@@ -1,0 +1,142 @@
+/*---------------------------------------------------------------------------------------------------------
+		CONTENT:
+				
+			1/ General content
+			2/ Forms
+			3/ Tables
+			4/ Errors
+			
+---------------------------------------------------------------------------------------------------------*/
+  
+/*---------------------------------------------------------------------------------------------------------
+		1) General content
+---------------------------------------------------------------------------------------------------------*/
+
+
+/*-------------------------------------------------------------------------------------------------------------
+		2) Forms, registration, editation, buttons
+-------------------------------------------------------------------------------------------------------------*/
+label {font-weight:bold;}
+.required {color:#FF0000;padding-right:2px;}
+
+input, textarea, select, .picker {
+	background-color:#e5e5e5;
+	text-align: left;
+	border: 1px solid #336698;	
+	color: #000000;
+	font-size: 11px;
+	padding:2px;
+}
+
+select {
+	padding:3px;
+	min-width:50px;}
+	
+option {padding-left:3px;}
+
+table.form {width:100%;}
+td.label {min-width:170px;}
+
+.picker {
+	width:200px;
+	float:left;
+	margin-right:5px;
+	padding:0px;
+	padding-top:3px;
+	display:inline;
+}
+
+#start_date,
+#end_date,
+#open_reg,
+#close_reg,
+#input_date,
+#birthday,
+#color1,
+#color2,
+#color3 {
+	float:left;
+	width:174px;
+	border: 0px;
+	margin-top:2px;
+}
+
+.button {
+	cursor:pointer;
+	padding:2px 5px 3px 5px;	
+	background-color:#E5E5E0;
+	color:#529900;
+	font-weight:bold;
+	text-align:center;
+	font-size:12px;
+	border:none;
+}
+
+.button:hover {color:#ce8b10;}
+
+a.link, button {
+	padding:3px 7px 3px 3px;
+	margin-bottom:2px;
+	display:inline-block;
+	font-weight:bold;
+	cursor:pointer;
+	border:none;
+	background-color:#ffffff;
+	color:#000000;
+}
+
+a.link:hover, button:hover {
+	background-color:#7DB9FF;
+	color:#000000;
+}
+
+button.datedit:hover,
+button.colormixer:hover {background-color:#e5e5e5;}
+
+
+/*---------------------------------------------------------------------------------------------------------
+		3) Tables
+---------------------------------------------------------------------------------------------------------*/
+
+table {
+	border:0px solid black;
+	border-collapse:collapse;
+	margin:0px;
+	padding:0px;
+}
+table td {border:0px solid black}
+
+td {
+	margin:0px;
+	padding:0px;
+}
+
+td table {
+	width:100%;
+	height:100%;
+}
+
+table.form {border-collapse:separate;}
+
+/* ----------------------------------------------------------------------------------------------------------
+		4) Errors
+---------------------------------------------------------------------------------------------------------- */
+.error {
+ color: #ff0000;
+ font-weight:bold;
+ padding:2px;
+ margin:2px 0px 2px 0px;
+ border:1px solid #ff0000;
+ background-color: #ffeeee;
+ display:block;
+}
+
+.ok {
+ color: #00bb00;
+ font-weight:bold;
+ padding:2px;
+ margin:2px 0px 2px 0px;
+ border:1px solid #00bb00;
+ background-color: #eeffee;
+ display:block;
+}

@@ -1,0 +1,495 @@
+/*---------------------------------------------------------------------------------------------------------
+		CONTENT:
+				
+			1/ HTML tags
+			2/ Universal Styles (display, float, margin, text-align...) 
+			3/ Layout
+			4/ Design			
+			5/ Index, login, Projekt
+			6/ Program
+			7/ Forms, registration, editation
+			8/ Help
+---------------------------------------------------------------------------------------------------------*/
+  
+/*---------------------------------------------------------------------------------------------------------
+		1) HTML tags
+---------------------------------------------------------------------------------------------------------*/
+h1 {
+ font-weight: bold;
+ font-size:24px;
+ margin:7px;
+ color:#000000;
+}
+
+h2 {
+ font-weight: bold;
+ font-size: 12px;
+ margin: 2px;
+ color:#000000;
+}
+
+h3 {
+ font-size: 11px;
+ color: #DE9816;
+ font-weight: bold;
+ margin-bottom: 0.5em;
+ margin-top: 2em
+}
+
+h4 {
+ font-size: 12px;
+ color: #000000;
+ font-weight: bold;
+ margin-bottom:0px;
+ margin-top:0px;
+}
+
+h5 {
+ font-size: 16px;
+ //color: #DE9816;
+ font-weight: bold;
+ margin-bottom: 0.5em;
+ margin-top:0px;
+ text-align:right;
+}
+
+h6 {
+ font-size: 14px;
+ background-color: #F9AD44;
+ font-weight: bold;
+ padding: 2px;
+ padding-bottom:3px;
+ padding-right:20px;
+ text-align:right;
+}
+
+body {
+ 	background-color:#ffffff;
+ 	font-family:"Segoe UI","Microsoft Sans Serif",Arial,Geneva,Sans-Serif;
+ 	font-size:11px;
+ 	text-align: left;
+ 	margin:0px;
+ 	vertical-align:top;
+	color:#000000;
+}
+
+img {vertical-align:middle;text-decoration:none;border:0px;margin-right:5px;}
+
+table {border:0px solid black}
+table td {border:0px solid black}
+
+a, a:link, a:visited {
+	color:#3e62a6;
+	cursor:pointer;
+	text-decoration:none;
+}
+
+a:hover {
+	color:#ce8b10;
+	text-decoration:none;
+}
+
+/* ----------------------------------------------------------------------------------------------------------
+		2) Universal styles (display, float, margin, text-align...)
+---------------------------------------------------------------------------------------------------------- */
+.ta-left {text-align:left;}
+.ta-right {text-align:right;}
+.fw-bold {font-weight:bold;}
+
+.bgc-grey {background-color:#f5f5f5;}
+
+.td-underline {text-decoration:underline;}
+
+/* ----------------------------------------------------------------------------------------------------------
+		3) Layout
+---------------------------------------------------------------------------------------------------------- */
+#canvas {
+ width: 100%;
+ border: 0px solid #C1C1C1;
+ padding-left: 0px;
+ background-image:url("../layout/head-gradient.png");
+ background-repeat:repeat-x;
+}
+
+#headerCanvas {
+ font-size: 30px;
+ padding-right:0px;
+}
+
+#headerContent {
+ font-size:11px;
+ text-align:right;
+ background: url("../layout/head-banner.jpg") no-repeat scroll left top transparent;
+ height:66px;
+ display:block;
+}
+
+#headerProfileLogout {
+	padding:10px;
+}
+
+#siteContent {
+ 	background-color:white;
+ 	padding-left:190px;
+ 	margin:7px;
+}
+
+#siteCanvas {
+	background-color:#ffffff;
+ 	margin-left:10px;
+ 	margin-right:10px;
+ 	margin-top:0px;
+ 	margin-bottom:10px;
+ 	height:100%;
+ 	border-top:3px solid #3E62A6;
+}
+
+#siteNavbar {
+ 	background-color:black;
+ 	background-image:url(../layout/navbar.png);
+ 	background-repeat:repeat-x;
+ 	font-size:18px;
+ 	text-align:left;
+ 	font-variant:small-caps;
+ 	color:white;
+ 	padding-left:10px;
+ 	padding-bottom:5px;
+ 	padding-top:5px;
+ 	margin:7px;
+}
+
+#menuCanvas {
+	width:180px;
+  	margin:0px 7px 0px 7px;
+ 	float:left;
+ 	height:100%;
+ 	background-color:#ffffff;
+}
+
+#menuContent {;}
+
+.menuItem {
+	background-color:#3E62A6;
+ 	/*background-color:#529900;*/
+ 	color:#ffffff;
+ 	padding-left:10px;
+ 	padding-top:4px;
+	padding-bottom:4px;
+ 	//height:20px;
+ 	font-weight:bold;
+ 	font-size:12px;
+}
+
+#footerCanvas {
+ 	height:30px;
+ 	color:#444444;
+ 	padding:0px;
+ 	border-top:3px solid #3E62A6;
+	position:static;
+	bottom:0px;
+	width:100%;
+}
+
+#footerContent {
+	margin:8px;
+	text-align:center;
+}
+
+/* ----------------------------------------------------------------------------------------------------------
+		4) Design
+---------------------------------------------------------------------------------------------------------- */
+
+#headerProfileLogout a {
+	color:#ffffff;
+	text-decoration:underline;
+}
+
+#headerProfileLogout a:hover {
+	color:#cccccc;	
+	text-decoration:underline;
+}
+
+#menuContent ul {
+	list-style:none outside none;
+	margin:0px;
+	padding:0px;
+}
+
+#menuContent a {
+	display:block;
+	font-size:11px;
+	padding-bottom:2px;	
+	padding-top:2px;
+	background-image:url("../layout/subnav-gradient.png");
+	background-repeat:repeat-x;
+	border:1px solid #dddddd;
+	font-weight:bold;
+	padding-left:10px;
+
+	height:18px;
+}
+
+#menuContent a:hover {;}
+
+.siteContentRibbon {
+ 	height:25px;
+ 	//background-color:#336698;
+ 	background-color:#999999;
+ 	font-size:19px;
+ 	color:#ffffff;
+ 	text-align:right;
+ 	padding-right:10px;
+ 	margin-bottom:3px;
+}
+
+.pageRibbon {
+ 	background-color:#e5e5e5;
+ 	font-size:12px;
+ 	font-weight:bold;
+ 	color:#000000;
+ 	padding-left:10px;
+ 	padding-top:3px;
+ 	padding-bottom:5px;
+ 	margin-top:3px;
+ 	margin-bottom:5px;
+}
+
+.pageContentRibbon {
+ 	font-size:12px;
+ 	font-weight:bold;
+ 	color:#000000;
+ 	padding-left:px;
+ 	padding-top:3px;
+ 	padding-bottom:5px;
+ 	margin-top:3px;
+ 	margin-bottom:10px;
+	border-bottom:1px solid black;
+}
+
+#copyright {
+ color: #999999;
+ font-size: 9px;
+ text-align: center;
+}
+#copyright a {
+ text-decoration:none;
+}
+
+.cleaner {
+		clear:both;
+		height:1px;
+		font-size:1px;
+		margin:0; padding:0;
+		background:transparent;
+		}
+
+.tab1 {
+ 	background-color: #a9a9a9;
+ 	background-color:#999;
+ 	font-size: 11px;
+ 	font-weight: bold;
+ 	padding:3px 20px 3px 8px;
+ 	color:white;
+	min-width:30px;
+}
+
+table tr.radek1 {background-color: #f5f5f5;}
+table tr.radek1:hover, table tr.radek2:hover {background-color: silver;}
+
+table.list {
+ border-collapse:separate;
+ text-align:right;
+ vertical-align:top;
+}
+
+td.text {
+ text-align:left;
+ margin:0px;
+ padding:2px;
+}
+
+/* formaty tabulek */
+td.emptyTable, div.emptyTable {
+ text-align:center;
+ border:1px dashed #000000;
+}
+
+img.edit {margin:2px;}
+
+a.pageIndexControl, .selected {
+	color:#FFFFFF;
+	display:inline-block;
+	font-size:;
+	font-weight:bold;
+	padding:3px 2px 3px 2px;
+	margin-top:5px;
+	text-align:center;
+	text-decoration:none;
+	min-width:1.6em;
+	background-color:#E5E5E0;
+	color:#529900;
+}
+
+a.pageIndexControl:hover {color:#ce8b10;}
+
+.selected, .selected:hover {background-color:#529900; color:#ffffff;}
+/* end formaty tabulek */
+
+/* ----------------------------------------------------------------------------------------------------------
+		4) Error
+---------------------------------------------------------------------------------------------------------- */
+.error {
+ color: #ff0000;
+ font-weight:bold;
+ padding:2px;
+ margin:2px 0px 2px 0px;
+ border:1px solid #ff0000;
+ background-color: #ffeeee;
+ display:block;
+}
+
+.ok {
+ color: #00bb00;
+ font-weight:bold;
+ padding:2px;
+ margin:2px 0px 2px 0px;
+ border:1px solid #00bb00;
+ background-color: #eeffee;
+ display:block;
+}
+
+/* ----------------------------------------------------------------------------------------------------------
+		5) Index, login
+---------------------------------------------------------------------------------------------------------- */
+
+/*-------------------------------------------------------------------------------------------------------------
+		6) Program
+-------------------------------------------------------------------------------------------------------------*/
+table.blocks,
+table.programs {
+	font-size:12px;
+	border:none;
+}
+
+table.programs {width:100%;}
+table.blocks {width:80%;}
+
+/*table.blocks td {tborder:none;}*/
+
+a.program,
+a.block {
+	display:block;
+	padding:2px;
+	color:black;}
+
+a.block {padding-left:30px;}
+
+td.time {
+	width:110px;
+	text-align:center;
+	background-color:#cccccc;
+	font-size:12px;
+	padding-bottom:3px;
+	padding-top:3px;
+}
+
+td.day {
+ 	background-color: #a9a9a9;
+ 	background-color:#999;
+ 	font-size: 15px;
+ 	font-weight: bold;
+ 	padding:3px 10px 3px 3px;
+ 	color:white;
+	text-align:right;
+}
+
+.block:hover, .program:hover {
+	background-color: silver;
+	color:#ce8b10;
+}
+
+a.program-link {color: black;}
+a.program-link:hover {color: #ce8b10;}
+
+/*-------------------------------------------------------------------------------------------------------------
+		7) Forms, registration, editation, buttons
+-------------------------------------------------------------------------------------------------------------*/
+label {font-weight:bold;}
+label.required {color:#FF0000;}
+
+input, textarea, select, .picker {
+	background-color:#e5e5e5;
+	text-align: left;
+	border: 1px solid #336698;	
+	color: #000000;
+	font-size: 11px;
+	padding:2px;
+}
+
+tr.radek1 td input {border-color:#f5f5f5;}
+
+select {
+	padding:3px;
+	min-width:50px;}
+
+table.form {width:100%;}
+td.label {width:120px;}
+
+.picker {
+	width:200px;
+	float:left;
+	margin-right:5px;
+	padding:0px;
+	display:inline;
+}
+
+#start_date,
+#end_date,
+#open_reg,
+#close_reg,
+#input_date,
+#birthday,
+#color1,
+#color2,
+#color3 {
+	float:left;
+	width:174px;
+	border: 0px;
+	margin-top:2px;
+}
+
+.button {
+	cursor:pointer;
+	padding:2px 5px 3px 5px;	
+	background-color:#E5E5E0;
+	color:#529900;
+	font-weight:bold;
+	text-align:center;
+	font-size:12px;
+	border:none;
+}
+
+.button:hover {color:#ce8b10;}
+
+a.link, button {
+	padding:3px 7px 3px 3px;
+	margin-bottom:2px;
+	display:inline-block;
+	font-weight:bold;
+	cursor:pointer;
+	border:none;
+	background-color:#ffffff;
+	color:#000000;
+}
+
+a.link:hover, button:hover {
+	background-color:#7DB9FF;
+	color:#000000;
+}
+
+button.datedit:hover,
+button.colormixer:hover {background-color:#e5e5e5;}
+
+/*---------------------------------------------------------------------------------------------------------
+		8) Help
+---------------------------------------------------------------------------------------------------------*/

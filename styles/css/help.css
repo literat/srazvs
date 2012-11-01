@@ -1,0 +1,89 @@
+h2 {
+	font-size:18px;
+	padding-bottom:0.7em;
+	padding-top:0.7em;
+	color:#529900;
+	margin:0px;
+}
+
+h3 {
+	font-size:1em;
+	padding-bottom:0;
+	color:#30332D;
+	margin:0px 0px 10px 0px;
+}
+
+#siteContentHelp {
+	padding:20px;
+	font-size:13px;
+}
+
+#siteContentHelp a {text-decoration:underline;}
+
+#leftSideHelp {
+	float:left;
+	padding-right:10px;
+	font-size:13px;
+}
+
+#rightSideHelp {
+	float:right;
+	font-size:13px;
+}
+
+#leftSideHelp, #rightSideHelp {
+	min-width:200px;
+	width:48%;
+}
+
+.helpHeader {
+	background-color:#CCCCC2;
+	color:#ffffff;
+	font-weight:bold;
+	padding:0.35em;
+}
+
+.helpIcon {
+	vertical-align:top;
+	width:65px;
+}
+
+.helpContent {
+	padding-left:0.75em;
+	vertical-align:middle;
+	width:100%;
+}
+
+p {
+	margin-bottom:1em;
+	margin-top:1em;
+}
+
+img.smallerIcon {width:36px;}
+
+.helpContent ul {margin-top:-5px;}
+
+ul {
+	list-style-image:url("../../../srazvs/styles/layout/icons/small/bullet_square.gif");
+	list-style-type:square;
+	margin-left:0;
+	padding-left:2em;
+}
+
+div.wikidoc ul {
+	list-style-image:url("../../../srazvs/styles/layout/icons/small/doublearrow.gif");
+	list-style-type:none;
+}
+
+div.wikidoc li {
+	margin-bottom:0.3em;
+	margin-top:0.3em;
+	vertical-align:middle;
+}
+
+img {
+border:0 none;
+margin-right:5px;
+text-decoration:none;
+vertical-align:middle;
+}

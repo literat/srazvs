@@ -1,0 +1,168 @@
+10
+
+dir
+0
+https://github.com:443/literat/SrazyVS.git/inc/mpdf
+https://github.com:443/literat/SrazyVS.git
+add
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+da9629fa-693e-fe54-b82e-ce57b7db7bff
+
+compress.php
+file
+
+
+
+add
+
+unifont
+dir
+
+
+
+add
+
+graph_cache
+dir
+
+
+
+add
+
+graph.php
+file
+
+
+
+add
+
+makefonts
+dir
+
+
+
+add
+
+config.php
+file
+
+
+
+add
+
+classes
+dir
+
+
+
+add
+
+mpdfi
+dir
+
+
+
+add
+
+tmp
+dir
+
+
+
+add
+
+patterns
+dir
+
+
+
+add
+
+maps
+dir
+
+
+
+add
+
+iccprofiles
+dir
+
+
+
+add
+
+config_fonts.php
+file
+
+
+
+add
+
+progress
+dir
+
+
+
+add
+
+font
+dir
+
+
+
+add
+
+includes
+dir
+
+
+
+add
+
+mpdf.php
+file
+
+
+
+add
+
+mpdf.css
+file
+
+
+
+add
+
+config_cp.php
+file
+
+
+
+add
+
+examples
+dir
+
+
+
+add
+

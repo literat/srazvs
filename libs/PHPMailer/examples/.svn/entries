@@ -1,0 +1,140 @@
+10
+
+dir
+0
+https://github.com:443/literat/SrazyVS.git/libs/PHPMailer/examples
+https://github.com:443/literat/SrazyVS.git
+add
+
+
+
+
+
+has-props
+has-prop-mods
+
+
+
+
+
+
+
+
+
+
+
+
+da9629fa-693e-fe54-b82e-ce57b7db7bff
+
+test_sendmail_basic.php
+file
+
+
+
+add
+
+test_smtp_gmail_basic.php
+file
+
+
+
+add
+
+test_smtp_basic_no_auth.php
+file
+
+
+
+add
+
+test_mail_advanced.php
+file
+
+
+
+add
+
+test_pop_before_smtp_advanced.php
+file
+
+
+
+add
+
+test_smtp_advanced.php
+file
+
+
+
+add
+
+contents.html
+file
+
+
+
+add
+
+images
+dir
+
+
+
+add
+
+test_sendmail_advanced.php
+file
+
+
+
+add
+
+test_smtp_gmail_advanced.php
+file
+
+
+
+add
+
+test_mail_basic.php
+file
+
+
+
+add
+
+test_pop_before_smtp_basic.php
+file
+
+
+
+add
+
+test_smtp_basic.php
+file
+
+
+
+add
+
+index.html
+file
+
+
+
+add
+
+test_smtp_advanced_no_auth.php
+file
+
+
+
+add
+
+test_db_smtp_basic.php
+file
+
+
+
+add
+

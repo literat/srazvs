@@ -1,0 +1,217 @@
+10
+
+dir
+0
+https://github.com:443/literat/SrazyVS.git/libs/PHPExcel/Classes/PHPExcel
+https://github.com:443/literat/SrazyVS.git
+add
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+da9629fa-693e-fe54-b82e-ce57b7db7bff
+
+Cell
+dir
+
+
+
+add
+
+RichText.php
+file
+
+
+
+add
+
+HashTable.php
+file
+
+
+
+add
+
+DocumentProperties.php
+file
+
+
+
+add
+
+CachedObjectStorage
+dir
+
+
+
+add
+
+ReferenceHelper.php
+file
+
+
+
+add
+
+Calculation.php
+file
+
+
+
+add
+
+IOFactory.php
+file
+
+
+
+add
+
+Autoloader.php
+file
+
+
+
+add
+
+Settings.php
+file
+
+
+
+add
+
+Style.php
+file
+
+
+
+add
+
+NamedRange.php
+file
+
+
+
+add
+
+Comment.php
+file
+
+
+
+add
+
+RichText
+dir
+
+
+
+add
+
+DocumentSecurity.php
+file
+
+
+
+add
+
+Calculation
+dir
+
+
+
+add
+
+locale
+dir
+
+
+
+add
+
+Style
+dir
+
+
+
+add
+
+CachedObjectStorageFactory.php
+file
+
+
+
+add
+
+Worksheet.php
+file
+
+
+
+add
+
+Reader
+dir
+
+
+
+add
+
+IComparable.php
+file
+
+
+
+add
+
+Cell.php
+file
+
+
+
+add
+
+Shared
+dir
+
+
+
+add
+
+Worksheet
+dir
+
+
+
+add
+
+WorksheetIterator.php
+file
+
+
+
+add
+
+Writer
+dir
+
+
+
+add
+
