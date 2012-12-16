@@ -1,462 +1,0 @@
-10
-
-dir
-0
-https://github.com:443/literat/SrazyVS.git/inc/phpexcel/Tests
-https://github.com:443/literat/SrazyVS.git
-add
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-da9629fa-693e-fe54-b82e-ce57b7db7bff
-
-14excel5.php
-file
-
-
-
-add
-
-OOCalcReader.xlsx
-file
-
-
-
-add
-
-
-
-
-
-has-props
-has-prop-mods
-
-03formulas.php
-file
-
-
-
-add
-
-GnumericTest.gnumeric
-file
-
-
-
-add
-
-
-
-
-
-has-props
-has-prop-mods
-
-GnumericReader.php
-file
-
-
-
-add
-
-30template.xls
-file
-
-
-
-add
-
-
-
-
-
-has-props
-has-prop-mods
-
-runall.php
-file
-
-
-
-add
-
-26utf8.php
-file
-
-
-
-add
-
-OOCalcTest.ods
-file
-
-
-
-add
-
-
-
-
-
-has-props
-has-prop-mods
-
-Excel2003XMLTest.xml
-file
-
-
-
-add
-
-16csv.php
-file
-
-
-
-add
-
-28iterator.php
-file
-
-
-
-add
-
-05featuredemo.php
-file
-
-
-
-add
-
-SylkReader.php
-file
-
-
-
-add
-
-02types.php
-file
-
-
-
-add
-
-01simple-download-pdf.php
-file
-
-
-
-add
-
-11documentsecurity.php
-file
-
-
-
-add
-
-07reader.php
-file
-
-
-
-add
-
-25inmemoryimage.php
-file
-
-
-
-add
-
-22heavilyformatted.php
-file
-
-
-
-add
-
-17html.php
-file
-
-
-
-add
-
-02types.xlsx
-file
-
-
-
-add
-
-
-
-
-
-has-props
-has-prop-mods
-
-09pagebreaks.php
-file
-
-
-
-add
-
-images
-dir
-
-
-
-add
-
-20readexcel5.php
-file
-
-
-
-add
-
-OOCalcReader.php
-file
-
-
-
-add
-
-XMLReader.php
-file
-
-
-
-add
-
-Quadratic.xlsx
-file
-
-
-
-add
-
-
-
-
-
-has-props
-has-prop-mods
-
-01simple.php
-file
-
-
-
-add
-
-15datavalidation.php
-file
-
-
-
-add
-
-01simple-download-xlsx.php
-file
-
-
-
-add
-
-04printing.php
-file
-
-
-
-add
-
-Quadratic2.php
-file
-
-
-
-add
-
-29advancedvaluebinder.php
-file
-
-
-
-add
-
-01simple.xlsx
-file
-
-
-
-add
-
-
-
-
-
-has-props
-has-prop-mods
-
-03formulas.xlsx
-file
-
-
-
-add
-
-
-
-
-
-has-props
-has-prop-mods
-
-13calculation.php
-file
-
-
-
-add
-
-01simple-download-xls.php
-file
-
-
-
-add
-
-08conditionalformatting.php
-file
-
-
-
-add
-
-06largescale.php
-file
-
-
-
-add
-
-templates
-dir
-
-
-
-add
-
-Excel2003XMLReader.php
-file
-
-
-
-add
-
-XMLTest.xml
-file
-
-
-
-add
-
-19namedrange.php
-file
-
-
-
-add
-
-21pdf.php
-file
-
-
-
-add
-
-05featuredemo.inc.php
-file
-
-
-
-add
-
-Quadratic.php
-file
-
-
-
-add
-
-30template.php
-file
-
-
-
-add
-
-23sharedstyles.php
-file
-
-
-
-add
-
-10autofilter.php
-file
-
-
-
-add
-
-27imagesexcel5.php
-file
-
-
-
-add
-
-SylkTest.slk
-file
-
-
-
-add
-
-24readfilter.php
-file
-
-
-
-add
-
-18extendedcalculation.php
-file
-
-
-
-add
-
