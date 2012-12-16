@@ -7,7 +7,7 @@
  * @created 2012-11-07
  * @author Tomas Litera <tomaslitera@hotmail.com>
  */ 
-class Visitor
+class Visitor /* extends Component */
 {
 	/** @var int meeting ID */
 	private $meeting_ID;
@@ -51,7 +51,7 @@ class Visitor
 	public $form_names = array();
 	
 	/** konstruktor */
-	public function __construct($meeting_ID, Emailer $Emailer, Meeting $Meeting, Meal $Meals, Program $Program, Blocks $Blocks)
+	public function __construct($meeting_ID, Emailer $Emailer, Meeting $Meeting, Meal $Meals, Program $Program, Block $Blocks)
 	{
 		$this->Emailer = $Emailer;
 		$this->Meeting = $Meeting;
@@ -82,6 +82,7 @@ class Visitor
 								"meeting"
 							);
 		$this->form_names = array("name", "description", "material", "tutor", "email", "capacity", "display_in_reg", "block", "category");
+		$this->dbTable = "kk_visitors";
 	}
 
 	/**
@@ -89,7 +90,7 @@ class Visitor
 	 *
 	 * @return	boolean
 	 */
-	public function create($DB_data, $meals_data, $programs_data)
+	public function create(array $DB_data, $meals_data, $programs_data)
 	{
 		$return = true;
 		
@@ -191,14 +192,14 @@ class Visitor
 	}
 	
 	/**
-	 * Delete one or multiple visitors
+	 * Delete one or multiple record/s
 	 *
-	 * @param	int	ID/s of visitor
+	 * @param	int		ID/s of record
 	 * @return	boolean 
 	 */
 	public function delete($id)
 	{
-    	$query = "UPDATE kk_visitors SET deleted = '1' WHERE id IN (".$id.")";
+    	$query = "UPDATE ".$this->dbTable." SET deleted = '1' WHERE id IN (".$id.")";
 	    $result = mysql_query($query);
 		
 		return $result;

@@ -15,15 +15,16 @@ interface IComponent extends IModel
 	 *
 	 * @return	boolean
 	 */
-	public function create($dbData);
+	public function create(array $dbData);
 
 	/**
 	 * Modify record
 	 *
 	 * @param	int		ID of record
+	 * @param	array	Associated array with data to DB
 	 * @return	bool
 	 */	
-	public function modify($id, $dbData);
+	public function modify($id, array $dbData);
 	
 	/**
 	 * Delete record

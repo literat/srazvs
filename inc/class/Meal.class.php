@@ -7,7 +7,7 @@
  * @created 2012-11-11
  * @author Tomas Litera <tomaslitera@hotmail.com>
  */
-class Meal
+class Meal extends Component
 {
 	/** @var meeting ID */
 	private $meeting;
@@ -37,6 +37,7 @@ class Meal
 			"nedělní snídaně"	=>	"sun_breakfast",
 			"nedělní oběd"		=>	"sun_lunch"
 		);
+		$this->dbTable = "kk_meals";
 	}
 	
 	public function getMeals()
@@ -79,52 +80,5 @@ class Meal
 		}
 				
 		return $html_select;
-	}
-	
-	/**
-	 * Create meals for new visitor
-	 *
-	 * @return	bool	query status
-	 */
-	public function create($DB_data)
-	{
-		$query_key_set = "";
-		$query_value_set = "";
-
-		foreach($DB_data as $key => $value) {
-			$query_key_set .= "`".$key."`,";
-			$query_value_set .= "'".$value."',";
-		}
-		$query_key_set = substr($query_key_set, 0, -1);
-		$query_value_set = substr($query_value_set, 0, -1);	
-
-    	$query = "INSERT INTO `kk_meals` 
-     				 (".$query_key_set.") 
-     				 VALUES (".$query_value_set.");";
-    	$result = mysql_query($query);
-
-		return $result;
-	}
-	
-	/**
-	 * Modify meals for visitor
-	 *
-	 * @return	bool	query status
-	 */
-	public function modify($id, $DB_data)
-	{
-		$query_set = "";
-	 	foreach($DB_data as $key => $value) {
-			$query_set .= "`".$key."` = '".$value."',";	
-		}
-	 	$query_set = substr($query_set, 0, -1);	
-		
-    	$query = "UPDATE `kk_meals` 
-					SET ".$query_set."
-					WHERE `visitor` = '".$id."'
-					LIMIT 1";
-    	$result = mysql_query($query);
-		
-		return $result;
 	}
 }

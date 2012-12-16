@@ -25,7 +25,7 @@ abstract class Component implements IComponent
 	 *
 	 * @return	boolean
 	 */
-	public function create($db_data)
+	public function create(array $db_data)
 	{
 		$query_key_set = "";
 		$query_value_set = "";
@@ -37,7 +37,7 @@ abstract class Component implements IComponent
 		$query_key_set = substr($query_key_set, 0, -1);
 		$query_value_set = substr($query_value_set, 0, -1);	
 
-    	$query = "INSERT INTO `".$this->dbTable."` 
+    	echo $query = "INSERT INTO `".$this->dbTable."` 
      				 (".$query_key_set.") 
      				 VALUES (".$query_value_set.");";
     	$result = mysql_query($query);
@@ -51,7 +51,7 @@ abstract class Component implements IComponent
 	 * @param	int		ID of record
 	 * @return	bool
 	 */	
-	public function modify($id, $db_data)
+	public function modify($id, array $db_data)
 	{
 		$query_set = "";
 	 	foreach($db_data as $key => $value) {
@@ -68,14 +68,14 @@ abstract class Component implements IComponent
 	}
 	
 	/**
-	 * Delete record
+	 * Delete one or multiple record/s
 	 *
-	 * @param	int		ID of record
+	 * @param	int		ID/s of record
 	 * @return	boolean 
 	 */
 	public function delete($id)
 	{
-		$query = "UPDATE ".$this->dbTable." SET deleted = '1' WHERE id = ".$id."	LIMIT 1";
+    	$query = "UPDATE ".$this->dbTable." SET deleted = '1' WHERE id IN (".$id.")";
 	    $result = mysql_query($query);
 		
 		return $result;

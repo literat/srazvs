@@ -7,7 +7,7 @@
  * @created 2012-03-06
  * @author Tomas Litera <tomaslitera@hotmail.com>
  */
-class Category
+class Category extends Component
 {
 	/**
 	 * Array of database block table columns
@@ -20,6 +20,7 @@ class Category
 	public function __construct()
 	{
 		$this->DB_columns = array("name", "bgcolor", "bocolor", "focolor");
+		$this->dbTable = "kk_categories";
 	}
 	
 	/**
@@ -77,6 +78,7 @@ class Category
 	/**
 	 * Create new category
 	 *
+	 * @param	array	Data to DB
 	 * @return	boolean
 	 */
 	public function create(array $DB_data)
@@ -105,7 +107,8 @@ class Category
 	/**
 	 * Modify category details
 	 *
-	 * @param	int	ID of category
+	 * @param	int		ID of category
+	 * @param	array	Data to DB
 	 * @return	boolean
 	 */
 	public function modify($id, array $DB_data)
@@ -126,21 +129,7 @@ class Category
 		
 		return $result;
 	}
-
-	/**
-	 * Delete a category
-	 *
-	 * @param	int	ID of category
-	 * @return	boolean
-	 */
-	public function delete($id)
-	{
-    	$query = "UPDATE `kk_categories` SET `deleted` = '1' WHERE `id` = ".$id." LIMIT 1";
-	    $result = mysql_query($query);
 		
-		return $result;
-	}
-	
 	/**
 	 * Render CSS coding of styles
 	 *
