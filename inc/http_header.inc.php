@@ -7,6 +7,7 @@
   <link href='<?php echo $CSSDIR ?>help.css' rel='stylesheet' type='text/css' />
   <link rel="stylesheet" href="<?php echo $CSSDIR ?>tablesorter.css" type="text/css" media="screen" />
   <link rel="stylesheet" href="<?php echo $CSSDIR ?>datedit.css" type="text/css" media="screen" />
+  <link rel="stylesheet" href="<?php echo $CSS2DIR ?>smoothness/jquery.ui.css" type="text/css" media="screen" />
   <link rel="stylesheet" href="<?php echo $CSSDIR ?>dgxcolormixer_s.css" type="text/css" media="screen,projection,tv" />
   <script src='<?php echo $AJAXDIR ?>function.js' type='text/javascript'></script>
   <script src='<?php echo $JSDIR ?>jquery/jquery.min.js' type='text/javascript'></script>

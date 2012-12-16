@@ -23,6 +23,9 @@ require_once($CLASSDIR.'Category.class.php');
 require_once($CLASSDIR.'Blocks.class.php');
 require_once($CLASSDIR.'Program.class.php');
 require_once($CLASSDIR.'Form.class.php');
+require_once($CLASSDIR.'Visitor.class.php');
+require_once($CLASSDIR.'Meeting.class.php');
+require_once($CLASSDIR.'Meal.class.php');
 
 require_once($LIBSDIR.'PHPMailer/class.phpmailer.php');
 

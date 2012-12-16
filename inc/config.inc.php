@@ -82,6 +82,7 @@ $LOGODIR 	= $LAYOUTDIR.'logos/';
 $LOGDIR 	= ROOT_DIR.'log/';
 $STYLEDIR 	= HTTP_DIR.'srazvs/styles/';
 $CSSDIR 	= HTTP_DIR.'srazvs/styles/css/';
+$CSS2DIR 	= HTTP_DIR.'srazvs/css/';
 $AJAXDIR 	= HTTP_DIR.'srazvs/js/';
 $JSDIR 		= HTTP_DIR.'srazvs/js/';
 $CLASSDIR 	= $INCDIR.'class/';
