@@ -61,7 +61,7 @@ $(document).ready(function() {
 </script>
 
 <?php
-########################## GENEROVANI STRANKY #############################33
+###################################################################
 
 // render data table
 echo $BlocksHandler->renderData();
