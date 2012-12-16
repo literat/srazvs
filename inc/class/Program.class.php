@@ -7,7 +7,7 @@
  * @created 2012-10-01
  * @author Tomas Litera <tomaslitera@hotmail.com>
  */ 
-class Program
+class Program extends Component
 {
 	/** @var int meeting ID */
 	private $meeting_ID;
@@ -32,74 +32,14 @@ class Program
 		$this->meeting_ID = $meeting_ID;
 		$this->DB_columns = array("name", "block", "display_in_reg", "description", "tutor", "email", "category", "material", "capacity");
 		$this->form_names = array("name", "description", "material", "tutor", "email", "capacity", "display_in_reg", "block", "category");
+		$this->dbTable = "kk_programs";
 	}
 
 	/**
-	 * Create a new program
+	 * Get programs
 	 *
-	 * @return	boolean
-	 */
-	public function create($DB_data)
-	{
-		$query_key_set = "";
-		$query_value_set = "";
-
-		foreach($DB_data as $key => $value) {
-			$query_key_set .= "`".$key."`,";
-			$query_value_set .= "'".$value."',";
-		}
-		$query_key_set = substr($query_key_set, 0, -1);
-		$query_value_set = substr($query_value_set, 0, -1);	
-
-    	$query = "INSERT INTO `kk_programs` 
-     				 (".$query_key_set.") 
-     				 VALUES (".$query_value_set.");";
-    	$result = mysql_query($query);
-
-		return $result;
-	}
-	
-	/**
-	 * Modify a program
-	 *
-	 * @param	int	ID of a program
-	 *
-	 * @return	bool
-	 */
-	public function modify($id, $DB_data)
-	{
-	 	$query_set = "";
-	 	foreach($DB_data as $key => $value) {
-			$query_set .= "`".$key."` = '".$value."',";	
-		}
-	 	$query_set = substr($query_set, 0, -1);	
-		
-    	$query = "UPDATE `kk_programs` 
-					SET ".$query_set."
-					WHERE `id`='".$id."' LIMIT 1";
-    	$result = mysql_query($query);
-		
-		return $result;
-	}
-	
-	/**
-	 * Delete program
-	 *
-	 * @param	int	ID of program
-	 * @return	boolean 
-	 */
-	public function delete($id)
-	{
-    	$query = "UPDATE kk_programs SET deleted = '1' WHERE id = ".$id."	LIMIT 1";
-	    $result = mysql_query($query);
-		
-		return $result;
-	}
-	
-	/**
-	 * Delete program
-	 *
-	 * @param	int	ID of program
+	 * @param	int		ID of program
+	 * @param	int		ID of visitor
 	 * @return	boolean 
 	 */
 	public function getPrograms($id, $vid)
