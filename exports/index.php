@@ -189,6 +189,56 @@ $moneySql = "SELECT SUM(bill) AS account,
 $moneyResult = mysql_query($moneySql);
 $moneyData = mysql_fetch_assoc($moneyResult);
 
+/*
+- na generování grafu
+
+*/
+
+$graph_width = 94;
+
+$graph_query = "SELECT DATE_FORMAT(reg_daytime, '%d. %m. %Y') AS day, 
+					   COUNT(reg_daytime) AS reg_count
+				FROM `kk_visitors` AS vis
+				LEFT JOIN kk_meetings AS meet ON meet.id = vis.meeting 
+				WHERE meet.id = ".$mid." AND vis.deleted='0'
+				GROUP BY day
+				ORDER BY reg_daytime ASC";
+$graph_result = mysql_query($graph_query);
+
+$max_query = "SELECT MAX( reg_count ) AS max
+			  FROM (
+				SELECT DATE_FORMAT( reg_daytime, '%d. %m. %Y' ) AS
+					DAY , COUNT( reg_daytime ) AS reg_count
+				FROM `kk_visitors` AS vis
+				LEFT JOIN kk_meetings AS meet ON meet.id = vis.meeting
+				WHERE meet.id = '".$mid."'
+					AND vis.deleted = '0'
+				GROUP BY DAY
+			  ) AS cnt";
+$max_result = mysql_query($max_query);
+$max_data = mysql_fetch_assoc($max_result);
+
+$reg_graph = "<table style='width:100%;'>";
+
+$graph_height = 0;
+
+while($graph_data = mysql_fetch_array($graph_result)){
+	    // trojclenka pro zjisteni pomeru sirky grafu...(aby nam to nevylezlo mimo obrazovku)
+/*var_dump($max);
+var_dump($graph_width);
+var_dump($graph_data['reg_count']);
+echo 	$width = ceil(($graph_width/$max)*$graph_data['reg_count'])."\n";*/
+ 	$width = ceil($graph_width/$max_data['max']*$graph_data['reg_count']);
+	$reg_graph .= "<tr><td align='right' style='width:60px;'>".$graph_data['day']."</td><td><img src='../images/graph.png' alt='".$graph_data['reg_count']."' style='width:".$width."%;' height='12' border='0'>".$graph_data['reg_count']."</td>";
+	
+	$graph_height += 21.5; 
+}
+	       
+$reg_graph .= "</table>";
+
+if($graph_height < 250) $graph_height = 250;
+
+
 ################## GENEROVANI STRANKY #############################
 
 include_once($INCDIR.'http_header.inc.php');
@@ -253,12 +303,18 @@ include_once($INCDIR.'header.inc.php');
   </div>
 </div>
 
-<div style="width:15%;padding-left:20.5%;float:right;">
+
+<div style="width:44%;padding-left:0.5%;float:right;">
+ <div class='pageRibbon'>Graf přihlašování</div>
+ <?php echo $reg_graph; ?>
+</div>
+
+<div style="width:15%;padding-left:0.5%;float:right;">
  <div class='pageRibbon'>Jídlo</div>
  <?php echo $meals; ?>
 </div>
 
-<div style="padding-left:22.5%;padding-right:15.5%;margin-top:6px;height:250px;">
+<div style="padding-left:22.5%;padding-right:60%;margin-top:6px;height:<?php echo $graph_height; ?>px;">
  <div class='pageRibbon'>Peníze</div>
  <div style="margin-bottom:4px;">Celkem vybráno: <strong><?php echo $moneyData['account']; ?></strong>,-Kč</div>
  <div style="margin-bottom:4px;">Zbývá vybrat: <strong><?php echo $moneyData['balance']; ?></strong>,-Kč</div>
