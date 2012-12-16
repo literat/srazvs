@@ -20,7 +20,8 @@ $error_description = "";
 $error_tutor = "";
 $error_email = "";
 
-$BlocksHandler = new Blocks($mid);
+$Container = new Container($GLOBALS['cfg'], $mid);
+$BlocksHandler = $Container->createBlock();
 
 ######################## ZPRACOVANI ####################################
 
@@ -59,6 +60,7 @@ switch($cms) {
 			$DB_data['from'] = $from;
 			$DB_data['to'] = $to;
 			$DB_data['capacity'] = 0;
+			$DB_data['meeting'] = $mid;
 		}
 		
 		if($BlocksHandler->create($DB_data)){	
@@ -117,6 +119,7 @@ switch($cms) {
 			$DB_data['from'] = $from;
 			$DB_data['to'] = $to;
 			$DB_data['capacity'] = 0;
+			$DB_data['meeting'] = $mid;
 		}
 		
 		if($BlocksHandler->modify($id, $DB_data)){	

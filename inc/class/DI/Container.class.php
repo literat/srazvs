@@ -106,6 +106,6 @@ class Container
 	 */
 	public function createBlock()
 	{
-		return new Blocks($this->meetingId);
+		return new Block($this->meetingId);
 	}
 }

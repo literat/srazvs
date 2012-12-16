@@ -24,7 +24,7 @@ require_once($CLASSDIR.'ComponentModel/Component.php');
 
 require_once($CLASSDIR.'Emailer.class.php');
 require_once($CLASSDIR.'Category.class.php');
-require_once($CLASSDIR.'Blocks.class.php');
+require_once($CLASSDIR.'Block.class.php');
 require_once($CLASSDIR.'Program.class.php');
 require_once($CLASSDIR.'Form.class.php');
 require_once($CLASSDIR.'Visitor.class.php');

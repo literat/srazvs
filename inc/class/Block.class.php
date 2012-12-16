@@ -7,7 +7,7 @@
  * @created 2012-09-14
  * @author Tomas Litera <tomaslitera@hotmail.com>
  */ 
-class Blocks
+class Block extends Component
 {
 	/** @var int meeting ID */
 	private $meeting_ID;
@@ -30,71 +30,38 @@ class Blocks
 	public function __construct($meeting_ID)
 	{
 		$this->meeting_ID = $meeting_ID;
-		$this->DB_columns = array("name", "day", "from", "to", "program", "display_progs", "description", "tutor", "email", "category", "material", "capacity");
-		$this->form_names = array("name", "day", "start_hour", "end_hour", "start_minute", "end_minute", "program", "display_progs", "description", "tutor", "email", "category", "material", "capacity");
-	}
-
-	/**
-	 * Create a new program block
-	 *
-	 * @return	boolean
-	 */
-	public function create($DB_data)
-	{
-		$query_key_set = "";
-		$query_value_set = "";
-
-		foreach($DB_data as $key => $value) {
-			$query_key_set .= "`".$key."`,";
-			$query_value_set .= "'".$value."',";
-		}
-		$query_key_set = substr($query_key_set, 0, -1);
-		$query_value_set = substr($query_value_set, 0, -1);	
-
-    	$query = "INSERT INTO `kk_blocks` 
-     				 (".$query_key_set.", `meeting`) 
-     				 VALUES (".$query_value_set.", '".$this->meeting_ID."');";
-					 var_dump($query);
-    	$result = mysql_query($query);
-		
-		return $result;
-	}
-	
-	/**
-	 * Modify a program block
-	 *
-	 * @param	int	ID of a block
-	 *
-	 * @return	boolean
-	 */
-	public function modify($id, $DB_data)
-	{
-	 	$query_set = "";
-	 	foreach($DB_data as $key => $value) {
-			$query_set .= "`".$key."` = '".$value."',";	
-		}
-	 	$query_set = substr($query_set, 0, -1);	
-		
-    	$query = "UPDATE `kk_blocks` 
-					SET ".$query_set."
-					WHERE `id`='".$id."' LIMIT 1";
-    	$result = mysql_query($query);
-		
-		return $result;
-	}
-	
-	/**
-	 * Delete block
-	 *
-	 * @param	int	ID of block
-	 * @return	boolean 
-	 */
-	public function delete($id)
-	{
-    	$query = "UPDATE kk_blocks SET deleted = '1' WHERE id = ".$id."	LIMIT 1";
-	    $result = mysql_query($query);
-		
-		return $result;
+		$this->DB_columns = array(
+			"name",
+			"day",
+			"from",
+			"to",
+			"program",
+			"display_progs",
+			"description",
+			"tutor",
+			"email",
+			"category",
+			"material",
+			"capacity",
+			"meeting"
+		);
+		$this->form_names = array(
+			"name",
+			"day",
+			"start_hour",
+			"end_hour",
+			"start_minute",
+			"end_minute",
+			"program",
+			"display_progs",
+			"description",
+			"tutor",
+			"email",
+			"category",
+			"material",
+			"capacity"
+		);
+		$this->dbTable = "kk_blocks";
 	}
 	
 	/**

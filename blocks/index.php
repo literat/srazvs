@@ -18,7 +18,8 @@ $id = requested("id","");
 $cms = requested("cms","");
 $error = requested("error","");
 
-$BlocksHandler = new Blocks($mid);
+$Container = new Container($GLOBALS['cfg'], $mid);
+$BlocksHandler = $Container->createBlock();
 
 // delete block
 if($cms == "del"){
