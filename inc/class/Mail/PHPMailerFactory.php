@@ -10,7 +10,7 @@
 class PHPMailerFactory
 {
 	/** @var PHPMailer */
-	private $PHPMailer;
+	public $PHPMailer;
 	
 	/** @var configuration */
 	private $configuration;

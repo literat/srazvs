@@ -12,10 +12,14 @@ class Container
 	/** @var configuration */
 	private $configuration;
 	
+	/** @var meeting ID */
+	private $meetingId;
+	
 	/** Constructor */
-	public function __construct($configuration)
+	public function __construct($configuration, $meetingId = NULL)
 	{
 		$this->configuration = $configuration;
+		$this->meetingId = $meetingId;
 	}
 	
 	/**
@@ -31,8 +35,6 @@ class Container
 	/**
 	 * Create instance of PHPMailerFactory
 	 *
-	 * @param	PHPMailer
-	 * @param	configuration settings
 	 * @return	PHPMailerFactory
 	 */
 	public function createPHPMailerFactory()
@@ -43,11 +45,67 @@ class Container
 	/**
 	 * Create instance of Emailer
 	 *
-	 * @param	PHPMailerFactory
 	 * @return	Emailer
 	 */
 	public function createEmailer()
 	{
 		return new Emailer($this->createPHPMailerFactory());
+	}
+	
+	/**
+	 * Create instance of Visitor
+	 *
+	 * @return	Visitor
+	 */
+	public function createVisitor()
+	{
+		return new Visitor(
+			$this->meetingId,
+			$this->createEmailer(),
+			$this->createMeeting(),
+			$this->createMeal(),
+			$this->createProgram(),
+			$this->createBlock()
+		);
+	}
+	
+	/**
+	 * Create instance of Meeting
+	 *
+	 * @return	Meeting
+	 */
+	public function createMeeting()
+	{
+		return new Meeting($this->meetingId);
+	}
+	
+	/**
+	 * Create instance of Program
+	 *
+	 * @return	Program
+	 */
+	public function createProgram()
+	{
+		return new Program($this->meetingId);
+	}
+	
+	/**
+	 * Create instance of Meal
+	 *
+	 * @return	Meal
+	 */
+	public function createMeal()
+	{
+		return new Meal($this->meetingId);
+	}
+	
+	/**
+	 * Create instance of Block
+	 *
+	 * @return	Block
+	 */
+	public function createBlock()
+	{
+		return new Blocks($this->meetingId);
 	}
 }

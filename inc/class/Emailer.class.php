@@ -2,7 +2,7 @@
 /**
  * Emailer
  *
- * Class fro hadling and sending e-mails
+ * Class for hadling and sending e-mails
  *
  * @created 2011-09-16
  * @author Tomas Litera <tomaslitera@hotmail.com>
@@ -23,18 +23,10 @@ class Emailer
 	{
 		// jestli jsem na vyvojove masine - true/false
 		$this->isDev = $GLOBALS['ISDEV'];
-		
+		// use PHPMailerFactory
 		$this->PHPMailerFactory = $PHPMailerFactory;
-	}
-	
-	/**
-	 * Create new PHPMailer for sending e-mails
-	 *
-	 * @return	PHPMailer
-	 */
-	public function createPHPMailer()
-	{
-		return $this->PHPMailerFactory->create();	
+		// use PHPMailer
+		$this->Emailer = $this->PHPMailerFactory->PHPMailer;
 	}
 	
 	/**
@@ -46,12 +38,14 @@ class Emailer
 	 * @param	string	message
 	 * @return	mixed	true or error information
 	 */
-	public function sendMail($recipient_mail, $recipient_name, $subject, $message)
+	public function sendMail($recipient_mail, $recipient_name, $subject, $message, $bcc_mail = NULL)
 	{	
-		// create PHPMailer
-		$this->Emailer = $this->createPHPMailer();
 		// add recipient address and name
 		$this->Emailer->AddAddress($recipient_mail, $recipient_name);
+		// add bcc
+		if(isset($bcc_mail) && $bcc_mail == '') {
+			$this->Emailer->AddBCC($bcc_mail);
+		}
 		// create subject
 		$this->Emailer->Subject = $subject;
 		// create HTML body
@@ -66,6 +60,26 @@ class Emailer
 		} else {
 			return true;
 		}
+	}
+
+	/**
+	 * Get e-mail templates from settings
+	 *
+	 * @param	string	type of template
+	 * @return	array	subject and message
+	 */	
+	public function getTemplates($type)
+	{
+		$query = "SELECT * FROM kk_settings WHERE name = 'mail_".$type."'";
+		$result = mysql_query($query);
+		$data = mysql_fetch_assoc($result);
+
+		$json = json_decode($data['value']);
+
+		$subject = html_entity_decode($json->subject);
+		$message = html_entity_decode($json->message);
+		
+		return array('subject' => $subject, 'message' => $message);
 	}
 	
 	/**
@@ -101,14 +115,10 @@ class Emailer
 		$recipient_name = $data['tutor'];
 		$tutor_form_url = "http://vodni.skauting.cz/srazvs/registrace/setcontent.php?type=".$type."&formkey=".$hash;
 		
-		$setQuery = "SELECT * FROM kk_settings WHERE name = 'mail_tutor'";
-		$setResult = mysql_query($setQuery);
-		$setData = mysql_fetch_assoc($setResult);
-
-		$json = json_decode($setData['value']);
-
-		$subject = html_entity_decode($json->subject);
-		$message = html_entity_decode($json->message);
+		// e-mail templates
+		$templates = $this->getTemplates('tutor');
+		$subject = $templates['subject'];
+		$message = $templates['message'];
 		
 		// replacing text variables
 		$subject = preg_replace('/%%\[typ-anotace\]%%/', $lang[$type]['cs'], $subject);
@@ -130,15 +140,11 @@ class Emailer
 	 */
 	public function sendRegistrationSummary($recipient_mail, $recipient_name, $hash, $code4bank)
 	{
-		$query = "SELECT * FROM kk_settings WHERE name = 'mail_post_reg'";
-		$result = mysql_query($query);
-		$data = mysql_fetch_assoc($result);
-
-		$json = json_decode($data['value']);
-
-		$subject = html_entity_decode($json->subject);
-		$message = html_entity_decode($json->message);
-		
+		// e-mail templates
+		$templates = $this->getTemplates('post_reg');
+		$subject = $templates['subject'];
+		$message = $templates['message'];
+				
 		// replacing text variables
 		$message = preg_replace('/%%\[kontrolni-hash\]%%/', $hash, $message);
 		$message = preg_replace('/%%\[variabilni-symbol\]%%/', $code4bank, $message);
@@ -155,7 +161,7 @@ class Emailer
 	 * @param	string	message
 	 * @return	mixed	true | error information
 	 */
-	function noticeVisitor($id, $subject, $message)
+	public function noticeVisitor($id, $subject, $message)
 	{
 		// multiple IDs, multiple visitors
 		if(is_array($id)){
@@ -184,6 +190,25 @@ class Emailer
 				$return = true;
 			}
 		}
+		
+		return $return;
+	}
+
+	/**
+	 * Get e-mail templates from settings
+	 *
+	 * @param	mixed	id numbers in row
+	 * @param	string	type of template
+	 * @return	array	subject and message
+	 */		
+	public function sendPaymentInfo($query_id, $type)
+	{
+		// e-mail templates
+		$templates = $this->getTemplates($type);
+		$subject = $templates['subject'];
+		$message = $templates['message'];
+			
+		$return = $this->noticeVisitor($query_id, $subject, $message);
 		
 		return $return;
 	}

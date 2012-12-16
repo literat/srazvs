@@ -188,7 +188,7 @@ class Blocks
 	 * @param	int		selected option
 	 * @return	string	html select box
 	 */
-	public function renderHtmlSelect($block_ID)
+	public function renderHtmlSelect($ID_block)
 	{
 		$query = "SELECT * FROM kk_blocks WHERE meeting='".$_SESSION['meetingID']."' AND program='1' AND deleted='0'";
 		$result = mysql_query($query);
@@ -196,12 +196,36 @@ class Blocks
 		$html_select = "<select style='width: 300px; font-size: 10px' name='block'>\n";
 
 		while($data = mysql_fetch_assoc($result)){
-			if($data['id'] == $block_ID) $selected = "selected";
+			if($data['id'] == $ID_block) $selected = "selected";
 			else $selected = "";
 			$html_select .= "<option ".$selected." value='".$data['id']."'>".$data['day'].", ".$data['from']." - ".$data['to']." : ".$data['name']."</option>\n";
 		}
 		$html_select .= "</select>\n";
 
 		return $html_select;
+	}
+	
+	/**
+	 * Return blocks that contents programs
+	 *
+	 * @param	int		meeting ID
+	 * @return	array	result and number of affected rows
+	 */
+	public function getProgramBlocks($ID_meeting)
+	{
+		$query = "SELECT 	id,
+					day,
+					DATE_FORMAT(`from`, '%H:%i') AS `from`,
+					DATE_FORMAT(`to`, '%H:%i') AS `to`,
+					name,
+					program
+				FROM kk_blocks
+				WHERE deleted = '0' AND program='1' AND meeting='".$ID_meeting."'
+				ORDER BY `day` ASC";
+
+		$result = mysql_query($query);
+		$rows = mysql_affected_rows();
+
+		return array('result' => $result, 'rows' => $rows);
 	}
 }

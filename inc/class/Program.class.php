@@ -54,9 +54,8 @@ class Program
     	$query = "INSERT INTO `kk_programs` 
      				 (".$query_key_set.") 
      				 VALUES (".$query_value_set.");";
-					 var_dump($query);
     	$result = mysql_query($query);
-		var_dump($result);
+
 		return $result;
 	}
 	
@@ -78,7 +77,6 @@ class Program
     	$query = "UPDATE `kk_programs` 
 					SET ".$query_set."
 					WHERE `id`='".$id."' LIMIT 1";
-					var_dump($query);
     	$result = mysql_query($query);
 		
 		return $result;
@@ -96,6 +94,79 @@ class Program
 	    $result = mysql_query($query);
 		
 		return $result;
+	}
+	
+	/**
+	 * Delete program
+	 *
+	 * @param	int	ID of program
+	 * @return	boolean 
+	 */
+	public function getPrograms($id, $vid)
+	{
+		$sql = "SELECT 	*
+				FROM kk_programs
+				WHERE block='".$id."' AND deleted='0'
+				LIMIT 10";
+		$result = mysql_query($sql);
+		$rows = mysql_affected_rows();
+	
+		if($rows == 0){
+			$html = "";
+		} else {
+			/*$progSql = "SELECT progs.name AS prog_name
+						FROM kk_programs AS progs
+						LEFT JOIN `kk_visitor-program` AS visprog ON progs.id = visprog.program
+						LEFT JOIN kk_visitors AS vis ON vis.id = visprog.visitor
+						WHERE vis.id = '".$id."'";
+				$progResult = mysql_query($progSql);*/
+	
+	
+			$html = "<div>\n";
+			
+			$checked_flag = false;
+			$html_input = "";
+			while($data = mysql_fetch_assoc($result)){
+				//// resim kapacitu programu a jeho naplneni navstevniky
+				$full_program_query = "SELECT COUNT(visitor) AS visitors FROM `kk_visitor-program` AS visprog
+									LEFT JOIN kk_visitors AS vis ON vis.id = visprog.visitor
+									WHERE program = '".$data['id']."' AND vis.deleted = '0'";
+				$full_program_result = mysql_query($full_program_query);
+				$DB_full_program = mysql_fetch_assoc($full_program_result);
+				
+				$program_query = "SELECT * FROM `kk_visitor-program` WHERE program = '".$data['id']."' AND visitor = '".$vid."'";
+				$program_result = mysql_query($full_program_query );
+				$rows = mysql_affected_rows();
+				if($rows == 1){
+					$checked = "checked='checked'";
+					$checked_flag = true;
+				} else {
+					$checked = "";
+				}
+				//$programData = mysql_fetch_assoc($programResult);
+			
+				if($DB_full_program['visitors'] >= $data['capacity']){
+					$html_input .= "<input ".$checked." disabled type='radio' name='".$id."' value='".$data['id']."' />\n";
+					$fullProgramInfo = " (NELZE ZAPSAT - kapacita programu je již naplněna!)";
+				} else {
+					$html_input .= "<input ".$checked." type='radio' name='".$id."' value='".$data['id']."' /> \n";
+					$fullProgramInfo = "";
+				}
+				$html_input .= $data['name'];
+				$html_input .= $fullProgramInfo;
+				$html_input .= "<br />\n";
+			}
+			
+			// pokud uz jednou bylo zaskrtnuto, nezaskrtavam znovu
+			if(!$checked_flag) $checked = "checked='checked'";
+			else $checked = "";
+			
+			$html .= "<input ".$checked." type='radio' name='".$id."' value='0' /> Nebudu přítomen <br />\n";
+			$html .= $html_input;
+			
+			$html .= "</div>\n";
+		}
+		return $html;
 	}
 	
 	/**
