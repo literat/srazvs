@@ -9,8 +9,8 @@ require_once('../inc/define.inc.php');
 //ini_set('include_path', ini_get('include_path').';./Classes/');  
 
 /* Vložení potřebných tříd pro práci a tvorbu souboru */  
-include_once($INCDIR."phpexcel/Classes/PHPExcel.php");  
-include_once($INCDIR."phpexcel/Classes/PHPExcel/Writer/Excel2007.php"); 
+include_once($LIBSDIR."PHPExcel/Classes/PHPExcel.php");  
+include_once($LIBSDIR."PHPExcel/Classes/PHPExcel/Writer/Excel2007.php"); 
 
 ######################### PRISTUPOVA PRAVA ################################
 
