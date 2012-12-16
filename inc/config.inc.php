@@ -4,31 +4,31 @@
  */
 
 /* prihlasovani do databaze */
-$cfg['db_user'] = 'vodni';
-$cfg['db_passwd'] = 'g0DqNdouBQ';
-$cfg['db_database'] = 'vodni';
-$cfg['db_host'] = 'localhost';
+$cfg['db_user']			= 'vodni';
+$cfg['db_passwd']		= 'g0DqNdouBQ';
+$cfg['db_database'] 	= 'vodni';
+$cfg['db_host']			= 'localhost';
 
 /* nastaveni kodovani */
-$cfg['encoding'] = 'utf8';
-$cfg['db-encoding'] = 'utf-8';
-$cfg['http-encoding'] = 'utf-8';
+$cfg['encoding']		= 'utf8';
+$cfg['db-encoding']		= 'utf-8';
+$cfg['http-encoding']	= 'utf-8';
 
 /* jine */
-$cfg['hash'] = '';
+$cfg['hash']			= '';
 
-$cfg['timeout'] = '-15 minutes';
+$cfg['timeout']			= '-15 minutes';
 
-$cfg['prefix'] = "sunlight";
+$cfg['prefix']			= "sunlight";
 
 
 
 /* nastaveni hlavicky */
-$cfg['title'] = 'Srazy VS | PlexIS::CMS';
-$cfg['description'] = 'administrační systém pro Srazy K + K';
-$cfg['keywords'] = 'plexis, administrace, cms';
-$cfg['author'] = 'LITERA Tomáš(slunda); tomaslitera(zavinac)hotmail(tecka)com';
-$cfg['owner'] = 'Litera Tomáš, Kolín';
+$cfg['title']			= 'Srazy VS | PlexIS::CMS';
+$cfg['description']		= 'administrační systém pro Srazy K + K';
+$cfg['keywords']		= 'plexis, administrace, cms';
+$cfg['author']			= 'LITERA Tomáš(slunda); tomaslitera(zavinac)hotmail(tecka)com';
+$cfg['owner']			= 'Litera Tomáš, Kolín';
 
 /* mailing */
 $cfg['mail-html-header'] = "<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Strict//EN' 'http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd'>\n
@@ -37,10 +37,10 @@ $cfg['mail-html-header'] = "<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Strict/
 <meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />\n
 </head>\n";
 
-$cfg['mail-language'] = "cz";
-$cfg['mail-encoding'] = 'utf-8';
-$cfg['mail-sender-address'] = 'srazyvs@hkvs.cz';
-$cfg['mail-sender-name'] = 'Srazy VS';
+$cfg['mail-language']		= "cz";
+$cfg['mail-encoding']		= 'utf-8';
+$cfg['mail-sender-address']	= 'srazyvs@hkvs.cz';
+$cfg['mail-sender-name']	= 'Srazy VS';
 
 /* nastaveni cest */
 //pokud jsem na vyvojovem stroji
