@@ -490,6 +490,17 @@ a.link:hover, button:hover {
 button.datedit:hover,
 button.colormixer:hover {background-color:#e5e5e5;}
 
+
+img.ui-datepicker-trigger {
+    cursor: pointer;
+    height: 18px;
+	margin: 0px;
+	margin-top: 2px;
+	margin-bottom: 2px;
+    vertical-align: top;
+    width: 20px;
+}
+
 /*---------------------------------------------------------------------------------------------------------
 		8) Help
 ---------------------------------------------------------------------------------------------------------*/
