@@ -1,6 +1,6 @@
 <?php
 require_once('../inc/define.inc.php');
-require_once("../inc/mpdf/mpdf.php");
+require_once($LIBSDIR."Mpdf/mpdf.php");
 
 ########################### AKTUALNI SRAZ ##############################
 
