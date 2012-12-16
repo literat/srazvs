@@ -18,6 +18,10 @@ require_once($INCDIR.'db_connect.inc.php');
 //include_once($INCDIR.'access.inc.php');
 require_once($INCDIR.'errors.inc.php');
 
+require_once($CLASSDIR.'ComponentModel/IModel.php');
+require_once($CLASSDIR.'ComponentModel/IComponent.php');
+require_once($CLASSDIR.'ComponentModel/Component.php');
+
 require_once($CLASSDIR.'Emailer.class.php');
 require_once($CLASSDIR.'Category.class.php');
 require_once($CLASSDIR.'Blocks.class.php');
@@ -31,6 +35,8 @@ require_once($LIBSDIR.'PHPMailer/class.phpmailer.php');
 
 require_once($CLASSDIR.'DI/Container.class.php');
 require_once($CLASSDIR.'Mail/PHPMailerFactory.php');
+
+
 
 $style = "";
 
