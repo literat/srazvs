@@ -21,8 +21,22 @@ abstract class Component implements IComponent
 	}
 	
 	/**
+	 * Create new or return existing instance of class
+	 *
+	 * @return	mixed	instance of class
+	 */
+	public static function getInstance()
+	{
+		if(self::$instance === false) {
+			self::$instance = new self();
+		}
+		return self::$instance;
+	}	
+	
+	/**
 	 * Create a new record
 	 *
+	 * @param	mixed	array of data
 	 * @return	boolean
 	 */
 	public function create(array $db_data)
@@ -49,6 +63,7 @@ abstract class Component implements IComponent
 	 * Modify record
 	 *
 	 * @param	int		ID of record
+	 * @param	mixed	array of data
 	 * @return	bool
 	 */	
 	public function modify($id, array $db_data)

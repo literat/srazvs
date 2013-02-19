@@ -10,4 +10,10 @@
  */ 
 interface IModel
 {
+	/**
+	 * Create new or return existing instance of class
+	 *
+	 * @return	mixed	instance of class
+	 */
+	public static function getInstance();
 }
