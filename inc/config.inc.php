@@ -21,6 +21,7 @@ $cfg['timeout']			= '-15 minutes';
 
 $cfg['prefix']			= "sunlight";
 
+$cfg['paper-format']	= "A4";
 
 
 /* nastaveni hlavicky */
@@ -54,8 +55,8 @@ if($ISDEV){
 		//echo ROOT_DIR;
   	}
 	else {
-		define('ROOT_DIR',$_SERVER['DOCUMENT_ROOT'].'/vodni/srazvs/');
-		define('HTTP_DIR','http://'.$_SERVER['HTTP_HOST'].'/vodni/');
+		define('ROOT_DIR',$_SERVER['DOCUMENT_ROOT'].'/skauting/vodni/srazvs/');
+		define('HTTP_DIR','http://'.$_SERVER['HTTP_HOST'].'/skauting/vodni/');
 	}
 } 
 //ostra masina
@@ -80,13 +81,17 @@ $IMGDIR 	= HTTP_DIR.'srazvs/img/';
 $ICODIR 	= $LAYOUTDIR.'icons/';
 $LOGODIR 	= $LAYOUTDIR.'logos/';
 $LOGDIR 	= ROOT_DIR.'log/';
+/* depracated */
 $STYLEDIR 	= HTTP_DIR.'srazvs/styles/';
+/* depracated */
 $CSSDIR 	= HTTP_DIR.'srazvs/styles/css/';
 $CSS2DIR 	= HTTP_DIR.'srazvs/css/';
+/* depracated */
 $AJAXDIR 	= HTTP_DIR.'srazvs/js/';
 $JSDIR 		= HTTP_DIR.'srazvs/js/';
 $CLASSDIR 	= $INCDIR.'class/';
 $LIBSDIR 	= ROOT_DIR.'libs/';
+$TPL_DIR 	= ROOT_DIR.'templates/';
 
 $TMPDIR 	= ROOT_DIR.'tmp/';
 
