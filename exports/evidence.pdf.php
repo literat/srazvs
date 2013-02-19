@@ -1,10 +1,10 @@
 <?php
 require_once('../inc/define.inc.php');
-require_once("../inc/mpdf/mpdf.php");
+require_once("../libs/mpdf/mpdf.php");
 
 ########################### AKTUALNI SRAZ ##############################
 
-$vid = requested("vid","");
+$vid = intval(requested("vid",""));
 $type = requested("type","");
 $mid = $_SESSION['meetingID'];
 //$mid = 2;
@@ -16,6 +16,14 @@ else {
 	$limit = "LIMIT 1";
 	$visid = "vis.id='".$vid."' AND";
 }
+
+$Container = new Container($GLOBALS['cfg'], $mid);
+$ExportHandler = $Container->createExport();
+
+$ExportHandler->printEvidence($type, $vid);
+exit();
+
+/* depracated */
 
 $sql = "SELECT	vis.id AS id,
 				name,
