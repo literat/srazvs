@@ -109,6 +109,96 @@ class Program extends Component
 		return $html;
 	}
 	
+	public function getExportPrograms($blockId)
+	{
+		$sql = "SELECT 	*
+				FROM kk_programs
+				WHERE block='".$blockId."' AND deleted='0'
+				LIMIT 10";
+		$result = mysql_query($sql);
+		$rows = mysql_affected_rows();
+	
+		if($rows == 0){
+			$html = "";
+		}
+		else{
+			$html = "<table>\n";
+			while($data = mysql_fetch_assoc($result)){
+				$html .= "<tr>";
+				//// resim kapacitu programu a jeho naplneni navstevniky
+				$fullProgramSql = "SELECT COUNT(visitor) AS visitors 
+								   FROM `kk_visitor-program` AS visprog
+								   LEFT JOIN `kk_visitors` AS vis ON vis.id = visprog.visitor
+								   WHERE program = '".$data['id']."'
+										AND vis.deleted = '0'";
+				$fullProgramResult = mysql_query($fullProgramSql);
+				$fullProgramData = mysql_fetch_assoc($fullProgramResult);
+			
+				if($fullProgramData['visitors'] >= $data['capacity']){
+					//$html .= "<input disabled type='radio' name='".$id."' value='".$data['id']."' />\n";
+					$fullProgramInfo = "<span style='font-size:12px; font-weight:bold;'>".$fullProgramData['visitors']."/".$data['capacity']."</span> (kapacita programu je naplněna!)";
+				}
+				else {
+					//$html .= "<input type='radio' name='".$id."' value='".$data['id']."' /> \n";
+					$fullProgramInfo = "<span style='font-size:12px; font-weight:bold;'>".$fullProgramData['visitors']."/".$data['capacity']."</span>";
+				}
+				$html .= "<td style='min-width:270px;'>";
+				$html .= "<a rel='programDetail' href='../programs/process.php?id=".$data['id']."&cms=edit' title='".$data['name']."'>".$data['name']."</a>\n";
+				$html .= "</td>";
+				$html .= "<td>";
+				$html .= $fullProgramInfo;
+				$html .= "</td>";
+				$html .= "</tr>\n";
+			}
+			$html .= "</table>\n";
+		}
+		return $html;
+	}
+	
+	public function renderExportPrograms()
+	{
+		$programs = "";
+
+		$progSql = "SELECT 	id,
+							day,
+							DATE_FORMAT(`from`, '%H:%i') AS `from`,
+							DATE_FORMAT(`to`, '%H:%i') AS `to`,
+							name,
+							program
+					FROM kk_blocks
+					WHERE deleted = '0' AND program='1' AND meeting='".$this->meeting_ID."'
+					ORDER BY `day`, `from` ASC";
+		
+		$progResult = mysql_query($progSql);
+		$progRows = mysql_affected_rows();
+		
+		if($progRows == 0){
+			$programs .= "<div class='emptyTable' style='width:400px;'>Nejsou žádná aktuální data.</div>\n";
+		}
+		else{
+			//// prasarnicka kvuli programu raftu - resim obsazenost dohromady u dvou polozek
+			$raftCountSql = "SELECT COUNT(visitor) AS raft FROM `kk_visitor-program` WHERE program='56|57'";
+			$raftCountResult = mysql_query($raftCountSql);
+			$raftCountData = mysql_fetch_assoc($raftCountResult);
+			
+			while($progData = mysql_fetch_assoc($progResult)){
+				//nemoznost volit predsnemovni dikusi
+				if($progData['id'] == 63) $notDisplayed = "style='display:none;'";
+				//obsazenost raftu
+				/*elseif($raftCountData['raft'] >= 18){
+					if($progData['id'] == 86) $notDisplayed = "style='display:none;'";
+					else $notDisplayed = "";
+				}*/
+				else $notDisplayed = "";
+				$programs .= "<div ".$notDisplayed.">".$progData['day'].", ".$progData['from']." - ".$progData['to']." : ".$progData['name']."</div>\n";
+				if($progData['program'] == 1) $programs .= "<div ".$notDisplayed.">".$this->getExportPrograms($progData['id'])."</div>";
+				$programs .= "<br />";
+			}
+		}
+		
+		return $programs;
+	}
+	
 	/**
 	 * Render data in a table
 	 *
