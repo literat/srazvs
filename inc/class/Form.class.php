@@ -25,7 +25,7 @@ class Form
 	 * @param	var		variable that match with value
 	 * @return	string	html of chceck box
 	 */
-	public function renderHtmlCheckBox($name, $value, $checked_variable)
+	public static function renderHtmlCheckBox($name, $value, $checked_variable)
 	{
 		if($checked_variable == $value) {
 			$checked = 'checked';
@@ -45,7 +45,7 @@ class Form
 	 * @param	var		variable that match selected option
 	 * @return	string	html of select box
 	 */
-	public function renderHtmlSelectBox($name, $select_content, $selected_option)
+	public static function renderHtmlSelectBox($name, $select_content, $selected_option)
 	{
 		$html_select = "<select name='".$name."'>";
 		foreach ($select_content as $key => $value) {
