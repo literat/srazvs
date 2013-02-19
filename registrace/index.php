@@ -25,6 +25,11 @@ $meetingHeader = $data['place']." ".$data['year'];
 if(($data['open_reg'] < time()) && (time() < $data['close_reg'])) $disabled = "";
 else $disabled = "disabled";
 
+if(defined('DEBUG') && DEBUG === TRUE){
+	$mid = 1;
+	$disabled = "";	
+}
+
 ################################ FUNKCE ###################################
 
 function getPrograms($id, $disabled){
