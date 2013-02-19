@@ -155,7 +155,7 @@ class Block extends Component
 	 * @param	int		selected option
 	 * @return	string	html select box
 	 */
-	public function renderHtmlSelect($ID_block)
+	public static function renderHtmlSelect($ID_block)
 	{
 		$query = "SELECT * FROM kk_blocks WHERE meeting='".$_SESSION['meetingID']."' AND program='1' AND deleted='0'";
 		$result = mysql_query($query);
