@@ -109,34 +109,7 @@ function getPrograms($id){
 	return $html;
 }
 
-############################# MATERIALS #########################
 
-function getMaterial()
-{
-	$sql = "SELECT 	progs.id AS id,
-					progs.name AS name,
-					progs.material AS material
-			FROM `kk_programs` AS progs
-			LEFT JOIN `kk_blocks` AS bls ON progs.block = bls.id
-			WHERE progs.deleted = '0'
-				AND bls.meeting = '".$_SESSION['meetingID']."'
-				AND bls.deleted = '0'";
-	$result = mysql_query($sql);
-	
-	$html = "";
-	while($data = mysql_fetch_assoc($result)){
-		if($data['material'] == "") $material = "(žádný)";
-		else $material = $data['material'];
-		$html .= "<div><a rel='programDetail' href='../programs/process.php?id=".$data['id']."&cms=edit' title='".$data['name']."'>".$data['name'].":</a>\n</div>";
-		$html .= "<div style='margin-left:10px;font-size:12px;font-weight:bold;'>".$material."</div>";
-	}
-	
-	return $html;
-}
-
-$material = "<div>";
-$material .= getMaterial();
-$material .= "</div>";
 
 ################################# PROGRAMY ################################
 
@@ -180,64 +153,10 @@ else{
 	}
 }
 
-$moneySql = "SELECT SUM(bill) AS account,
-					COUNT(bill) * cost AS suma,
-					COUNT(bill) * cost - SUM(bill) AS balance
-			FROM kk_visitors AS vis
-			LEFT JOIN kk_meetings AS meets ON vis.meeting = meets.id
-			WHERE meeting = '".$mid."' AND vis.deleted = '0'";
-$moneyResult = mysql_query($moneySql);
-$moneyData = mysql_fetch_assoc($moneyResult);
 
-/*
-- na generování grafu
-
-*/
-
-$graph_width = 94;
-
-$graph_query = "SELECT DATE_FORMAT(reg_daytime, '%d. %m. %Y') AS day, 
-					   COUNT(reg_daytime) AS reg_count
-				FROM `kk_visitors` AS vis
-				LEFT JOIN kk_meetings AS meet ON meet.id = vis.meeting 
-				WHERE meet.id = ".$mid." AND vis.deleted='0'
-				GROUP BY day
-				ORDER BY reg_daytime ASC";
-$graph_result = mysql_query($graph_query);
-
-$max_query = "SELECT MAX( reg_count ) AS max
-			  FROM (
-				SELECT DATE_FORMAT( reg_daytime, '%d. %m. %Y' ) AS
-					DAY , COUNT( reg_daytime ) AS reg_count
-				FROM `kk_visitors` AS vis
-				LEFT JOIN kk_meetings AS meet ON meet.id = vis.meeting
-				WHERE meet.id = '".$mid."'
-					AND vis.deleted = '0'
-				GROUP BY DAY
-			  ) AS cnt";
-$max_result = mysql_query($max_query);
-$max_data = mysql_fetch_assoc($max_result);
-
-$reg_graph = "<table style='width:100%;'>";
-
-$graph_height = 0;
-
-while($graph_data = mysql_fetch_array($graph_result)){
-	    // trojclenka pro zjisteni pomeru sirky grafu...(aby nam to nevylezlo mimo obrazovku)
-/*var_dump($max);
-var_dump($graph_width);
-var_dump($graph_data['reg_count']);
-echo 	$width = ceil(($graph_width/$max)*$graph_data['reg_count'])."\n";*/
- 	$width = ceil($graph_width/$max_data['max']*$graph_data['reg_count']);
-	$reg_graph .= "<tr><td align='right' style='width:60px;'>".$graph_data['day']."</td><td><img src='../images/graph.png' alt='".$graph_data['reg_count']."' style='width:".$width."%;' height='12' border='0'>".$graph_data['reg_count']."</td>";
-	
-	$graph_height += 21.5; 
-}
-	       
-$reg_graph .= "</table>";
-
-if($graph_height < 250) $graph_height = 250;
-
+/********/
+$Container = new Container($GLOBALS['cfg'], $mid);
+$ExportHandler = $Container->createExport();
 
 ################## GENEROVANI STRANKY #############################
 
@@ -250,12 +169,12 @@ include_once($INCDIR.'header.inc.php');
 <div style="width:22%;float:left;">
  <div class='pageRibbon'>Tisk</div>
   <div>
- <a style='text-decoration:none; display:block; margin-bottom:4px;' href='evidence.pdf.php?vid=all&amp;type=confirm'>
+ <a style='text-decoration:none; display:block; margin-bottom:4px;' href='evidence.pdf.php?type=confirm'>
   <img style='border:none;' align='absbottom' src='<?php echo $ICODIR; ?>small/pdf.png' />
   potvrzení o přijetí zálohy
  </a> 
  
- <a style='text-decoration:none; display:block; margin-bottom:4px;' href='evidence.pdf.php?vid=all&amp;type=evidence'>
+ <a style='text-decoration:none; display:block; margin-bottom:4px;' href='evidence.pdf.php?type=evidence'>
   <img style='border:none;' align='absbottom' src='<?php echo $ICODIR; ?>small/pdf.png' />
   příjmový pokladní doklad
  </a>
@@ -295,7 +214,7 @@ include_once($INCDIR.'header.inc.php');
   zpětná vazba
  </a>
  
- <a style='text-decoration:none; display:block; margin-bottom:4px;' href='evidence.pdf.php?vid=all&amp;type=summary'>
+ <a style='text-decoration:none; display:block; margin-bottom:4px;' href='evidence.pdf.php?type=summary'>
   <img style='border:none;' align='absbottom' src='<?php echo $ICODIR; ?>small/pdf.png' />
   kompletní příjmový pokladní doklad
  </a>
@@ -306,7 +225,7 @@ include_once($INCDIR.'header.inc.php');
 
 <div style="width:44%;padding-left:0.5%;float:right;">
  <div class='pageRibbon'>Graf přihlašování</div>
- <?php echo $reg_graph; ?>
+ <?php echo $ExportHandler->renderGraph(); ?>
 </div>
 
 <div style="width:15%;padding-left:0.5%;float:right;">
@@ -314,11 +233,11 @@ include_once($INCDIR.'header.inc.php');
  <?php echo $meals; ?>
 </div>
 
-<div style="padding-left:22.5%;padding-right:60%;margin-top:6px;height:<?php echo $graph_height; ?>px;">
+<div style="padding-left:22.5%;padding-right:60%;margin-top:6px;height:<?php echo $ExportHandler->getGraphHeight(); ?>px;">
  <div class='pageRibbon'>Peníze</div>
- <div style="margin-bottom:4px;">Celkem vybráno: <strong><?php echo $moneyData['account']; ?></strong>,-Kč</div>
- <div style="margin-bottom:4px;">Zbývá vybrat: <strong><?php echo $moneyData['balance']; ?></strong>,-Kč</div>
- <div style="margin-bottom:4px;">Suma srazu celkem: <strong><?php echo $moneyData['suma']; ?></strong>,-Kč</div>
+ <div style="margin-bottom:4px;">Celkem vybráno: <strong><?php echo $ExportHandler->getMoney('account'); ?></strong>,-Kč</div>
+ <div style="margin-bottom:4px;">Zbývá vybrat: <strong><?php echo $ExportHandler->getMoney('balance'); ?></strong>,-Kč</div>
+ <div style="margin-bottom:4px;">Suma srazu celkem: <strong><?php echo $ExportHandler->getMoney('suma'); ?></strong>,-Kč</div>
 </div>
 
 <div style="width:50%;float:left;">
@@ -328,8 +247,10 @@ include_once($INCDIR.'header.inc.php');
 
 <div style="width:49.5%;padding-left:50.5%;">
  <div class='pageRibbon'>Materiál</div>
- <?php echo $material; ?>
-</div>
+  <div>
+	<?php echo $ExportHandler->getMaterial(); ?>
+  </div>
+ </div>
 
 
 <!--<div class='pageRibbon'>Něco dalšího</div>-->
