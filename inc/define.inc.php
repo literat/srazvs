@@ -30,12 +30,17 @@ require_once($CLASSDIR.'Form.class.php');
 require_once($CLASSDIR.'Visitor.class.php');
 require_once($CLASSDIR.'Meeting.class.php');
 require_once($CLASSDIR.'Meal.class.php');
+require_once($CLASSDIR.'View.class.php');
+require_once($CLASSDIR.'ExportModel.class.php');
 
 require_once($LIBSDIR.'PHPMailer/class.phpmailer.php');
+require_once($LIBSDIR.'Mpdf/mpdf.php');
 
 require_once($CLASSDIR.'DI/Container.class.php');
 require_once($CLASSDIR.'Mail/PHPMailerFactory.php');
+require_once($CLASSDIR.'Exporting/PdfFactory.php');
 
+define('DEBUG', true);
 
 
 $style = "";
