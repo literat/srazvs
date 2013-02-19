@@ -135,7 +135,7 @@ class Category extends Component
 	 *
 	 * @return	string	CSS
 	 */
-	public function getStyles()
+	public static function getStyles()
 	{
 		$style = "";
 
@@ -162,7 +162,7 @@ class Category extends Component
 	 * @param	int	ID of selected category
 	 * @return	string	html <select>
 	 */
-	public function renderHtmlSelect($selected_category)
+	public static function renderHtmlSelect($selected_category)
 	{
 		$html_select = "<select style='width: 225px; font-size: 10px' class='field' name='category'>\n";
 
