@@ -1,6 +1,29 @@
 <?php
 require_once('../inc/define.inc.php');
-require_once($LIBSDIR."Mpdf/mpdf.php"); 
+
+######################### PRISTUPOVA PRAVA ################################
+
+include_once($INCDIR.'access.inc.php');
+
+########################### POST a GET #########################
+
+if($mid = requested("mid","")){
+	$_SESSION['meetingID'] = $mid;
+} else {
+	$mid = $_SESSION['meetingID'];
+}
+
+$id = requested("id","");
+$cms = requested("cms","");
+$error = requested("error","");
+
+$Container = new Container($GLOBALS['cfg'], $mid);
+$ExportHandler = $Container->createExport();
+
+$ExportHandler->printAttendance();
+exit();
+
+/* depracated */
 
 ########################### AKTUALNI SRAZ ##############################
 
@@ -108,25 +131,17 @@ $html .= "</table>\n";
 
 $html .= "</body>";
 
-//echo $html;
+if(defined('DEBUG') && DEBUG === true){
+	//var_dump($ExportHandler);
+	echo $html;
+	exit('DEBUG_MODE');
+}
 
-//die();
-$mpdf = new mPDF('utf-8', 'A4');
-$mpdf->useOnlyCoreFonts = true;
-$mpdf->SetDisplayMode('fullpage');
-$mpdf->SetAutoFont(0);
+$ExportHandler->Pdf->SetHeader($meetingHeader.'|sraz VS|Prezenční listina');
 
-$mpdf->defaultfooterfontsize = 16;
-$mpdf->defaultfooterfontstyle = B;
-$mpdf->SetHeader(''.$meetingHeader.'|sraz VS|Prezenční listina');
-
-// CSS soubor
-//$stylesheet = file_get_contents(ROOT_DIR.'styles/css/print_event.css');
-
-//$mpdf->WriteHTML($stylesheet, 1);
-$mpdf->WriteHTML($html, 0);
+$ExportHandler->Pdf->WriteHTML($html, 0);
 
 $name = $filename.".pdf";
 // download
-$mpdf->Output($name, "D");
+//$ExportHandler->Pdf->Output($name, "D");
 ?>
