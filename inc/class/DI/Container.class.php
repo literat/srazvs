@@ -43,6 +43,26 @@ class Container
 	}
 	
 	/**
+	 * Create instance of Mpdf
+	 *
+	 * @return	Mpdf
+	 */
+	public function createMpdf()
+	{
+		return new mPDF($this->configuration['http-encoding'], $this->configuration['paper-format']);
+	}
+	
+	/**
+	 * Create instance of MpdfFactory
+	 *
+	 * @return	MpdfFactory
+	 */
+	public function createPdfFactory()
+	{
+		return new PdfFactory($this->createMpdf(), $this->configuration);
+	}
+	
+	/**
 	 * Create instance of Emailer
 	 *
 	 * @return	Emailer
@@ -50,6 +70,16 @@ class Container
 	public function createEmailer()
 	{
 		return new Emailer($this->createPHPMailerFactory());
+	}
+	
+	/**
+	 * Create instance of View
+	 *
+	 * @return	View
+	 */
+	public function createView()
+	{
+		return new View();
 	}
 	
 	/**
@@ -107,5 +137,15 @@ class Container
 	public function createBlock()
 	{
 		return new Block($this->meetingId);
+	}
+	
+	/**
+	 * Create instance of Export
+	 *
+	 * @return	Export
+	 */
+	public function createExport()
+	{
+		return new ExportModel($this->meetingId, $this->createPdfFactory(), $this->createView(), $this->createProgram());
 	}
 }
