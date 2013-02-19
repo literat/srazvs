@@ -12,7 +12,7 @@ class Emailer
 	/* jsem na vyvoji nebo na produkci? */
 	protected $isDev;
 	
-	/** @var EmailerFactory */
+	/** @var PHPMailerFactory */
 	private $PHPMailerFactory;
 	
 	/** @var Emailer */

@@ -26,7 +26,7 @@ class Program extends Component
 	 */
 	public $form_names = array();
 	
-	/** konstruktor */
+	/** Constructor */
 	public function __construct($meeting_ID)
 	{
 		$this->meeting_ID = $meeting_ID;
