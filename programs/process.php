@@ -97,7 +97,7 @@ $style = Category::getStyles();
 // category select box
 $cat_roll = Category::renderHtmlSelect($category);
 // blocks select box
-$block_roll = Blocks::renderHtmlSelect($block);
+$block_roll = Block::renderHtmlSelect($block);
 // display in registration check box
 $display_in_reg_checkbox = Form::renderHtmlCheckBox('display_in_reg', 0, $display_in_reg);
 
