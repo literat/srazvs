@@ -22,7 +22,7 @@ class ExportModel
 	private $View;
 	
 	/** @var Program Programs class */
-	public $Programs;
+	public $Program;
 	
 	/** @var int graph height */
 	private $graph_height;
@@ -37,7 +37,7 @@ class ExportModel
 		$this->Pdf = $this->createPdf();
 		// templating system
 		$this->View = $View;
-		$this->Programs = $Program;
+		$this->Program = $Program;
 	}
 	
 	public function setGraphHeight($height)
@@ -91,7 +91,7 @@ class ExportModel
 		$result = mysql_query($query);
 
 		// load and prepare template
-		$this->View->loadTemplate('attendance');
+		$this->View->loadTemplate('exports/attendance');
 		$this->View->assign('result', $result);
 		$template = $this->View->render(false);
 		
@@ -163,22 +163,22 @@ class ExportModel
 		$hkvs_header .= "IČ: 65991753, ČÚ: 2300183549/2010";
 
 		// load and prepare template
-		$this->View->loadTemplate('evidence_header');
+		$this->View->loadTemplate('exports/evidence_header');
 		$this->View->assign('header', $this->View->render(false));
 		// multiple evidence type/template
 		switch($evidence_type){
 			case "summary":
-				$this->View->loadTemplate('evidence_summary');
+				$this->View->loadTemplate('exports/evidence_summary');
 				// specific mPDF settings
 				$this->Pdf->defaultfooterfontsize = 16;
 				$this->Pdf->defaultfooterfontstyle = 'B';
 				$this->Pdf->SetHeader($hkvs_header);
 				break;
 			case "confirm":
-				$this->View->loadTemplate('evidence_confirm');
+				$this->View->loadTemplate('exports/evidence_confirm');
 				break;
 			default:
-				$this->View->loadTemplate('evidence');
+				$this->View->loadTemplate('exports/evidence');
 				break;
 		}
 		$this->View->assign('LOGODIR', $GLOBALS['LOGODIR']);
@@ -326,5 +326,42 @@ class ExportModel
 				return FALSE;
 				break;
 		}
+	}
+	
+	public function getMealCount($meal)
+	{
+		$sql = "SELECT count(". $meal.") AS ". $meal."
+				FROM `kk_meals` AS mls
+				LEFT JOIN `kk_visitors` AS vis ON vis.id = mls.visitor
+				WHERE vis.deleted = '0'
+					AND vis.meeting = '".$_SESSION['meetingID']."'
+					AND vis.deleted = '0'
+					AND ". $meal." = 'ano'";
+		$result = mysql_query($sql);
+		$data = mysql_fetch_assoc($result);
+		
+		return $data[$meal];
+	}
+
+	public function renderMealCount()
+	{
+		$mealsArr = array("fry_dinner" => "páteční večeře",
+						  "sat_breakfast" => "sobotní snídaně",
+						  "sat_lunch" => "sobotní oběd",
+						  "sat_dinner" => "sobotní večeře",
+						  "sun_breakfast" => "nedělní snídaně",
+						  "sun_lunch" => "nedělní oběd");
+		
+		$meals = "<table>";
+		
+		foreach($mealsArr as $mealsKey => $mealsVal){
+			$mealCount = $this->getMealCount($mealsKey);
+			
+			$meals .= "<tr><td>".$mealsVal.":</td><td><span style='font-size:12px; font-weight:bold;'>".$mealCount."</span></td></tr>";
+		}
+		
+		$meals .= "</table>";
+		
+		return $meals;
 	}
 }
