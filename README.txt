@@ -15,7 +15,17 @@ Installation
 Getting started
 ---------------
 
+Coding standard
+---------------
+Class Definitions:		PascalCase
 
+Class Methods:			camelCase()
+
+Class Variables:		camelCase
+
+Functions Definitions:	camelCase()
+
+Variables Definitions:	camelCase
 
 -----
 
