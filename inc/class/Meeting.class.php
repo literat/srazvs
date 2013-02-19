@@ -9,24 +9,16 @@
  */
 class Meeting extends Component
 {
-	/** @var meeting ID */
+	/** @var int meeting ID */
 	private $meetingId;
 	
-	/** @var days of weekend */
+	/** @var array days of weekend */
 	private $weekendDays = array();
 	
-	/**
-	 * Array of form names
-	 *
-	 * @var array	$form_names[]
-	 */
+	/** @var array of form names */
 	public $form_names = array();
 	
-	/**
-	 * Array of database programs table columns
-	 *
-	 * @var array	$dbColumns[]
-	 */
+	/** @var array of database programs table columns */
 	public $dbColumns = array();
 	
 	/** Constructor */
