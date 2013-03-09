@@ -43,11 +43,17 @@ class Form
 	 * @param	string	name
 	 * @param	array	content of slect box
 	 * @param	var		variable that match selected option
+	 * @param	string	inline styling
 	 * @return	string	html of select box
 	 */
-	public static function renderHtmlSelectBox($name, $select_content, $selected_option)
+	public static function renderHtmlSelectBox($name, $select_content, $selected_option, $inline_style = NULL)
 	{
-		$html_select = "<select name='".$name."'>";
+		if(isset($inline_style) && $inline_style != NULL){
+			$style = " style='".$inline_style."'";
+		} else {
+			$style = "";
+		}
+		$html_select = "<select name='".$name."'".$style.">";
 		foreach ($select_content as $key => $value) {
 			if($key == $selected_option) {
 				$selected = 'selected';
