@@ -14,6 +14,7 @@
 <link href="<?php echo HTTP_DIR; ?>plugins/templates/hkvs2/style/layout.css?1" type="text/css" rel="stylesheet" />
 <link rel="stylesheet" href="<?php echo $CSSDIR ?>datedit.css" type="text/css" media="screen" />
 <link rel="stylesheet" href="<?php echo $CSSDIR ?>dgxcolormixer_s.css" type="text/css" media="screen,projection,tv" />
+<link rel="stylesheet" href="<?php echo CSS_DIR ?>smoothness/jquery.ui.css" type="text/css" media="screen" />
 <script type="text/javascript">/* <![CDATA[ */var sl_indexroot='./';/* ]]> */</script>
 <script type="text/javascript" src="<?php echo HTTP_DIR; ?>remote/jscript.php?1&amp;default"></script>
 
@@ -21,9 +22,9 @@
 <script type="text/javascript" src="<?php echo HTTP_DIR; ?>remote/lightbox/script.js?1"></script>
 
 <link rel="stylesheet" href="<?php echo $CSSDIR ?>colorbox.css" />
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-<script src="<?php echo $AJAXDIR ?>colorbox/jquery.colorbox.js"></script>
-<script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script type="text/javascript" src="<?php echo $AJAXDIR ?>colorbox/jquery.colorbox.js"></script>
+<script type="text/javascript">
 $(document).ready(function(){
 	$(".program-link").colorbox({rel:'programDetail', width:"75%", height:"50%", transition:"fade"});
 	//Example of preserving a JavaScript event for inline calls.
@@ -34,6 +35,14 @@ $(document).ready(function(){
 });
 </script>
 
+<script type="text/javascript" src="<?php echo JS_DIR ?>/jquery/jquery.tinytips.js"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+	$('a.programLink').tinyTips('light', 'title');
+});
+</script>
+
+<link rel="stylesheet" href="<?php echo CSS_DIR ?>tinytips/tinyTips.css" />
 <link rel="alternate" type="application/rss+xml" href="<?php echo HTTP_DIR; ?>remote/rss.php?tp=4&amp;id=-1" title="Nejnovější články" />
 <link rel="shortcut icon" href="<?php echo HTTP_DIR; ?>favicon.ico?1" />
 <title>Program srazu VS</title>
