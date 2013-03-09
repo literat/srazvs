@@ -147,6 +147,7 @@ $style = Category::getStyles();
 // category select box
 $cat_roll = Category::renderHtmlSelect($category);
 // time select boxes
+$day_roll = Form::renderHtmlSelectBox('day', array('pátek'=>'pátek', 'sobota'=>'sobota', 'neděle'=>'neděle'), $DB_data['day'], 'width:172px;');
 $hour_roll = Form::renderHtmlSelectBox('start_hour', $hours_array, $start_hour);
 $minute_roll = Form::renderHtmlSelectBox('start_minute', $minutes_array, $start_minute);
 $end_hour_roll = Form::renderHtmlSelectBox('end_hour', $hours_array, $end_hour);
@@ -191,13 +192,7 @@ include_once($INCDIR.'header.inc.php');
 	</tr>
 	<tr>
 		<td class='label'><label class="required">Den:</label></td>
-		<td>
-			<select name='day' style="width:172px;">
-				<option value="pátek">pátek</option>
-                <option value="sobota">sobota</option>
-                <option value="neděle">neděle</option>
-			</select>
-		</td>
+		<td><?php echo $day_roll; ?></td>
 	</tr>
  <tr>
   <td class='label'><label class="required">Od:</label></td>
