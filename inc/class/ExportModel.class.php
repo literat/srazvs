@@ -66,6 +66,70 @@ class ExportModel
 	 * @param	string	file type
 	 * @return	file	PDF file
 	 */
+	public function printMealTicket($fileType = "pdf")
+	{
+		// output file name
+		$outputFilename= "vlastni_stravenky.".$fileType;
+		
+		$query = "SELECT	vis.id AS id,
+				name,
+				surname,
+				nick,
+				DATE_FORMAT(birthday, '%Y-%m-%d') AS birthday,
+				street,
+				city,
+				postal_code,
+				province,
+				province_name,
+				group_num,
+				group_name,
+				troop_name,
+				comment,
+				arrival,
+				departure,
+				question,
+				fry_dinner,
+				sat_breakfast,
+				sat_lunch,
+				sat_dinner,
+				sun_breakfast,
+				sun_lunch,
+				bill,
+				place,
+				DATE_FORMAT(start_date, '%d. -') AS start_date,
+				DATE_FORMAT(end_date, '%d. %m. %Y') AS end_date
+		FROM kk_visitors AS vis
+		LEFT JOIN kk_meals AS meals ON meals.visitor = vis.id
+		LEFT JOIN kk_provinces AS provs ON vis.province = provs.id
+		LEFT JOIN kk_meetings AS meets ON meets.id = vis.meeting
+		WHERE meeting='".$this->meetingId."' AND vis.deleted='0'
+		";
+		$result = mysql_query($query);
+
+		// load and prepare template
+		$this->View->loadTemplate('exports/meal_ticket');
+		$this->View->assign('result', $result);
+		$template = $this->View->render(false);
+
+		// write html
+		$this->Pdf->WriteHTML($template, 0);
+		
+		/* debugging */
+		if(defined('DEBUG') && DEBUG === true){
+			echo $template;
+			exit('DEBUG_MODE');
+		} else {
+			// download
+			$this->Pdf->Output($outputFilename, "D");
+		}
+	}
+	
+	/**
+	 * Print Attendance into PDF file
+	 *
+	 * @param	string	file type
+	 * @return	file	PDF file
+	 */
 	public function printAttendance($file_type = "pdf")
 	{
 		// output file name
