@@ -29,12 +29,16 @@ class PdfFactory
 	 */
 	public function create()
 	{
-		$this->Pdf->debug = true;
+		// debugging on demand
+		if(defined('DEBUG') && DEBUG === TRUE){
+			$this->Pdf->debug = true;
+		}
 		$this->Pdf->useOnlyCoreFonts = true;
 		$this->Pdf->SetDisplayMode('fullpage');
 		$this->Pdf->SetAutoFont(0);
 		$this->Pdf->defaultfooterfontsize = 16;
 		$this->Pdf->defaultfooterfontstyle = 'B';
+		$this->Pdf->mgl = 15;
 		
 		return $this->Pdf;
 	}
