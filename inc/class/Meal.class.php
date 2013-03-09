@@ -40,9 +40,33 @@ class Meal extends Component
 		$this->dbTable = "kk_meals";
 	}
 	
-	public function getMeals()
+	function getMeals($vid)
 	{
-		return (array)$this->meals;
+		$meals = "<tr>";
+		$meals .= " <td class='progPart'>";
+	
+		$mealSql = "SELECT 	*
+					FROM kk_meals
+					WHERE visitor='".$vid."'
+					";
+	
+		$mealResult = mysql_query($mealSql);
+		$mealRows = mysql_affected_rows();
+	
+		if($mealRows == 0){
+			$meals .= "<div class='emptyTable' style='width:400px;'>Nejsou žádná aktuální data.</div>\n";
+		}
+		else{	
+			while($mealData = mysql_fetch_assoc($mealResult)){
+				$meals .= "<div class='block'>".$mealData['fry_dinner'].", ".$mealData['sat_breakfast']." - ".$mealData['sat_lunch']." : ".$mealData['sat_dinner']."</div>\n";
+	
+			}
+		}
+	
+		$meals .= "</td>";
+		$meals .= "</tr>";
+	
+		return $meals;
 	}
 	
 	/**
