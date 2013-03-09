@@ -1,6 +1,6 @@
 <?php
 require_once('../inc/define.inc.php');
-require_once("../libs/mpdf/mpdf.php");
+require_once(LIBS_DIR."Mpdf/mpdf.php");
 
 ########################### AKTUALNI SRAZ ##############################
 
@@ -272,7 +272,7 @@ $mpdf->SetAutoFont(0);
 //$stylesheet = file_get_contents(ROOT_DIR.'styles/css/print_event.css');
 
 //$mpdf->WriteHTML($stylesheet, 1);
-$mpdf->WriteHTML($html, 0);
+$mpdf->WriteHTML($html, 2);
 
 $name = $filename.".pdf";
 // download

@@ -1,11 +1,17 @@
 <?php
 require_once('../inc/define.inc.php');
-require_once($LIBSDIR."Mpdf/mpdf.php");
+require_once(LIBS_DIR."Mpdf/mpdf.php");
 
 ########################### AKTUALNI SRAZ ##############################
 
 $mid = $_SESSION['meetingID'];
 //$mid = 2;
+
+$Container = new Container($GLOBALS['cfg'], $mid);
+$ExportHandler = $Container->createExport();
+
+$ExportHandler->printMealTicket();
+exit();
 
 $sql = "SELECT	vis.id AS id,
 				name,
