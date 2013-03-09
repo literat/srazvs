@@ -40,7 +40,7 @@ class View
 	{
 		$this->template = $template;
 		//compose file name
-        $file = $GLOBALS['TPL_DIR'].strtolower($template).'.tpl';
+        $file = TEMPLATE_DIR.strtolower($template).'.tpl';
 		
         if (file_exists($file)){
             /**
@@ -90,9 +90,7 @@ class View
     }
 	
 	/** Destruct */
-	/*
     public function __destruct()
     {
     }
-	*/
 }
