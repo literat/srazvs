@@ -26,40 +26,11 @@ if($type == "program"){
 	$countData = mysql_fetch_assoc($countResult);
 	
 	$html = "<tr>\n";
-	$html .= " <td class='label'>Obsazenost programu:</td>\n";
-	$html .= " <td class='text'>".$countData['visitors']."/".$capacity."</td>\n";
+	$html .= " <td class=\"label\">Obsazenost programu:</td>\n";
+	$html .= " <td class=\"text\">".$countData['visitors']."/".$capacity."</td>\n";
     $html .= "</tr>\n";
 }
 else $html = "";
 
 ?>
-<html>
- <head>
-  <meta http-equiv='Content-Type' content='text/html; charset=<?php echo $cfg['http-encoding'] ?>' />
- </head>
- <body>
-  <style>
-   td.text {text-align:left;}
-  </style>
-
-  <table class='form'>
-   <tr>
-	<td class='label'>Program:</td>
-	<td class="text"><?php echo $name; ?></td>
-   </tr>
-   <tr>
-	<td class='label'>Popis:</td>
-	<td class="text"><?php echo $description; ?></td>
-   </tr>
-   <tr>
-	<td class='label'>Lektor:</td>
-	<td class="text"><?php echo $tutor; ?></td>
-   </tr>
-   <tr>
-	<td class='label'>E-mail:</td>
-	<td class="text"><a href="mailto:<?php echo $email; ?>" title="e-mail"><?php echo $email; ?></a></td>
-   </tr>
-   <?php echo $html; ?>
-  </table>
- </body>
-</html>
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=<?php echo $cfg['http-encoding'] ?>" /></head><body><style>td.text {text-align:left;}</style><table class="form"><tr><td class="label">Program:</td><td class="text"><?php echo $name; ?></td></tr><tr><td class="label">Popis:</td><td class="text"><?php echo $description; ?></td></tr><tr><td class="label">Lektor:</td><td class="text"><?php echo $tutor; ?></td></tr><tr><td class="label">E-mail:</td><td class="text"><a href="mailto:<?php echo $email; ?>" title="e-mail"><?php echo $email; ?></a></td></tr><?php echo $html; ?></table></body></html>
