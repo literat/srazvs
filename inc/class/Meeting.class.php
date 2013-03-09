@@ -130,6 +130,33 @@ class Meeting extends Component
 		return $html;
 	}
 	
+	/** Public program same as getPrograms*/
+	public function getPublicPrograms($block_id){
+		$sql = "SELECT 	progs.id AS id,
+						progs.name AS name,
+						style
+				FROM kk_programs AS progs
+				LEFT JOIN kk_categories AS cat ON cat.id = progs.category
+				WHERE block='".$block_id."' AND progs.deleted='0'
+				LIMIT 10";
+		$result = mysql_query($sql);
+		$rows = mysql_affected_rows();
+	
+		if($rows == 0) $html = "";
+		else{
+			$html = "<table>\n";
+			$html .= " <tr>\n";
+			while($data = mysql_fetch_assoc($result)){			
+				$html .= "<td class='cat-".$data['style']."' style='text-align:center;'>\n";
+				$html .= "<a class='programLink' rel='programDetail' href='detail.php?id=".$data['id']."&type=program' rel='programDetail' title='".file_get_contents(HTTP_DIR.'srazvs/detail.php?id='.$data['id'].'&type=program')."'>".$data['name']."</a>\n";
+				$html .= "</td>\n";
+			}
+			$html .= " </tr>\n";
+			$html .= "</table>\n";
+		}
+		return $html;
+	}
+	
 	/**
 	 * Render Program Overview
 	 *
@@ -178,6 +205,62 @@ class Meeting extends Component
 					else {
 						$html .= "<td class='cat-".$data['style']."'>";
 						$html .= "<a class='block' href='".$GLOBALS['BLOCKDIR']."process.php?id=".$data['id']."&cms=edit&page=meetings' title='".$data['name']."'>".$data['name']."</a>\n";
+						$html .= "</td>\n";
+					}
+					$html .= "</tr>\n";
+				}
+			}
+			$html .= "</table>\n";
+		}
+		
+		return $html;
+	}
+	
+	public function renderPublicProgramOverview()
+	{
+		$days = array("pátek", "sobota", "neděle");
+		$html = "";
+		
+		foreach($days as $dayKey => $dayVal){
+			$html .= "<table>\n";
+			$html .= " <tr>\n";
+			$html .= "  <td class='day' colspan='2' >".$dayVal."</td>\n";
+			$html .= " </tr>\n";
+		
+			$sql = "SELECT 	blocks.id AS id,
+							day,
+							DATE_FORMAT(`from`, '%H:%i') AS `from`,
+							DATE_FORMAT(`to`, '%H:%i') AS `to`,
+							blocks.name AS name,
+							program,
+							display_progs,
+							style
+					FROM kk_blocks AS blocks
+					LEFT JOIN kk_categories AS cat ON cat.id = blocks.category
+					WHERE blocks.deleted = '0' AND day='".$dayVal."' AND meeting='".$this->meetingId."'
+					ORDER BY `from` ASC";
+		
+			$result = mysql_query($sql);
+			$rows = mysql_affected_rows();
+		
+			if($rows == 0){
+				$html .= "<td class='emptyTable' style='width:400px;'>Nejsou žádná aktuální data.</td>\n";
+			}
+			else{
+				while($data = mysql_fetch_assoc($result)){
+					$html .= "<tr>\n";
+					$html .= "<td class='time'>".$data['from']." - ".$data['to']."</td>\n";
+					if(($data['program'] == 1) && ($data['display_progs'] == 1)){ 
+						$html .= "<td class='cat-".$data['style']."' class='daytime'>\n";
+						$html .= "<div>\n";
+						$html .= "<a class='programLink rel='programDetail' href='detail.php?id=".$data['id']."&type=block' rel='programDetail' title='".file_get_contents(HTTP_DIR.'srazvs/detail.php?id='.$data['id'].'&type=program')."'>".$data['name']."</a>\n";
+						$html .= "</div>\n";
+						$html .= $this->getPublicPrograms($data['id']);
+						$html .= "</td>\n";
+					}
+					else {
+						$html .= "<td class='cat-".$data['style']."'>";
+						$html .= "<a class='programLink rel='programDetail' href='detail.php?id=".$data['id']."&type=block' rel='programDetail' title='".file_get_contents(HTTP_DIR.'srazvs/detail.php?id='.$data['id'].'&type=program')."'>".$data['name']."</a>\n";
 						$html .= "</td>\n";
 					}
 					$html .= "</tr>\n";
@@ -271,4 +354,6 @@ class Meeting extends Component
 		
 		return $html_table;
 	}
+	
+	
 }
