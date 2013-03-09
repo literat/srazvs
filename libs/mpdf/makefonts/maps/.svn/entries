@@ -1,70 +1,0 @@
-10
-
-dir
-0
-https://github.com:443/literat/SrazyVS.git/libs/mpdf/makefonts/maps
-https://github.com:443/literat/SrazyVS.git
-add
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-da9629fa-693e-fe54-b82e-ce57b7db7bff
-
-win-1251.map
-file
-
-
-
-add
-
-iso-8859-2.map
-file
-
-
-
-add
-
-win-1252.map
-file
-
-
-
-add
-
-iso-8859-4.map
-file
-
-
-
-add
-
-iso-8859-7.map
-file
-
-
-
-add
-
-iso-8859-9.map
-file
-
-
-
-add
-
