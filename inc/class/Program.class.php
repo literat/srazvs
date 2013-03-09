@@ -282,4 +282,55 @@ class Program extends Component
 		
 		return $html_table;
 	}
+	
+	/**
+	 * Get programs on registration
+	 *
+	 * @param	int		ID of program
+	 * @param	string	disabled
+	 * @return	string	html
+	 */
+	public function getProgramsRegistration ($id, $disabled)
+	{
+		$sql = "SELECT 	*
+			FROM kk_programs
+			WHERE block='".$id."' AND deleted='0'
+			LIMIT 10";
+		$result = mysql_query($sql);
+		$rows = mysql_affected_rows();
+	
+		if($rows == 0){
+			$html = "";
+		}
+		else{
+			$html = "<div>\n";
+			$html .= "<input ".$disabled." checked type='radio' name='".$id."' value='0' /> Nebudu přítomen <br />\n";
+			while($data = mysql_fetch_assoc($result)){
+				//// resim kapacitu programu a jeho naplneni navstevniky
+				$fullProgramSql = " SELECT COUNT(visitor) AS visitors FROM `kk_visitor-program` AS visprog
+									LEFT JOIN kk_visitors AS vis ON vis.id = visprog.visitor
+									WHERE program = '".$data['id']."' AND vis.deleted = '0'";
+				$fullProgramResult = mysql_query($fullProgramSql);
+				$fullProgramData = mysql_fetch_assoc($fullProgramResult);
+			
+				// nezobrazeni programu v registraci, v adminu zaskrtavatko u programu
+				if($data['display_in_reg'] == 0) $notDisplayedProg = "style='display:none;'";
+				else $notDisplayedProg = "";
+			
+				if($fullProgramData['visitors'] >= $data['capacity']){
+					$html .= "<div ".$notDisplayedProg."><input disabled type='radio' name='".$id."' value='".$data['id']."' />\n";
+					$fullProgramInfo = " (NELZE ZAPSAT - kapacita programu je již naplněna!)";
+				}
+				else {
+					$html .= "<div ".$notDisplayedProg."><input ".$disabled." type='radio' name='".$id."' value='".$data['id']."' /> \n";
+					$fullProgramInfo = "";
+				}
+				$html .= "<a class='programLink' rel='programDetail' href='".HTTP_DIR."srazvs/detail.php?id=".$data['id']."&type=program' title='".file_get_contents(HTTP_DIR.'srazvs/detail.php?id='.$data['id'].'&type=program')."' target='_blank'>".$data['name']."</a>\n";
+				$html .= $fullProgramInfo;
+				$html .= "</div>\n";
+			}
+			$html .= "</div>\n";
+		}
+		return $html;
+	}
 }
