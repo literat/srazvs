@@ -43,23 +43,23 @@ class Container
 	}
 	
 	/**
-	 * Create instance of Mpdf
+	 * Create instance of PdfFactory
 	 *
-	 * @return	Mpdf
-	 */
-	public function createMpdf()
-	{
-		return new mPDF($this->configuration['http-encoding'], $this->configuration['paper-format']);
-	}
-	
-	/**
-	 * Create instance of MpdfFactory
-	 *
-	 * @return	MpdfFactory
+	 * @return	PdfFactory
 	 */
 	public function createPdfFactory()
 	{
-		return new PdfFactory($this->createMpdf(), $this->configuration);
+		return new PdfFactory();
+	}
+	
+	/**
+	 * Create instance of ExcelFactory
+	 *
+	 * @return	ExcelFactory
+	 */
+	public function createExcelFactory()
+	{
+		return new ExcelFactory();
 	}
 	
 	/**
@@ -146,6 +146,6 @@ class Container
 	 */
 	public function createExport()
 	{
-		return new ExportModel($this->meetingId, $this->createPdfFactory(), $this->createView(), $this->createProgram());
+		return new ExportModel($this->meetingId, $this->createPdfFactory(), $this->createView(), $this->createProgram(), $this->createExcelFactory());
 	}
 }
