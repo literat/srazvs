@@ -387,7 +387,7 @@ class Visitor /* extends Component */
 				$html_row .= "<td><a href='process.php?id=".$data['id']."&cms=edit&page=visitors' title='Upravit'><img class='edit' src='".$GLOBALS['ICODIR']."small/edit.gif' /></a></td>\n";
 				$html_row .= "<td><a href='?id=".$data['id']."&amp;cms=advance&amp;search=".$this->search."' title='Záloha'><img class='edit' src='".$GLOBALS['ICODIR']."small/advance.png' /></a></td>\n";
 				$html_row .= "<td><a href='?id=".$data['id']."&amp;cms=pay&amp;search=".$this->search."' title='Zaplatit'><img class='edit' src='".$GLOBALS['ICODIR']."small/pay.png' /></a></td>\n";
-				$html_row .= "<td><a href='../exports/evidence.pdf.php?vid=".$data['id']."&type=confirm' title='Doklad'><img class='edit' src='".$GLOBALS['ICODIR']."small/pdf.png' /></a></td>\n";
+				$html_row .= "<td><a href='../exports/?evidence=confirm&vid=".$data['id']."' title='Doklad'><img class='edit' src='".$GLOBALS['ICODIR']."small/pdf.png' /></a></td>\n";
 				$html_row .= "<td><a href=\"javascript:confirmation('?id=".$data['id']."&amp;cms=del&amp;search=".$this->search."', 'účastník: ".$data['nick']." -> Opravdu SMAZAT tohoto účastníka? Jste si jisti?')\" title='Odstranit'><img class='edit' src='".$GLOBALS['ICODIR']."small/delete.gif' /></a></td>\n";
 				$html_row .= "<td class='text'>".$data['id']."</td>\n";
 				$html_row .= "<td class='text'>".$data['code']."</td>\n";

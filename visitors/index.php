@@ -21,6 +21,7 @@ $error = requested("error","");
 
 $Container = new Container($GLOBALS['cfg'], $mid);
 $VisitorsHandler = $Container->createVisitor();
+$ExportHandler = $Container->createExport();
 
 if(isset($_POST['checker'])){
 	$id = $_POST['checker'];
@@ -73,6 +74,10 @@ switch($cms) {
 			$VisitorsHandler->setSearch($search);
 		}
 		break;
+	// export all visitors to excel
+	case "export":
+		$ExportHandler->printVisitorsExcel();
+		break;
 }
 
 ################## GENEROVANI STRANKY #############################
@@ -88,7 +93,7 @@ include_once($INCDIR.'header.inc.php');
 <div>
 	počet účastníků: <span style="font-size:12px; font-weight:bold;"><?php echo $VisitorsHandler->getCount(); ?></span>
 	<span style="margin-left:10px; margin-right:10px;">|</span> 
-	<a style='text-decoration:none; padding-right:2px;' href='export.xls.php?mid=<?php echo $mid; ?>'>
+	<a style='text-decoration:none; padding-right:2px;' href='?cms=export'>
 		<img style='border:none;' align='absbottom' src='<?php echo $ICODIR; ?>small/xlsx.png' />
 		export účastníků
 	</a>
