@@ -1,4 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//Dtd XHTML 1.0 Strict//EN" "http://www.w3.org/tr/xhtml1/Dtd/xhtml1-strict.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//Dtd XHTML 1.0 Transitional//EN" "http://www.w3.org/tr/xhtml1/Dtd/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en">
  <head>
   <meta http-equiv='Content-Type' content='text/html; charset=<?php echo $cfg['http-encoding'] ?>' />
@@ -20,5 +20,5 @@
   <meta name='robots' content='all' />
   <meta name='author' content='<?php echo $cfg['author'] ?>' />
   <meta name='copyright' content='(C) 2001 - <?php echo date('Y') ?>, <?php echo $cfg['owner'] ?>' />
-  <style><?php echo $style; ?></style>
+  <style type="text/css"><?php echo $style; ?></style>
  </head>
