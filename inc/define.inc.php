@@ -84,10 +84,10 @@ define('SESSION_DIR',	TEMP_DIR.'session/');
 define('CACHE_DIR',		TEMP_DIR.'cache/');
 /* Application */
 define('APP_DIR',		ROOT_DIR.'app/');
-define('MODEL_DIR',		ROOT_DIR.'app/Models/');
-define('VIEW_DIR',		ROOT_DIR.'app/Views/');
-define('CONTROLLER_DIR',ROOT_DIR.'app/Controllers/');
-define('TEMPLATE_DIR',	ROOT_DIR.'app/Templates/');
+define('MODEL_DIR',		APP_DIR.'Models/');
+define('VIEW_DIR',		APP_DIR.'Views/');
+define('CONTROLLER_DIR',APP_DIR.'Controllers/');
+define('TEMPLATE_DIR',	APP_DIR.'Templates/');
 
 
 define('SESSION_PREFIX', md5($cfg['db_host'].$cfg['db_database'].$cfg['db_user'].$cfg['prefix'])."-");
@@ -97,14 +97,15 @@ session_name(SESSION_PREFIX.'session');
 //session_save_path(SESSION_DIR);
 session_start();
 
-require_once($INCDIR.'functions.inc.php');
-require_once($INCDIR.'db_connect.inc.php');
+require_once(INC_DIR.'functions.inc.php');
+require_once(INC_DIR.'db_connect.inc.php');
 //include_once($INCDIR.'access.inc.php');
-require_once($INCDIR.'errors.inc.php');
+require_once(INC_DIR.'errors.inc.php');
 
 require_once($CLASSDIR.'ComponentModel/IModel.php');
 require_once($CLASSDIR.'ComponentModel/IComponent.php');
 require_once($CLASSDIR.'ComponentModel/Component.php');
+require_once($CLASSDIR.'ComponentModel/CodeplexModel.php');
 
 require_once($CLASSDIR.'Emailer.class.php');
 require_once($CLASSDIR.'Category.class.php');
@@ -115,16 +116,19 @@ require_once($CLASSDIR.'Visitor.class.php');
 require_once($CLASSDIR.'Meeting.class.php');
 require_once($CLASSDIR.'Meal.class.php');
 require_once($CLASSDIR.'View.class.php');
-require_once($CLASSDIR.'ExportModel.class.php');
+require_once(MODEL_DIR.'ExportModel.php');
 
-require_once($LIBSDIR.'PHPMailer/class.phpmailer.php');
-require_once($LIBSDIR.'Mpdf/mpdf.php');
+/* Libraries */
+require_once(LIBS_DIR.'PHPMailer/class.phpmailer.php');
+require_once(LIBS_DIR.'Mpdf/mpdf.php');
+require_once(LIBS_DIR.'PHPExcel/Classes/PHPExcel.php');
 
 require_once($CLASSDIR.'DI/Container.class.php');
 require_once($CLASSDIR.'Mail/PHPMailerFactory.php');
 require_once($CLASSDIR.'Exporting/PdfFactory.php');
+require_once($CLASSDIR.'Exporting/ExcelFactory.php');
 
-define('DEBUG', TRUE);
+define('DEBUG', FALSE);
 
 
 //debuggovani
