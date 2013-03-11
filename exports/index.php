@@ -16,108 +16,45 @@ if($mid = requested("mid","")){
 
 $Container = new Container($GLOBALS['cfg'], $mid);
 $ExportHandler = $Container->createExport();
+$ViewHandler = $Container->createView();
+
+switch(key($_GET)){
+	case 'attendance':
+		$ExportHandler->printAttendance();
+		break;
+	case 'evidence':
+		if(isset($_GET['vid']) && $_GET['vid'] != ''){
+			$ExportHandler->printEvidence($_GET['evidence'], intval($_GET['vid']));
+		} else {
+			$ExportHandler->printEvidence($_GET['evidence']);
+		}
+		break;
+	case 'visitor-excel':
+		$ExportHandler->printVisitorsExcel();
+		break;
+	case 'meal-ticket':
+		$ExportHandler->printMealTicket();
+		break;
+	case 'name-badges':
+		$ExportHandler->printNameBadges();
+		break;
+}
 
 ################## GENEROVANI STRANKY #############################
 
-include_once($INCDIR.'http_header.inc.php');
-include_once($INCDIR.'header.inc.php');
+include_once(INC_DIR.'http_header.inc.php');
+include_once(INC_DIR.'header.inc.php');
 
-?>
+// load and prepare template
+$ViewHandler->loadTemplate('exports/exports');
+$ViewHandler->assign('graph',		$ExportHandler->renderGraph());
+$ViewHandler->assign('graphHeight',	$ExportHandler->getGraphHeight());
+$ViewHandler->assign('account',		$ExportHandler->getMoney('account'));
+$ViewHandler->assign('balance',		$ExportHandler->getMoney('balance'));
+$ViewHandler->assign('suma',		$ExportHandler->getMoney('suma'));
+$ViewHandler->assign('programs',	$ExportHandler->Program->renderExportPrograms());
+$ViewHandler->assign('materials',	$ExportHandler->getMaterial());
+$ViewHandler->assign('meals',		$ExportHandler->renderMealCount());
+$ViewHandler->render(TRUE);
 
-<div class='siteContentRibbon'>Exporty</div>
-<div style="width:22%;float:left;">
- <div class='pageRibbon'>Tisk</div>
-  <div>
- <a style='text-decoration:none; display:block; margin-bottom:4px;' href='evidence.pdf.php?type=confirm'>
-  <img style='border:none;' align='absbottom' src='<?php echo $ICODIR; ?>small/pdf.png' />
-  potvrzení o přijetí zálohy
- </a> 
- 
- <a style='text-decoration:none; display:block; margin-bottom:4px;' href='evidence.pdf.php?type=evidence'>
-  <img style='border:none;' align='absbottom' src='<?php echo $ICODIR; ?>small/pdf.png' />
-  příjmový pokladní doklad
- </a>
- 
- <a style='text-decoration:none; display:block; margin-bottom:4px;' href='program_cards.pdf.php'>
-  <img style='border:none;' align='absbottom' src='<?php echo $ICODIR; ?>small/pdf.png' />
-  osobní program
- </a>
- 
- <a style='text-decoration:none; display:block; margin-bottom:4px;' href='program_large.pdf.php'>
-  <img style='border:none;' align='absbottom' src='<?php echo $ICODIR; ?>small/pdf.png' />
-  program srazu - velký formát
- </a>
- 
- <a style='text-decoration:none; display:block; margin-bottom:4px;' href='program_badge.pdf.php'>
-  <img style='border:none;' align='absbottom' src='<?php echo $ICODIR; ?>small/pdf.png' />
-  program srazu - do visačky
- </a>
- 
- <a style='text-decoration:none; display:block; margin-bottom:4px;' href='name_badge.pdf.php'>
-  <img style='border:none;' align='absbottom' src='<?php echo $ICODIR; ?>small/pdf.png' />
-  jmenovky
- </a>
- 
- <a style='text-decoration:none; display:block; margin-bottom:4px;' href='attendance.pdf.php'>
-  <img style='border:none;' align='absbottom' src='<?php echo $ICODIR; ?>small/pdf.png' />
-  prezenční listina
- </a>
- 
- <a style='text-decoration:none; display:block; margin-bottom:4px;' href='meal_ticket.pdf.php'>
-  <img style='border:none;' align='absbottom' src='<?php echo $ICODIR; ?>small/pdf.png' />
-  stravenky
- </a>
- 
- <a style='text-decoration:none; display:block; margin-bottom:4px;' href='feedback.pdf.php'>
-  <img style='border:none;' align='absbottom' src='<?php echo $ICODIR; ?>small/pdf.png' />
-  zpětná vazba
- </a>
- 
- <a style='text-decoration:none; display:block; margin-bottom:4px;' href='evidence.pdf.php?type=summary'>
-  <img style='border:none;' align='absbottom' src='<?php echo $ICODIR; ?>small/pdf.png' />
-  kompletní příjmový pokladní doklad
- </a>
- 
-  </div>
-</div>
-
-
-<div style="width:44%;padding-left:0.5%;float:right;">
- <div class='pageRibbon'>Graf přihlašování</div>
- <?php echo $ExportHandler->renderGraph(); ?>
-</div>
-
-<div style="width:15%;padding-left:0.5%;float:right;">
- <div class='pageRibbon'>Jídlo</div>
- <?php echo $ExportHandler->renderMealCount(); ?>
-</div>
-
-<div style="padding-left:22.5%;padding-right:60%;margin-top:6px;height:<?php echo $ExportHandler->getGraphHeight(); ?>px;">
- <div class='pageRibbon'>Peníze</div>
- <div style="margin-bottom:4px;">Celkem vybráno: <strong><?php echo $ExportHandler->getMoney('account'); ?></strong>,-Kč</div>
- <div style="margin-bottom:4px;">Zbývá vybrat: <strong><?php echo $ExportHandler->getMoney('balance'); ?></strong>,-Kč</div>
- <div style="margin-bottom:4px;">Suma srazu celkem: <strong><?php echo $ExportHandler->getMoney('suma'); ?></strong>,-Kč</div>
-</div>
-
-<div style="width:50%;float:left;">
- <div class='pageRibbon'>Programy</div>
- <?php echo $ExportHandler->Program->renderExportPrograms(); ?>
-</div>
-
-<div style="width:49.5%;padding-left:50.5%;">
- <div class='pageRibbon'>Materiál</div>
-  <div>
-	<?php echo $ExportHandler->getMaterial(); ?>
-  </div>
- </div>
-
-
-<!--<div class='pageRibbon'>Něco dalšího</div>-->
-
-<?php
-###################################################################
-
-include_once($INCDIR.'footer.inc.php');
-
-###################################################################
-?>
+include_once(INC_DIR.'footer.inc.php');
