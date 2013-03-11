@@ -408,8 +408,8 @@ td.day {
 	color:#ce8b10;
 }
 
-a.program-link {color: black;}
-a.program-link:hover {color: #ce8b10;}
+a.programLink {color: black;}
+a.programLink:hover {color: #ce8b10;}
 
 /*-------------------------------------------------------------------------------------------------------------
 		7) Forms, registration, editation, buttons
