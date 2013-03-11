@@ -85,41 +85,41 @@ function getPrograms($id, $vid){
 
 function getBlocks($vid)
 {
-$programs = "<tr>";
-$programs .= " <td class='progPart'>";
-
-$progSql = "SELECT 	id,
-					day,
-					DATE_FORMAT(`from`, '%H:%i') AS `from`,
-					DATE_FORMAT(`to`, '%H:%i') AS `to`,
-					name,
-					program
-			FROM kk_blocks
-			WHERE deleted = '0' AND program='1' AND meeting='".$_SESSION['meetingID']."'
-			ORDER BY `day` ASC";
-
-$progResult = mysql_query($progSql);
-$progRows = mysql_affected_rows();
-
-if($progRows == 0){
-	$programs .= "<div class='emptyTable' style='width:400px;'>Nejsou žádná aktuální data.</div>\n";
-}
-else{	
-	while($progData = mysql_fetch_assoc($progResult)){
-		// zbaveni se predsnemovni diskuse
-		if($progData['id'] == 63) $programs .= "";
-		else {
-			$programs .= "<div class='block'>".$progData['day'].", ".$progData['from']." - ".$progData['to']." : ".$progData['name']."</div>\n";
-		
-			if($progData['program'] == 1) $programs .= "<div>".getPrograms($progData['id'], $vid)."</div>";
+	$programs = "<tr>";
+	$programs .= " <td class='progPart'>";
+	
+	$progSql = "SELECT 	id,
+						day,
+						DATE_FORMAT(`from`, '%H:%i') AS `from`,
+						DATE_FORMAT(`to`, '%H:%i') AS `to`,
+						name,
+						program
+				FROM kk_blocks
+				WHERE deleted = '0' AND program='1' AND meeting='".$_SESSION['meetingID']."'
+				ORDER BY `day` ASC";
+	
+	$progResult = mysql_query($progSql);
+	$progRows = mysql_affected_rows();
+	
+	if($progRows == 0){
+		$programs .= "<div class='emptyTable' style='width:400px;'>Nejsou žádná aktuální data.</div>\n";
+	}
+	else{	
+		while($progData = mysql_fetch_assoc($progResult)){
+			// zbaveni se predsnemovni diskuse
+			if($progData['id'] == 63) $programs .= "";
+			else {
+				$programs .= "<div class='block'>".$progData['day'].", ".$progData['from']." - ".$progData['to']." : ".$progData['name']."</div>\n";
+			
+				if($progData['program'] == 1) $programs .= "<div>".getPrograms($progData['id'], $vid)."</div>";
+			}
 		}
 	}
-}
-
-$programs .= "</td>";
-$programs .= "</tr>";
-
-return $programs;
+	
+	$programs .= "</td>";
+	$programs .= "</tr>";
+	
+	return $programs;
 }
 #############################################################################
 
