@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * View
  * 
@@ -81,7 +81,7 @@ class View
         $data = $this->data;
 
         // Get template
-        include($this->render);
+        include_once($this->render);
         
         // Get the contents of the buffer and return it
         if ($direct_output !== TRUE){
