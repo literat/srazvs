@@ -7,7 +7,7 @@
  * @created 2012-09-21
  * @author Tomas Litera <tomaslitera@hotmail.com>
  */
-class ExportModel
+class ExportModel extends CodeplexModel
 {
 	/** @var int meeting ID */
 	private $meetingId;
@@ -24,30 +24,34 @@ class ExportModel
 	/** @var Program Programs class */
 	public $Program;
 	
+	/** @var PHPExcel PHPExcel class */
+	private $Excel;
+	
 	/** @var int graph height */
-	private $graph_height;
+	private $graphHeight;
 	
 	/** Constructor */
-	public function __construct($meetingId, PdfFactory $PdfFactory, View $View, Program $Program)
+	public function __construct($meetingId, PdfFactory $PdfFactory, View $View, Program $Program, ExcelFactory $ExcelFactory)
 	{
 		$this->meetingId = $meetingId;
 		// use PdfFactory
 		$this->PdfFactory = $PdfFactory;
 		// create mPdf with default settings
-		$this->Pdf = $this->createPdf();
+		//$this->Pdf = $PdfFactory->create();
 		// templating system
 		$this->View = $View;
 		$this->Program = $Program;
+		$this->Excel = $ExcelFactory->create();
 	}
 	
 	public function setGraphHeight($height)
 	{
-		$this->graph_height = $height;	
+		$this->graphHeight = $height;	
 	}
 	
 	public function getGraphHeight()
 	{
-		return $this->graph_height;
+		return $this->graphHeight;
 	}
 	
 	/**
@@ -111,6 +115,8 @@ class ExportModel
 		$this->View->assign('result', $result);
 		$template = $this->View->render(false);
 
+		$this->Pdf = $this->createPdf();
+
 		// write html
 		$this->Pdf->WriteHTML($template, 0);
 		
@@ -163,6 +169,8 @@ class ExportModel
 		$header_data = mysql_fetch_assoc($result);
 		$attendance_header = $header_data['place']." ".$header_data['year'];
 
+		$this->Pdf = $this->createPdf();
+	
 		// set header
 		$this->Pdf->SetHeader($attendance_header.'|sraz VS|Prezenční listina');
 		// write html
@@ -226,6 +234,8 @@ class ExportModel
 		$hkvs_header .= "Senovážné náměstí 977/24, Praha 1, 116 47 | ";
 		$hkvs_header .= "IČ: 65991753, ČÚ: 2300183549/2010";
 
+		$this->Pdf = $this->createPdf();
+
 		// load and prepare template
 		$this->View->loadTemplate('exports/evidence_header');
 		$this->View->assign('header', $this->View->render(false));
@@ -270,9 +280,117 @@ class ExportModel
 	 * @param	string	file type
 	 * @return	file	PDF file
 	 */
-	public function printProgram($evidence_type, $visitor_id = NULL, $file_type = "pdf")
+	public function printProgramCards($evidence_type, $visitor_id = NULL, $file_type = "pdf")
 	{
+		$sql = "SELECT	vis.id AS id,
+						name,
+						surname,
+						nick,
+						DATE_FORMAT(birthday, '%Y-%m-%d') AS birthday,
+						street,
+						city,
+						postal_code,
+						province,
+						province_name,
+						group_num,
+						group_name,
+						troop_name,
+						comment,
+						arrival,
+						departure,
+						question,
+						fry_dinner,
+						sat_breakfast,
+						sat_lunch,
+						sat_dinner,
+						sun_breakfast,
+						sun_lunch,
+						bill,
+						place,
+						DATE_FORMAT(start_date, '%d. -') AS start_date,
+						DATE_FORMAT(end_date, '%d. %m. %Y') AS end_date
+				FROM kk_visitors AS vis
+				LEFT JOIN kk_meals AS meals ON meals.visitor = vis.id
+				LEFT JOIN kk_provinces AS provs ON vis.province = provs.id
+				LEFT JOIN kk_meetings AS meets ON meets.id = vis.meeting
+				WHERE meeting='".$this->meetingId."' AND vis.deleted='0'
+				";
+		$result = mysql_query($sql);
+		//$data = mysql_fetch_assoc($result);
 		
+		////ziskani zvolenych programu
+		$blockSql = "SELECT 	id
+					 FROM kk_blocks
+					 WHERE meeting='".$mid."' AND program='1' AND deleted='0'";
+		$blockResult = mysql_query($blockSql);
+		while($blockData = mysql_fetch_assoc($blockResult)){
+			$$blockData['id'] = requested($blockData['id'],0);
+			//echo $blockData['id'].":".$$blockData['id']."|";
+		}
+	
+		// load and prepare template
+		$this->View->loadTemplate('exports/program_cards');
+		$this->View->assign('result', $result);
+		//$this->View->assign('blocks' getBlocks($data['id']));
+		$template = $this->View->render(false);
+		
+		// prepare header
+		$header_data = mysql_fetch_assoc($result);
+		$attendance_header = $header_data['place']." ".$header_data['year'];
+
+		$this->Pdf = $this->createPdf();
+
+		$this->Pdf->SetWatermarkImage($GLOBALS['LOGODIR'].'watermark.jpg', 0.1, '');
+		$this->Pdf->showWatermarkImage = true;
+		
+		// write html
+		$this->Pdf->WriteHTML($template, 0);
+		
+		/* debugging */
+		if(defined('DEBUG') && DEBUG === true){
+			echo $template;
+			exit('DEBUG_MODE');
+		} else {
+			// download
+			$this->Pdf->Output($output_filename, "D");
+		}
+	
+	}
+	
+	public function printNameBadges()
+	{
+		$output_filename = "jmenovky.pdf";
+		
+		$sql = "SELECT	vis.id AS id,
+						nick
+				FROM kk_visitors AS vis
+				WHERE meeting='".$this->meetingId."' AND vis.deleted='0'
+				";
+		$result = mysql_query($sql);
+		
+		// load and prepare template
+		$this->View->loadTemplate('exports/name_badge');
+		$this->View->assign('result', $result);
+		$template = $this->View->render(FALSE);
+		
+		$this->PdfFactory->setMargins(15, 15, 10, 5);
+		$this->Pdf = $this->PdfFactory->create();
+		
+		// set watermark
+		$this->Pdf->SetWatermarkImage($GLOBALS['LOGODIR'].'watermark-waves.jpg', 0.1, '');
+		$this->Pdf->showWatermarkImage = TRUE;
+		
+		// write html
+		$this->Pdf->WriteHTML($template, 0);
+		
+		/* debugging */
+		if(defined('DEBUG') && DEBUG === TRUE){
+			echo $template;
+			exit('DEBUG_MODE');
+		} else {
+			// download
+			$this->Pdf->Output($output_filename, "D");
+		}
 	}
 	
 	/**
@@ -324,7 +442,7 @@ class ExportModel
 				   
 		$reg_graph .= "</table>";
 		
-		if($graph_height < 250) $graph_height = 250;
+		if($graph_height < 260) $graph_height = 260;
 		
 		$this->setGraphHeight($graph_height);
 		
@@ -427,5 +545,136 @@ class ExportModel
 		$meals .= "</table>";
 		
 		return $meals;
+	}
+	
+	public function printVisitorsExcel()
+	{
+		$this->Excel->getProperties()->setCreator("HKVS Srazy K + K")->setTitle("Návštěvníci");
+		
+		// Zde si vyvoláme aktivní list (nastavený nahoře) a vyplníme buňky A1 a A2
+		
+		$list = $this->Excel->setActiveSheetIndex(0);
+		
+		$list->setCellValue('A1', 'ID');
+		$list->setCellValue('B1', 'symbol');
+		$list->setCellValue('C1', 'Jméno');
+		$list->setCellValue('D1', 'Příjmení');
+		$list->setCellValue('E1', 'Přezdívka');
+		$list->setCellValue('F1', 'Narození');
+		$list->setCellValue('G1', 'E-mail');
+		$list->setCellValue('H1', 'Adresa');
+		$list->setCellValue('I1', 'Město');
+		$list->setCellValue('J1', 'PSČ');
+		$list->setCellValue('K1', 'Kraj');
+		$list->setCellValue('L1', 'Evidence');
+		$list->setCellValue('M1', 'Středisko/Přístav');
+		$list->setCellValue('N1', 'Oddíl');
+		$list->setCellValue('O1', 'Účet');
+		$list->setCellValue('P1', 'Připomínky');
+		$list->setCellValue('Q1', 'Příjezd');
+		$list->setCellValue('R1', 'Odjezd');
+		$list->setCellValue('S1', 'Otázka');
+		
+		$this->Excel->getActiveSheet()->getStyle('A1:Z1')->getFont()->setBold(true);
+		
+		$this->Excel->getActiveSheet()->getColumnDimension('C')->setWidth(15);  
+		$this->Excel->getActiveSheet()->getColumnDimension('D')->setWidth(15);  
+		$this->Excel->getActiveSheet()->getColumnDimension('F')->setWidth(15);  
+		$this->Excel->getActiveSheet()->getColumnDimension('G')->setWidth(30);  
+		$this->Excel->getActiveSheet()->getColumnDimension('H')->setWidth(20);
+		$this->Excel->getActiveSheet()->getColumnDimension('I')->setWidth(15);
+		$this->Excel->getActiveSheet()->getColumnDimension('K')->setWidth(20);
+		$this->Excel->getActiveSheet()->getColumnDimension('M')->setWidth(30);  
+		$this->Excel->getActiveSheet()->getColumnDimension('N')->setWidth(20);
+		$this->Excel->getActiveSheet()->getColumnDimension('P')->setWidth(20);
+		$this->Excel->getActiveSheet()->getColumnDimension('Q')->setWidth(20);
+		$this->Excel->getActiveSheet()->getColumnDimension('R')->setWidth(20);
+		$this->Excel->getActiveSheet()->getColumnDimension('S')->setWidth(20);
+		
+		$sql = "
+		SELECT vis.id AS id,
+			code,
+			vis.name,
+			surname,
+			nick,
+			DATE_FORMAT(birthday, '%d. %m. %Y') AS birthday,
+			vis.email,
+			street,
+			city,
+			postal_code,
+			province_name AS province,
+			group_num,
+			group_name,
+			troop_name,
+			bill,
+			`comment`,
+			arrival,
+			departure,
+			question,
+			`all`,
+			fry_dinner,
+			sat_breakfast,
+			sat_lunch,
+			sat_dinner,
+			sun_breakfast,
+			sun_lunch,
+			meeting
+		FROM `kk_visitors` AS vis
+		LEFT JOIN `kk_provinces` AS provs ON provs.id = vis.province
+		/*LEFT JOIN `kk_visitor-program` AS visprog ON visprog.visitor = vis.id
+		LEFT JOIN `kk_programs` AS progs ON visprog.program = progs.id*/
+		LEFT JOIN `kk_meals` AS mls ON mls.visitor = vis.id
+		WHERE vis.deleted = '0' AND meeting = '".$this->meetingId."'
+		";
+		
+		$query = mysql_query($sql);
+		
+		$i = 2;
+		while($data = mysql_fetch_assoc($query)){
+			$list->setCellValue('A'.$i, $data['id']);
+			$list->setCellValue('B'.$i, $data['code']);
+			$list->setCellValue('C'.$i, $data['name']);
+			$list->setCellValue('D'.$i, $data['surname']);
+			$list->setCellValue('E'.$i, $data['nick']);
+			$list->setCellValue('F'.$i, $data['birthday']);
+			$list->setCellValue('G'.$i, $data['email']);
+			$list->setCellValue('H'.$i, $data['street']);
+			$list->setCellValue('I'.$i, $data['city']);
+			$list->setCellValue('J'.$i, $data['postal_code']);
+			$list->setCellValue('K'.$i, $data['province']);
+			$list->setCellValue('L'.$i, $data['group_num']);
+			$list->setCellValue('M'.$i, $data['group_name']);
+			$list->setCellValue('N'.$i, $data['troop_name']);
+			$list->setCellValue('O'.$i, $data['bill']);
+			$list->setCellValue('P'.$i, $data['comment']);
+			$list->setCellValue('Q'.$i, $data['arrival']);
+			$list->setCellValue('R'.$i, $data['departure']);
+			$list->setCellValue('S'.$i, $data['question']);
+			$list->setCellValue('T'.$i, $data['all']);
+			$list->setCellValue('U'.$i, $data['fry_dinner']);
+			$list->setCellValue('V'.$i, $data['sat_breakfast']);
+			$list->setCellValue('W'.$i, $data['sat_lunch']);
+			$list->setCellValue('X'.$i, $data['sat_dinner']);
+			$list->setCellValue('Y'.$i, $data['sun_breakfast']);
+			$list->setCellValue('Z'.$i, $data['sun_lunch']);
+			$i++;
+		
+		}
+		
+		// stahnuti souboru
+		$filename = 'export-MS-'.date('Y-m-d',time()).'.xlsx';
+		
+		$this->Excel->setActiveSheetIndex(0);
+		
+		// clean output
+		ob_clean();
+		flush();
+		
+		header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+		header('Content-Disposition: attachment;filename="'.$filename.'"');
+		header('Cache-Control: max-age=0');
+		
+		$ExcelWriter = PHPExcel_IOFactory::createWriter($this->Excel, 'Excel2007');
+		$ExcelWriter->save('php://output');
 	}
 }
