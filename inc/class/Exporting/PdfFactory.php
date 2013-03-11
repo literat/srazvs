@@ -15,11 +15,18 @@ class PdfFactory
 	/** @var configuration */
 	private $configuration;
 	
+	private $encoding = 'utf-8';
+	private $paperFormat = 'A4';
+	private $fontSize = 0;
+	private $font = '';
+	private $marginLeft = 15;
+	private $marginRight = 15;
+	private $marginTop = 16;
+	private $marginBottom = 16;
+	
 	/** Constructor */
-	public function __construct(mPDF $Mpdf, $configuration)
+	public function __construct()
 	{
-		$this->Pdf = $Mpdf;
-		$this->configuration = $configuration;
 	}
 	
 	/**
@@ -29,6 +36,16 @@ class PdfFactory
 	 */
 	public function create()
 	{
+		$this->Pdf = new mPdf($this->encoding,
+							  $this->paperFormat,
+							  $this->fontSize,
+							  $this->font,
+							  $this->marginLeft,
+							  $this->marginRight,
+							  $this->marginTop,
+							  $this->marginBottom
+							 );
+		
 		// debugging on demand
 		if(defined('DEBUG') && DEBUG === TRUE){
 			$this->Pdf->debug = true;
@@ -38,8 +55,18 @@ class PdfFactory
 		$this->Pdf->SetAutoFont(0);
 		$this->Pdf->defaultfooterfontsize = 16;
 		$this->Pdf->defaultfooterfontstyle = 'B';
-		$this->Pdf->mgl = 15;
 		
 		return $this->Pdf;
+	}
+	
+	/**
+	 * Set margins of PDF
+	 */
+	public function setMargins($left, $right, $top, $bottom)
+	{
+		$this->marginLeft = $left;
+		$this->marginRight = $right;
+		$this->marginTop = $top;
+		$this->marginBottom = $bottom;
 	}
 }
