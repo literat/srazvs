@@ -509,7 +509,13 @@ class ExportModel extends CodeplexModel
 				break;
 		}
 	}
-	
+
+	/**
+	 * Get count of meals
+	 *
+	 * @param	string	name of meal
+	 * @return	array	meal name => count
+	 */	
 	public function getMealCount($meal)
 	{
 		$sql = "SELECT count(". $meal.") AS ". $meal."
@@ -525,6 +531,11 @@ class ExportModel extends CodeplexModel
 		return $data[$meal];
 	}
 
+	/**
+	 * Render data from getMealCount
+	 *
+	 * @return	mixed	html
+	 */
 	public function renderMealCount()
 	{
 		$mealsArr = array("fry_dinner" => "páteční večeře",
@@ -547,6 +558,60 @@ class ExportModel extends CodeplexModel
 		return $meals;
 	}
 	
+	/**
+	 * Print visitors on program into PDF file
+	 *
+	 * @param	string	type of evidence
+	 * @param	int		ID of visitor
+	 * @param	string	file type
+	 * @return	file	PDF file
+	 */
+	public function printProgramVisitors($programId)
+	{
+		$output_filename = "ucastnici-programu.pdf";
+		
+		$query = "SELECT vis.name AS name,
+							vis.surname AS surname,
+							vis.nick AS nick,
+							prog.name AS program
+					FROM kk_visitors AS vis
+					LEFT JOIN `kk_visitor-program` AS visprog ON vis.id = visprog.visitor
+					LEFT JOIN `kk_programs` AS prog ON prog.id = visprog.program
+					WHERE visprog.program = '".$programId."' AND vis.deleted = '0'";
+		$result = mysql_query($query);
+		
+		// load and prepare template
+		$this->View->loadTemplate('exports/program_visitors');
+		$this->View->assign('result', $result);
+		$template = $this->View->render(false);
+
+		// prepare header
+		$result = mysql_query($query);
+		$header_data = mysql_fetch_assoc($result);
+		$program_header = $header_data['program'];
+
+		$this->Pdf = $this->createPdf();
+	
+		// set header
+		$this->Pdf->SetHeader($program_header.'|sraz VS|Účastnící programu');
+		// write html
+		$this->Pdf->WriteHTML($template, 0);
+		
+		/* debugging */
+		if(defined('DEBUG') && DEBUG === true){
+			echo $template;
+			exit('DEBUG_MODE');
+		} else {
+			// download
+			$this->Pdf->Output($output_filename, "D");
+		}
+	}
+	
+	/**
+	 * Print data of visitors into excel file
+	 *
+	 * @return	file	*.xlsx file type
+	 */	
 	public function printVisitorsExcel()
 	{
 		$this->Excel->getProperties()->setCreator("HKVS Srazy K + K")->setTitle("Návštěvníci");
