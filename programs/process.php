@@ -28,7 +28,9 @@ $error_tutor = "";
 $error_email = "";
 $error_material = "";
 
-$ProgramHandler = new Program($mid);
+$Container = new Container($GLOBALS['cfg'], $mid);
+$ProgramHandler = $Container->createProgram();
+$ExportHandler = $Container->createExport(); 
 
 ######################## ZPRACOVANI ####################################
 
@@ -96,6 +98,9 @@ switch($cms) {
 		if($Emailer->tutor($pid, $mid, "program")) {
 			redirect("index.php?error=mail_send");
 		}
+		break;
+	case 'program-visitors':
+		$ExportHandler->printProgramVisitors($id);
 		break;
 }
 
