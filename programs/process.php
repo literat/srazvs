@@ -10,6 +10,13 @@ include_once($INCDIR.'access.inc.php');
 
 $id = requested("id","");
 $mid = $_SESSION['meetingID'];
+
+if($mid = requested("mid","")){
+	$_SESSION['meetingID'] = $mid;
+} else {
+	$mid = $_SESSION['meetingID'];
+}
+
 $cms = requested("cms","");
 $page = requested("page","");
 
@@ -63,6 +70,8 @@ switch($cms) {
 		foreach($ProgramHandler->form_names as $key) {
 			$$key = requested($key, $DB_data[$key]);
 		}
+		
+		$program_visitors = $ProgramHandler->getProgramVisitors($id);
 		
 		break;
 	case "modify":
@@ -173,24 +182,9 @@ include_once($INCDIR.'header.inc.php');
  <input type='hidden' name='id' value='<?php echo $id; ?>'>	
 </form>
 
+<?php echo $program_visitors; ?>
+
 <?php
-################################ VISITORS ###################################
-
-$visitors = "  <div style='border-bottom:1px solid black;text-align:right;'>účastníci</div>";
-
-$visitSql = "SELECT vis.name AS name,
-					vis.surname AS surname,
-					vis.nick AS nick
-			FROM kk_visitors AS vis
-			LEFT JOIN `kk_visitor-program` AS visprog ON vis.id = visprog.visitor
-			WHERE visprog.program = '".$id."' AND vis.deleted = '0'";
-$visitResult = mysql_query($visitSql);
-$i = 1;
-while($visitData = mysql_fetch_assoc($visitResult)){
-	$visitors .= $i.". ".$visitData['name']." ".$visitData['surname']." - ".$visitData['nick']."<br />";
-	$i++;
-}
-echo $visitors;
 
 ###################################################################
 

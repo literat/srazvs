@@ -333,4 +333,29 @@ class Program extends Component
 		}
 		return $html;
 	}
+	
+	/**
+	 * Get visitors registred on program
+	 *
+	 * @param	int		$programId	ID of program
+	 * @return	string	html
+	 */
+	public function getProgramVisitors($programId)
+	{
+		$html = "  <div style='border-bottom:1px solid black;text-align:right;'>účastníci</div>";
+
+		$query = "SELECT vis.name AS name,
+							vis.surname AS surname,
+							vis.nick AS nick
+					FROM kk_visitors AS vis
+					LEFT JOIN `kk_visitor-program` AS visprog ON vis.id = visprog.visitor
+					WHERE visprog.program = '".$programId."' AND vis.deleted = '0'";
+		$result = mysql_query($query);
+		$i = 1;
+		while($data = mysql_fetch_assoc($result)){
+			$html .= $i.". ".$data['name']." ".$data['surname']." - ".$data['nick']."<br />";
+			$i++;
+		}
+		return $html;
+	}
 }
