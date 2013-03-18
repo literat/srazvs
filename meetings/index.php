@@ -4,7 +4,7 @@ require_once('../inc/define.inc.php');
 
 ######################### PRISTUPOVA PRAVA ################################
 
-include_once($INCDIR.'access.inc.php');
+include_once(INC_DIR.'access.inc.php');
 
 ###########################################################################
 
@@ -14,7 +14,7 @@ if($mid = requested("mid","")){
 	$mid = $_SESSION['meetingID'];
 }
 
-$id = requested("id","");
+$id = requested("id",$mid);
 $cms = requested("cms","");
 $error = requested("error","");
 
@@ -59,8 +59,8 @@ $style = Category::getStyles();
 
 ############################## GENEROVANI STRANKY ##########################
 
-include_once($INCDIR.'http_header.inc.php');
-include_once($INCDIR.'header.inc.php');
+include_once(INC_DIR.'http_header.inc.php');
+include_once(INC_DIR.'header.inc.php');
 
 ?>
 
@@ -68,7 +68,7 @@ include_once($INCDIR.'header.inc.php');
 <?php printError($error); ?>
 <div class='pageRibbon'><?php echo $heading2; ?></div>
 
-<script src='<?php echo $JSDIR ?>jquery/jquery.tablesorter.min.js' type='text/javascript'></script>
+<script src='<?php echo JS_DIR ?>jquery/jquery.tablesorter.min.js' type='text/javascript'></script>
 <script>
 $(document).ready(function() {
 	$("#MeetingsTable").tablesorter( {
@@ -98,18 +98,18 @@ if($cms == 'list-view') {
 
 <div class='pageRibbon'>nastavení</div>
 
-<form action='process.php?redir=index' method='post'>
+<form action='process.php?page=meetings' method='post'>
 
 <div class='button-line'>
  <button type='submit' onclick=\"this.form.submit()\">
-  <img src='<?php echo $ICODIR; ?>small/save.png' /> Uložit</button>
+  <img src='<?php echo IMG_DIR; ?>icons/save.png' /> Uložit</button>
  <button type='button' onclick="window.location.replace('index.php?cms=list-view')">
-  <img src='<?php echo $ICODIR; ?>small/storno.png'  /> Storno</button>
+  <img src='<?php echo IMG_DIR; ?>icons/storno.png'  /> Storno</button>
 </div>
 
-<script src='<?php echo $JSDIR ?>jquery/jquery-ui.js' type='text/javascript'></script>
-<script src='<?php echo $JSDIR ?>jquery/jquery-ui-timepicker-addon.js' type='text/javascript'></script>
-<script src='<?php echo $JSDIR ?>jquery/jquery-ui-slideraccess-addon.js' type='text/javascript'></script>
+<script src='<?php echo JS_DIR ?>jquery/jquery-ui.js' type='text/javascript'></script>
+<script src='<?php echo JS_DIR ?>jquery/jquery-ui-timepicker-addon.js' type='text/javascript'></script>
+<script src='<?php echo JS_DIR ?>jquery/jquery-ui-slideraccess-addon.js' type='text/javascript'></script>
 <script type="text/javascript">
 $(function() {
 	$.datepicker.setDefaults($.datepicker.regional['cs']);
@@ -201,7 +201,7 @@ $(function() {
  </tr> 
 </table>
 
- <input type='hidden' name='cms' value='update'>
+ <input type='hidden' name='cms' value='modify'>
  <input type='hidden' name='mid' value='<?php echo $mid; ?>'>
 </form>
 
@@ -209,7 +209,7 @@ $(function() {
 
 ###################################################################
 
-include_once($INCDIR.'footer.inc.php');
+include_once(INC_DIR.'footer.inc.php');
 
 ###################################################################
 ?>

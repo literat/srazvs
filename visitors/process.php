@@ -4,7 +4,7 @@ require_once('../inc/define.inc.php');
 
 ######################### PRISTUPOVA PRAVA ################################
 
-include_once($INCDIR.'access.inc.php');
+include_once(INC_DIR.'access.inc.php');
 
 ################################ SQL, KONTROLA #############################
 
@@ -40,6 +40,7 @@ $disabled = requested("disabled","");
 $error = "";
 $error_name = "";
 $error_surname = "";
+$error_nick = "";
 $error_postal_code = "";
 $error_email = "";
 $error_group_num = "";
@@ -143,8 +144,8 @@ switch($cms) {
 
 ################## GENEROVANI STRANKY #############################
 
-include_once($INCDIR.'http_header.inc.php');
-include_once($INCDIR.'header.inc.php');
+include_once(INC_DIR.'http_header.inc.php');
+include_once(INC_DIR.'header.inc.php');
 
 ###################################################################
 
@@ -159,21 +160,30 @@ include_once($INCDIR.'header.inc.php');
 
 <div class='button-line'>
  <button type='submit' onclick=\"this.form.submit()\">
-  <img src='<?php echo $ICODIR; ?>small/save.png' /> Uložit</button>
+  <img src='<?php echo IMG_DIR; ?>icons/save.png' /> Uložit</button>
  <button type='button' onclick="window.location.replace('index.php')">
-  <img src='<?php echo $ICODIR; ?>small/storno.png'  /> Storno</button>
+  <img src='<?php echo IMG_DIR; ?>icons/storno.png'  /> Storno</button>
 </div>
 
-<!-- Datedit by Ivo Skalicky - ITPro CZ - http://www.itpro.cz -->
-<script type="text/javascript" charset="iso-8859-1" src="<?php echo $AJAXDIR; ?>datedit/datedit.js"></script>
-<script type="text/javascript" charset="utf-8" src="<?php echo $AJAXDIR; ?>datedit/lang/cz.js"></script>
+<script src='<?php echo JS_DIR; ?>jquery/jquery-ui.js' type='text/javascript'></script>
 <script type="text/javascript">
-  <?php
-  //jak prekonvertovat pomoci datedit datum pro sql databazi
-  //datedit("start_date","dd.mm.yyyy",true,"yyyy-mm-dd");
-  ?>
-  datedit("birthday","yyyy-mm-dd");
-</script> 
+$(function() {
+	$.datepicker.setDefaults($.datepicker.regional['cs']);
+	$( ".datePicker" ).datepicker({
+		showOn: "button",
+		buttonImage: "../images/calendar_button.png",
+		buttonImageOnly: true,
+		showWeek: true,
+        firstDay: 1,
+		showOtherMonths: true,
+        selectOtherMonths: true,
+		showButtonPanel: true,
+		changeMonth: true,
+		changeYear: true,
+		dateFormat: 'yy-mm-dd',
+	});
+});
+</script>
 
 <table class='form'>
  <tr>
@@ -185,8 +195,8 @@ include_once($INCDIR.'header.inc.php');
   <td><input type="text" name='surname' size="30" value='<?php echo $surname; ?>' /><?php printError($error_surname); ?></td>
  </tr>
  <tr>
-  <td class='label'><label>Přezdívka:</label></td>
-  <td><input type='text' name='nick' size='30' value='<?php echo $nick; ?>' /></td>
+  <td class='label'><label class="required">Přezdívka:</label></td>
+  <td><input type='text' name='nick' size='30' value='<?php echo $nick; ?>' /><?php printError($error_nick); ?></td>
  </tr>
  <tr>
   <td class='label'><label class="required">E-mail:</label></td>
@@ -194,7 +204,7 @@ include_once($INCDIR.'header.inc.php');
  </tr>
  <tr>
   <td class='label'><label class="required">Datum narození:</label></td>
-  <td><div class="picker"><input id="birthday" type='text' name='birthday' size='30' value='<?php echo $birthday; ?>' /></div> (datum ve formátu rrrr-mm-dd)</td>
+  <td><div class="picker"><input id="birthday" class="datePicker" type='text' name='birthday' size='30' value='<?php echo $birthday; ?>' /></div> (datum ve formátu rrrr-mm-dd)</td>
  </tr>
  <tr>
   <td class='label'><label class="required">Ulice:</label></td>
@@ -263,9 +273,9 @@ include_once($INCDIR.'header.inc.php');
  
  <div class='button-line'>
  <button type='submit' onclick=\"this.form.submit()\">
-  <img src='<?php echo $ICODIR; ?>small/save.png' /> Uložit</button>
+  <img src='<?php echo IMG_DIR; ?>icons/save.png' /> Uložit</button>
  <button type='button' onclick="window.location.replace('index.php')">
-  <img src='<?php echo $ICODIR; ?>small/storno.png'  /> Storno</button>
+  <img src='<?php echo IMG_DIR; ?>icons/storno.png'  /> Storno</button>
 </div>
  
 </form>
@@ -273,7 +283,7 @@ include_once($INCDIR.'header.inc.php');
 <?php
 ###################################################################
 
-include_once($INCDIR.'footer.inc.php');
+include_once(INC_DIR.'footer.inc.php');
 
 ###################################################################
 ?>

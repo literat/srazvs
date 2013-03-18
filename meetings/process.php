@@ -8,12 +8,16 @@ include_once($INCDIR.'access.inc.php');
 
 ######################### KONTROLA ########################################
 
-$id = requested("id","");
-$meetingId = $id;
+if($mid = requested("mid","")){
+	$_SESSION['meetingID'] = $mid;
+} else {
+	$mid = $_SESSION['meetingID'];
+}
+
 $page = requested("page","");
 $cms = requested("cms","");
 
-$Container = new Container($GLOBALS['cfg'], $meetingId);
+$Container = new Container($GLOBALS['cfg'], $mid);
 $MeetingsHandler = $Container->createMeeting();
 
 ////inicializace promenych
@@ -59,7 +63,7 @@ switch($cms) {
 		// get meeting's data
 		$query = "SELECT	*
 					FROM kk_meetings
-					WHERE id='".$id."' AND deleted='0'
+					WHERE id='".$mid."' AND deleted='0'
 					LIMIT 1"; 
 		$dbData = mysql_fetch_assoc(mysql_query($query));
 		
@@ -70,12 +74,13 @@ switch($cms) {
 		break;
 	/* process updating information about meeting */
 	case "modify":
+		var_dump($id);
 		foreach($MeetingsHandler->dbColumns as $key) {
 			$$key = requested($key, $value);
 			$dbData[$key] = $$key;
 		}
 		
-		if($MeetingsHandler->modify($id, $dbData)){	
+		if($MeetingsHandler->modify($mid, $dbData)){	
 			redirect("../".$page."?error=ok");
 		}	
 		break;
@@ -83,8 +88,8 @@ switch($cms) {
 
 ################## GENEROVANI STRANKY #############################
 
-include_once($INCDIR.'http_header.inc.php');
-include_once($INCDIR.'header.inc.php');
+include_once(INC_DIR.'http_header.inc.php');
+include_once(INC_DIR.'header.inc.php');
 
 ##################################################################
 
@@ -99,14 +104,14 @@ include_once($INCDIR.'header.inc.php');
 
 <div class='button-line'>
  <button type='submit' onClick=\"this.form.submit()\">
-  <img src='<?php echo $ICODIR; ?>small/save.png' /> Uložit</button>
+  <img src='<?php echo IMG_DIR; ?>icons/save.png' /> Uložit</button>
  <button type='button' onclick="window.location.replace('index.php?cms=list-view')">
-  <img src='<?php echo $ICODIR; ?>small/storno.png'  /> Storno</button>
+  <img src='<?php echo IMG_DIR; ?>icons/storno.png'  /> Storno</button>
 </div>
 
-<script src='<?php echo $JSDIR ?>jquery/jquery-ui.js' type='text/javascript'></script>
-<script src='<?php echo $JSDIR ?>jquery/jquery-ui-timepicker-addon.js' type='text/javascript'></script>
-<script src='<?php echo $JSDIR ?>jquery/jquery-ui-slideraccess-addon.js' type='text/javascript'></script>
+<script src='<?php echo JS_DIR ?>jquery/jquery-ui.js' type='text/javascript'></script>
+<script src='<?php echo JS_DIR ?>jquery/jquery-ui-timepicker-addon.js' type='text/javascript'></script>
+<script src='<?php echo JS_DIR ?>jquery/jquery-ui-slideraccess-addon.js' type='text/javascript'></script>
 <script type="text/javascript">
 $(function() {
 	$.datepicker.setDefaults($.datepicker.regional['cs']);
@@ -198,13 +203,13 @@ $(function() {
 
  <input type='hidden' name='cms' value='<?php echo $todo; ?>'>
  <input type='hidden' name='page' value='<?php echo $page; ?>'>
- <input type='hidden' name='id' value='<?php echo $id; ?>'>	
+ <input type='hidden' name='mid' value='<?php echo $mid; ?>'>	
 </form>
 
 <?php
 ###################################################################
 
-include_once($INCDIR.'footer.inc.php');
+include_once(INC_DIR.'footer.inc.php');
 
 ###################################################################
 ?>

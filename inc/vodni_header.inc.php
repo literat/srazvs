@@ -23,7 +23,7 @@
     
     <link rel="stylesheet" href="<?php echo $CSSDIR ?>colorbox.css" />
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-    <script type="text/javascript" src="<?php echo $AJAXDIR ?>colorbox/jquery.colorbox.js"></script>
+    <script type="text/javascript" src="<?php echo JS_DIR ?>colorbox/jquery.colorbox.js"></script>
     <script type="text/javascript">
     $(document).ready(function(){
         $(".program-link").colorbox({rel:'programDetail', width:"75%", height:"50%", transition:"fade"});

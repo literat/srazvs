@@ -38,20 +38,20 @@
 	</div>
     <div id="siteNavbar">
 	 <a href="<?php echo $MEETDIR."?mid=".$_SESSION['meetingID']; ?>" title="sraz">
-      <img src="<?php echo $ICODIR; ?>home.png" alt="home" /> sraz</a> |
+      <img src="<?php echo IMG_DIR; ?>home.png" alt="home" /> sraz</a> |
      <a href="<?php echo $BLOCKDIR; ?>" title="bloky">
-      <img src="<?php echo $ICODIR; ?>blocks.png" alt="blok" /> bloky</a> |
+      <img src="<?php echo IMG_DIR; ?>blocks.png" alt="blok" /> bloky</a> |
 	 <a href="<?php echo $PROGDIR; ?>" title="programy">
-      <img src="<?php echo $ICODIR; ?>programs.png" alt="program" /> programy</a> |
+      <img src="<?php echo IMG_DIR; ?>programs.png" alt="program" /> programy</a> |
 	 <a href="<?php echo $VISITDIR; ?>" title="účastníci">
-      <img src="<?php echo $ICODIR; ?>users.png" alt="ucastnik" /> účastníci</a> |
+      <img src="<?php echo IMG_DIR; ?>users.png" alt="ucastnik" /> účastníci</a> |
 	 <a href="<?php echo $EXPDIR; ?>" title="exporty">
-      <img src="<?php echo $ICODIR; ?>exports.png" alt="exporty" /> exporty</a> |
+      <img src="<?php echo IMG_DIR; ?>exports.png" alt="exporty" /> exporty</a> |
 	 <a href="<?php echo $CATDIR; ?>" title="kategorie">
-      <img src="<?php echo $ICODIR; ?>categories.png" alt="kategorie" /> kategorie</a>
+      <img src="<?php echo IMG_DIR; ?>categories.png" alt="kategorie" /> kategorie</a>
     </div>  
 	
-    <?php include_once($INCDIR.'menu.inc.php'); ?>
+    <?php include_once(INC_DIR.'menu.inc.php'); ?>
    <!-- start of siteContent -->
    <div id='siteContent'>
     <div id='content'>
