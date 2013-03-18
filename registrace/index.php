@@ -164,6 +164,7 @@ if($cms == "create"){
 	
 	if(isEmpty($name)) $error_name = "empty";
 	if(isEmpty($surname)) $error_surname = "empty";
+	if(isEmpty($nick)) $error_nick = "empty";
 	if(isEmpty($birthday)) $error_birthday = "empty";
 	if(isEmpty($street)) $error_street = "empty";
 	if(isEmpty($city)) $error_city = "empty";
@@ -342,8 +343,8 @@ $(function() {
   <td><input <?php echo $disabled; ?> type="text" name='surname' size="30" value='<?php echo $surname; ?>' /><?php printError($error_surname); ?></td>
  </tr>
  <tr>
-  <td class='label'><label>Přezdívka:</label></td>
-  <td><input <?php echo $disabled; ?> type='text' name='nick' size='30' value='<?php echo $nick; ?>' /></td>
+  <td class='label'><label><span class="required">*</span>Přezdívka:</label></td>
+  <td><input <?php echo $disabled; ?> type='text' name='nick' size='30' value='<?php echo $nick; ?>' /><?php printError($error_nick); ?></td>
  </tr>
  <tr>
   <td class='label'><label><span class="required">*</span>E-mail:</label></td>
