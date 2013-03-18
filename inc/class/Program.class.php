@@ -228,16 +228,17 @@ class Program extends Component
 		
 		if($rows == 0){
 			$html_row .= "<tr class='radek1'>\n";
-			$html_row .= "<td><img class='edit' src='".$GLOBALS['ICODIR']."small/edit2.gif' /></td>\n";
-			$html_row .= "<td><img class='edit' src='".$GLOBALS['ICODIR']."small/delete2.gif' /></td>\n";
+			$html_row .= "<td><img class='edit' src='".IMG_DIR."icons/edit2.gif' /></td>\n";
+			$html_row .= "<td><img class='edit' src='".IMG_DIR."icons/delete2.gif' /></td>\n";
 			$html_row .= "<td colspan='11' class='emptyTable'>Nejsou k dispozici žádné položky.</td>\n";
 			$html_row .= "</tr>\n";
 		}
 		else{
 			while($data = mysql_fetch_assoc($result)){			
 				$html_row .= "<tr class='radek1'>\n";
-				$html_row .= "<td><a href='process.php?id=".$data['id']."&cms=edit&page=programs' title='Upravit'><img class='edit' src='".$GLOBALS['ICODIR']."small/edit.gif' /></a></td>\n";
-				$html_row .= "<td><a href=\"javascript:confirmation('?id=".$data['id']."&amp;cms=del', 'program: ".$data['name']." -> Opravdu SMAZAT tento program? Jste si jisti?')\" title='Odstranit'><img class='edit' src='".$GLOBALS['ICODIR']."small/delete.gif' /></a></td>\n";
+				$html_row .= "<td><a href='process.php?id=".$data['id']."&cms=edit&page=programs' title='Upravit'><img class='edit' src='".IMG_DIR."icons/edit.gif' /></a></td>\n";
+				$html_row .= "<td><a href='../programs/process.php?cms=program-visitors&id=".$data['id']."' title='Účastníci programu'><img class='edit' src='".IMG_DIR."icons/pdf.png' /></a></td>\n";
+				$html_row .= "<td><a href=\"javascript:confirmation('?id=".$data['id']."&amp;cms=del', 'program: ".$data['name']." -> Opravdu SMAZAT tento program? Jste si jisti?')\" title='Odstranit'><img class='edit' src='".IMG_DIR."icons/delete.gif' /></a></td>\n";
 				$html_row .= "<td class='text'>".$data['id']."</td>\n";
 				$html_row .= "<td class='text'>".$data['name']."</td>\n";
 				$html_row .= "<td class='text'>".shortenText($data['description'], 70, " ")."</td>\n";
@@ -252,6 +253,7 @@ class Program extends Component
 		
 		// table head
 		$html_thead = "<tr>\n";
+		$html_thead .= "<th></th>\n";
 		$html_thead .= "<th></th>\n";
 		$html_thead .= "<th></th>\n";
 		$html_thead .= "<th class='tab1'>ID</th>\n";
@@ -343,6 +345,9 @@ class Program extends Component
 	public function getProgramVisitors($programId)
 	{
 		$html = "  <div style='border-bottom:1px solid black;text-align:right;'>účastníci</div>";
+		
+		$html .= "<br /><a style='text-decoration:none; display:block; margin-bottom:4px;' href='?cms=program-visitors&id=".$programId."'>
+      	<img style='border:none;' align='absbottom' src='".IMG_DIR."icons/pdf.png' />Účastníci programu</a>";
 
 		$query = "SELECT vis.name AS name,
 							vis.surname AS surname,
