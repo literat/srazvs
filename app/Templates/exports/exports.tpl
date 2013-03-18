@@ -12,6 +12,11 @@
       příjmový pokladní doklad
      </a>
      
+     <a style='text-decoration:none; display:block; margin-bottom:4px;' href='../program.pdf.php'>
+      <img style='border:none;' align='absbottom' src='<?php echo IMG_DIR; ?>icons/pdf.png' />
+      veřejný program
+     </a>
+     
      <a style='text-decoration:none; display:block; margin-bottom:4px;' href='program_cards.pdf.php'>
       <img style='border:none;' align='absbottom' src='<?php echo IMG_DIR; ?>icons/pdf.png' />
       osobní program

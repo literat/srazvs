@@ -1,4 +1,4 @@
-﻿<head>
+<head>
 	<style>
 		body {
 			font-family:Arial,Geneva,Sans-Serif;

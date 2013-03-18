@@ -32,7 +32,7 @@ while($row = mysql_fetch_assoc($data['result'])){
 ?>	
 	<table>
 		<tr>
-			<td class='cutLine'>
+		  <td class='cutLine'>
 <?php }	else { ?>
 	<td class='cutLine'>
 <?php } ?>

@@ -1,10 +1,10 @@
-﻿<?php echo $data['header']; ?>
+<?php echo $data['header']; ?>
 <body>
 	<?php
 		$i = 1;
 		while($row = mysql_fetch_assoc($data['result'])){
 	?>
-    <h2>POTVRZENÍ O PŘIJETÍ ZÁLOHY</h2>
+	<h2>POTVRZENÍ O PŘIJETÍ ZÁLOHY</h2>
 	<h4>Potvrzujeme přijetí účastnické zálohy na běžný účet číslo 66655333/5500.</h4>
 	<table>
 		<tr>

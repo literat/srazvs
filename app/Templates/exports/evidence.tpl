@@ -1,4 +1,4 @@
-﻿<?php echo $data['header']; ?>
+<?php echo $data['header']; ?>
 <body>
 	<?php
 		$i = 1;
