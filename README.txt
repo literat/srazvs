@@ -27,5 +27,6 @@ Functions Definitions:	camelCase()
 
 Variables Definitions:	camelCase
 
------
-
+Bug Tracker
+---------------
+http://literat.poutnicikolin.cz/tracker/
