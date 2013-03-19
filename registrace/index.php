@@ -32,8 +32,13 @@ $meetingHeader = $data['place']." ".$data['year'];
 
 
 ////otevirani a uzavirani prihlasovani
-if(($data['open_reg'] < time()) && (time() < $data['close_reg']) || DEBUG === TRUE) $disabled = "";
-else $disabled = "disabled";
+if(($data['open_reg'] < time()) && (time() < $data['close_reg']) || DEBUG === TRUE){
+	$disabled = "";
+	$display_registration = TRUE;
+} else {
+	$disabled = "disabled";
+	$display_registration = FALSE;
+}
 
 
 $Container = new Container($GLOBALS['cfg'], $mid);
@@ -89,6 +94,7 @@ else{
 $error = "";
 $error_name = "";
 $error_surname = "";
+$error_nick = "";
 $error_postal_code = "";
 $error_email = "";
 $error_street = "";
@@ -269,6 +275,9 @@ $style .= "
 $style .= "</style>";
 
 ################## GENEROVANI STRANKY #############################
+
+$page_title = "Registrace srazu VS";
+
 ?>
 
 <?php require_once('../inc/vodni_header.inc.php'); ?>
@@ -290,6 +299,8 @@ echo $error_email;
 echo $error_group_num;
 echo $error_bill;*/
 ?>
+
+<?php if($display_registration){ ?>
 
 <script type="text/javascript" src="<?php echo JS_DIR ?>/jquery/jquery.tinytips.js"></script>
 <script type="text/javascript">
@@ -440,12 +451,15 @@ $(function() {
 
 <!-- REGISTRACNI FORMULAR SRAZU -->
 
+<?php } else { ?>
+<div>Registrace není otevřena, sraz se stále ještě připravuje!</div>
+<?php } ?>
+
 <p> </p>
 <p style="text-align: center;"> </p>    </div>
     </div>
     <div class="cleaner"></div>
   </div>
 </div>
-
 
 <?php require_once('../inc/vodni_footer.inc.php'); ?>

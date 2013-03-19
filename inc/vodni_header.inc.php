@@ -45,7 +45,7 @@
     <link rel="stylesheet" href="<?php echo CSS_DIR ?>tinytips/tinyTips.css" />
     <link rel="alternate" type="application/rss+xml" href="<?php echo HTTP_DIR; ?>remote/rss.php?tp=4&amp;id=-1" title="Nejnovější články" />
     <link rel="shortcut icon" href="<?php echo HTTP_DIR; ?>favicon.ico?1" />
-    <title>Program srazu VS</title>
+    <title><?php echo $page_title; ?></title>
     
     <!-- GA Tracking Code -->
     <script type="text/javascript">

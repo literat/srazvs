@@ -23,6 +23,14 @@ if($mid = requested("mid","")){
 	$mid = $_SESSION['meetingID'];
 }
 */
+
+////otevirani a uzavirani prihlasovani
+if(($data['open_reg'] < time()) && (time() < $data['close_reg']) || DEBUG === TRUE){
+	$display_program = TRUE;
+} else {
+	$display_program = FALSE;
+}
+
 $Container = new Container($GLOBALS['cfg'], $mid);
 $MeetingHandler = $Container->createMeeting();
 
@@ -62,6 +70,8 @@ $style .= "</style>";
 
 ################## GENEROVANI STRANKY #############################
 
+$page_title = "Program srazu VS";
+
 ?>
 
 <?php include_once($INCDIR."vodni_header.inc.php"); ?>
@@ -77,6 +87,8 @@ $style .= "</style>";
 
 	<!-- PROGRAM SRAZU -->
 
+<?php if($display_program){ ?>
+
 	<?php echo $MeetingHandler->renderPublicProgramOverview(); ?>
 
 	<br />
@@ -87,6 +99,10 @@ $style .= "</style>";
 	<p style="text-align:center; font-size:medium;">Změna programu vyhrazena!</p>
 
 	<!-- PROGRAM SRAZU -->
+
+<?php } else { ?>
+<div>Registrace není otevřena, sraz se stále ještě připravuje!</div>
+<?php } ?>
 
 		<p></p>
 		<p style="text-align: center; "></p>
