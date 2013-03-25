@@ -62,8 +62,8 @@ abstract class Component implements IComponent
 	/**
 	 * Modify record
 	 *
-	 * @param	int		ID of record
-	 * @param	mixed	array of data
+	 * @param	int		$id			ID of record
+	 * @param	array	$db_data	array of data
 	 * @return	bool
 	 */	
 	public function modify($id, array $db_data)
