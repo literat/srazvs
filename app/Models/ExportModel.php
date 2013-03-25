@@ -442,7 +442,7 @@ class ExportModel extends CodeplexModel
 				   
 		$reg_graph .= "</table>";
 		
-		if($graph_height < 270) $graph_height = 270;
+		if($graph_height < 290) $graph_height = 290;
 		
 		$this->setGraphHeight($graph_height);
 		
