@@ -30,3 +30,18 @@ Variables Definitions:	camelCase
 Bug Tracker
 ---------------
 http://literat.poutnicikolin.cz/tracker/
+
+Git rules
+---------------
+For each task create cpecific branch
+<task-type>-<refs>-<name>
+defect-44-forgetting-visitors-program
+feature-31-print-program-details
+...
+
+Merge these branches to branch of specific version.
+version-1.6
+version-1.7
+...
+
+After end of version development merge version branch to Master.
