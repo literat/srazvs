@@ -38,17 +38,17 @@ class Program extends Component
 	/**
 	 * Get programs
 	 *
-	 * @param	int		ID of program
-	 * @param	int		ID of visitor
-	 * @return	boolean 
+	 * @param	int		$block_id	ID of block
+	 * @param	int		$visitor_id	ID of visitor
+	 * @return	string				html
 	 */
-	public function getPrograms($id, $vid)
+	public function getPrograms($block_id, $vid)
 	{
-		$sql = "SELECT 	*
+		$query = "SELECT 	*
 				FROM kk_programs
-				WHERE block='".$id."' AND deleted='0'
+				WHERE block='".$block_id."' AND deleted='0'
 				LIMIT 10";
-		$result = mysql_query($sql);
+		$result = mysql_query($query);
 		$rows = mysql_affected_rows();
 	
 		if($rows == 0){
@@ -61,21 +61,21 @@ class Program extends Component
 						WHERE vis.id = '".$id."'";
 				$progResult = mysql_query($progSql);*/
 	
-	
 			$html = "<div>\n";
 			
 			$checked_flag = false;
 			$html_input = "";
 			while($data = mysql_fetch_assoc($result)){
-				//// resim kapacitu programu a jeho naplneni navstevniky
+				// full program capacity with visitors
 				$full_program_query = "SELECT COUNT(visitor) AS visitors FROM `kk_visitor-program` AS visprog
 									LEFT JOIN kk_visitors AS vis ON vis.id = visprog.visitor
 									WHERE program = '".$data['id']."' AND vis.deleted = '0'";
 				$full_program_result = mysql_query($full_program_query);
 				$DB_full_program = mysql_fetch_assoc($full_program_result);
 				
+				// if the program is checked
 				$program_query = "SELECT * FROM `kk_visitor-program` WHERE program = '".$data['id']."' AND visitor = '".$vid."'";
-				$program_result = mysql_query($full_program_query );
+				$program_result = mysql_query($program_query);
 				$rows = mysql_affected_rows();
 				if($rows == 1){
 					$checked = "checked='checked'";
@@ -83,8 +83,7 @@ class Program extends Component
 				} else {
 					$checked = "";
 				}
-				//$programData = mysql_fetch_assoc($programResult);
-			
+				// if the capacity is full
 				if($DB_full_program['visitors'] >= $data['capacity']){
 					$html_input .= "<input ".$checked." disabled type='radio' name='".$id."' value='".$data['id']."' />\n";
 					$fullProgramInfo = " (NELZE ZAPSAT - kapacita programu je již naplněna!)";
@@ -106,6 +105,7 @@ class Program extends Component
 			
 			$html .= "</div>\n";
 		}
+		
 		return $html;
 	}
 	
