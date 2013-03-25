@@ -39,6 +39,29 @@ class Meal extends Component
 		);
 		$this->dbTable = "kk_meals";
 	}
+
+	/**
+	 * Modify record
+	 *
+	 * @param	int		$id			Id of record
+	 * @param	array	$db_data	Array of data
+	 * @return	bool
+	 */	
+	public function modify($id, array $db_data)
+	{
+		$query_set = "";
+	 	foreach($db_data as $key => $value) {
+			$query_set .= "`".$key."` = '".$value."',";	
+		}
+	 	$query_set = substr($query_set, 0, -1);	
+		
+    	echo $query = "UPDATE `".$this->dbTable."` 
+					SET ".$query_set."
+					WHERE `visitor`='".$id."' LIMIT 1";
+    	$result = mysql_query($query);
+		
+		return $result;
+	}
 	
 	function getMeals($vid)
 	{
