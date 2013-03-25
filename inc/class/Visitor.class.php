@@ -147,14 +147,16 @@ class Visitor /* extends Component */
 	/**
 	 * Modify a visitor
 	 *
-	 * @param	int		ID of a visitor
-	 * @param	array	visitor's database data
-	 * @param	array	data of meals
-	 * @param	array	program's data
-	 * @return	bool
+	 * @param	int		$visitor_id		ID of a visitor
+	 * @param	array	$db_data		Visitor's database data
+	 * @param	array	$meals_data		Data of meals
+	 * @param	array	$programs_data	Program's data
+	 * @return	mixed					TRUE or array of errors 
 	 */
 	public function modify($ID_visitor, $DB_data, $meals_data, $programs_data)
 	{
+		// for returning specific error
+		$error = array('visitor' => TRUE, 'meal' => TRUE, 'program' => TRUE);
 		// preparation for query
 	 	$query_set = "";
 	 	foreach($DB_data as $key => $value) {
@@ -167,11 +169,13 @@ class Visitor /* extends Component */
 					SET ".$query_set."
 					WHERE `id`='".$ID_visitor."' LIMIT 1";
     	$result = mysql_query($query);
+		$error['visitor'] = $result;
 		
 		if($result){
 			// change meals
 			$result = $this->Meals->modify($ID_visitor, $meals_data);
-					
+			$error['meal'] = $result;
+
 			if($result){
 				// gets data from database
 				$program_blocks = $this->Blocks->getProgramBlocks($DB_data['meeting']);
@@ -184,11 +188,17 @@ class Visitor /* extends Component */
 									WHERE visitor = ".$ID_visitor."
 									AND id = ".$DB_old_program_data['id'].";";
 					$usr_program_result = mysql_query($usr_program_query);
+					$error['program'] = $usr_program_result;
 				}
 			}
 		}
 		
-		return $result;
+		// return array of errors if error exists
+		if(array_search(FALSE, $error)){
+			return $result;
+		} else {
+			return TRUE;
+		}
 	}
 	
 	/**
