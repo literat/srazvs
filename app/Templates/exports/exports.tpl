@@ -57,9 +57,14 @@
       kompletní příjmový pokladní doklad
      </a>
      
-     <a style='text-decoration:none; padding-right:2px;' href='?visitor-excel'>
+     <a style='text-decoration:none; display:block; padding-right:4px;' href='?visitor-excel'>
       <img style='border:none;' align='absbottom' src='<?php echo IMG_DIR; ?>icons/xlsx.png' />
       data účastníků
+     </a>
+     
+     <a style='text-decoration:none; display:block; margin-bottom:4px; margin-top:4px;' href='?program-details'>
+      <img style='border:none;' align='absbottom' src='<?php echo IMG_DIR; ?>icons/pdf.png' />
+      detaily programů
      </a>
  
   </div>
