@@ -442,7 +442,7 @@ class ExportModel extends CodeplexModel
 				   
 		$reg_graph .= "</table>";
 		
-		if($graph_height < 260) $graph_height = 260;
+		if($graph_height < 290) $graph_height = 290;
 		
 		$this->setGraphHeight($graph_height);
 		
@@ -594,6 +594,49 @@ class ExportModel extends CodeplexModel
 	
 		// set header
 		$this->Pdf->SetHeader($program_header.'|sraz VS|Účastnící programu');
+		// write html
+		$this->Pdf->WriteHTML($template, 0);
+		
+		/* debugging */
+		if(defined('DEBUG') && DEBUG === true){
+			echo $template;
+			exit('DEBUG_MODE');
+		} else {
+			// download
+			$this->Pdf->Output($output_filename, "D");
+		}
+	}
+	
+	/**
+	 * Print details of program into PDF file
+	 *
+	 * @param	void
+	 * @return	file	PDF file
+	 */
+	public function printProgramDetails()
+	{
+		$output_filename = "vypis-programu.pdf";
+		
+		$query = "SELECT prog.name AS name,
+						 prog.description AS description,
+						 prog.tutor AS tutor,
+						 prog.email AS email
+					FROM kk_programs AS prog
+					LEFT JOIN `kk_blocks` AS block ON block.id = prog.block
+					WHERE block.meeting = '".$this->meetingId."'
+						AND prog.deleted = '0'
+						AND block.deleted = '0'";
+		$result = mysql_query($query);
+		
+		// load and prepare template
+		$this->View->loadTemplate('exports/program_details');
+		$this->View->assign('result', $result);
+		$template = $this->View->render(false);
+
+		$this->Pdf = $this->createPdf();
+	
+		// set header
+		$this->Pdf->SetHeader('Výpis programů|sraz VS');
 		// write html
 		$this->Pdf->WriteHTML($template, 0);
 		
