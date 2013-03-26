@@ -96,6 +96,11 @@ $page_title = "Program srazu VS";
     	<img style='border:none;' align='absbottom' src='styles/layout/icons/small/pdf.png' />
     </a>
 	<a href="program.pdf.php">Stáhněte si program srazu ve formátu PDF</a>
+    <br />
+    <a style="text-decoration:none; padding-right:4px;" href="exports/?program-details">
+    	<img style='border:none;' align='absbottom' src='styles/layout/icons/small/pdf.png' />
+    </a>
+	<a href="exports/?program-details">Stáhněte si detaily programů srazu ve formátu PDF</a>
 	<p style="text-align:center; font-size:medium;">Změna programu vyhrazena!</p>
 
 	<!-- PROGRAM SRAZU -->

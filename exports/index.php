@@ -38,6 +38,9 @@ switch(key($_GET)){
 	case 'name-badges':
 		$ExportHandler->printNameBadges();
 		break;
+	case 'program-details':
+		$ExportHandler->printProgramDetails();
+		break;
 }
 
 ################## GENEROVANI STRANKY #############################
