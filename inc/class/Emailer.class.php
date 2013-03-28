@@ -26,7 +26,7 @@ class Emailer
 		// use PHPMailerFactory
 		$this->PHPMailerFactory = $PHPMailerFactory;
 		// use PHPMailer
-		$this->Emailer = $this->PHPMailerFactory->PHPMailer;
+		$this->Emailer = $this->PHPMailerFactory->create();
 	}
 	
 	/**

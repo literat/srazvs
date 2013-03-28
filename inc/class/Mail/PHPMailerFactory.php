@@ -36,11 +36,11 @@ class PHPMailerFactory
 		// encoding
 		$this->PHPMailer->CharSet = $this->configuration['mail-encoding'];
 		// language
-		$this->PHPMailer->SetLanguage($this->configuration['cfg']['mail-language']);
+		$this->PHPMailer->SetLanguage($this->configuration['mail-language']);
 		// sender e-mail address
-		$this->PHPMailer->From = $this->configuration['cfg']['mail-sender-address'];
+		$this->PHPMailer->From = $this->configuration['mail-sender-address'];
 		// sender name
-		$this->PHPMailer->FromName = $this->configuration['cfg']['mail-sender-name'];
+		$this->PHPMailer->FromName = $this->configuration['mail-sender-name'];
 		
 		return $this->PHPMailer;
 	}
