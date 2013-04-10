@@ -107,7 +107,7 @@ class Visitor /* extends Component */
     	$query = "INSERT INTO `kk_visitors` 
      				 (".$query_key_set.", `code`,`reg_daytime`) 
      				 VALUES (".$query_value_set.", CONCAT(LEFT('".$DB_data['name']."',1),LEFT('".$DB_data['surname']."',1),SUBSTRING('".$DB_data['birthday']."',3,2)),'".date('Y-m-d H:i:s')."');";
-    	$result = mysql_query($query);
+        $result = mysql_query($query);
 		
 		$ID_visitor = mysql_insert_id();
 		// visitor's id is empty and i must add one
@@ -122,7 +122,6 @@ class Visitor /* extends Component */
 				// var programs_data contains requested values in format block-id => program-id
 				$query_binding = "INSERT INTO `kk_visitor-program` (`visitor`, `program`)
 							   VALUES ('".$ID_visitor."', '".$programs_data[$DB_blocks_data['id']]."')";
-							   var_dump($query_binding);
 				$result_binding = mysql_query($query_binding);
 
 				if(!$result_binding){
