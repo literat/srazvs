@@ -36,7 +36,7 @@
                     </tr>
                      <tr>
                         <td style="border:none;">
-                            <b>Celkem Kč:</b> =<?php echo $data['balance']; ?>,- &nbsp;&nbsp;&nbsp;&nbsp; <strong>Slovy Kč:</strong> <?php echo ucfirst(number2word($row['balance'], true)); ?>korun~
+                            <b>Celkem Kč:</b> =<?php echo $row['balance']; ?>,- &nbsp;&nbsp;&nbsp;&nbsp; <strong>Slovy Kč:</strong> <?php echo ucfirst(number2word($row['balance'], true)); ?>korun~
                         </td>
                     </tr>
                     <tr>
