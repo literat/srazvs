@@ -25,7 +25,7 @@ if($mid = requested("mid","")){
 */
 
 ////otevirani a uzavirani prihlasovani
-if(($data['open_reg'] < time()) && (time() < $data['close_reg']) || DEBUG === TRUE){
+if(($data['open_reg'] < time()) || DEBUG === TRUE){
 	$display_program = TRUE;
 } else {
 	$display_program = FALSE;
