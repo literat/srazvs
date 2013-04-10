@@ -8,3 +8,5 @@ srazvs.sublime-project
 srazvs.sublime-workspace
 *.sln
 *.suo
+_compareTemp
+
