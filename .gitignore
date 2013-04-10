@@ -6,3 +6,5 @@ libs
 *deprecated*
 srazvs.sublime-project
 srazvs.sublime-workspace
+*.sln
+*.suo
