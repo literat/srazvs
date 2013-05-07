@@ -11,7 +11,8 @@
  */ 
 abstract class CodeplexModel implements IModel
 {
-    public $logfile = LOGDIR.'/CodeplexModel.class.log';
+	/** @var logfile */
+    public $logfile = 'CodeplexModel.class.log';
     
 	/** Constructor */
 	public function __construct()
@@ -20,7 +21,7 @@ abstract class CodeplexModel implements IModel
          * in child class use this for automatic path setting to logfile by class name
          * parent::__construct();
          */
-        $this->logfile = LOGDIR."/".get_class($this).".class.log";
+        $this->logfile = LOG_DIR."/".get_class($this).".class.log";
 	}
 	
 	/**

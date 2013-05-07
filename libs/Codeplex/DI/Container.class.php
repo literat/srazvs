@@ -89,7 +89,7 @@ class Container
 	 */
 	public function createVisitor()
 	{
-		return new Visitor(
+		return new VisitorModel(
 			$this->meetingId,
 			$this->createEmailer(),
 			$this->createMeeting(),
@@ -106,7 +106,7 @@ class Container
 	 */
 	public function createMeeting()
 	{
-		return new Meeting($this->meetingId);
+		return new MeetingModel($this->meetingId);
 	}
 	
 	/**
@@ -116,7 +116,7 @@ class Container
 	 */
 	public function createProgram()
 	{
-		return new Program($this->meetingId);
+		return new ProgramModel($this->meetingId);
 	}
 	
 	/**
@@ -126,7 +126,7 @@ class Container
 	 */
 	public function createMeal()
 	{
-		return new Meal($this->meetingId);
+		return new MealModel($this->meetingId);
 	}
 	
 	/**
@@ -136,7 +136,7 @@ class Container
 	 */
 	public function createBlock()
 	{
-		return new Block($this->meetingId);
+		return new BlockModel($this->meetingId);
 	}
 	
 	/**

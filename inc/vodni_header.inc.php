@@ -9,11 +9,11 @@
     <meta name="author" content="HKVS team" />
     <meta name="generator" content="SunLight CMS 7.5.1 STABLE0" />
     <meta name="robots" content="index, follow" />
-    <link href='<?php echo $CSSDIR ?>default.css' rel='stylesheet' type='text/css' />
+    <link href='<?php echo CSS_DIR ?>default.css' rel='stylesheet' type='text/css' />
     <link href="<?php echo HTTP_DIR; ?>plugins/templates/hkvs2/style/system.css?1" type="text/css" rel="stylesheet" />
     <link href="<?php echo HTTP_DIR; ?>plugins/templates/hkvs2/style/layout.css?1" type="text/css" rel="stylesheet" />
-    <link rel="stylesheet" href="<?php echo $CSSDIR ?>datedit.css" type="text/css" media="screen" />
-    <link rel="stylesheet" href="<?php echo $CSSDIR ?>dgxcolormixer_s.css" type="text/css" media="screen,projection,tv" />
+    <link rel="stylesheet" href="<?php echo CSS_DIR ?>datedit.css" type="text/css" media="screen" />
+    <link rel="stylesheet" href="<?php echo CSS_DIR ?>dgxcolormixer_s.css" type="text/css" media="screen,projection,tv" />
     <link rel="stylesheet" href="<?php echo CSS_DIR ?>smoothness/jquery.ui.css" type="text/css" media="screen" />
     <script type="text/javascript">/* <![CDATA[ */var sl_indexroot='./';/* ]]> */</script>
     <script type="text/javascript" src="<?php echo HTTP_DIR; ?>remote/jscript.php?1&amp;default"></script>
@@ -21,7 +21,7 @@
     <link rel="stylesheet" href="<? echo HTTP_DIR; ?>remote/lightbox/style.css?1" type="text/css" media="screen" />
     <script type="text/javascript" src="<?php echo HTTP_DIR; ?>remote/lightbox/script.js?1"></script>
     
-    <link rel="stylesheet" href="<?php echo $CSSDIR ?>colorbox.css" />
+    <link rel="stylesheet" href="<?php echo CSS_DIR ?>colorbox.css" />
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
     <script type="text/javascript" src="<?php echo JS_DIR ?>colorbox/jquery.colorbox.js"></script>
     <script type="text/javascript">

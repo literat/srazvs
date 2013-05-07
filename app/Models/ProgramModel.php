@@ -7,7 +7,7 @@
  * @created 2012-10-01
  * @author Tomas Litera <tomaslitera@hotmail.com>
  */ 
-class Program extends Component
+class ProgramModel extends Component
 {
 	/** @var int meeting ID */
 	private $meeting_ID;

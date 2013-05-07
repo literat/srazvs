@@ -29,7 +29,7 @@ if($cms == "del"){
 }
 
 // styles in header
-$style = Category::getStyles();
+$style = CategoryModel::getStyles();
 
 ################## GENEROVANI STRANKY #############################
 

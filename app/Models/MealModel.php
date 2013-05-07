@@ -7,7 +7,7 @@
  * @created 2012-11-11
  * @author Tomas Litera <tomaslitera@hotmail.com>
  */
-class Meal extends Component
+class MealModel extends Component
 {
 	/** @var meeting ID */
 	private $meeting;

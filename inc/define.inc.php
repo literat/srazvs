@@ -102,33 +102,35 @@ require_once(INC_DIR.'db_connect.inc.php');
 //include_once($INCDIR.'access.inc.php');
 require_once(INC_DIR.'errors.inc.php');
 
-require_once($CLASSDIR.'ComponentModel/IModel.php');
-require_once($CLASSDIR.'ComponentModel/IComponent.php');
-require_once($CLASSDIR.'ComponentModel/Component.php');
-require_once($CLASSDIR.'ComponentModel/CodeplexModel.php');
-
-require_once($CLASSDIR.'Emailer.class.php');
-require_once($CLASSDIR.'Category.class.php');
-require_once($CLASSDIR.'Block.class.php');
-require_once($CLASSDIR.'Program.class.php');
-require_once($CLASSDIR.'Form.class.php');
-require_once($CLASSDIR.'Visitor.class.php');
-require_once($CLASSDIR.'Meeting.class.php');
-require_once($CLASSDIR.'Meal.class.php');
-require_once($CLASSDIR.'View.class.php');
-require_once(MODEL_DIR.'ExportModel.php');
-
 /* Libraries */
+require_once(LIBS_DIR.'Codeplex/ComponentModel/IModel.php');
+require_once(LIBS_DIR.'Codeplex/ComponentModel/IComponent.php');
+require_once(LIBS_DIR.'Codeplex/ComponentModel/Component.php');
+require_once(LIBS_DIR.'Codeplex/ComponentModel/CodeplexModel.php');
+
 require_once(LIBS_DIR.'PHPMailer/class.phpmailer.php');
 require_once(LIBS_DIR.'Mpdf/mpdf.php');
 require_once(LIBS_DIR.'PHPExcel/Classes/PHPExcel.php');
 
-require_once($CLASSDIR.'DI/Container.class.php');
-require_once($CLASSDIR.'Mail/PHPMailerFactory.php');
-require_once($CLASSDIR.'Exporting/PdfFactory.php');
-require_once($CLASSDIR.'Exporting/ExcelFactory.php');
+require_once(LIBS_DIR.'Codeplex/DI/Container.class.php');
+require_once(LIBS_DIR.'Codeplex/Mail/PHPMailerFactory.php');
+require_once(LIBS_DIR.'Codeplex/Exporting/PdfFactory.php');
+require_once(LIBS_DIR.'Codeplex/Exporting/ExcelFactory.php');
 
-define('DEBUG', FALSE);
+/* Application */
+require_once($CLASSDIR.'Emailer.class.php');
+require_once(MODEL_DIR.'CategoryModel.php');
+require_once(MODEL_DIR.'BlockModel.php');
+require_once(MODEL_DIR.'ProgramModel.php');
+require_once($CLASSDIR.'Form.class.php');
+require_once(MODEL_DIR.'VisitorModel.php');
+require_once(MODEL_DIR.'MeetingModel.php');
+require_once(MODEL_DIR.'MealModel.php');
+require_once(MODEL_DIR.'ExportModel.php');
+
+require_once(VIEW_DIR.'View.php');
+
+define('DEBUG', TRUE);
 
 
 //debuggovani

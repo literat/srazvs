@@ -7,7 +7,7 @@
  * @created 2012-03-06
  * @author Tomas Litera <tomaslitera@hotmail.com>
  */
-class Category extends Component
+class CategoryModel extends Component
 {
 	/**
 	 * Array of database block table columns

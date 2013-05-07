@@ -7,7 +7,7 @@
  * @created 2012-11-07
  * @author Tomas Litera <tomaslitera@hotmail.com>
  */ 
-class Visitor /* extends Component */
+class VisitorModel /* extends Component */
 {
 	/** @var int meeting ID */
 	private $meeting_ID;
@@ -51,7 +51,7 @@ class Visitor /* extends Component */
 	public $form_names = array();
 	
 	/** konstruktor */
-	public function __construct($meeting_ID, Emailer $Emailer, Meeting $Meeting, Meal $Meals, Program $Program, Block $Blocks)
+	public function __construct($meeting_ID, Emailer $Emailer, MeetingModel $Meeting, MealModel $Meals, ProgramModel $Program, BlockModel $Blocks)
 	{
 		$this->Emailer = $Emailer;
 		$this->Meeting = $Meeting;

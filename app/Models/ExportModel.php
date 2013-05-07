@@ -31,7 +31,7 @@ class ExportModel extends CodeplexModel
 	private $graphHeight;
 	
 	/** Constructor */
-	public function __construct($meetingId, PdfFactory $PdfFactory, View $View, Program $Program, ExcelFactory $ExcelFactory)
+	public function __construct($meetingId, PdfFactory $PdfFactory, View $View, ProgramModel $Program, ExcelFactory $ExcelFactory)
 	{
 		$this->meetingId = $meetingId;
 		// use PdfFactory

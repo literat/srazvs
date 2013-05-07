@@ -55,7 +55,7 @@ $error_close_reg = "";
 $error_login = "";
 
 // styles in header
-$style = Category::getStyles();
+$style = CategoryModel::getStyles();
 
 ############################## GENEROVANI STRANKY ##########################
 
