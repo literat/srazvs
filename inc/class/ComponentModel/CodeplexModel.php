@@ -5,19 +5,28 @@
  *
  * Default Model for base/default application Model (MVC)
  *
- * @created 2013-03-11
- * @author Tomas Litera <tomaslitera@hotmail.com>
+ * @author      Tomas Litera    <tomaslitera@hotmail.com>
+ * @copyright   2013-03-11      Tomas Litera
+ * @version     1.0
  */ 
 abstract class CodeplexModel implements IModel
 {
+    public $logfile = LOGDIR.'/CodeplexModel.class.log';
+    
 	/** Constructor */
 	public function __construct()
 	{
+        /**
+         * in child class use this for automatic path setting to logfile by class name
+         * parent::__construct();
+         */
+        $this->logfile = LOGDIR."/".get_class($this).".class.log";
 	}
 	
 	/**
 	 * Create new or return existing instance of class
 	 *
+	 * @param   void
 	 * @return	mixed	instance of class
 	 */
 	public static function getInstance()
