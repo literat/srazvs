@@ -26,5 +26,17 @@ abstract class CodeplexModel implements IModel
 			self::$instance = new self();
 		}
 		return self::$instance;
-	}	
+	}
+    
+    /**
+     * Logging to file
+     *
+     * @param   string  $message    text
+     * @param   string  $method     (I)nfo|(E)rror|(W)arning|
+     * @return  bool
+     */
+    public function log($message,$method = 'I')
+    {
+        return error_log(date("Y-m-d H:i:s").' '.$method.' '.$message."\n", 3, $this->logfile);
+    }
 }
