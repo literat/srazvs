@@ -4,7 +4,7 @@ require_once('../inc/define.inc.php');
 
 ######################### PRISTUPOVA PRAVA ################################
 
-include_once($INCDIR.'access.inc.php');
+include_once(INC_DIR.'access.inc.php');
 
 ################################ SQL, KONTROLA ############################
 
@@ -65,8 +65,8 @@ $recipient_mails = rtrim($recipient_mails, "\n,");
 
 ################## GENEROVANI STRANKY #############################
 
-include_once($INCDIR.'http_header.inc.php');
-include_once($INCDIR.'header.inc.php');
+include_once(INC_DIR.'http_header.inc.php');
+include_once(INC_DIR.'header.inc.php');
 
 ?>
 
@@ -85,7 +85,7 @@ include_once($INCDIR.'header.inc.php');
 	<input type="hidden" name="cms" value="send" />
 	<div class='button-line'>
 		<button type='submit' onclick=\"this.form.submit()\">
-			<img src='<?php echo $ICODIR; ?>small/mail.png' /> Odeslat</button>
+			<img src='<?php echo IMG_DIR; ?>icons/mail.png' /> Odeslat</button>
 	</div>
 </form>
 
@@ -93,7 +93,7 @@ include_once($INCDIR.'header.inc.php');
 
 ###################################################################
 
-include_once($INCDIR.'footer.inc.php');
+include_once(INC_DIR.'footer.inc.php');
 
 ###################################################################
 ?>

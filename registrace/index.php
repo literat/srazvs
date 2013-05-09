@@ -315,9 +315,9 @@ $(document).ready(function() {
 
 <div class='button-line'>
  <button <?php echo $disabled; ?> type='submit' onclick=\"this.form.submit()\">
-  <img src='<?php echo $ICODIR; ?>small/save.png' /> Uložit</button>
+  <img src='<?php echo IMG_DIR; ?>icons/save.png' /> Uložit</button>
  <button type='button' onClick="window.location.replace('<?php echo HTTP_DIR ?>sraz-kk-setkani-cinovniku.p77.html')">
-  <img src='<?php echo $ICODIR; ?>small/storno.png'  /> Storno</button>
+  <img src='<?php echo IMG_DIR; ?>icons/storno.png'  /> Storno</button>
 </div>
 
 <div style="text-align:center;"><span class="required">*</span>Takto označené položky musí být vyplněné!</div>
@@ -441,9 +441,9 @@ $(function() {
  
  <div class='button-line'>
  <button <?php echo $disabled; ?> type='submit' onclick=\"this.form.submit()\">
-  <img src='<?php echo $ICODIR; ?>small/save.png' /> Uložit</button>
+  <img src='<?php echo IMG_DIR; ?>icons/save.png' /> Uložit</button>
  <button type='button' onClick="window.location.replace('<?php echo HTTP_DIR ?>sraz-kk-setkani-cinovniku.p77.html')">
-  <img src='<?php echo $ICODIR; ?>small/storno.png'  /> Storno</button>
+  <img src='<?php echo IMG_DIR; ?>icons/storno.png'  /> Storno</button>
 </div>
  
 </form>

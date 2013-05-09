@@ -4,7 +4,7 @@ require_once('../inc/define.inc.php');
 
 ######################### PRISTUPOVA PRAVA ################################
 
-include_once($INCDIR.'access.inc.php');
+include_once(INC_DIR.'access.inc.php');
 
 ######################### KONTROLA ########################################
 
@@ -143,9 +143,9 @@ $hours_array = array (0 => "00","01","02","03","04","05","06","07","08","09","10
 $minutes_array = array (00 => "00", 05 => "05", 10 => "10",15 => "15", 20 => "20",25 => "25", 30 => "30",35 => "35", 40 => "40", 45 => "45", 50 => "50", 55 => "55");
 
 // category styles
-$style = Category::getStyles();
+$style = CategoryModel::getStyles();
 // category select box
-$cat_roll = Category::renderHtmlSelect($category);
+$cat_roll = CategoryModel::renderHtmlSelect($category);
 // time select boxes
 $day_roll = Form::renderHtmlSelectBox('day', array('pátek'=>'pátek', 'sobota'=>'sobota', 'neděle'=>'neděle'), $DB_data['day'], 'width:172px;');
 $hour_roll = Form::renderHtmlSelectBox('start_hour', $hours_array, $start_hour);
@@ -159,8 +159,8 @@ $display_progs_checkbox = Form::renderHtmlCheckBox('display_progs', 0, $display_
 
 ################## GENEROVANI STRANKY #############################
 
-include_once($INCDIR.'http_header.inc.php');
-include_once($INCDIR.'header.inc.php');
+include_once(INC_DIR.'http_header.inc.php');
+include_once(INC_DIR.'header.inc.php');
 
 ##################################################################
 
@@ -174,14 +174,14 @@ include_once($INCDIR.'header.inc.php');
 
 <div class='button-line'>
 	<button type='submit' onclick=\"this.form.submit()\">
-		<img src='<?php echo $ICODIR; ?>small/save.png' /> Uložit</button>
+		<img src='<?php echo IMG_DIR; ?>icons/save.png' /> Uložit</button>
 	<button type='button' onclick="window.location.replace('index.php')">
-		<img src='<?php echo $ICODIR; ?>small/storno.png'  /> Storno</button>
+		<img src='<?php echo IMG_DIR; ?>icons/storno.png'  /> Storno</button>
  <?php
  if($cms == "edit") {
  ?>
 	<button type='button' onclick="window.location.replace('process.php?cms=mail&pid=<?php echo $id; ?>')">
-		<img src='<?php echo $ICODIR; ?>small/mail.png'  /> Odeslat lektorovi</button>
+		<img src='<?php echo IMG_DIR; ?>icons/mail.png'  /> Odeslat lektorovi</button>
  <?php } ?>
 </div>
 
@@ -236,7 +236,7 @@ include_once($INCDIR.'header.inc.php');
 <?php
 ###################################################################
 
-include_once($INCDIR.'footer.inc.php');
+include_once(INC_DIR.'footer.inc.php');
 
 ###################################################################
 ?>

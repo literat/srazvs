@@ -298,58 +298,58 @@ class MeetingModel extends Component
 		
 		if($rows == 0){
 			$html_row .= "<tr class='radek1'>";
-			$html_row .= "<td><img class='edit' src='".$GLOBALS['ICODIR']."small/edit2.gif' /></td>\n";
-			$html_row .= "<td><img class='edit' src='".$GLOBALS['ICODIR']."small/delete2.gif' /></td>\n";
+			$html_row .= "<td><img class='edit' src='".IMG_DIR."icons/edit2.gif' /></td>\n";
+			$html_row .= "<td><img class='edit' src='".IMG_DIR."icons/delete2.gif' /></td>\n";
 			$html_row .= "<td colspan='11' class='emptyTable'>Nejsou k dispozici žádné položky.</td>";
 			$html_row .= "</tr>";
 		}
 		else{
 			while($data = mysql_fetch_assoc($result)){			
 				$html_row .= "<tr class='radek1'>";
-				$html_row .= "<td><a href='process.php?id=".$data['id']."&cms=edit&page=meetings' title='Upravit'><img class='edit' src='".$GLOBALS['ICODIR']."small/edit.gif' /></a></td>\n";
-				$html_row .= "<td><a href=\"javascript:confirmation('?id=".$data['id']."&amp;cms=del', 'sraz: ".$data['place']." ".$data['start_date']." -> Opravdu SMAZAT tento sraz? Jste si jisti?')\" title='Odstranit'><img class='edit' src='".$GLOBALS['ICODIR']."small/delete.gif' /></a></td>\n";
-				$html_row .= "<td class='text'>".$data['id']."</td>\n";
-				$html_row .= "<td class='text'>".$data['place']."</td>\n";
-				$html_row .= "<td class='text'>".$data['start_date']."</td>\n";
-				$html_row .= "<td class='text'>".$data['end_date']."</td>\n";
-				$html_row .= "<td class='text'>".$data['open_reg']."</td>\n";
-				$html_row .= "<td class='text'>".$data['close_reg']."</td>\n";
-				$html_row .= "<td class='text'>".$data['contact']."</td>\n";
-				$html_row .= "<td class='text'>".$data['email']."</td>\n";
-				$html_row .= "<td class='text'>".$data['gsm']."</td>\n";
+				$html_row .= "\t\t\t<td><a href='process.php?id=".$data['id']."&cms=edit&page=meetings' title='Upravit'><img class='edit' src='".IMG_DIR."icons/edit.gif' /></a></td>\n";
+				$html_row .= "\t\t\t<td><a href=\"javascript:confirmation('?id=".$data['id']."&amp;cms=del', 'sraz: ".$data['place']." ".$data['start_date']." -> Opravdu SMAZAT tento sraz? Jste si jisti?')\" title='Odstranit'><img class='edit' src='".IMG_DIR."icons/delete.gif' /></a></td>\n";
+				$html_row .= "\t\t\t<td class='text'>".$data['id']."</td>\n";
+				$html_row .= "\t\t\t<td class='text'>".$data['place']."</td>\n";
+				$html_row .= "\t\t\t<td class='text'>".$data['start_date']."</td>\n";
+				$html_row .= "\t\t\t<td class='text'>".$data['end_date']."</td>\n";
+				$html_row .= "\t\t\t<td class='text'>".$data['open_reg']."</td>\n";
+				$html_row .= "\t\t\t<td class='text'>".$data['close_reg']."</td>\n";
+				$html_row .= "\t\t\t<td class='text'>".$data['contact']."</td>\n";
+				$html_row .= "\t\t\t<td class='text'>".$data['email']."</td>\n";
+				$html_row .= "\t\t\t<td class='text'>".$data['gsm']."</td>\n";
 				$html_row .= "</tr>";
 			}
 		}
 		
 		// table head
-		$html_thead = "<tr>\n";
-		$html_thead .= "<th></th>\n";
-		$html_thead .= "<th></th>\n";
-		$html_thead .= "<th class='tab1'>id</th>\n";
-		$html_thead .= "<th class='tab1'>místo</th>\n";
-		$html_thead .= "<th class='tab1'>začátek</th>\n";
-		$html_thead .= "<th class='tab1'>konec</th>\n";
-		$html_thead .= "<th class='tab1'>otevření registrace</th>\n";
-		$html_thead .= "<th class='tab1'>uzavření registrace</th>\n";
-		$html_thead .= "<th class='tab1'>kontakt</th>\n";
-		$html_thead .= "<th class='tab1'>e-mail</th>\n";
-		$html_thead .= "<th class='tab1'>telefon</th>\n";
-		$html_thead .= "</tr>\n";
+		$html_thead = "\t<tr>\n";
+		$html_thead .= "\t\t<th></th>\n";
+		$html_thead .= "\t\t<th></th>\n";
+		$html_thead .= "\t\t<th class='tab1'>id</th>\n";
+		$html_thead .= "\t\t<th class='tab1'>místo</th>\n";
+		$html_thead .= "\t\t<th class='tab1'>začátek</th>\n";
+		$html_thead .= "\t\t<th class='tab1'>konec</th>\n";
+		$html_thead .= "\t\t<th class='tab1'>otevření registrace</th>\n";
+		$html_thead .= "\t\t<th class='tab1'>uzavření registrace</th>\n";
+		$html_thead .= "\t\t<th class='tab1'>kontakt</th>\n";
+		$html_thead .= "\t\t<th class='tab1'>e-mail</th>\n";
+		$html_thead .= "\t\t<th class='tab1'>telefon</th>\n";
+		$html_thead .= "\t</tr>\n";
 		
 		// table foot
 		$html_tfoot = $html_thead;
 
 		// table
 		$html_table = "<table id='MeetingsTable' class='list tablesorter'>\n";
-		$html_table .= "<thead>\n";
+		$html_table .= "\t<thead>\n";
 		$html_table .= $html_thead;
-		$html_table .= "</thead>\n";
-		$html_table .= "<tfoot>\n";
+		$html_table .= "\t</thead>\n";
+		$html_table .= "\t<tfoot>\n";
 		$html_table .= $html_tfoot;
-		$html_table .= "</tfoot>\n";
-		$html_table .= "<tbody>\n";
+		$html_table .= "\t</tfoot>\n";
+		$html_table .= "\t<tbody>\n";
 		$html_table .= $html_row;
-		$html_table .= "</tbody>\n";
+		$html_table .= "\t</tbody>\n";
 		$html_table .= "</table>\n";
 		
 		return $html_table;

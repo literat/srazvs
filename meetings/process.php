@@ -4,7 +4,7 @@ require_once('../inc/define.inc.php');
 
 ######################### PRISTUPOVA PRAVA ################################
 
-include_once($INCDIR.'access.inc.php');
+include_once(INC_DIR.'access.inc.php');
 
 ######################### KONTROLA ########################################
 

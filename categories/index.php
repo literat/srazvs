@@ -4,7 +4,7 @@ require_once('../inc/define.inc.php');
 
 ###################### PRISTUPOVA PRAVA ###########################
 
-include_once($INCDIR.'access.inc.php');
+include_once(INC_DIR.'access.inc.php');
 
 ########################## KONTROLA ###############################
 
@@ -29,8 +29,8 @@ if($cms == "del"){
 // styly jednotlivych kategorii
 $style = $CategoryHandler->getStyles();
 
-include_once($INCDIR.'http_header.inc.php');
-include_once($INCDIR.'header.inc.php');
+include_once(INC_DIR.'http_header.inc.php');
+include_once(INC_DIR.'header.inc.php');
 
 ?>
 
@@ -63,7 +63,7 @@ echo $CategoryHandler->render();
 
 ###################################################################
 
-include_once($INCDIR.'footer.inc.php');
+include_once(INC_DIR.'footer.inc.php');
 
 ###################################################################
 ?>

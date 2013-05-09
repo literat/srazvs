@@ -1,7 +1,7 @@
 <?php
 
 require_once('inc/define.inc.php');
-include_once($INCDIR.'access.inc.php');
+include_once(INC_DIR.'access.inc.php');
 
 $sql = "SELECT id
 		FROM kk_meetings

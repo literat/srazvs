@@ -4,7 +4,7 @@ require_once('../inc/define.inc.php');
 
 ######################### PRISTUPOVA PRAVA ################################
 
-include_once($INCDIR.'access.inc.php');
+include_once(INC_DIR.'access.inc.php');
 
 ########################### POST a GET #########################
 
@@ -61,8 +61,8 @@ if($cms == 'sendmail'){
 
 ################## GENEROVANI STRANKY #############################
 
-include_once($INCDIR.'http_header.inc.php');
-include_once($INCDIR.'header.inc.php');
+include_once(INC_DIR.'http_header.inc.php');
+include_once(INC_DIR.'header.inc.php');
 
 ?>
 
@@ -134,7 +134,7 @@ echo html_entity_decode($json->message);
 			<input type="hidden" name="cms" value="sendmail" />
 			<input type="hidden" name="mail" value="advance" />
 			<button type='button' onclick="this.form.submit()">
-				<img src='<?php echo $ICODIR; ?>small/mail.png'  /> Odeslat náhled</button>
+				<img src='<?php echo IMG_DIR; ?>icons/mail.png'  /> Odeslat náhled</button>
 		</form>
 	</div>
 
@@ -147,7 +147,7 @@ echo html_entity_decode($json->message);
 		<input type="hidden" name="mail" value="advance" />
 		<div class='button-line'>
 			<button type='submit' onclick=\"this.form.submit()\">
-				<img src='<?php echo $ICODIR; ?>small/save.png' /> Uložit</button>
+				<img src='<?php echo IMG_DIR; ?>icons/save.png' /> Uložit</button>
 		</div>
 	</form>
 </div>
@@ -177,7 +177,7 @@ echo html_entity_decode($json->message);
 			<input type="hidden" name="cms" value="sendmail" />
 			<input type="hidden" name="mail" value="tutor" />
 			<button type='button' onclick="this.form.submit()">
-				<img src='<?php echo $ICODIR; ?>small/mail.png'  /> Odeslat náhled</button>
+				<img src='<?php echo IMG_DIR; ?>icons/mail.png'  /> Odeslat náhled</button>
 		</form>
 	</div>
 	<form action='index.php' method='post'>
@@ -189,7 +189,7 @@ echo html_entity_decode($json->message);
 		<input type="hidden" name="mail" value="tutor" />
 		<div class='button-line'>
 			<button type='submit' onclick=\"this.form.submit()\">
-				<img src='<?php echo $ICODIR; ?>small/save.png' /> Uložit</button>
+				<img src='<?php echo IMG_DIR; ?>icons/save.png' /> Uložit</button>
 		</div>
 	</form>
 </div>
@@ -219,7 +219,7 @@ echo html_entity_decode($json->message);
 			<input type="hidden" name="cms" value="sendmail" />
 			<input type="hidden" name="mail" value="post_reg" />
 			<button type='button' onclick="this.form.submit()">
-				<img src='<?php echo $ICODIR; ?>small/mail.png'  /> Odeslat náhled</button>
+				<img src='<?php echo IMG_DIR; ?>icons/mail.png'  /> Odeslat náhled</button>
 		</form>
 	</div>
 	<form action='index.php' method='post'>
@@ -231,7 +231,7 @@ echo html_entity_decode($json->message);
 		<input type="hidden" name="mail" value="post_reg" />
 		<div class='button-line'>
 			<button type='submit' onclick=\"this.form.submit()\">
-				<img src='<?php echo $ICODIR; ?>small/save.png' /> Uložit</button>
+				<img src='<?php echo IMG_DIR; ?>icons/save.png' /> Uložit</button>
 		</div>
 	</form>
 </div>
@@ -242,7 +242,7 @@ echo html_entity_decode($json->message);
 
 ###################################################################
 
-include_once($INCDIR.'footer.inc.php');
+include_once(INC_DIR.'footer.inc.php');
 
 ###################################################################
 ?>

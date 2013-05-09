@@ -4,14 +4,16 @@ require_once('../inc/define.inc.php');
 
 ######################### PRISTUPOVA PRAVA #########################
 
-include_once($INCDIR.'access.inc.php');
+include_once(INC_DIR.'access.inc.php');
 
 ####################### KONTROLA ###################################
 
+$mid = $_SESSION['meetingID'];
 $id = requested("id","");
 $cms = requested("cms","");
 
-$CategoryHandler = new Category();
+$Container = new Container($GLOBALS['cfg'], $mid);
+$CategoryHandler = $Container->createCategory();
 
 // styly jednotlivych kategorii
 $style = $CategoryHandler->getStyles();
@@ -60,8 +62,8 @@ switch($cms) {
 
 #################### GENEROVANI STRANKY ############################
 
-include_once($INCDIR.'http_header.inc.php');
-include_once($INCDIR.'header.inc.php');
+include_once(INC_DIR.'http_header.inc.php');
+include_once(INC_DIR.'header.inc.php');
 
 ############################ FORMULAR ###############################
 
@@ -74,15 +76,15 @@ include_once($INCDIR.'header.inc.php');
 
 	<div class='button-line'>
 		<button type='submit' onclick=\"this.form.submit()\">
-			<img src='<?php echo $ICODIR; ?>small/save.png' /> Uložit
+			<img src='<?php echo IMG_DIR; ?>icons/save.png' /> Uložit
 		</button>
 		<button type='button' onclick="window.location.replace('<?php echo "index.php" ?>')">
-			<img src='<?php echo $ICODIR; ?>small/storno.png'  /> Storno
+			<img src='<?php echo IMG_DIR; ?>icons/storno.png'  /> Storno
 		</button>
 	</div>
 
 <!-- ColorMixer by David Grundl - LaTrine - http://latrine.dgx.cz/color-mixer-aneb-michatko -->
-<script type="text/javascript" src="<?php echo $AJAXDIR ?>colormixer/dgxcolormixer_s.js"></script>
+<script type="text/javascript" src="<?php echo JS_DIR ?>colormixer/dgxcolormixer_s.js"></script>
 <script type="text/javascript">
 function myChangeColorHandler(mixer){
     document.title = '#' + mixer.color.toRGB().toHEX();
@@ -167,7 +169,7 @@ window.onload = function(){
 <?php
 ###################################################################
 
-include_once($INCDIR.'footer.inc.php');
+include_once(INC_DIR.'footer.inc.php');
 
 ###################################################################
 ?>

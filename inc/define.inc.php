@@ -34,29 +34,6 @@ else {
 
 //echo $_SERVER['HTTP_REFERER'];
 
-/* systemove slozky */
-/* do not forget to add slash at the end*/
-$INCDIR 	= ROOT_DIR.'inc/';
-
-$LAYOUTDIR 	= HTTP_DIR.'srazvs/styles/layout/';
-$IMGDIR 	= HTTP_DIR.'srazvs/img/';
-$ICODIR 	= $LAYOUTDIR.'icons/';
-$LOGODIR 	= $LAYOUTDIR.'logos/';
-$LOGDIR 	= ROOT_DIR.'log/';
-/* depracated */
-$STYLEDIR 	= HTTP_DIR.'srazvs/styles/';
-/* depracated */
-$CSSDIR 	= HTTP_DIR.'srazvs/styles/css/';
-$CSS2DIR 	= HTTP_DIR.'srazvs/css/';
-
-/* depracated */
-$AJAXDIR 	= HTTP_DIR.'srazvs/js/';
-$JSDIR 		= HTTP_DIR.'srazvs/js/';
-$CLASSDIR 	= $INCDIR.'class/';
-$LIBSDIR 	= ROOT_DIR.'libs/';
-$TPL_DIR 	= ROOT_DIR.'templates/';
-$TMPDIR 	= ROOT_DIR.'tmp/';
-
 $BLOCKDIR	= HTTP_DIR.'srazvs/blocks/';
 $PROGDIR 	= HTTP_DIR.'srazvs/programs/';
 $MEETDIR 	= HTTP_DIR.'srazvs/meetings/';
@@ -102,7 +79,7 @@ require_once(INC_DIR.'db_connect.inc.php');
 //include_once($INCDIR.'access.inc.php');
 require_once(INC_DIR.'errors.inc.php');
 
-/* Libraries */
+/* Libraries */	
 require_once(LIBS_DIR.'Codeplex/ComponentModel/IModel.php');
 require_once(LIBS_DIR.'Codeplex/ComponentModel/IComponent.php');
 require_once(LIBS_DIR.'Codeplex/ComponentModel/Component.php');
@@ -118,11 +95,11 @@ require_once(LIBS_DIR.'Codeplex/Exporting/PdfFactory.php');
 require_once(LIBS_DIR.'Codeplex/Exporting/ExcelFactory.php');
 
 /* Application */
-require_once($CLASSDIR.'Emailer.class.php');
+require_once(LIBS_DIR.'Codeplex/Mail/Emailer.php');
 require_once(MODEL_DIR.'CategoryModel.php');
 require_once(MODEL_DIR.'BlockModel.php');
 require_once(MODEL_DIR.'ProgramModel.php');
-require_once($CLASSDIR.'Form.class.php');
+require_once(LIBS_DIR.'Codeplex/Forms/Form.php');
 require_once(MODEL_DIR.'VisitorModel.php');
 require_once(MODEL_DIR.'MeetingModel.php');
 require_once(MODEL_DIR.'MealModel.php');
@@ -140,5 +117,3 @@ if(defined('DEBUG') && DEBUG === TRUE){
 }
 
 $style = "";
-
-?>

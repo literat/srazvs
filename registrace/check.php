@@ -132,11 +132,11 @@ $sun_lunch = requested("sun_lunch",$data['sun_lunch']);
 <meta name="author" content="HKVS team" />
 <meta name="generator" content="SunLight CMS 7.5.1 STABLE0" />
 <meta name="robots" content="index, follow" />
-<link href='<?php echo $CSSDIR ?>default.css' rel='stylesheet' type='text/css' />
+<link href='<?php echo CSS_DIR ?>default.css' rel='stylesheet' type='text/css' />
 <link href="<?php echo HTTP_DIR; ?>plugins/templates/hkvs2/style/system.css?1" type="text/css" rel="stylesheet" />
 <link href="<?php echo HTTP_DIR; ?>plugins/templates/hkvs2/style/layout.css?1" type="text/css" rel="stylesheet" />
-<link rel="stylesheet" href="<?php echo $CSSDIR ?>datedit.css" type="text/css" media="screen" />
-<link rel="stylesheet" href="<?php echo $CSSDIR ?>dgxcolormixer_s.css" type="text/css" media="screen,projection,tv" />
+<link rel="stylesheet" href="<?php echo CSS_DIR ?>datedit.css" type="text/css" media="screen" />
+<link rel="stylesheet" href="<?php echo CSS_DIR ?>dgxcolormixer_s.css" type="text/css" media="screen,projection,tv" />
 <script type="text/javascript">/* <![CDATA[ */var sl_indexroot='./';/* ]]> */</script>
 <script type="text/javascript" src="<?php echo HTTP_DIR; ?>remote/jscript.php?1&amp;default"></script>
 

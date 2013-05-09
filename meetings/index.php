@@ -88,7 +88,7 @@ $(document).ready(function() {
 <?php 
 
 if($cms == 'list-view') {
-	echo "<div class='link'><a class='link' href='process.php?cms=new&page=meetings'><img src='".$ICODIR."small/new.png' />NOVÝ SRAZ</a></div>\n";
+	echo "<div class='link'><a class='link' href='process.php?cms=new&page=meetings'><img src='".IMG_DIR."icons/new.png' />NOVÝ SRAZ</a></div>\n";
 	echo $MeetingsHandler->renderData();
 } else {
 	echo $MeetingsHandler->renderProgramOverview();

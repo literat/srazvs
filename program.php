@@ -74,7 +74,7 @@ $page_title = "Program srazu VS";
 
 ?>
 
-<?php include_once($INCDIR."vodni_header.inc.php"); ?>
+<?php include_once(INC_DIR."vodni_header.inc.php"); ?>
 
     <!-- content -->
     <div id="content-program">
@@ -117,4 +117,4 @@ $page_title = "Program srazu VS";
   </div>
 </div>
 
-<?php include_once($INCDIR."vodni_footer.inc.php"); ?>
+<?php include_once(INC_DIR."vodni_footer.inc.php"); ?>

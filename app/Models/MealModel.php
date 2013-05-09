@@ -113,7 +113,7 @@ class MealModel extends Component
 			if(preg_match("/dinner/", $var_name))		$mealIcon = "dinner";
 			
 			$html_select .= "<span style='display:block;font-size:11px;'>".$title.":</span>\n";
-			$html_select .= "<img style='width:18px;' src='".$GLOBALS['ICODIR']."small/".$mealIcon.".png' />\n";
+			$html_select .= "<img style='width:18px;' src='".IMG_DIR."icons/".$mealIcon.".png' />\n";
 			$html_select .= "<select ".$disabled." style='width:195px; font-size:11px;margin-left:5px;' name='".$var_name."'>\n";
 			
 			foreach ($yes_no as $key){

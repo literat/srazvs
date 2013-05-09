@@ -4,7 +4,7 @@ require_once('../inc/define.inc.php');
 
 ######################### PRISTUPOVA PRAVA ################################
 
-include_once($INCDIR.'access.inc.php');
+include_once(INC_DIR.'access.inc.php');
 
 ######################### KONTROLA ########################################
 
@@ -107,18 +107,18 @@ switch($cms) {
 ######################## STATIC BOXES ##################################
 
 // category styles
-$style = Category::getStyles();
+$style = CategorymODEL::getStyles();
 // category select box
-$cat_roll = Category::renderHtmlSelect($category);
+$cat_roll = CategoryModel::renderHtmlSelect($category);
 // blocks select box
-$block_roll = Block::renderHtmlSelect($block);
+$block_roll = BlockModel::renderHtmlSelect($block);
 // display in registration check box
 $display_in_reg_checkbox = Form::renderHtmlCheckBox('display_in_reg', 0, $display_in_reg);
 
 ################## GENEROVANI STRANKY #############################
 
-include_once($INCDIR.'http_header.inc.php');
-include_once($INCDIR.'header.inc.php');
+include_once(INC_DIR.'http_header.inc.php');
+include_once(INC_DIR.'header.inc.php');
 
 ##################################################################
 
@@ -132,14 +132,14 @@ include_once($INCDIR.'header.inc.php');
 
 <div class='button-line'>
 	<button type='submit' onclick=\"this.form.submit()\">
-		<img src='<?php echo $ICODIR; ?>small/save.png' /> Uložit</button>
+		<img src='<?php echo IMG_DIR; ?>icons/save.png' /> Uložit</button>
 	<button type='button' onclick="window.location.replace('index.php')">
-		<img src='<?php echo $ICODIR; ?>small/storno.png'  /> Storno</button>
+		<img src='<?php echo IMG_DIR; ?>icons/storno.png'  /> Storno</button>
  <?php
  if($cms == "edit") {
  ?>
 	<button type='button' onclick="window.location.replace('process.php?cms=mail&pid=<?php echo $id; ?>')">
-		<img src='<?php echo $ICODIR; ?>small/mail.png'  /> Odeslat lektorovi</button>
+		<img src='<?php echo IMG_DIR; ?>icons/mail.png'  /> Odeslat lektorovi</button>
  <?php } ?>
 </div>
 
@@ -193,7 +193,7 @@ include_once($INCDIR.'header.inc.php');
 
 ###################################################################
 
-include_once($INCDIR.'footer.inc.php');
+include_once(INC_DIR.'footer.inc.php');
 
 ###################################################################
 ?>
