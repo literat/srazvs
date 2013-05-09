@@ -51,7 +51,7 @@ Git rules
 ---------------
 For each feature/task/defect create a specific branch
 
-- <task-type>-<refs>-<name>
+- [task-type]-[refs]-[name/description]
 
 - defect-44-forgetting-visitors-program
 
