@@ -94,7 +94,7 @@ include_once($INCDIR.'header.inc.php');
 	počet účastníků: <span style="font-size:12px; font-weight:bold;"><?php echo $VisitorsHandler->getCount(); ?></span>
 	<span style="margin-left:10px; margin-right:10px;">|</span> 
 	<a style='text-decoration:none; padding-right:2px;' href='?cms=export'>
-		<img style='border:none;' align='absbottom' src='<?php echo $ICODIR; ?>small/xlsx.png' />
+		<img style='border:none;' align='absbottom' src='<?php echo IMG_DIR; ?>icons/xlsx.png' />
 		export účastníků
 	</a>
 </div>
@@ -105,18 +105,18 @@ include_once($INCDIR.'header.inc.php');
 		<label>hledej:</label>
 		<input type='text' name='search' size='30' value='<?php echo $search; ?>' />
         <button type='submit' onClick=\"this.form.submit()\">
-  			<img src='<?php echo $ICODIR; ?>small/search.png' /> Hledej
+  			<img src='<?php echo IMG_DIR; ?>icons/search.png' /> Hledej
 		</button>
  		<!--<button type='button' onclick=\"window.location.replace('index.php')\">
   		<img src='".$ICODIR."small/storno.png'  /> Zpět</button>-->
 		<input type='hidden' name='cms' value='search' />
 	</form>
 	<a class='link' href='process.php?cms=new&page=visitors'>
-		<img src='<?php echo $ICODIR; ?>small/new.png' />NOVÝ ÚČASTNÍK
+		<img src='<?php echo IMG_DIR; ?>icons/new.png' />NOVÝ ÚČASTNÍK
 	</a>
 </div>
 
-<script src='<?php echo $JSDIR; ?>jquery/jquery.tablesorter.min.js' type='text/javascript'></script>
+<script src='<?php echo JS_DIR; ?>jquery/jquery.tablesorter.min.js' type='text/javascript'></script>
 <script>
 $(document).ready(function() {
 	$("#VisitorsTable").tablesorter( {

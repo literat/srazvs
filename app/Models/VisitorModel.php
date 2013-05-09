@@ -371,11 +371,11 @@ class VisitorModel /* extends Component */
 		if($rows == 0){
 			$html_row .= "<tr class='radek1'>";
 			$html_row .= "<td><input disabled type='checkbox' /></td>\n";
-			$html_row .= "<td><img class='edit' src='".$GLOBALS['ICODIR']."small/edit2.gif' /></td>\n";
-			$html_row .= "<td><img class='edit' src='".$GLOBALS['ICODIR']."small/delete2.gif' /></td>\n";
-			$html_row .= "<td><img class='edit' src='".$GLOBALS['ICODIR']."small/advance2.png' /></td>\n";
-			$html_row .= "<td><img class='edit' src='".$GLOBALS['ICODIR']."small/pay2.png' /></td>\n";
-			$html_row .= "<td><img class='edit' src='".$GLOBALS['ICODIR']."small/pdf2.png' /></td>\n";
+			$html_row .= "<td><img class='edit' src='".IMG_DIR."icons/edit2.gif' /></td>\n";
+			$html_row .= "<td><img class='edit' src='".IMG_DIR."icons/delete2.gif' /></td>\n";
+			$html_row .= "<td><img class='edit' src='".IMG_DIR."icons/advance2.png' /></td>\n";
+			$html_row .= "<td><img class='edit' src='".IMG_DIR."icons/pay2.png' /></td>\n";
+			$html_row .= "<td><img class='edit' src='".IMG_DIR."icons/pdf2.png' /></td>\n";
 			$html_row .= "<td colspan='15' class='emptyTable'>Nejsou k dispozici žádné položky.</td>";
 			$html_row .= "</tr>";
 		}
@@ -384,20 +384,20 @@ class VisitorModel /* extends Component */
 				$code4bank = substr($data['name'], 0, 1).substr($data['surname'], 0, 1).substr($data['birthday'], 2, 2);
 		
 				if($this->meeting_price <= $data['bill']) {
-					$payment = "<acronym title='Zaplaceno'><img src='".$GLOBALS['ICODIR']."small/paid.png' alt='zaplaceno' /></acronym>";
+					$payment = "<acronym title='Zaplaceno'><img src='".IMG_DIR."icons/paid.png' alt='zaplaceno' /></acronym>";
 				} elseif(200 <= $data['bill']) {
-					$payment = "<acronym title='Zaplacena záloha'><img src='".$GLOBALS['ICODIR']."small/advancement.png' alt='zaloha' /></acronym>";
+					$payment = "<acronym title='Zaplacena záloha'><img src='".IMG_DIR."icons/advancement.png' alt='zaloha' /></acronym>";
 				} else {
-					 $payment = "<acronym title='Nezaplaceno'><img src='".$GLOBALS['ICODIR']."small/notpaid.png' alt='nezaplaceno' /></acronym>";
+					 $payment = "<acronym title='Nezaplaceno'><img src='".IMG_DIR."icons/notpaid.png' alt='nezaplaceno' /></acronym>";
 				}
 					
 				$html_row .= "<tr class='radek1'>";
 				$html_row .= "<td><input type='checkbox' name='checker[]'  value='".$data['id']."' /></td>\n";
-				$html_row .= "<td><a href='process.php?id=".$data['id']."&cms=edit&page=visitors' title='Upravit'><img class='edit' src='".$GLOBALS['ICODIR']."small/edit.gif' /></a></td>\n";
-				$html_row .= "<td><a href='?id=".$data['id']."&amp;cms=advance&amp;search=".$this->search."' title='Záloha'><img class='edit' src='".$GLOBALS['ICODIR']."small/advance.png' /></a></td>\n";
-				$html_row .= "<td><a href='?id=".$data['id']."&amp;cms=pay&amp;search=".$this->search."' title='Zaplatit'><img class='edit' src='".$GLOBALS['ICODIR']."small/pay.png' /></a></td>\n";
-				$html_row .= "<td><a href='../exports/?evidence=confirm&vid=".$data['id']."' title='Doklad'><img class='edit' src='".$GLOBALS['ICODIR']."small/pdf.png' /></a></td>\n";
-				$html_row .= "<td><a href=\"javascript:confirmation('?id=".$data['id']."&amp;cms=del&amp;search=".$this->search."', 'účastník: ".$data['nick']." -> Opravdu SMAZAT tohoto účastníka? Jste si jisti?')\" title='Odstranit'><img class='edit' src='".$GLOBALS['ICODIR']."small/delete.gif' /></a></td>\n";
+				$html_row .= "<td><a href='process.php?id=".$data['id']."&cms=edit&page=visitors' title='Upravit'><img class='edit' src='".IMG_DIR."icons/edit.gif' /></a></td>\n";
+				$html_row .= "<td><a href='?id=".$data['id']."&amp;cms=advance&amp;search=".$this->search."' title='Záloha'><img class='edit' src='".IMG_DIR."icons/advance.png' /></a></td>\n";
+				$html_row .= "<td><a href='?id=".$data['id']."&amp;cms=pay&amp;search=".$this->search."' title='Zaplatit'><img class='edit' src='".IMG_DIR."icons/pay.png' /></a></td>\n";
+				$html_row .= "<td><a href='../exports/?evidence=confirm&vid=".$data['id']."' title='Doklad'><img class='edit' src='".IMG_DIR."icons/pdf.png' /></a></td>\n";
+				$html_row .= "<td><a href=\"javascript:confirmation('?id=".$data['id']."&amp;cms=del&amp;search=".$this->search."', 'účastník: ".$data['nick']." -> Opravdu SMAZAT tohoto účastníka? Jste si jisti?')\" title='Odstranit'><img class='edit' src='".IMG_DIR."icons/delete.gif' /></a></td>\n";
 				$html_row .= "<td class='text'>".$data['id']."</td>\n";
 				$html_row .= "<td class='text'>".$data['code']."</td>\n";
 				$html_row .= "<td class='text'>".$data['group_num']."</td>\n";
@@ -455,16 +455,16 @@ class VisitorModel /* extends Component */
 		$html_buttons .= "<a href='javascript:select(0)'>Odškrtnout vše</a>\n";
 		$html_buttons .= "<span style='margin-left:10px;'>Zaškrtnuté:</span>\n";
 		$html_buttons .= "<button onClick=\"this.form.submit()\" title='Záloha' value='advance' name='cms' type='submit'>\n";
-		$html_buttons .= "<img class='edit' src='".$GLOBALS['ICODIR']."small/advance.png' /> Záloha\n";
+		$html_buttons .= "<img class='edit' src='".IMG_DIR."icons/advance.png' /> Záloha\n";
 		$html_buttons .= "</button>\n";
 		$html_buttons .= "<button onClick=\"this.form.submit()\" title='Platba' value='pay' name='cms' type='submit'>\n";
-		$html_buttons .= "<img class='edit' src='".$GLOBALS['ICODIR']."small/pay.png' /> Platba\n";
+		$html_buttons .= "<img class='edit' src='".IMG_DIR."icons/pay.png' /> Platba\n";
 		$html_buttons .= "</button>\n";
 		$html_buttons .= "<button onClick=\"return confirm('Opravdu SMAZAT tyto účastníky? Jste si jisti?')\"' title='Smazat' value='del' name='cms' type='submit'>\n";
-		$html_buttons .= "<img class='edit' src='".$GLOBALS['ICODIR']."small/delete.gif' /> Smazat\n";
+		$html_buttons .= "<img class='edit' src='".IMG_DIR."icons/delete.gif' /> Smazat\n";
 		$html_buttons .= "</button>\n";
 		$html_buttons .= "<button onclick=\"this.form.action='mail.php';\" title='Hromadný e-mail' value='mail' name='cms' type='submit'>\n";
-		$html_buttons .= "<img src='".$GLOBALS['ICODIR']."small/mail.png'  /> Hromadný e-mail\n";
+		$html_buttons .= "<img src='".IMG_DIR."icons/mail.png'  /> Hromadný e-mail\n";
 		$html_buttons .= "</button>\n";
 		
 		// table controls

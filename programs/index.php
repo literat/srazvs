@@ -18,7 +18,8 @@ $id = requested("id","");
 $cms = requested("cms","");
 $error = requested("error","");
 
-$ProgramsHandler = new Program($mid);
+$Container = new Container($GLOBALS['cfg'], $mid);
+$ProgramsHandler = $Container->createProgram();
 
 // delete program
 if($cms == "del"){
@@ -28,7 +29,7 @@ if($cms == "del"){
 }
 
 // styles in header
-$style = Category::getStyles();
+$style = CategoryModel::getStyles();
 
 ################## GENEROVANI STRANKY #############################
 
@@ -44,17 +45,18 @@ include_once($INCDIR.'header.inc.php');
 <div class='pageRibbon'>seznam programů</div>
 <div class='link'>
 	<a class='link' href='process.php?cms=new'>
-    	<img src='<?php echo $ICODIR; ?>small/new.png' />NOVÝ PROGRAM
+    	<img src='<?php echo IMG_DIR; ?>icons/new.png' />NOVÝ PROGRAM
 	</a>
 </div>
 
-<script src='<?php echo $JSDIR ?>jquery/jquery.tablesorter.min.js' type='text/javascript'></script>
+<script src='<?php echo JS_DIR ?>jquery/jquery.tablesorter.min.js' type='text/javascript'></script>
 <script>
 $(document).ready(function() {
 	$("#ProgramsTable").tablesorter( {
 		headers: {
 			0: { sorter: false},
 			1: { sorter: false},
+			2: { sorter: false},
 			4: { sorter: false},
 			9: { sorter: false},
 		}

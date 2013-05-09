@@ -43,11 +43,11 @@ include_once($INCDIR.'header.inc.php');
 <div class='pageRibbon'>seznam bloků</div>
 <div class='link'>
 	<a class='link' href='process.php?cms=new'>
-    	<img src='<?php echo $ICODIR; ?>small/new.png' />NOVÝ BLOK
+    	<img src='<?php echo IMG_DIR; ?>icons/new.png' />NOVÝ BLOK
 	</a>
 </div>
 
-<script src='<?php echo $JSDIR ?>jquery/jquery.tablesorter.min.js' type='text/javascript'></script>
+<script src='<?php echo JS_DIR ?>jquery/jquery.tablesorter.min.js' type='text/javascript'></script>
 <script>
 $(document).ready(function() {
 	$("#BlocksTable").tablesorter( {

@@ -64,14 +64,14 @@ img.smallerIcon {width:36px;}
 .helpContent ul {margin-top:-5px;}
 
 ul {
-	list-style-image:url("../../../srazvs/styles/layout/icons/small/bullet_square.gif");
+	list-style-image:url("../../../srazvs/images/icons/bullet_square.gif");
 	list-style-type:square;
 	margin-left:0;
 	padding-left:2em;
 }
 
 div.wikidoc ul {
-	list-style-image:url("../../../srazvs/styles/layout/icons/small/doublearrow.gif");
+	list-style-image:url("../../../srazvs/images/icons/doublearrow.gif");
 	list-style-type:none;
 }
 

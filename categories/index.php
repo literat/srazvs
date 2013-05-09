@@ -13,7 +13,8 @@ $id = requested("id","");
 $cms = requested("cms","");
 $error = requested("error","");
 
-$CategoryHandler = new Category();
+$Container = new Container($GLOBALS['cfg'], $mid);
+$CategoryHandler = $Container->createCategory();
 
 ######################### DELETE CATEGORY #########################
 
@@ -40,10 +41,10 @@ include_once($INCDIR.'header.inc.php');
 
 <div class='link'>
 	<a class='link' href='process.php?cms=new'>
-    	<img src='<?php echo $ICODIR; ?>small/new.png' />NOVÁ KATEGORIE</a>
+    	<img src='<?php echo IMG_DIR; ?>icons/new.png' />NOVÁ KATEGORIE</a>
 </div>
 
-<script src='<?php echo $JSDIR ?>jquery/jquery.tablesorter.min.js' type='text/javascript'></script>
+<script src='<?php echo JS_DIR ?>jquery/jquery.tablesorter.min.js' type='text/javascript'></script>
 <script>
 $(document).ready(function() {
 	$("#CategoryTable").tablesorter( {

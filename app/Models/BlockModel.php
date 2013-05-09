@@ -92,16 +92,16 @@ class BlockModel extends Component
 		
 		if($rows == 0){
 			$html_row .= "<tr class='radek1'>\n";
-			$html_row .= "<td><img class='edit' src='".$GLOBALS['ICODIR']."small/edit2.gif' /></td>\n";
-			$html_row .= "<td><img class='edit' src='".$GLOBALS['ICODIR']."small/delete2.gif' /></td>\n";
+			$html_row .= "<td><img class='edit' src='".IMG_DIR."icons/edit2.gif' /></td>\n";
+			$html_row .= "<td><img class='edit' src='".IMG_DIR."icons/delete2.gif' /></td>\n";
 			$html_row .= "<td colspan='11' class='emptyTable'>Nejsou k dispozici žádné položky.</td>\n";
 			$html_row .= "</tr>\n";
 		}
 		else{
 			while($data = mysql_fetch_assoc($result)){			
 				$html_row .= "<tr class='radek1'>\n";
-				$html_row .= "<td><a href='process.php?id=".$data['id']."&cms=edit&page=blocks' title='Upravit'><img class='edit' src='".$GLOBALS['ICODIR']."small/edit.gif' /></a></td>\n";
-				$html_row .= "<td><a href=\"javascript:confirmation('?id=".$data['id']."&amp;cms=del', 'blok: ".$data['name']." ".$data['from']." -> Opravdu SMAZAT tento blok? Jste si jisti?')\" title='Odstranit'><img class='edit' src='".$GLOBALS['ICODIR']."small/delete.gif' /></a></td>\n";
+				$html_row .= "<td><a href='process.php?id=".$data['id']."&cms=edit&page=blocks' title='Upravit'><img class='edit' src='".IMG_DIR."icons/edit.gif' /></a></td>\n";
+				$html_row .= "<td><a href=\"javascript:confirmation('?id=".$data['id']."&amp;cms=del', 'blok: ".$data['name']." ".$data['from']." -> Opravdu SMAZAT tento blok? Jste si jisti?')\" title='Odstranit'><img class='edit' src='".IMG_DIR."icons/delete.gif' /></a></td>\n";
 				$html_row .= "<td class='text'>".$data['id']."</td>\n";
 				$html_row .= "<td class='text'>".$data['day']."</td>\n";
 				$html_row .= "<td class='text'>".$data['from']."</td>\n";

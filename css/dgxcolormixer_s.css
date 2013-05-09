@@ -1,7 +1,7 @@
 
 .DGXColorMixer_main { 
   position: relative; 
-  background: url('../layout/colormixer/dgxmixer-bg.png'); 
+  background: url('../images/colormixer/dgxmixer-bg.png'); 
   width: 341px; height: 341px; 
   display: none;
   border: 1px solid black;
@@ -13,8 +13,8 @@
   width: 258px; height: 258px; 
   widt\h: 256px; heigh\t: 256px; 
   border: 1px solid black;
-  background: url('../layout/colormixer/dgxmixer-mask.png'); 
-  _filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../layout/colormixer/dgxmixer-mask.png', sizingMethod='scale');
+  background: url('../images/colormixer/dgxmixer-mask.png'); 
+  _filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../images/colormixer/dgxmixer-mask.png', sizingMethod='scale');
   _background-image: none;
 }
 
@@ -24,20 +24,20 @@
   width: 34px; height: 319px; 
   widt\h: 32px; heigh\t: 317px; 
   border: 1px solid black;
-  background: url('../layout/colormixer/dgxmixer-gradient.png'); 
+  background: url('../images/colormixer/dgxmixer-gradient.png'); 
 }
 
 .DGXColorMixer_slider {
   position: absolute; 
   left: -4px; 
   width: 40px; height: 5px; 
-  background: url('../layout/colormixer/dgxmixer-slider.png') no-repeat;
+  background: url('../images/colormixer/dgxmixer-slider.png') no-repeat;
 }
 
 .DGXColorMixer_crosshair { 
   position: absolute; 
   width: 14px; height: 14px; 
-  background: url('../layout/colormixer/dgxmixer-crosshair.png') no-repeat;
+  background: url('../images/colormixer/dgxmixer-crosshair.png') no-repeat;
 }
 
 .DGXColorMixer_color {
@@ -55,7 +55,7 @@
 }
 
 button.colormixer {
-  background: url('../layout/colormixer/button.png') no-repeat #E2E2E2 center center;
+  background: url('../images/colormixer/button.png') no-repeat #E2E2E2 center center;
   width: 20px;
   height: 18px;
   _cursor: hand; /* for IE6 */

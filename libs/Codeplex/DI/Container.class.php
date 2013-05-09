@@ -138,6 +138,16 @@ class Container
 	{
 		return new BlockModel($this->meetingId);
 	}
+
+	/**
+	 * Create instance of Category
+	 *
+	 * @return	CategoryModel
+	 */
+	public function createCategory()
+	{
+		return new CategoryModel();
+	}
 	
 	/**
 	 * Create instance of Export

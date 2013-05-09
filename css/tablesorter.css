@@ -18,7 +18,7 @@ table.tablesorter thead tr th, table.tablesorter tfoot tr th {
 }
 */
 table.tablesorter thead tr .header {
-	background-image: url(../layout/tablesorter/bg.gif);
+	background-image: url(../images/tablesorter/bg.gif);
 	background-repeat: no-repeat;
 	background-position: center right;
 	cursor: pointer;
@@ -41,10 +41,10 @@ table.tablesorter tbody tr.odd td {
 }
 */
 table.tablesorter thead tr .headerSortUp {
-	background-image: url(../layout/tablesorter/asc.gif);
+	background-image: url(../images/tablesorter/asc.gif);
 }
 table.tablesorter thead tr .headerSortDown {
-	background-image: url(../layout/tablesorter/desc.gif);
+	background-image: url(../images/tablesorter/desc.gif);
 }
 /*
 table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSortUp {
