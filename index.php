@@ -10,9 +10,10 @@ $sql = "SELECT id
 $result = mysql_query($sql);
 $data = mysql_fetch_assoc($result);
 
-redirect("meetings/?mid=".$data['id']."");
+require_once(APP_DIR.'Router.php');
+
+//redirect("meetings/?mid=".$data['id']."");
 
 /*echo "<script type='javascript'>
 	   window.location='meetings/?mid=".$data['id']."';
 	  </script>";*/
-?>

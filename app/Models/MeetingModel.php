@@ -197,14 +197,14 @@ class MeetingModel extends Component
 					if($data['program'] == 1){ 
 						$html .= "<td class='cat-".$data['style']."'>\n";
 						$html .= "<div>\n";
-						$html .= "<a class='block' href='".$GLOBALS['BLOCKDIR']."process.php?id=".$data['id']."&cms=edit&page=meetings' title='".$data['name']."'>".$data['name']."</a>\n";
+						$html .= "<a class='block' href='".BLOCK_DIR."process.php?id=".$data['id']."&cms=edit&page=meetings' title='".$data['name']."'>".$data['name']."</a>\n";
 						$html .= "</div>\n";
 						$html .= $this->getPrograms($data['id']);
 						$html .= "</td>\n";
 					}
 					else {
 						$html .= "<td class='cat-".$data['style']."'>";
-						$html .= "<a class='block' href='".$GLOBALS['BLOCKDIR']."process.php?id=".$data['id']."&cms=edit&page=meetings' title='".$data['name']."'>".$data['name']."</a>\n";
+						$html .= "<a class='block' href='".BLOCK_DIR."process.php?id=".$data['id']."&cms=edit&page=meetings' title='".$data['name']."'>".$data['name']."</a>\n";
 						$html .= "</td>\n";
 					}
 					$html .= "</tr>\n";

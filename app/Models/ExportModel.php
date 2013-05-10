@@ -435,7 +435,7 @@ class ExportModel extends CodeplexModel
 		var_dump($graph_data['reg_count']);
 		echo 	$width = ceil(($graph_width/$max)*$graph_data['reg_count'])."\n";*/
 			$width = ceil($graph_width/$max_data['max']*$graph_data['reg_count']);
-			$reg_graph .= "<tr><td align='right' style='width:60px;'>".$graph_data['day']."</td><td><img src='../images/graph.png' alt='".$graph_data['reg_count']."' style='width:".$width."%;' height='12' border='0'>".$graph_data['reg_count']."</td>";
+			$reg_graph .= "<tr><td align='right' style='width:60px;'>".$graph_data['day']."</td><td><img src='images/graph.png' alt='".$graph_data['reg_count']."' style='width:".$width."%;' height='12' border='0'>".$graph_data['reg_count']."</td>";
 			
 			$graph_height += 21.5; 
 		}

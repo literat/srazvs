@@ -22,18 +22,18 @@ foreach ($parsed as $argument)
 }
 
 //compute the path to the file
-$target = SERVER_ROOT . '/controllers/' . $page . '.php';
+$target = APP_DIR.'/Controllers/'.ucfirst($page).'Controller.php';
 
 //get target
-if (file_exists($target))
+if(file_exists($target))
 {
 	include_once($target);
 
 	//modify page to fit naming convention
-	$class = ucfirst($page) . '_Controller';
+	$class = ucfirst($page).'Controller';
 
 	//instantiate the appropriate class
-	if (class_exists($class))
+	if(class_exists($class))
 	{
 		$controller = new $class;
 	}

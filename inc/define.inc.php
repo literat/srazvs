@@ -34,14 +34,6 @@ else {
 
 //echo $_SERVER['HTTP_REFERER'];
 
-$BLOCKDIR	= HTTP_DIR.'srazvs/blocks/';
-$PROGDIR 	= HTTP_DIR.'srazvs/programs/';
-$MEETDIR 	= HTTP_DIR.'srazvs/meetings/';
-$VISITDIR 	= HTTP_DIR.'srazvs/visitors/';
-$CATDIR 	= HTTP_DIR.'srazvs/categories/';
-$EXPDIR 	= HTTP_DIR.'srazvs/exports/';
-$SETDIR 	= HTTP_DIR.'srazvs/settings/';
-
 /**
  * This is Codeplex definitions
  *
@@ -65,7 +57,14 @@ define('MODEL_DIR',		APP_DIR.'Models/');
 define('VIEW_DIR',		APP_DIR.'Views/');
 define('CONTROLLER_DIR',APP_DIR.'Controllers/');
 define('TEMPLATE_DIR',	APP_DIR.'Templates/');
-
+/* URLs */
+define('BLOCK_DIR',		HTTP_DIR.PROJECT.'/blocks/');
+define('PROG_DIR',		HTTP_DIR.PROJECT.'/programs/');
+define('MEET_DIR',		HTTP_DIR.PROJECT.'/meetings/');
+define('VISIT_DIR',		HTTP_DIR.PROJECT.'/visitors/');
+define('CAT_DIR',		HTTP_DIR.PROJECT.'/categories/');
+define('EXP_DIR',		HTTP_DIR.PROJECT.'/exports/');
+define('SET_DIR',		HTTP_DIR.PROJECT.'/settings/');
 
 define('SESSION_PREFIX', md5($cfg['db_host'].$cfg['db_database'].$cfg['db_user'].$cfg['prefix'])."-");
 
