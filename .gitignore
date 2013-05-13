@@ -1,8 +1,8 @@
 !.*
 !*/.*
 *dwsync.xml
-!libs/Codeplex
 libs
+!libs/Codeplex
 *deprecated*
 srazvs.sublime-project
 srazvs.sublime-workspace
