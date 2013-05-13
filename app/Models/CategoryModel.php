@@ -39,7 +39,7 @@ class CategoryModel extends Component
 			$html_row .= "<tr class='radek1'>\n";
 			$html_row .= "<td><a href='process.php?id=".$DB_data['id']."&amp;cms=edit' title='Upravit kategorii'>\n";
 			$html_row .= "<img class='edit' src='".IMG_DIR."icons/edit.gif' /></a></td>\n";
-			$html_row .= "<td><a href=\"javascript:confirmation('?id=".$DB_data['id']."&amp;cms=del', 'opravdu smazat kategorii ".$DB_data['name']."? jste si jisti?')\" title='Odstranit'>\n";
+			$html_row .= "<td><a href=\"javascript:confirmation('?category&amp;id=".$DB_data['id']."&amp;cms=del', 'opravdu smazat kategorii ".$DB_data['name']."? jste si jisti?')\" title='Odstranit'>\n";
 			$html_row .= "<img class='edit' src='".IMG_DIR."icons/delete.gif' /></a></td>\n";
 			$html_row .= "<td>".$DB_data['name']."</td>\n";
 			$html_row .= "<td>\n";
