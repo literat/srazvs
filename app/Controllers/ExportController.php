@@ -1,6 +1,8 @@
 <?php
 /**
- * This file handles the retrieval and serving of news articles
+ * Export Controller
+ *
+ * This file handles the retrieval and serving of exports
  */
 class ExportController
 {
@@ -13,9 +15,9 @@ class ExportController
 	/**
 	 * This is the default function that will be called by router.php
 	 * 
-	 * @param array $getVars the GET variables posted to index.php
+	 * @param 	array 	$getVars 	the GET variables posted to index.php
 	 */
-	public function main(array $getVars)
+	public function init(array $getVars)
 	{
 		include_once(INC_DIR.'access.inc.php');
 

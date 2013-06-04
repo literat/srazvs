@@ -15,7 +15,7 @@ class MeetingController
 	 * 
 	 * @param array $getVars the GET variables posted to index.php
 	 */
-	public function main(array $getVars)
+	public function init(array $getVars)
 	{
 		######################### PRISTUPOVA PRAVA ################################
 

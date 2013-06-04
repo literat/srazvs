@@ -9,28 +9,30 @@
  */ 
 class BlockModel extends Component
 {
-	/** @var int meeting ID */
-	private $meeting_ID;
+	/** @var integer meeting ID */
+	private $meetingId;
 	
 	/**
 	 * Array of database block table columns
-	 *
-	 * @var array	DB_columns[]
+	 * @var array
 	 */
-	public $DB_columns = array();
+	public $dbColumns = array();
 	
 	/**
 	 * Array of form names
-	 *
-	 * @var array	form_names[]
+	 * @var array
 	 */
-	public $form_names = array();
+	public $formNames = array();
 	
-	/** konstruktor */
+	/**
+	 * Init variables
+	 * 
+	 * @param int $meeting_ID ID of meeting
+	 */
 	public function __construct($meeting_ID)
 	{
-		$this->meeting_ID = $meeting_ID;
-		$this->DB_columns = array(
+		$this->meetingId = $meeting_ID;
+		$this->dbColumns = array(
 			"name",
 			"day",
 			"from",
@@ -42,10 +44,10 @@ class BlockModel extends Component
 			"email",
 			"category",
 			"material",
-			"capacity",
-			"meeting"
+			"capacity"/*,
+			"meeting"*/
 		);
-		$this->form_names = array(
+		$this->formNames = array(
 			"name",
 			"day",
 			"start_hour",
@@ -65,97 +67,65 @@ class BlockModel extends Component
 	}
 	
 	/**
-	 * Render data in a table
+	 * Get data from database
 	 *
 	 * @return	string	html of a table
 	 */
-	public function renderData()
+	public function getData($block_id = NULL)
 	{
-		$sql = "SELECT 	blocks.id AS id,
-						blocks.name AS name,
-						cat.name AS cat_name,
-						day,
-						DATE_FORMAT(`from`, '%H:%i') AS `from`,
-						DATE_FORMAT(`to`, '%H:%i') AS `to`,
-						description,
-						tutor,
-						email,
-						style
-				FROM kk_blocks AS blocks
-				LEFT JOIN kk_categories AS cat ON cat.id = blocks.category
-				WHERE meeting = '".$this->meeting_ID."' AND blocks.deleted = '0'
-				ORDER BY day, `from` ASC";
-		$result = mysql_query($sql);
-		$rows = mysql_affected_rows();
-		
-		$html_row = "";
-		
-		if($rows == 0){
-			$html_row .= "<tr class='radek1'>\n";
-			$html_row .= "<td><img class='edit' src='".IMG_DIR."icons/edit2.gif' /></td>\n";
-			$html_row .= "<td><img class='edit' src='".IMG_DIR."icons/delete2.gif' /></td>\n";
-			$html_row .= "<td colspan='11' class='emptyTable'>Nejsou k dispozici žádné položky.</td>\n";
-			$html_row .= "</tr>\n";
+		if(isset($block_id)) {
+			$query = "SELECT 	name,
+						   		DATE_FORMAT(`from`,'%H') AS start_hour,
+						   		DATE_FORMAT(`to`,'%H') AS end_hour,
+						   		DATE_FORMAT(`from`,'%i') AS start_minute,
+						   		DATE_FORMAT(`to`,'%i') AS end_minute,
+								day,
+								program,
+								display_progs,
+								description,
+								material,
+								tutor,
+								email,
+								capacity,
+								category
+						FROM kk_blocks
+						WHERE id='".$block_id."' AND deleted='0'
+						LIMIT 1"; 
+			$result = mysql_query($query);
+			$rows = mysql_affected_rows();
+		} else {
+			$query = "SELECT 	blocks.id AS id,
+							blocks.name AS name,
+							cat.name AS cat_name,
+							day,
+							DATE_FORMAT(`from`, '%H:%i') AS `from`,
+							DATE_FORMAT(`to`, '%H:%i') AS `to`,
+							description,
+							tutor,
+							email,
+							style
+					FROM kk_blocks AS blocks
+					LEFT JOIN kk_categories AS cat ON cat.id = blocks.category
+					WHERE meeting = '".$this->meetingId."' AND blocks.deleted = '0'
+					ORDER BY day, `from` ASC";
+			$result = mysql_query($query);
+			$rows = mysql_affected_rows();
 		}
-		else{
-			while($data = mysql_fetch_assoc($result)){			
-				$html_row .= "<tr class='radek1'>\n";
-				$html_row .= "<td><a href='process.php?id=".$data['id']."&cms=edit&page=blocks' title='Upravit'><img class='edit' src='".IMG_DIR."icons/edit.gif' /></a></td>\n";
-				$html_row .= "<td><a href=\"javascript:confirmation('?id=".$data['id']."&amp;cms=del', 'blok: ".$data['name']." ".$data['from']." -> Opravdu SMAZAT tento blok? Jste si jisti?')\" title='Odstranit'><img class='edit' src='".IMG_DIR."icons/delete.gif' /></a></td>\n";
-				$html_row .= "<td class='text'>".$data['id']."</td>\n";
-				$html_row .= "<td class='text'>".$data['day']."</td>\n";
-				$html_row .= "<td class='text'>".$data['from']."</td>\n";
-				$html_row .= "<td class='text'>".$data['to']."</td>\n";
-				$html_row .= "<td class='text'>".$data['name']."</td>\n";
-				$html_row .= "<td class='text'>".shortenText($data['description'], 70, " ")."</td>\n";
-				$html_row .= "<td class='text'>".$data['tutor']."</td>\n";
-				$html_row .= "<td class='text'>".$data['email']."</td>\n";
-				$html_row .= "<td class='text'><div class='cat-".$data['style']."'>".$data['cat_name']."</div></td>\n";
-				$html_row .= "</tr>\n";
-			}
-		}
-		
-		// table head
-		$html_thead = "<tr>\n";
-		$html_thead .= "<th></th>\n";
-		$html_thead .= "<th></th>\n";
-		$html_thead .= "<th class='tab1'>ID</th>\n";
-		$html_thead .= "<th class='tab1'>den</th>\n";
-		$html_thead .= "<th class='tab1'>od</th>\n";
-		$html_thead .= "<th class='tab1'>do</th>\n";
-		$html_thead .= "<th class='tab1'>název</th>\n";
-		$html_thead .= "<th class='tab1'>popis</th>\n";
-		$html_thead .= "<th class='tab1'>lektor</th>\n";
-		$html_thead .= "<th class='tab1'>e-mail</th>\n";
-		$html_thead .= "<th class='tab1'>kategorie</th>\n";
-		$html_thead .= "</tr>\n";
-		
-		// table foot
-		$html_tfoot = $html_thead;
 
-		// table
-		$html_table = "<table id='BlocksTable' class='list tablesorter'>\n";
-		$html_table .= "<thead>\n";
-		$html_table .= $html_thead;
-		$html_table .= "</thead>\n";
-		$html_table .= "<tfoot>\n";
-		$html_table .= $html_tfoot;
-		$html_table .= "</tfoot>\n";
-		$html_table .= "<tbody>\n";
-		$html_table .= $html_row;
-		$html_table .= "</tbody>\n";
-		$html_table .= "</table>\n";
-		
-		return $html_table;
+		if($rows == 0) {
+			return 0;
+		} else {
+			return $result;
+		}
 	}
-	
+
 	/**
 	 * Render select box of blocks
 	 *
 	 * @param	int		selected option
 	 * @return	string	html select box
 	 */
-	public static function renderHtmlSelect($ID_block)
+	public static function renderHtmlSelect($block_id)
 	{
 		$query = "SELECT * FROM kk_blocks WHERE meeting='".$_SESSION['meetingID']."' AND program='1' AND deleted='0'";
 		$result = mysql_query($query);
@@ -163,7 +133,7 @@ class BlockModel extends Component
 		$html_select = "<select style='width: 300px; font-size: 10px' name='block'>\n";
 
 		while($data = mysql_fetch_assoc($result)){
-			if($data['id'] == $ID_block) $selected = "selected";
+			if($data['id'] == $block_id) $selected = "selected";
 			else $selected = "";
 			$html_select .= "<option ".$selected." value='".$data['id']."'>".$data['day'].", ".$data['from']." - ".$data['to']." : ".$data['name']."</option>\n";
 		}
@@ -178,7 +148,7 @@ class BlockModel extends Component
 	 * @param	int		meeting ID
 	 * @return	array	result and number of affected rows
 	 */
-	public function getProgramBlocks($ID_meeting)
+	public function getProgramBlocks($meeting_id)
 	{
 		$query = "SELECT 	id,
 					day,
@@ -187,7 +157,7 @@ class BlockModel extends Component
 					name,
 					program
 				FROM kk_blocks
-				WHERE deleted = '0' AND program='1' AND meeting='".$ID_meeting."'
+				WHERE deleted = '0' AND program='1' AND meeting='".$meeting_id."'
 				ORDER BY `day` ASC";
 
 		$result = mysql_query($query);

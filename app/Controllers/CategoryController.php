@@ -10,10 +10,74 @@ class CategoryController
 	 */
 	public $template = 'categories';
 
+	private $Container;
+
+	private $Category;
+
+	private $View;
+
 	/** Constructor */
 	public function __construct()
 	{
+		$mid = $_SESSION['meetingID'];
 
+		$this->Container = new Container($GLOBALS['cfg'], $mid);
+		$this->Category = $this->Container->createCategory();
+		$this->View = $this->Container->createView();
+	}
+
+	private function newItem()
+	{
+		$heading = "nová kategorie";
+		$todo = "create";
+		$this->template = "process";
+			
+		foreach($this->Category->DB_columns as $key) {
+			$$key = requested($key, "");	
+		}
+	}
+
+	private function delete($id)
+	{
+		if($this->Category->delete($id)){			
+	  		redirect("?category&error=del");
+		}
+	}
+
+	private function create()
+	{
+		foreach($this->Category->DB_columns as $key) {
+			$DB_data[$key] = requested($key, "");	
+		}
+			
+		if($this->Category->create($DB_data)){	
+			redirect("index.php?error=ok");
+		}
+	}
+
+	private function edit()
+	{
+		$heading = "úprava kategorie";
+		$todo = "modify";
+		$this->template = "process";
+				
+		$query = "SELECT * FROM kk_categories WHERE id = ".$id." LIMIT 1"; 
+		$DB_data = mysql_fetch_assoc(mysql_query($query));
+				
+		foreach($this->Category->DB_columns as $key) {
+			$$key = requested($key, $DB_data[$key]);	
+		}
+	}
+
+	private function modify()
+	{
+		foreach($this->Category->DB_columns as $key) {
+			$DB_data[$key] = requested($key, "");	
+		}
+				
+		if($this->Category->modify($id, $DB_data)){
+			redirect("index.php?error=ok");
+		}
 	}
 
 	/**
@@ -21,91 +85,38 @@ class CategoryController
 	 * 
 	 * @param array $getVars the GET variables posted to index.php
 	 */
-	public function main(array $getVars)
+	public function init(array $getVars)
 	{
 		include_once(INC_DIR.'access.inc.php');
 
 		########################## KONTROLA ###############################
 
-		$mid = $_SESSION['meetingID'];
+		//$mid = $_SESSION['meetingID'];
 		$id = requested("id","");
 		$cms = requested("cms","");
 		$error = requested("error","");
-
-		$Container = new Container($GLOBALS['cfg'], $mid);
-		$CategoryHandler = $Container->createCategory();
-		$ViewHandler = $Container->createView();
 
 		######################### DELETE CATEGORY #########################
 
 		switch($cms) {
 			case "del":
-				if($CategoryHandler->delete($id)){	
-			  		redirect("?category&error=del");
-				}
+				$this->delete();
 				break;
 			case "new":
-				$heading = "nová kategorie";
-				$todo = "create";
-				$this->template = "process";
-				
-				foreach($CategoryHandler->DB_columns as $key) {
-					$$key = requested($key, "");	
-				}
+				$this->newItem();
 				break;
 			case "create":
-				foreach($CategoryHandler->DB_columns as $key) {
-					$DB_data[$key] = requested($key, "");	
-				}
-				
-				if($CategoryHandler->create($DB_data)){	
-					redirect("index.php?error=ok");
-				}
+				$this->create();
 				break;
 			case "edit":
-				$heading = "úprava kategorie";
-				$todo = "modify";
-				$this->template = "process";
-				
-				$query = "SELECT * FROM kk_categories WHERE id = ".$id." LIMIT 1"; 
-				$DB_data = mysql_fetch_assoc(mysql_query($query));
-				
-				foreach($CategoryHandler->DB_columns as $key) {
-					$$key = requested($key, $DB_data[$key]);	
-				}
+				$this->edit();
 				break;
 			case "modify":
-				foreach($CategoryHandler->DB_columns as $key) {
-					$DB_data[$key] = requested($key, "");	
-				}
-				
-				if($CategoryHandler->modify($id, $DB_data)){
-					redirect("index.php?error=ok");
-				}
+				$this->modify();
 				break;
 		}
 
-		/* HTTP Header */
-		$ViewHandler->loadTemplate('http_header');
-		$ViewHandler->assign('config',		$GLOBALS['cfg']);
-		$ViewHandler->assign('style',		$CategoryHandler->getStyles());
-		$ViewHandler->render(TRUE);
-
-		/* Application Header */
-		$ViewHandler->loadTemplate('header');
-		$ViewHandler->assign('config',		$GLOBALS['cfg']);
-		$ViewHandler->render(TRUE);
-
-		// load and prepare template
-		$ViewHandler->loadTemplate('categories/'.$this->template);
-		$ViewHandler->assign('error',	printError($error));
-		$ViewHandler->assign('render',	$CategoryHandler->render());
-		$ViewHandler->render(TRUE);
-		$this->renderContent();
-
-		/* Footer */
-		$ViewHandler->loadTemplate('footer');
-		$ViewHandler->render(TRUE);
+		$this->render();
 	}
 
 	private function process()
@@ -119,8 +130,28 @@ class CategoryController
 		$ViewHandler->render(TRUE);
 	}
 
-	private function renderContent($cms)
+	private function render()
 	{
+		/* HTTP Header */
+		$this->View->loadTemplate('http_header');
+		$this->View->assign('config',		$GLOBALS['cfg']);
+		$this->View->assign('style',		$this->Category->getStyles());
+		$this->View->render(TRUE);
 
+		/* Application Header */
+		$this->View->loadTemplate('header');
+		$this->View->assign('config',		$GLOBALS['cfg']);
+		$this->View->render(TRUE);
+
+		// load and prepare template
+		$this->View->loadTemplate('categories/'.$this->template);
+		$this->View->assign('error',	printError($error));
+		$this->View->assign('render',	$this->Category->render());
+		$this->View->render(TRUE);
+		//$this->renderContent();
+
+		/* Footer */
+		$this->View->loadTemplate('footer');
+		$this->View->render(TRUE);
 	}
 }
