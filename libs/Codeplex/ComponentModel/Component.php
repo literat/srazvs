@@ -66,7 +66,7 @@ abstract class Component implements IComponent
 	 * @param	array	$db_data	array of data
 	 * @return	bool
 	 */	
-	public function modify($id, array $db_data)
+	public function update($id, array $db_data)
 	{
 		$query_set = "";
 	 	foreach($db_data as $key => $value) {

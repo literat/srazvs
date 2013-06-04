@@ -24,7 +24,7 @@ interface IComponent extends IModel
 	 * @param	array	Associated array with data to DB
 	 * @return	bool
 	 */	
-	public function modify($id, array $dbData);
+	public function update($id, array $dbData);
 	
 	/**
 	 * Delete record
