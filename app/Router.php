@@ -17,7 +17,7 @@ $getVars = array();
 foreach ($parsed as $argument)
 {
 	//split GET vars along '=' symbol to separate variable, values
-	list($variable , $value) = split('=' , $argument);
+	list($variable , $value) = preg_split('/=/' , $argument);
 	$getVars[$variable] = $value;
 }
 
@@ -51,4 +51,4 @@ else
 
 //once we have the controller instantiated, execute the default function
 //pass any GET varaibles to the main method
-$controller->main($getVars);
+$controller->init($getVars);
