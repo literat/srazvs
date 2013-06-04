@@ -7,7 +7,7 @@
     <div id="headerContent">
 	 <div id="headerProfileLogout">
 	  <a href="<?php echo HTTP_DIR."srazvs/"; ?>index.php" title="domů"><span>Domů</span></a>&nbsp;|&nbsp;
-	  <a href="<?php echo $SETDIR; ?>index.php" title="nastavení"><span>Nastavení</span></a>&nbsp;|&nbsp;
+	  <a href="<?php echo SET_DIR; ?>index.php" title="nastavení"><span>Nastavení</span></a>&nbsp;|&nbsp;
       <a href="<?php echo HTTP_DIR."admin/"; ?>" title="administrace"><span>Administrace</span></a>&nbsp;|&nbsp; 
 	  <a href="<?php echo HTTP_DIR."srazvs/registrace"; ?>" title="registrace" target="_blank"><span>Registrace</span></a>&nbsp;|&nbsp;
 	  <a href="<?php echo HTTP_DIR."srazvs/program.php"; ?>" title="program" target="_blank"><span>Veřejný program</span></a>&nbsp;|&nbsp;
@@ -37,7 +37,7 @@
 	 <h1>Srazy VS :::: <?php echo $data['place']." ".$data['year']; ?></h1>
 	</div>
     <div id="siteNavbar">
-	 <a href="<?php echo $MEETDIR."?mid=".$_SESSION['meetingID']; ?>" title="sraz">
+	 <a href="<?php echo $MEET_DIR."?mid=".$_SESSION['meetingID']; ?>" title="sraz">
       <img src="<?php echo IMG_DIR; ?>home.png" alt="home" /> sraz</a> |
      <a href="<?php echo $BLOCKDIR; ?>" title="bloky">
       <img src="<?php echo IMG_DIR; ?>blocks.png" alt="blok" /> bloky</a> |
