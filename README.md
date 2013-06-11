@@ -37,9 +37,9 @@ Class Methods:			$this->camelCase()
 
 Class Variables:		$this->camelCase
 
-Functions Definitions:	camelCase()
+Functions Definitions:	simple_function()
 
-Variables Definitions:	$camelCase
+Variables Definitions:	$simple_variable
 
 Bug Tracker
 ---------------
