@@ -5,79 +5,97 @@
 class CategoryController
 {
 	/**
-	 * This template variable will hold the 'view' portion of our MVC for this 
-	 * controller
+	 * template
+	 * @var string
 	 */
-	public $template = 'categories';
+	private $template = 'listing';
 
+	/**
+	 * template directory
+	 * @var string
+	 */
+	private $templateDir = 'category';
+
+	/**
+	 * meeting ID
+	 * @var integer
+	 */
+	private $meetingId = 0;
+
+	/**
+	 * category ID
+	 * @var integer
+	 */
+	private $categoryId = NULL;
+
+	/**
+	 * action what to do
+	 * @var string
+	 */
+	private $cms = '';
+
+	/**
+	 * page where to return
+	 * @var string
+	 */
+	private $page = 'category';
+
+	/**
+	 * heading tetxt
+	 * @var string
+	 */
+	private $heading = '';
+
+	/**
+	 * action what to do next
+	 * @var string
+	 */
+	private $todo = '';
+
+	/**
+	 * data
+	 * @var array
+	 */
+	private $data = array();
+
+	/**
+	 * error handler
+	 * @var string
+	 */
+	private $error = '';
+
+	/**
+	 * Container class
+	 * @var [type]
+	 */
 	private $Container;
 
+	/**
+	 * Category model
+	 * @var Category
+	 */
 	private $Category;
 
+	/**
+	 * View model
+	 * @var View
+	 */
 	private $View;
 
-	/** Constructor */
+	/**
+	 * Prepare initial values
+	 */
 	public function __construct()
 	{
-		$mid = $_SESSION['meetingID'];
+		if($this->meetingId = requested("mid","")){
+			$_SESSION['meetingID'] = $this->meetingId;
+		} else {
+			$this->meetingId = $_SESSION['meetingID'];
+		}
 
-		$this->Container = new Container($GLOBALS['cfg'], $mid);
+		$this->Container = new Container($GLOBALS['cfg'], $this->meetingId);
 		$this->Category = $this->Container->createCategory();
 		$this->View = $this->Container->createView();
-	}
-
-	private function newItem()
-	{
-		$heading = "nová kategorie";
-		$todo = "create";
-		$this->template = "process";
-			
-		foreach($this->Category->DB_columns as $key) {
-			$$key = requested($key, "");	
-		}
-	}
-
-	private function delete($id)
-	{
-		if($this->Category->delete($id)){			
-	  		redirect("?category&error=del");
-		}
-	}
-
-	private function create()
-	{
-		foreach($this->Category->DB_columns as $key) {
-			$DB_data[$key] = requested($key, "");	
-		}
-			
-		if($this->Category->create($DB_data)){	
-			redirect("index.php?error=ok");
-		}
-	}
-
-	private function edit()
-	{
-		$heading = "úprava kategorie";
-		$todo = "modify";
-		$this->template = "process";
-				
-		$query = "SELECT * FROM kk_categories WHERE id = ".$id." LIMIT 1"; 
-		$DB_data = mysql_fetch_assoc(mysql_query($query));
-				
-		foreach($this->Category->DB_columns as $key) {
-			$$key = requested($key, $DB_data[$key]);	
-		}
-	}
-
-	private function modify()
-	{
-		foreach($this->Category->DB_columns as $key) {
-			$DB_data[$key] = requested($key, "");	
-		}
-				
-		if($this->Category->modify($id, $DB_data)){
-			redirect("index.php?error=ok");
-		}
 	}
 
 	/**
@@ -92,46 +110,120 @@ class CategoryController
 		########################## KONTROLA ###############################
 
 		//$mid = $_SESSION['meetingID'];
-		$id = requested("id","");
-		$cms = requested("cms","");
-		$error = requested("error","");
+		$id = requested("id",$this->categoryId);
+		$this->cms = requested("cms","");
+		$this->error = requested("error","");
+		$this->page = requested("page",$this->page);
 
 		######################### DELETE CATEGORY #########################
 
-		switch($cms) {
-			case "del":
-				$this->delete();
+		switch($this->cms) {
+			case "delete":
+				$this->delete($id);
 				break;
 			case "new":
-				$this->newItem();
+				$this->__new();
 				break;
 			case "create":
 				$this->create();
 				break;
 			case "edit":
-				$this->edit();
+				$this->edit($id);
 				break;
 			case "modify":
-				$this->modify();
+				$this->update($id);
 				break;
 		}
 
 		$this->render();
 	}
 
-	private function process()
+	/**
+	 * Prepare new item
+	 * @return void
+	 */
+	private function __new()
 	{
-		$ViewHandler->assign('id',		$id);
-		$ViewHandler->assign('todo',	$todo);
-		$ViewHandler->assign('name',	$name);
-		$ViewHandler->assign('bgcolor',	bgcolor);
-		$ViewHandler->assign('bocolor',	bocolor);
-		$ViewHandler->assign('focolor',	focolor);
-		$ViewHandler->render(TRUE);
+		$this->heading = "nová kategorie";
+		$this->todo = "create";
+		$this->template = "form";
+			
+		foreach($this->Category->dbColumns as $key) {
+			$this->data[$key] = requested($key, "");	
+		}
 	}
 
+	/**
+	 * Delete item
+	 * @param  int $id of item
+	 * @return void
+	 */
+	private function delete($id)
+	{
+		if($this->Category->delete($id)){			
+	  		redirect("?category&error=del");
+		}
+	}
+
+	/**
+	 * Create new item in DB
+	 * @return void
+	 */
+	private function create()
+	{
+		foreach($this->Category->dbColumns as $key) {
+			$db_data[$key] = requested($key, "");	
+		}
+
+		if($this->Category->create($db_data)){	
+			redirect("?".$this->page."&error=ok");
+		}
+	}
+
+	/**
+	 * Prepare form page
+	 * @param  int $id of item
+	 * @return void
+	 */
+	private function edit($id)
+	{
+		$this->heading = "úprava kategorie";
+		$this->todo = "modify";
+		$this->template = "form";
+		$this->categoryId = $id;
+				
+		$query = "SELECT * FROM kk_categories WHERE id = ".$id." LIMIT 1"; 
+		$db_data = mysql_fetch_assoc(mysql_query($query));
+				
+		foreach($this->Category->dbColumns as $key) {
+			$this->data[$key] = requested($key, $db_data[$key]);	
+		}
+	}
+
+	/**
+	 * Update item in DB
+	 * @param  int $id of item
+	 * @return void
+	 */
+	private function update($id)
+	{
+		foreach($this->Category->dbColumns as $key) {
+			$db_data[$key] = requested($key, "");
+		}
+
+		if($this->Category->modify($id, $db_data)){
+			redirect("?".$this->page."&error=ok");
+		}
+	}
+
+	/**
+	 * Render entire page
+	 * @return void
+	 */
 	private function render()
 	{
+		$error = "";
+
 		/* HTTP Header */
 		$this->View->loadTemplate('http_header');
 		$this->View->assign('config',		$GLOBALS['cfg']);
@@ -144,11 +236,24 @@ class CategoryController
 		$this->View->render(TRUE);
 
 		// load and prepare template
-		$this->View->loadTemplate('categories/'.$this->template);
-		$this->View->assign('error',	printError($error));
-		$this->View->assign('render',	$this->Category->render());
+		$this->View->loadTemplate($this->templateDir.'/'.$this->template);
+		$this->View->assign('heading',	$this->heading);
+		$this->View->assign('todo',		$this->todo);
+		$this->View->assign('error',	printError($this->error));
+		$this->View->assign('render',	$this->Category->getData());
+		$this->View->assign('cms',		$this->cms);
+		$this->View->assign('mid',		$this->meetingId);
+		$this->View->assign('page',		$this->page);
+
+		if(!empty($this->data)) {
+			$this->View->assign('id',		$this->categoryId);
+			$this->View->assign('name',		$this->data['name']);
+			$this->View->assign('bgcolor',	$this->data['bgcolor']);
+			$this->View->assign('bocolor',	$this->data['bocolor']);
+			$this->View->assign('focolor',	$this->data['focolor']);
+		}
+
 		$this->View->render(TRUE);
-		//$this->renderContent();
 
 		/* Footer */
 		$this->View->loadTemplate('footer');

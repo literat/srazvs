@@ -14,12 +14,12 @@ class CategoryModel extends Component
 	 *
 	 * @var array	DB_columns[]
 	 */
-	public $DB_columns = array();
+	public $dbColumns = array();
 	
 	/** Constructor */
 	public function __construct()
 	{
-		$this->DB_columns = array("name", "bgcolor", "bocolor", "focolor");
+		$this->dbColumns = array("name", "bgcolor", "bocolor", "focolor");
 		$this->dbTable = "kk_categories";
 	}
 	
@@ -28,51 +28,17 @@ class CategoryModel extends Component
 	 *
 	 * @return	string	html table
 	 */
-	public function render()
+	public function getData()
 	{		
 		$query = "SELECT * FROM kk_categories WHERE deleted = '0' ORDER BY name";
 		$result = mysql_query($query);
+		$rows = mysql_affected_rows();
 
-		$html_row = "";
-
-		while($DB_data = mysql_fetch_assoc($result)){
-			$html_row .= "<tr class='radek1'>\n";
-			$html_row .= "<td><a href='process.php?id=".$DB_data['id']."&amp;cms=edit' title='Upravit kategorii'>\n";
-			$html_row .= "<img class='edit' src='".IMG_DIR."icons/edit.gif' /></a></td>\n";
-			$html_row .= "<td><a href=\"javascript:confirmation('?category&amp;id=".$DB_data['id']."&amp;cms=del', 'opravdu smazat kategorii ".$DB_data['name']."? jste si jisti?')\" title='Odstranit'>\n";
-			$html_row .= "<img class='edit' src='".IMG_DIR."icons/delete.gif' /></a></td>\n";
-			$html_row .= "<td>".$DB_data['name']."</td>\n";
-			$html_row .= "<td>\n";
-			$html_row .= "<div class='cat-".$DB_data['style']."'>".$DB_data['style']."</div>\n";
-			$html_row .= "</td>\n";
-        	$html_row .= "</tr>\n";
+		if($rows == 0) {
+			return 0;
+		} else {
+			return $result;
 		}
-		
-		// table head
-		$html_thead = "<tr>\n";
-		$html_thead .= "<th></th>\n";
-		$html_thead .= "<th></th>\n";
-		$html_thead .= "<th class='tab1'>název</th>\n";
-		$html_thead .= "<th class='tab1'>styl</th>\n";
-		$html_thead .= "</tr>\n";
-		
-		// table foot
-		$html_tfoot = $html_thead;
-
-		// table
-		$html_table = "<table id='CategoryTable' class='list tablesorter'>\n";
-		$html_table .= "<thead>\n";
-		$html_table .= $html_thead;
-		$html_table .= "</thead>\n";
-		$html_table .= "<tfoot>\n";
-		$html_table .= $html_tfoot;
-		$html_table .= "</tfoot>\n";
-		$html_table .= "<tbody>\n";
-		$html_table .= $html_row;
-		$html_table .= "</tbody>\n";
-		$html_table .= "</table>\n";
-		
-		return $html_table;
 	}
 
 	/**

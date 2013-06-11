@@ -1,13 +1,13 @@
 <div class='siteContentRibbon'>Správa kategorií</div>
 <div class='pageRibbon'><?php echo $data['heading']; ?></div>
 
-<form action='<?php echo '../../srazvs/categories/process.php' ?>' method='post'>
+<form action='<?php echo CAT_DIR; ?>' method='post'>
 
 	<div class='button-line'>
 		<button type='submit' onclick=\"this.form.submit()\">
 			<img src='<?php echo IMG_DIR; ?>icons/save.png' /> Uložit
 		</button>
-		<button type='button' onclick="window.location.replace('<?php echo "index.php" ?>')">
+		<button type='button' onclick="window.location.replace('<?php echo CAT_DIR; ?>')">
 			<img src='<?php echo IMG_DIR; ?>icons/storno.png'  /> Storno
 		</button>
 	</div>
@@ -93,4 +93,5 @@ window.onload = function(){
 	</table>
 	<input type='hidden' name='cms' value='<?php echo $data['todo']; ?>'>
 	<input type='hidden' name='id' value='<?php echo $data['id']; ?>'>
+	<input type='hidden' name='page' value='<?php echo $data['page']; ?>'>
 </form>
