@@ -475,7 +475,7 @@ function custom_hmac($algo, $data, $key, $raw_output = false)
  * @param string $var - nazev pole GET nebo POST
  * @param $default - defaultni hodnota v pripade neexistence GET nebo POST
  */
-function requested($var, $default)
+function requested($var, $default = NULL)
 {
 	//if(isset($_SESSION['data'][$var])){
 	//	$out = $_SESSION['data'][$var];
@@ -563,4 +563,26 @@ function number2word($number, $zero = false)
 	return false;
 }
 
-?>
+function backtrace_debug() {
+//* * * * start of backtrace debug code * * *
+	$dbt = debug_backtrace();
+	echo "<div><br>= = = = = = = = Backtrace = = = = = = = =<br>\n";
+	for($d_b_t = 0 ; $d_b_t < count($dbt) ; $d_b_t++) {
+        if($d_b_t == 0) {
+          echo basename( __FILE__ ) . ' is referenced in ';
+        } else {
+          echo $dbt[$d_b_t - 1]['file'] . ' is referenced in ';
+        }
+        if(isset($dbt[$d_b_t]['file'])) {
+          echo $dbt[$d_b_t]['file'] . ' on line ';
+        }
+        if (isset($dbt[$d_b_t]['line'])) {
+          echo $dbt[$d_b_t]['line'] . ' in a "';
+        }
+        if(isset($dbt[$d_b_t]['function'])) {
+          echo $dbt[$d_b_t]['function'] . '"<br>' . "\n";
+        }
+	}
+	echo "<br>= = = = = = = = = = = = = = = = = = = = =<br>\n</div>";
+	//* * * * end of backtrace debug code * * *
+}
