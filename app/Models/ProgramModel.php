@@ -1,6 +1,6 @@
 <?php
 /**
- * Program
+ * Program model
  *
  * class for handling programs
  *
@@ -10,28 +10,28 @@
 class ProgramModel extends Component
 {
 	/** @var int meeting ID */
-	private $meeting_ID;
+	private $meetingId;
 	
 	/**
 	 * Array of database programs table columns
 	 *
 	 * @var array	DB_columns[]
 	 */
-	public $DB_columns = array();
+	public $dbColumns = array();
 	
 	/**
 	 * Array of form names
 	 *
 	 * @var array	form_names[]
 	 */
-	public $form_names = array();
+	public $formNames = array();
 	
 	/** Constructor */
-	public function __construct($meeting_ID)
+	public function __construct($meeting_id)
 	{
-		$this->meeting_ID = $meeting_ID;
-		$this->DB_columns = array("name", "block", "display_in_reg", "description", "tutor", "email", "category", "material", "capacity");
-		$this->form_names = array("name", "description", "material", "tutor", "email", "capacity", "display_in_reg", "block", "category");
+		$this->meetingId = $meeting_id;
+		$this->dbColumns = array("name", "block", "display_in_reg", "description", "tutor", "email", "category", "material", "capacity");
+		$this->formNames = array("name", "description", "material", "tutor", "email", "capacity", "display_in_reg", "block", "category");
 		$this->dbTable = "kk_programs";
 	}
 
@@ -166,7 +166,7 @@ class ProgramModel extends Component
 							name,
 							program
 					FROM kk_blocks
-					WHERE deleted = '0' AND program='1' AND meeting='".$this->meeting_ID."'
+					WHERE deleted = '0' AND program='1' AND meeting='".$this->meetingId."'
 					ORDER BY `day`, `from` ASC";
 		
 		$progResult = mysql_query($progSql);
@@ -204,9 +204,17 @@ class ProgramModel extends Component
 	 *
 	 * @return	string	html of a table
 	 */
-	public function renderData()
+	public function getData($program_id = NULL)
 	{
-		$sql = "SELECT 	programs.id AS id,
+		if(isset($program_id)) {
+			$query = "SELECT	*
+					FROM kk_programs
+					WHERE id='".$program_id."' AND deleted='0'
+					LIMIT 1"; ; 
+			$result = mysql_query($query);
+			$rows = mysql_affected_rows();
+		} else {
+			$query = "SELECT 	programs.id AS id,
 						programs.name AS name,
 						programs.description AS description,
 						programs.tutor AS tutor,
@@ -218,71 +226,18 @@ class ProgramModel extends Component
 				FROM kk_programs AS programs
 				LEFT JOIN kk_blocks AS blocks ON blocks.id = programs.block
 				LEFT JOIN kk_categories AS cat ON cat.id = programs.category
-				WHERE blocks.meeting = '".$this->meeting_ID."' AND programs.deleted = '0' AND blocks.deleted='0'
+				WHERE blocks.meeting = '".$this->meetingId."' AND programs.deleted = '0' AND blocks.deleted='0'
 				ORDER BY programs.id ASC";
 				
-		$result = mysql_query($sql);
-		$rows = mysql_affected_rows();
-		
-		$html_row = "";
-		
-		if($rows == 0){
-			$html_row .= "<tr class='radek1'>\n";
-			$html_row .= "<td><img class='edit' src='".IMG_DIR."icons/edit2.gif' /></td>\n";
-			$html_row .= "<td><img class='edit' src='".IMG_DIR."icons/delete2.gif' /></td>\n";
-			$html_row .= "<td colspan='11' class='emptyTable'>Nejsou k dispozici žádné položky.</td>\n";
-			$html_row .= "</tr>\n";
-		}
-		else{
-			while($data = mysql_fetch_assoc($result)){			
-				$html_row .= "<tr class='radek1'>\n";
-				$html_row .= "<td><a href='process.php?id=".$data['id']."&cms=edit&page=programs' title='Upravit'><img class='edit' src='".IMG_DIR."icons/edit.gif' /></a></td>\n";
-				$html_row .= "<td><a href='../programs/process.php?cms=program-visitors&id=".$data['id']."' title='Účastníci programu'><img class='edit' src='".IMG_DIR."icons/pdf.png' /></a></td>\n";
-				$html_row .= "<td><a href=\"javascript:confirmation('?id=".$data['id']."&amp;cms=del', 'program: ".$data['name']." -> Opravdu SMAZAT tento program? Jste si jisti?')\" title='Odstranit'><img class='edit' src='".IMG_DIR."icons/delete.gif' /></a></td>\n";
-				$html_row .= "<td class='text'>".$data['id']."</td>\n";
-				$html_row .= "<td class='text'>".$data['name']."</td>\n";
-				$html_row .= "<td class='text'>".shortenText($data['description'], 70, " ")."</td>\n";
-				$html_row .= "<td class='text'>".$data['tutor']."</td>\n";
-				$html_row .= "<td class='text'>".$data['email']."</td>\n";
-				$html_row .= "<td class='text'>".$data['block']."</td>\n";
-				$html_row .= "<td class='text'>".$data['capacity']."</td>\n";
-				$html_row .= "<td class='text'><div class='cat-".$data['style']."'>".$data['cat_name']."</div></td>\n";
-				$html_row .= "</tr>\n";
-			}
+			$result = mysql_query($query);
+			$rows = mysql_affected_rows();
 		}
 		
-		// table head
-		$html_thead = "<tr>\n";
-		$html_thead .= "<th></th>\n";
-		$html_thead .= "<th></th>\n";
-		$html_thead .= "<th></th>\n";
-		$html_thead .= "<th class='tab1'>ID</th>\n";
-		$html_thead .= "<th class='tab1'>název</th>\n";
-		$html_thead .= "<th class='tab1'>popis</th>\n";
-		$html_thead .= "<th class='tab1'>lektor</th>\n";
-		$html_thead .= "<th class='tab1'>e-mail</th>\n";
-		$html_thead .= "<th class='tab1'>blok</th>\n";
-		$html_thead .= "<th class='tab1'>kapacita</th>\n";
-		$html_thead .= "<th class='tab1'>kategorie</th>\n";
-		$html_thead .= "</tr>\n";
-		
-		// table foot
-		$html_tfoot = $html_thead;
-
-		// table
-		$html_table = "<table id='ProgramsTable' class='list tablesorter'>\n";
-		$html_table .= "<thead>\n";
-		$html_table .= $html_thead;
-		$html_table .= "</thead>\n";
-		$html_table .= "<tfoot>\n";
-		$html_table .= $html_tfoot;
-		$html_table .= "</tfoot>\n";
-		$html_table .= "<tbody>\n";
-		$html_table .= $html_row;
-		$html_table .= "</tbody>\n";
-		$html_table .= "</table>\n";
-		
-		return $html_table;
+		if($rows == 0) {
+			return 0;
+		} else {
+			return $result;
+		}
 	}
 	
 	/**
@@ -294,11 +249,11 @@ class ProgramModel extends Component
 	 */
 	public function getProgramsRegistration ($id, $disabled)
 	{
-		$sql = "SELECT 	*
+		$query = "SELECT 	*
 			FROM kk_programs
 			WHERE block='".$id."' AND deleted='0'
 			LIMIT 10";
-		$result = mysql_query($sql);
+		$result = mysql_query($query);
 		$rows = mysql_affected_rows();
 	
 		if($rows == 0){
@@ -340,27 +295,32 @@ class ProgramModel extends Component
 	 * Get visitors registred on program
 	 *
 	 * @param	int		$programId	ID of program
-	 * @return	string	html
+	 * @return	string	html or null
 	 */
-	public function getProgramVisitors($programId)
+	public function getProgramVisitors($program_id = NULL)
 	{
-		$html = "  <div style='border-bottom:1px solid black;text-align:right;'>účastníci</div>";
-		
-		$html .= "<br /><a style='text-decoration:none; display:block; margin-bottom:4px;' href='?cms=program-visitors&id=".$programId."'>
-      	<img style='border:none;' align='absbottom' src='".IMG_DIR."icons/pdf.png' />Účastníci programu</a>";
+		if(!isset($program_id)) {
+			return NULL;
+		} else {
+			$html = "  <div style='border-bottom:1px solid black;text-align:right;'>účastníci</div>";
+			
+			$html .= "<br /><a style='text-decoration:none; display:block; margin-bottom:4px;' href='?cms=program-visitors&id=".$program_id."'>
+	      	<img style='border:none;' align='absbottom' src='".IMG_DIR."icons/pdf.png' />Účastníci programu</a>";
 
-		$query = "SELECT vis.name AS name,
-							vis.surname AS surname,
-							vis.nick AS nick
-					FROM kk_visitors AS vis
-					LEFT JOIN `kk_visitor-program` AS visprog ON vis.id = visprog.visitor
-					WHERE visprog.program = '".$programId."' AND vis.deleted = '0'";
-		$result = mysql_query($query);
-		$i = 1;
-		while($data = mysql_fetch_assoc($result)){
-			$html .= $i.". ".$data['name']." ".$data['surname']." - ".$data['nick']."<br />";
-			$i++;
+			$query = "SELECT vis.name AS name,
+								vis.surname AS surname,
+								vis.nick AS nick
+						FROM kk_visitors AS vis
+						LEFT JOIN `kk_visitor-program` AS visprog ON vis.id = visprog.visitor
+						WHERE visprog.program = '".$program_id."' AND vis.deleted = '0'";
+			$result = mysql_query($query);
+			$i = 1;
+			while($data = mysql_fetch_assoc($result)){
+				$html .= $i.". ".$data['name']." ".$data['surname']." - ".$data['nick']."<br />";
+				$i++;
+			}
+
+			return $html;
 		}
-		return $html;
 	}
 }
