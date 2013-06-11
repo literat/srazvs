@@ -4,6 +4,7 @@
  */
 
 //fetch the passed request
+
 $request = $_SERVER['QUERY_STRING'];
 
 //parse the page request and other GET variables
@@ -22,12 +23,15 @@ foreach ($parsed as $argument)
 }
 
 //compute the path to the file
-$target = APP_DIR.'/Controllers/'.ucfirst($page).'Controller.php';
+$target = CONTROLLER_DIR.ucfirst($page).'Controller.php';
+
+//var_dump($target);
 
 //get target
 if(file_exists($target))
 {
-	include_once($target);
+	//print_r(get_declared_classes());
+	require_once($target);
 
 	//modify page to fit naming convention
 	$class = ucfirst($page).'Controller';
