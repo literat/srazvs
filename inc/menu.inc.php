@@ -22,7 +22,7 @@ $menu .= "  <div class='menuItem'>jednotlivé srazy</div>\n";
 $menu .= "   <ul>";
 
 while($data = mysql_fetch_array($result)){
-	$menu .= "    <li><a href='"./*$MEETDIR*/"?mid=".$data['mid']."'>".$data['place']." ".$data['year']."</a></li>\n";
+	$menu .= "    <li><a href='".MEET_DIR."&mid=".$data['mid']."'>".$data['place']." ".$data['year']."</a></li>\n";
 }
 
 $menu .= "   </ul>";

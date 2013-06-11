@@ -37,7 +37,7 @@
 	 <h1>Srazy VS :::: <?php echo $row['place']." ".$row['year']; ?></h1>
 	</div>
     <div id="siteNavbar">
-	 <a href="<?php echo MEET_DIR."?mid=".$_SESSION['meetingID']; ?>" title="sraz">
+	 <a href="<?php echo MEET_DIR."&mid=".$_SESSION['meetingID']; ?>" title="sraz">
       <img src="<?php echo IMG_DIR; ?>home.png" alt="home" /> sraz</a> |
      <a href="<?php echo BLOCK_DIR; ?>" title="bloky">
       <img src="<?php echo IMG_DIR; ?>blocks.png" alt="blok" /> bloky</a> |
