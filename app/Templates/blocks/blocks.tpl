@@ -61,7 +61,6 @@
 				</tr>
 				<?php
 				} else {
-					//var_dump(mysql_fetch_assoc($data['render']));
 					while($row = mysql_fetch_assoc($data['render'])) {
 				?>	
 				<tr class='radek1'>

@@ -152,6 +152,28 @@ class BlockController
 	}
 
 	/**
+	 * Prepare data for editing
+	 * 
+	 * @param  int $id of Block
+	 * @return void
+	 */
+	private function edit($id)
+	{
+		$this->template = 'process';
+
+		$this->heading = "úprava bloku";
+		$this->todo = "modify";
+
+		$this->blockId = $id;
+		
+		$dbData = mysql_fetch_assoc($this->Block->getData($id));
+		
+		foreach($this->Block->formNames as $key) {
+			$this->data[$key] = requested($key, $dbData[$key]);
+		}
+	}
+
+	/**
 	 * Process data from editing
 	 * 
 	 * @param  int 	$id 	of Block
@@ -187,28 +209,6 @@ class BlockController
 		
 		if($this->Block->update($id, $DB_data)){	
 			redirect("?".$this->page."&error=ok");
-		}
-	}
-
-	/**
-	 * Prepare data for editing
-	 * 
-	 * @param  int $id of Block
-	 * @return void
-	 */
-	private function edit($id)
-	{
-		$this->template = 'process';
-
-		$this->heading = "úprava bloku";
-		$this->todo = "modify";
-
-		$this->blockId = $id;
-		
-		$dbData = mysql_fetch_assoc($this->Block->getData($id));
-		
-		foreach($this->Block->formNames as $key) {
-			$this->data[$key] = requested($key, $dbData[$key]);
 		}
 	}
 
