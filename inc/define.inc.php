@@ -106,6 +106,8 @@ require_once(MODEL_DIR.'ExportModel.php');
 
 require_once(VIEW_DIR.'View.php');
 
+require_once(CONTROLLER_DIR.'BaseController.php');
+
 define('DEBUG', TRUE);
 
 
