@@ -13,7 +13,7 @@ class VisitorModel /* extends Component */
 	private $meeting_ID;
 	
 	/** @var string	search pattern */
-	private $search;
+	public $search;
 	
 	/** @var Emailer Emailer class */
 	private $Emailer;
@@ -31,7 +31,7 @@ class VisitorModel /* extends Component */
 	public $Blocks;
 	
 	/** @var int meeting price */
-	private $meeting_price;
+	public $meeting_price;
 	
 	/** @var int meeting advance */
 	private $meeting_advance;
@@ -39,16 +39,16 @@ class VisitorModel /* extends Component */
 	/**
 	 * Array of database programs table columns
 	 *
-	 * @var array	DB_columns[]
+	 * @var array	dbColumns[]
 	 */
-	public $DB_columns = array();
+	public $dbColumns = array();
 	
 	/**
 	 * Array of form names
 	 *
-	 * @var array	form_names[]
+	 * @var array	formNames[]
 	 */
-	public $form_names = array();
+	public $formNames = array();
 	
 	/** konstruktor */
 	public function __construct($meeting_ID, Emailer $Emailer, MeetingModel $Meeting, MealModel $Meals, ProgramModel $Program, BlockModel $Blocks)
@@ -61,7 +61,7 @@ class VisitorModel /* extends Component */
 		$this->Meals = $Meals;
 		$this->Programs = $Program;
 		$this->Blocks = $Blocks;
-		$this->DB_columns = array(
+		$this->dbColumns = array(
 								"name",
 								"surname",
 								"nick",
@@ -81,7 +81,7 @@ class VisitorModel /* extends Component */
 								"question",
 								"meeting"
 							);
-		$this->form_names = array("name", "description", "material", "tutor", "email", "capacity", "display_in_reg", "block", "category");
+		$this->formNames = array("name", "description", "material", "tutor", "email", "capacity", "display_in_reg", "block", "category");
 		$this->dbTable = "kk_visitors";
 	}
 
@@ -343,137 +343,40 @@ class VisitorModel /* extends Component */
 	 *
 	 * @return	string	html of a table
 	 */
-	public function renderData()
-	{			
-		$query = "SELECT 	vis.id AS id,
-				code,
-				name,
-				surname,
-				nick, 
-				email,
-				group_name,
-				group_num,
-				city,
-				province_name AS province,
-				bill,
-				birthday
-				/*CONCAT(LEFT(name,1),LEFT(surname,1),SUBSTRING(birthday,3,2)) AS code*/
-		FROM kk_visitors AS vis
-		LEFT JOIN kk_provinces AS provs ON vis.province = provs.id
-		WHERE meeting='".$this->meeting_ID."' AND deleted='0' ".$this->getSearch($this->search)."
-		ORDER BY vis.id ASC";
+	public function getData($visitor_id = NULL)
+	{
+		if(isset($visitor_id)) {
+			$query = "SELECT	*
+						FROM kk_visitors
+						WHERE id='".$visitor_id."' AND deleted = '0'
+						LIMIT 1";
+		} else {
+			$query = "SELECT 	vis.id AS id,
+								code,
+								name,
+								surname,
+								nick, 
+								email,
+								group_name,
+								group_num,
+								city,
+								province_name AS province,
+								bill,
+								birthday
+								/*CONCAT(LEFT(name,1),LEFT(surname,1),SUBSTRING(birthday,3,2)) AS code*/
+						FROM kk_visitors AS vis
+						LEFT JOIN kk_provinces AS provs ON vis.province = provs.id
+						WHERE meeting='".$this->meeting_ID."' AND deleted='0' ".$this->getSearch($this->search)."
+						ORDER BY vis.id ASC";
+		}
 				
 		$result = mysql_query($query);
 		$rows = mysql_affected_rows();
 		
-		$html_row = "";
-		
-		if($rows == 0){
-			$html_row .= "<tr class='radek1'>";
-			$html_row .= "<td><input disabled type='checkbox' /></td>\n";
-			$html_row .= "<td><img class='edit' src='".IMG_DIR."icons/edit2.gif' /></td>\n";
-			$html_row .= "<td><img class='edit' src='".IMG_DIR."icons/delete2.gif' /></td>\n";
-			$html_row .= "<td><img class='edit' src='".IMG_DIR."icons/advance2.png' /></td>\n";
-			$html_row .= "<td><img class='edit' src='".IMG_DIR."icons/pay2.png' /></td>\n";
-			$html_row .= "<td><img class='edit' src='".IMG_DIR."icons/pdf2.png' /></td>\n";
-			$html_row .= "<td colspan='15' class='emptyTable'>Nejsou k dispozici žádné položky.</td>";
-			$html_row .= "</tr>";
+		if($rows == 0) {
+			return 0;
+		} else {
+			return $result;
 		}
-		else{
-			while($data = mysql_fetch_assoc($result)){			
-				$code4bank = substr($data['name'], 0, 1).substr($data['surname'], 0, 1).substr($data['birthday'], 2, 2);
-		
-				if($this->meeting_price <= $data['bill']) {
-					$payment = "<acronym title='Zaplaceno'><img src='".IMG_DIR."icons/paid.png' alt='zaplaceno' /></acronym>";
-				} elseif(200 <= $data['bill']) {
-					$payment = "<acronym title='Zaplacena záloha'><img src='".IMG_DIR."icons/advancement.png' alt='zaloha' /></acronym>";
-				} else {
-					 $payment = "<acronym title='Nezaplaceno'><img src='".IMG_DIR."icons/notpaid.png' alt='nezaplaceno' /></acronym>";
-				}
-					
-				$html_row .= "<tr class='radek1'>";
-				$html_row .= "<td><input type='checkbox' name='checker[]'  value='".$data['id']."' /></td>\n";
-				$html_row .= "<td><a href='process.php?id=".$data['id']."&cms=edit&page=visitors' title='Upravit'><img class='edit' src='".IMG_DIR."icons/edit.gif' /></a></td>\n";
-				$html_row .= "<td><a href='?id=".$data['id']."&amp;cms=advance&amp;search=".$this->search."' title='Záloha'><img class='edit' src='".IMG_DIR."icons/advance.png' /></a></td>\n";
-				$html_row .= "<td><a href='?id=".$data['id']."&amp;cms=pay&amp;search=".$this->search."' title='Zaplatit'><img class='edit' src='".IMG_DIR."icons/pay.png' /></a></td>\n";
-				$html_row .= "<td><a href='../exports/?evidence=confirm&vid=".$data['id']."' title='Doklad'><img class='edit' src='".IMG_DIR."icons/pdf.png' /></a></td>\n";
-				$html_row .= "<td><a href=\"javascript:confirmation('?id=".$data['id']."&amp;cms=del&amp;search=".$this->search."', 'účastník: ".$data['nick']." -> Opravdu SMAZAT tohoto účastníka? Jste si jisti?')\" title='Odstranit'><img class='edit' src='".IMG_DIR."icons/delete.gif' /></a></td>\n";
-				$html_row .= "<td class='text'>".$data['id']."</td>\n";
-				$html_row .= "<td class='text'>".$data['code']."</td>\n";
-				$html_row .= "<td class='text'>".$data['group_num']."</td>\n";
-				$html_row .= "<td class='text'>".$data['name']."</td>\n";
-				$html_row .= "<td class='text'>".$data['surname']."</td>\n";
-				$html_row .= "<td class='text'>".$data['nick']."</td>\n";
-				$html_row .= "<td class='text'>".$data['email']."</td>\n";
-				$html_row .= "<td class='text'>".$data['group_name']."</td>\n";
-				$html_row .= "<td class='text'>".$data['city']."</td>\n";
-				$html_row .= "<td class='text'>".$data['province']."</td>\n";
-				$html_row .= "<td class='text'>".$payment." ".$data['bill'].",-Kč</td>\n";
-				$html_row .= "</tr>";
-			}
-		}
-		
-		// table head
-		$html_thead = "<tr>\n";
-		$html_thead .= "<th></th>\n";
-		$html_thead .= "<th></th>\n";
-		$html_thead .= "<th></th>\n";
-		$html_thead .= "<th></th>\n";
-		$html_thead .= "<th></th>\n";
-		$html_thead .= "<th></th>\n";
-		$html_thead .= "<th class='tab1'>ID</th>\n";
-		$html_thead .= "<th class='tab1'>symbol</th>\n";
-		$html_thead .= "<th class='tab1'>evidence</th>\n";
-		$html_thead .= "<th class='tab1'>jméno</th>\n";
-		$html_thead .= "<th class='tab1'>příjmení</th>\n";
-		$html_thead .= "<th class='tab1'>přezdívka</th>\n";
-		$html_thead .= "<th class='tab1'>e-mail</th>\n";
-		$html_thead .= "<th class='tab1'>středisko/přístav</th>\n";
-		$html_thead .= "<th class='tab1'>město</th>\n";
-		$html_thead .= "<th class='tab1'>kraj</th>\n";
-		$html_thead .= "<th class='tab1'>zaplaceno</th>\n";
-		$html_thead .= "</tr>\n";
-		
-		// table foot
-		$html_tfoot = $html_thead;
-
-		// table
-		$html_table = "<table id='VisitorsTable' class='list tablesorter'>\n";
-		$html_table .= "<thead>\n";
-		$html_table .= $html_thead;
-		$html_table .= "</thead>\n";
-		$html_table .= "<tfoot>\n";
-		$html_table .= $html_tfoot;
-		$html_table .= "</tfoot>\n";
-		$html_table .= "<tbody>\n";
-		$html_table .= $html_row;
-		$html_table .= "</tbody>\n";
-		$html_table .= "</table>\n";
-		
-		// form controls
-		$html_buttons = "<a href='javascript:select(1)'>Zaškrtnout vše</a> / \n";
-		$html_buttons .= "<a href='javascript:select(0)'>Odškrtnout vše</a>\n";
-		$html_buttons .= "<span style='margin-left:10px;'>Zaškrtnuté:</span>\n";
-		$html_buttons .= "<button onClick=\"this.form.submit()\" title='Záloha' value='advance' name='cms' type='submit'>\n";
-		$html_buttons .= "<img class='edit' src='".IMG_DIR."icons/advance.png' /> Záloha\n";
-		$html_buttons .= "</button>\n";
-		$html_buttons .= "<button onClick=\"this.form.submit()\" title='Platba' value='pay' name='cms' type='submit'>\n";
-		$html_buttons .= "<img class='edit' src='".IMG_DIR."icons/pay.png' /> Platba\n";
-		$html_buttons .= "</button>\n";
-		$html_buttons .= "<button onClick=\"return confirm('Opravdu SMAZAT tyto účastníky? Jste si jisti?')\"' title='Smazat' value='del' name='cms' type='submit'>\n";
-		$html_buttons .= "<img class='edit' src='".IMG_DIR."icons/delete.gif' /> Smazat\n";
-		$html_buttons .= "</button>\n";
-		$html_buttons .= "<button onclick=\"this.form.action='mail.php';\" title='Hromadný e-mail' value='mail' name='cms' type='submit'>\n";
-		$html_buttons .= "<img src='".IMG_DIR."icons/mail.png'  /> Hromadný e-mail\n";
-		$html_buttons .= "</button>\n";
-		
-		// table controls
-		$html_controls = "<form name='checkerForm' method='post' action='index.php'>\n";
-		$html_controls .= $html_buttons;
-		$html_controls .= $html_table;
-		$html_controls .= $html_buttons;
-		$html_controls .= "</form>";
-				
-		return $html_controls;
 	}
 }

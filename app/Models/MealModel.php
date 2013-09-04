@@ -19,7 +19,7 @@ class MealModel extends Component
 	public function __construct($meeting = NULL)
 	{
 		$this->meeting = $meeting;
-		$this->DB_columns = array(
+		$this->dbColumns = array(
 			"visitor",
 			"fry_dinner",
 			"sat_breakfast",
@@ -29,7 +29,7 @@ class MealModel extends Component
 			"sun_lunch"
 		);
 							
-		$this->day_meal = array(
+		$this->dayMeal = array(
 			"páteční večeře"	=>	"fry_dinner",
 			"sobotní snídaně"	=>	"sat_breakfast",
 			"sobotní oběd"		=>	"sat_lunch",
@@ -63,14 +63,14 @@ class MealModel extends Component
 		return $result;
 	}
 	
-	function getMeals($vid)
+	function getMeals($visitorId)
 	{
 		$meals = "<tr>";
 		$meals .= " <td class='progPart'>";
 	
 		$mealSql = "SELECT 	*
 					FROM kk_meals
-					WHERE visitor='".$vid."'
+					WHERE visitor='".$visitorId."'
 					";
 	
 		$mealResult = mysql_query($mealSql);
@@ -99,33 +99,55 @@ class MealModel extends Component
 	 * @param	string	if select is disabled
 	 * @return	string	html <select>
 	 */
-	public function renderHtmlMealsSelect($meals_value, $disabled)
+	public function renderHtmlMealsSelect($mealsValue, $disabled)
 	{
 		// order must be firtsly NO and then YES
 		// first value is displayed in form as default
-		$meal_array = array("ne" => "ne","ano" => "ano");
-		$yes_no = array("ne", "ano");
+		$mealArray = array("ne" => "ne","ano" => "ano");
+		$yesNoArray = array("ne", "ano");
 		
-		$html_select = "";
-		foreach($this->day_meal as $title => $var_name){
-			if(preg_match("/breakfast/", $var_name))	$mealIcon = "breakfast";
-			if(preg_match("/lunch/", $var_name))		$mealIcon = "lunch";
-			if(preg_match("/dinner/", $var_name))		$mealIcon = "dinner";
+		$htmlSelect = "";
+		foreach($this->dayMeal as $title => $varName){
+			if(preg_match("/breakfast/", $varName))	$mealIcon = "breakfast";
+			if(preg_match("/lunch/", $varName))		$mealIcon = "lunch";
+			if(preg_match("/dinner/", $varName))	$mealIcon = "dinner";
 			
-			$html_select .= "<span style='display:block;font-size:11px;'>".$title.":</span>\n";
-			$html_select .= "<img style='width:18px;' src='".IMG_DIR."icons/".$mealIcon.".png' />\n";
-			$html_select .= "<select ".$disabled." style='width:195px; font-size:11px;margin-left:5px;' name='".$var_name."'>\n";
+			$htmlSelect .= "<span style='display:block;font-size:11px;'>".$title.":</span>\n";
+			$htmlSelect .= "<img style='width:18px;' src='".IMG_DIR."icons/".$mealIcon.".png' />\n";
+			$htmlSelect .= "<select ".$disabled." style='width:195px; font-size:11px;margin-left:5px;' name='".$varName."'>\n";
 			
-			foreach ($yes_no as $key){
-				if($key == $meals_value[$var_name]){
+			foreach ($yesNoArray as $key){
+				if($key == $mealsValue[$varName]){
 					$selected = "selected";
 				}
 				else $selected = "";
-				$html_select .= "<option value='".$key."' ".$selected.">".$key."</option>";
+				$htmlSelect .= "<option value='".$key."' ".$selected.">".$key."</option>";
 			}
-			$html_select .= "</select><br />\n";
+			$htmlSelect .= "</select><br />\n";
 		}
 				
-		return $html_select;
+		return $htmlSelect;
+	}
+
+	/**
+	 * Get meals data into array
+	 *
+	 * @param	integer	visitor id
+	 * @return	array	meal => ano|ne
+	 */
+	public function getMealsArray($visitor_id)
+	{
+		$query = "SELECT	*
+					FROM kk_meals
+					WHERE visitor='".$visitor_id."'
+					LIMIT 1"; 
+		$DB_data = mysql_fetch_assoc(mysql_query($query));
+		
+		foreach($this->DB_columns as $var_name) {
+			$$var_name = requested($var_name, $DB_data[$var_name]);
+			$meals_data[$var_name] = $$var_name;
+		}
+
+		return $meals_data;
 	}
 }

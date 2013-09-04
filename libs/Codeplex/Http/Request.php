@@ -21,8 +21,7 @@ class Request
          */
         public function __construct()
         {
-                $this->isAjax = isset($_SERVER['HTTP_X_REQUESTED_WITH'])
-                        && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest';
+                $this->isAjax = isset($_SERVER['HTTP_X_REQUESTED_WITH']) && $_SERVER['HTTP_X_REQUESTED_WITH'] == 'XMLHttpRequest';
 
                 $this->method = strtolower($_SERVER['REQUEST_METHOD']);
                 $this->request = self::getRequest();
