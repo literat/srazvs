@@ -58,13 +58,13 @@ define('VIEW_DIR',		APP_DIR.'Views/');
 define('CONTROLLER_DIR',APP_DIR.'Controllers/');
 define('TEMPLATE_DIR',	APP_DIR.'Templates/');
 /* URLs */
-define('BLOCK_DIR',		HTTP_DIR.PROJECT.'/?block');
-define('PROG_DIR',		HTTP_DIR.PROJECT.'/?program');
-define('MEET_DIR',		HTTP_DIR.PROJECT.'/?meeting');
-define('VISIT_DIR',		HTTP_DIR.PROJECT.'/?visitor');
-define('CAT_DIR',		HTTP_DIR.PROJECT.'/?category');
-define('EXP_DIR',		HTTP_DIR.PROJECT.'/?export');
-define('SET_DIR',		HTTP_DIR.PROJECT.'/?settings');
+define('BLOCK_DIR',		HTTP_DIR.PROJECT.'/block');
+define('PROG_DIR',		HTTP_DIR.PROJECT.'/program');
+define('MEET_DIR',		HTTP_DIR.PROJECT.'/meeting');
+define('VISIT_DIR',		HTTP_DIR.PROJECT.'/visitor');
+define('CAT_DIR',		HTTP_DIR.PROJECT.'/category');
+define('EXP_DIR',		HTTP_DIR.PROJECT.'/export');
+define('SET_DIR',		HTTP_DIR.PROJECT.'/settings');
 
 define('SESSION_PREFIX', md5($cfg['db_host'].$cfg['db_database'].$cfg['db_user'].$cfg['prefix'])."-");
 
@@ -92,6 +92,12 @@ require_once(LIBS_DIR.'Codeplex/DI/Container.class.php');
 require_once(LIBS_DIR.'Codeplex/Mail/PHPMailerFactory.php');
 require_once(LIBS_DIR.'Codeplex/Exporting/PdfFactory.php');
 require_once(LIBS_DIR.'Codeplex/Exporting/ExcelFactory.php');
+
+require_once(LIBS_DIR.'Codeplex/Http/Http.php');
+require_once(LIBS_DIR.'Codeplex/Http/Request.php');
+require_once(LIBS_DIR.'Codeplex/Http/Response.php');
+
+require_once(LIBS_DIR.'Codeplex/Utils/Tools.php');
 
 /* Application */
 require_once(LIBS_DIR.'Codeplex/Mail/Emailer.php');

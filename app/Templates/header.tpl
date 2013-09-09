@@ -45,7 +45,7 @@
       <img src="<?php echo IMG_DIR; ?>programs.png" alt="program" /> programy</a> |
 	 <a href="<?php echo VISIT_DIR; ?>" title="účastníci">
       <img src="<?php echo IMG_DIR; ?>users.png" alt="ucastnik" /> účastníci</a> |
-	 <a href="?export<?php //echo EXP_DIR; ?>" title="exporty">
+	 <a href="<?php echo EXP_DIR; ?>" title="exporty">
       <img src="<?php echo IMG_DIR; ?>exports.png" alt="exporty" /> exporty</a> |
 	 <a href="<?php echo CAT_DIR; ?>" title="kategorie">
       <img src="<?php echo IMG_DIR; ?>categories.png" alt="kategorie" /> kategorie</a>

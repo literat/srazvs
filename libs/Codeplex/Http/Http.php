@@ -35,7 +35,7 @@ class Http
         /**
          * Initializes HTTP class
          */
-        public static function __construct()
+        public function __construct()
         {
                 self::sanitizeData();
                 self::$domain = $_SERVER['SERVER_NAME'];

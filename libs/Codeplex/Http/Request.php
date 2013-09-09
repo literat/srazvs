@@ -90,21 +90,26 @@ class Request
          * Returns url request
          * @return string
          */
- 
         protected function getRequest()
         {
                 $url = urldecode($_SERVER['REQUEST_URI']);
                 $qm = strpos($url, '?');
-                if ($qm !== false)
+
+                if ($qm !== false) {
                         $url = substr($url, 0, $qm);
- 
+                }
+
                 $script = dirname($_SERVER['SCRIPT_NAME']);
-                if (strpos($url, $script) === 0)
+
+                if (strpos($url, $script) === 0) {
                         $url = substr($url, strlen($script));
+                }
 
                 $script = basename($_SERVER['SCRIPT_NAME']);
-                if (strpos($url, $script) === 0)
+
+                if (strpos($url, $script) === 0) {
                         $url = substr($url, strlen($script));
+                }
 
                 return trim($url, '/\\');
         }
