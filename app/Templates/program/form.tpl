@@ -12,7 +12,7 @@
  <?php
  if($data['cms'] == "edit") {
  ?>
-	<button type='button' onclick="window.location.replace('?program&cms=mail&pid=<?php echo $data['id']; ?>')">
+	<button type='button' onclick="window.location.replace('?cms=mail&pid=<?php echo $data['id']; ?>')">
 		<img src='<?php echo IMG_DIR; ?>icons/mail.png'  /> Odeslat lektorovi</button>
  <?php } ?>
 </div>

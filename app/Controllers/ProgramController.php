@@ -14,7 +14,7 @@ class ProgramController
 	 * This template variable will hold the 'this->View' portion of our MVC for this 
 	 * controller
 	 */
-	private $template = 'list';
+	private $template = 'listing';
 
 	/**
 	 * Template directory
@@ -204,7 +204,7 @@ class ProgramController
 		}
 		
 		if($this->Program->create($DB_data)){	
-			redirect("?".$this->page."&error=ok");
+			redirect("?page=".$this->page."&error=ok");
 		}
 	}
 
@@ -218,7 +218,7 @@ class ProgramController
 	private function update($id = NULL)
 	{
 		foreach($this->Program->formNames as $key) {
-			if($key == 'display_in_reg' && $$key == '') {
+			if($key == 'display_in_reg' && !isset($$key)) {
 				$value = 1;
 			} else {
 				$value = NULL;
@@ -232,7 +232,7 @@ class ProgramController
 		}
 		
 		if($this->Program->update($id, $DB_data)){	
-			redirect("?".$this->page."&error=ok");
+			redirect("?page=".$this->page."&error=ok");
 		}
 	}
 
