@@ -4,7 +4,7 @@
 		<?php echo $data['error']; ?>
 
 		<div class='link'>
-			<a class='link' href='?category&amp;cms=new'>
+			<a class='link' href='?cms=new'>
 		    	<img src='<?php echo IMG_DIR; ?>icons/new.png' />NOVÁ KATEGORIE</a>
 		</div>
 
@@ -43,12 +43,12 @@
 			?>
 				<tr class='radek1'>
 					<td>
-						<a href='?category&id=<?php echo $row['id']; ?>&amp;cms=edit' title='Upravit kategorii'>
+						<a href='?id=<?php echo $row['id']; ?>&amp;cms=edit' title='Upravit kategorii'>
 							<img class='edit' src='<?php echo IMG_DIR; ?>icons/edit.gif' />
 						</a>
 					</td>
 					<td>
-						<a href="javascript:confirmation('?category&amp;id=<?php echo $row['id']; ?>.&amp;cms=delete', 'opravdu smazat kategorii <?php echo $row['name']; ?>? jste si jisti?')" title='Odstranit'>
+						<a href="javascript:confirmation('?id=<?php echo $row['id']; ?>.&amp;cms=delete', 'opravdu smazat kategorii <?php echo $row['name']; ?>? jste si jisti?')" title='Odstranit'>
 							<img class='edit' src='<?php echo IMG_DIR; ?>icons/delete.gif' />
 						</a>
 					</td>
