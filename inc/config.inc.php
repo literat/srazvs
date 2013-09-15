@@ -5,7 +5,7 @@
 
 /* prihlasovani do databaze */
 $cfg['db_user']			= 'vodni';
-$cfg['db_passwd']		= 'g0DqNdouBQ';
+$cfg['db_passwd']		= 'aY%79%2me4xJsuw#rFrA2DmP';
 $cfg['db_database'] 	= 'vodni';
 $cfg['db_host']			= 'localhost';
 
