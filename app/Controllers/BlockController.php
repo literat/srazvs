@@ -13,7 +13,7 @@ class BlockController
 	 * This template variable will hold the 'this->View' portion of our MVC for this 
 	 * controller
 	 */
-	private $template = 'blocks';
+	private $template = 'listing';
 
 	/**
 	 * Heading of the page
@@ -134,7 +134,7 @@ class BlockController
 	 */
 	private function __new()
 	{
-		$this->template = 'process';
+		$this->template = 'form';
 
 		$this->heading = "nový blok";
 		$this->todo = "create";
@@ -152,6 +152,43 @@ class BlockController
 	}
 
 	/**
+	 * Create new item in DB
+	 * @return void
+	 */
+	private function create()
+	{
+		foreach($this->Block->formNames as $key) {
+				if($key == 'start_hour') $value = date("H");
+				elseif($key == 'end_hour') $value = date("H")+1;
+				elseif($key == 'start_minute') $value = date("i");
+				elseif($key == 'end_minute') $value = date("i");
+				elseif($key == 'program') $value = 0;
+				elseif($key == 'display_progs') $value = 1;
+				else $value = "";
+				$$key = requested($key, $value);	
+		}
+
+		$from = date("H:i:s",mktime($start_hour,$start_minute,0,0,0,0));
+		$to = date("H:i:s",mktime($end_hour,$end_minute,0,0,0,0));
+		
+		//TODO: dodelat osetreni chyb
+		if($from > $to) echo "chyba";
+		else {
+			foreach($this->Block->dbColumns as $key) {
+				$db_data[$key] = $$key;	
+			}
+			$db_data['from'] = $from;
+			$db_data['to'] = $to;
+			$db_data['capacity'] = 0;
+			$db_data['meeting'] = $this->meetingId;
+		}
+
+		if($this->Block->create($db_data)){	
+			redirect("?page=".$this->page."&error=ok");
+		}
+	}
+
+	/**
 	 * Prepare data for editing
 	 * 
 	 * @param  int $id of Block
@@ -159,7 +196,7 @@ class BlockController
 	 */
 	private function edit($id)
 	{
-		$this->template = 'process';
+		$this->template = 'form';
 
 		$this->heading = "úprava bloku";
 		$this->todo = "modify";
@@ -208,7 +245,7 @@ class BlockController
 		}
 		
 		if($this->Block->update($id, $DB_data)){	
-			redirect("?".$this->page."&error=ok");
+			redirect("?page=".$this->page."&error=ok");
 		}
 	}
 
