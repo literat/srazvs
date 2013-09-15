@@ -21,14 +21,15 @@ $router->setDefaults(array(
     'id' => $data['id']
 ));
 
+/**
+ first route that match is used
+*/
 $router->connect('/', array(), true, true);
+//$router->connect('/<:controller>/<:action>', array(), true, true);
 $router->connect('/<:controller>', array(), true, true);
-$router->connect('/<:controller>/<:action>', array(), true, true);
 $routing = $router->getRouting();
 
 $target = CONTROLLER_DIR.$routing['controller'].'Controller.php';
-
-//var_dump($target);
 
 //get target
 if(file_exists($target))
@@ -56,14 +57,7 @@ else
 	die('page does not exist!');
 }
 
-$getVars = $router->getParams();
-
+$getParams = $router->getParams();
 //once we have the controller instantiated, execute the default function
 //pass any GET varaibles to the main method
-$controller->init($getVars);
-
-//redirect("meetings/?mid=".$data['id']."");
-
-/*echo "<script type='javascript'>
-	   window.location='meetings/?mid=".$data['id']."';
-	  </script>";*/
+$controller->init($getParams);

@@ -51,7 +51,7 @@ abstract class Component implements IComponent
 		$query_key_set = substr($query_key_set, 0, -1);
 		$query_value_set = substr($query_value_set, 0, -1);	
 
-    	echo $query = "INSERT INTO `".$this->dbTable."` 
+    	$query = "INSERT INTO `".$this->dbTable."` 
      				 (".$query_key_set.") 
      				 VALUES (".$query_value_set.");";
     	$result = mysql_query($query);
