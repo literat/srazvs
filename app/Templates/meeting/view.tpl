@@ -1,29 +1,12 @@
-<div class='siteContentRibbon'><?php echo $data['heading1']; ?></div>
+<div class='siteContentRibbon'>Správa srazů</div>
 <?php $data['error']; ?>
-<div class='pageRibbon'><?php echo $data['heading2']; ?></div>
-
-<script src='<?php echo JS_DIR ?>jquery/jquery.tablesorter.min.js' type='text/javascript'></script>
-<script>
-$(document).ready(function() {
-	$("#MeetingsTable").tablesorter( {
-		headers: {
-			0: { sorter: false},
-			1: { sorter: false},
-			5: { sorter: false},
-			6: { sorter: false},
-			7: { sorter: false},
-			9: { sorter: false},
-			10: { sorter: false},
-		}
-	} );
-} );
-</script>
+<div class='pageRibbon'>Aktuální sraz</div>
 
 <?php echo $data['render']; ?>
 
 <div class='pageRibbon'>nastavení</div>
 
-<form action='process.php?page=meetings' method='post'>
+<form action='?cms=update&page=meetings' method='post'>
 
 <div class='button-line'>
  <button type='submit' onclick=\"this.form.submit()\">
@@ -41,7 +24,7 @@ $(function() {
 	$.timepicker.setDefaults($.timepicker.regional['cs']);
 	$( ".dateTimePicker" ).datetimepicker({
 		showOn: "button",
-		buttonImage: "images/calendar_button.png",
+		buttonImage: "../images/calendar_button.png",
 		buttonImageOnly: true,
 		showWeek: true,
         firstDay: 1,
@@ -63,7 +46,7 @@ $(function() {
 	$.datepicker.setDefaults($.datepicker.regional['cs']);
 	$( ".datePicker" ).datepicker({
 		showOn: "button",
-		buttonImage: "images/calendar_button.png",
+		buttonImage: "../images/calendar_button.png",
 		buttonImageOnly: true,
 		showWeek: true,
         firstDay: 1,

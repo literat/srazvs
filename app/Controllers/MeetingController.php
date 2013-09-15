@@ -8,7 +8,79 @@ class MeetingController
 	 * This template variable will hold the 'view' portion of our MVC for this 
 	 * controller
 	 */
-	public $template = 'meeting';
+	public $template = 'view';
+
+	/**
+	 * template directory
+	 * @var string
+	 */
+	private $templateDir = 'meeting';
+
+	/**
+	 * page where to return
+	 * @var string
+	 */
+	private $page = 'meeting';
+
+	/**
+	 * action what to do
+	 * @var string
+	 */
+	private $cms = '';
+
+	/**
+	 * error handler
+	 * @var string
+	 */
+	private $error = '';
+
+	/**
+	 * action what to do next
+	 * @var string
+	 */
+	private $todo = '';
+
+	private $render = NULL;
+
+	/**
+	 * meeting ID
+	 * @var integer
+	 */
+	private $meetingId = 0;
+
+	/**
+	 * Container class
+	 * @var [type]
+	 */
+	private $Container;
+
+	/**
+	 * Category model
+	 * @var Category
+	 */
+	private $Category;
+
+	/**
+	 * View model
+	 * @var View
+	 */
+	private $View;
+
+	/**
+	 * Prepare initial values
+	 */
+	public function __construct()
+	{
+		if($this->meetingId = requested("mid","")){
+			$_SESSION['meetingID'] = $this->meetingId;
+		} else {
+			$this->meetingId = $_SESSION['meetingID'];
+		}
+
+		$this->Container = new Container($GLOBALS['cfg'], $this->meetingId);
+		$this->Meeting = $this->Container->createMeeting();
+		$this->View = $this->Container->createView();
+	}
 
 	/**
 	 * This is the default function that will be called by router.php
@@ -23,46 +95,123 @@ class MeetingController
 
 		###########################################################################
 
-		if($mid = requested("mid","")){
-			$_SESSION['meetingID'] = $mid;
-		} else {
-			$mid = $_SESSION['meetingID'];
+		$id = requested("id",$this->meetingId);
+		$this->cms = requested("cms","");
+		$this->error = requested("error","");
+
+		switch($this->cms) {
+			case "delete":
+				$this->delete($id);
+				break;
+			case "new":
+				$this->__new();
+				break;
+			case "create":
+				$this->create();
+				break;
+			case "edit":
+				$this->edit($id);
+				break;
+			case "modify":
+				$this->update($id);
+				break;
+			case "list-view":
+				$this->template = 'listing';
+				$this->render = $this->Meeting->getData();
+				$this->data = mysql_fetch_assoc($this->Meeting->getData($this->meetingId));
+				break;
+			default:
+				$this->render = $this->Meeting->renderProgramOverview();
+				$this->data = mysql_fetch_assoc($this->Meeting->getData($this->meetingId));
+				break;
 		}
 
-		$id = requested("id",$mid);
-		$cms = requested("cms","");
-		$error = requested("error","");
+		$this->render();
+	}
 
-		$Container = new Container($GLOBALS['cfg'], $mid);
-		$MeetingsHandler = $Container->createMeeting();
-		$ViewHandler = $Container->createView();
 
-		// delete program
-		if($cms == "del"){
-			if($MeetingsHandler->delete($id)){	
-			  	redirect("index.php?error=del");
-			}
+	/**
+	 * Prepare new item
+	 * @return void
+	 */
+	private function __new()
+	{
+		$this->heading = "nová kategorie";
+		$this->todo = "create";
+		$this->template = "form";
+			
+		foreach($this->Meeting->dbColumns as $key) {
+			$this->data[$key] = requested($key, "");	
+		}
+	}
+
+	/**
+	 * Delete item
+	 * @param  int $id of item
+	 * @return void
+	 */
+	private function delete($id)
+	{
+		if($this->Meeting->delete($id)){			
+	  		redirect("?error=del");
+		}
+	}
+
+	/**
+	 * Create new item in DB
+	 * @return void
+	 */
+	private function create()
+	{
+		foreach($this->Meeting->dbColumns as $key) {
+			$db_data[$key] = requested($key, "");	
 		}
 
-		if($cms == 'list-view'){
-			$heading1 = 'Správa srazů';
-			$heading2 = 'seznam srazů';	
-		} else {
-			$heading1 = 'Aktuální sraz';
-			$heading2 = 'program';
+		if($this->Meeting->create($db_data)){	
+			redirect("?page=".$this->page."&error=ok");
 		}
+	}
 
-		$sql = "SELECT	*
-				FROM kk_meetings
-				WHERE id='".$mid."' AND deleted='0'
-				LIMIT 1";
-		$result = mysql_query($sql);
-		$dbData = mysql_fetch_assoc($result);
+	/**
+	 * Prepare form page
+	 * @param  int $id of item
+	 * @return void
+	 */
+	private function edit($id)
+	{
+		$this->template = 'form';
 
-		foreach($MeetingsHandler->form_names as $key) {
-			$$key = requested($key, $dbData[$key]);
+		$this->todo = "modify";
+		// get meeting's data
+		$this->data = mysql_fetch_assoc($this->Meeting->getData($id));
+		
+		foreach($this->Meeting->dbColumns as $key) {
+			$$key = requested($key, $this->data[$key]);
 		}
+	}
 
+	/**
+	 * Update item in DB
+	 * @param  int $id of item
+	 * @return void
+	 */
+	private function update($id)
+	{
+		foreach($this->Meeting->dbColumns as $key) {
+			$db_data[$key] = requested($key, "");
+		}
+		
+		if($this->Meeting->update($this->meetingId, $db_data)){
+			redirect("?page=".$this->page."&error=ok");
+		}
+	}
+
+	/**
+	 * Render entire page
+	 * @return void
+	 */
+	private function render()
+	{
 		////inicializace promenych
 		$error_start = "";
 		$error_end = "";
@@ -73,45 +222,53 @@ class MeetingController
 		// styles in header
 		$style = CategoryModel::getStyles();
 
-		if($cms == 'list-view') {
-			$render = "<div class='link'><a class='link' href='process.php?cms=new&page=meetings'><img src='".IMG_DIR."icons/new.png' />NOVÝ SRAZ</a></div>\n";
-			$render .= $MeetingsHandler->renderData();
-		} else {
-			$render = $MeetingsHandler->renderProgramOverview();
-		}
-
 		/* HTTP Header */
-		$ViewHandler->loadTemplate('http_header');
-		$ViewHandler->assign('config',		$GLOBALS['cfg']);
-		$ViewHandler->assign('style',		$style);
-		$ViewHandler->render(TRUE);
+		$this->View->loadTemplate('http_header');
+		$this->View->assign('config',		$GLOBALS['cfg']);
+		$this->View->assign('style',		$style);
+		$this->View->render(TRUE);
 
 		/* Application Header */
-		$ViewHandler->loadTemplate('header');
-		$ViewHandler->assign('config',		$GLOBALS['cfg']);
-		$ViewHandler->render(TRUE);
+		$this->View->loadTemplate('header');
+		$this->View->assign('config',		$GLOBALS['cfg']);
+		$this->View->render(TRUE);
 
 		// load and prepare template
-		$ViewHandler->loadTemplate('meetings/meeting');
-		$ViewHandler->assign('heading1',	$heading1);
-		$ViewHandler->assign('heading2',	$heading2);
-		$ViewHandler->assign('error',		printError($error));
-		$ViewHandler->assign('cms',			$cms);
-		$ViewHandler->assign('render',		$render);
-		foreach($MeetingsHandler->form_names as $key) {
-			//$$key = requested($key, $dbData[$key]);
-			$ViewHandler->assign($key,	requested($key, $dbData[$key]));
+		$this->View->loadTemplate($this->templateDir.'/'.$this->template);
+		$this->View->assign('error',			printError($this->error));
+		$this->View->assign('cms',				$this->cms);
+		$this->View->assign('render',			$this->render);
+		$this->View->assign('mid',				$this->meetingId);
+		$this->View->assign('error_start',		printError($error_start));
+		$this->View->assign('error_end',		printError($error_end));
+		$this->View->assign('error_open_reg',	printError($error_open_reg));
+		$this->View->assign('error_close_reg',	printError($error_close_reg));
+		$this->View->assign('error_login',		printError($error_login));
+		$this->View->assign('cms',				$this->cms);
+		$this->View->assign('mid',				$this->meetingId);
+		$this->View->assign('page',				$this->page);
+
+		if(!empty($this->data)) {
+			$this->View->assign('id',			$this->meetingId);
+			$this->View->assign('place',		$this->data['place']);
+			$this->View->assign('start_date',	$this->data['start_date']);
+			$this->View->assign('end_date',		$this->data['end_date']);
+			$this->View->assign('open_reg',		$this->data['open_reg']);
+			$this->View->assign('close_reg',	$this->data['close_reg']);
+			$this->View->assign('cost',			$this->data['cost']);
+			$this->View->assign('advance',		$this->data['advance']);
+			$this->View->assign('numbering',	$this->data['numbering']);
+			$this->View->assign('contact',		$this->data['contact']);
+			$this->View->assign('email',		$this->data['email']);
+			$this->View->assign('gsm',			$this->data['gsm']);
+
+			$this->View->assign('todo',				$this->todo);
 		}
-		$ViewHandler->assign('mid',			$mid);
-		$ViewHandler->assign('error_start',			$error_start);
-		$ViewHandler->assign('error_end',			$error_end);
-		$ViewHandler->assign('error_open_reg',		$error_open_reg);
-		$ViewHandler->assign('error_close_reg',		$error_close_reg);
-		$ViewHandler->assign('error_login',			$error_login);
-		$ViewHandler->render(TRUE);
+
+		$this->View->render(TRUE);
 
 		/* Footer */
-		$ViewHandler->loadTemplate('footer');
-		$ViewHandler->render(TRUE);
+		$this->View->loadTemplate('footer');
+		$this->View->render(TRUE);
 	}
 }

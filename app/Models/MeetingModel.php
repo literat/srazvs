@@ -56,6 +56,30 @@ class MeetingModel extends Component
 	}
 	
 	/**
+	 * Return meeting data
+	 *
+	 * @return	string	html table
+	 */
+	public function getData($meeting_id = NULL)
+	{
+		if(isset($meeting_id)) {
+			$query = "SELECT * FROM kk_meetings WHERE deleted = '0' AND id = ".$meeting_id;
+			$result = mysql_query($query);
+			$rows = mysql_affected_rows();
+		} else {
+			$query = "SELECT * FROM kk_meetings WHERE deleted = '0'";
+			$result = mysql_query($query);
+			$rows = mysql_affected_rows();
+		}
+
+		if($rows == 0) {
+			return 0;
+		} else {
+			return $result;
+		}
+	}
+
+	/**
 	 * Get meeting price
 	 *
 	 * @var		string	type of charge
