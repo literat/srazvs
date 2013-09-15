@@ -5,7 +5,7 @@ require_once('config.inc.php');
 
 /* nastaveni cest */
 //pokud jsem na vyvojovem stroji
-$ISDEV = ($_SERVER["SERVER_NAME"] == 'localhost')?true:false; 
+$ISDEV = ($_SERVER["SERVER_NAME"] == 'localhost' || $_SERVER["SERVER_NAME"] == 'vodni.skauting.pp')?true:false; 
 if($ISDEV){
 	//vyvojova masina
 	if($_SERVER["SERVER_NAME"] == 'vodni.poutnicikolin.cz'){
@@ -13,6 +13,10 @@ if($ISDEV){
   	  	//define('ROOT_DIR', "/home/www/poutnicikolin.cz/subdomains/dev/admin/");
 		define('HTTP_DIR','http://'.$_SERVER['HTTP_HOST']."/vodni/srazvs/");
 		//echo ROOT_DIR;
+  	}
+  	elseif($_SERVER["SERVER_NAME"] == 'vodni.skauting.pp') {
+		define('HTTP_DIR','http://'.$_SERVER['HTTP_HOST']."/srazvs/");
+		define('HTTP_DIR','http://'.$_SERVER['HTTP_HOST'].'/');
   	}
 	else {
 		define('ROOT_DIR',$_SERVER['DOCUMENT_ROOT'].'/skauting/vodni/srazvs/');
