@@ -29,7 +29,7 @@
 	 $sql = "SELECT	place,
 					DATE_FORMAT(start_date, '%Y') AS year
 			FROM kk_meetings
-			WHERE id = '".$_SESSION['meetingID']."'
+			WHERE id = '".$_SESSION['meetingID']."' AND deleted = 0
 			LIMIT 1";
 	 $result = mysql_query($sql);
 	 $row = mysql_fetch_array($result);
