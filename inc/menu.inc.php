@@ -4,6 +4,7 @@ $sql = "SELECT  id AS mid,
 				place,
 				DATE_FORMAT(start_date, '%Y') AS year
 		FROM kk_meetings
+		WHERE deleted = '0'
 		ORDER BY id DESC";
 $result = mysql_query($sql);
 
