@@ -162,10 +162,17 @@ class VisitorController extends BaseController
 		$this->heading = "nový program";
 		$this->todo = "create";
 		
-		foreach($this->Program->formNames as $key) {
-				if($key == 'display_in_reg') $value = 1;
-				else $value = "";
-				$this->data[$key] = requested($key, $value);
+		// requested for meals
+		foreach($this->Meal->dbColumns as $var_name) {
+			$$var_name = requested($var_name, "ne");
+			$this->mealData[$var_name] = $$var_name;
+		}
+	
+		// requested for visitors fields
+		foreach($this->Visitor->dbColumns as $key) {
+			if($key == 'bill') $value = 0;
+			else $value = "";
+			$this->data[$key] = requested($key, $value);	
 		}
 	}
 
@@ -176,21 +183,38 @@ class VisitorController extends BaseController
 	 */
 	private function create()
 	{
-		foreach($this->Program->formNames as $key) {
-				if($key == 'display_in_reg') {
-					$value = 0;
-				} else {
-					$value = NULL;
-				}
-				$$key = requested($key, $value);
+		// TODO
+		////ziskani zvolenych programu
+		$blockSql = "SELECT 	id
+					 FROM kk_blocks
+					 WHERE meeting='".$this->meetingId."' AND program='1' AND deleted='0'";
+		$blockResult = mysql_query($blockSql);
+		while($blockData = mysql_fetch_assoc($blockResult)){
+			$$blockData['id'] = requested($blockData['id'],0);
+			$programs_data[$blockData['id']] = $$blockData['id'];
+			//echo $blockData['id'].":".$$blockData['id']."|";
 		}
 
-		foreach($this->Program->dbColumns as $key) {
-			$db_data[$key] = $$key;	
+		// requested for visitors
+		foreach($this->Visitor->dbColumns as $key) {
+				if($key == 'bill') $$key = requested($key, 0);
+				else $$key = requested($key, null);
+				$DB_data[$key] = $$key;	
 		}
-		
-		if($this->Program->create($db_data)){	
-			redirect("?".$this->page."&error=ok");
+
+		// i must add visitor's ID because it is empty
+		$DB_data['meeting'] = $this->meetingId;
+
+		// requested for meals
+		foreach($this->Meal->dbColumns as $var_name) {
+			$$var_name = requested($var_name, null);
+			$meals_data[$var_name] = $$var_name;
+		}
+		// create
+		if($this->Visitor->create($DB_data, $meals_data, $programs_data)){	
+			redirect("?page=".$this->page."&error=ok");
+		} else {
+			redirect("?page=".$this->page."&error=error");
 		}
 	}
 
@@ -202,21 +226,38 @@ class VisitorController extends BaseController
 	 */
 	private function update($id = NULL)
 	{
-		foreach($this->Program->formNames as $key) {
-			if($key == 'display_in_reg' && $$key == '') {
-				$value = 1;
-			} else {
-				$value = NULL;
-			}
-			$$key = requested($key, $value);
+		// TODO
+		////ziskani zvolenych programu
+		$blockSql = "SELECT 	id
+					 FROM kk_blocks
+					 WHERE meeting='".$this->meetingId."' AND program='1' AND deleted='0'";
+		$blockResult = mysql_query($blockSql);
+		while($blockData = mysql_fetch_assoc($blockResult)){
+			$$blockData['id'] = requested($blockData['id'],0);
+			$programs_data[$blockData['id']] = $$blockData['id'];
+			//echo $blockData['id'].":".$$blockData['id']."|";
 		}
 
-		foreach($this->Program->dbColumns as $key) {
-			$db_data[$key] = $$key;	
+		foreach($this->Visitor->dbColumns as $key) {
+				if($key == 'bill') $$key = requested($key, 0);
+				else $$key = requested($key, null);
+				$DB_data[$key] = $$key;	
 		}
-		
-		if($this->Program->update($id, $db_data)){	
-			redirect("?".$this->page."&error=ok");
+
+		// i must add visitor's ID because it is empty
+		$DB_data['meeting'] = $this->meetingId;
+
+		foreach($this->Meal->dbColumns as $var_name) {
+			$$var_name = requested($var_name, null);
+			$meals_data[$var_name] = $$var_name;
+		}
+		// i must add visitor's ID because it is empty
+		$meals_data['visitor'] = $id;
+
+		if($this->Visitor->modify($id, $DB_data, $meals_data, $programs_data)){	
+			redirect("?page=".$this->page."&error=ok");
+		} else {
+			redirect("?page=".$this->page."&error=error");
 		}
 	}
 
@@ -262,7 +303,7 @@ class VisitorController extends BaseController
 	private function delete($id)
 	{
 		if($this->Visitor->delete($id)) {	
-			  	redirect("?visitor&error=del");
+			  redirect("?error=del");
 		}
 	}
 

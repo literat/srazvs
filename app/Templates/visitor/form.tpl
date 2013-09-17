@@ -4,7 +4,7 @@
 <?php echo $data['error']; ?>
 <div class='pageRibbon'><?php echo $data['heading']; ?></div>
 
-<form action='process.php' method='post'>
+<form action='?visitor' method='post'>
 
 <div class='button-line'>
  <button type='submit' onclick=\"this.form.submit()\">
@@ -19,7 +19,7 @@ $(function() {
 	$.datepicker.setDefaults($.datepicker.regional['cs']);
 	$( ".datePicker" ).datepicker({
 		showOn: "button",
-		buttonImage: "images/calendar_button.png",
+		buttonImage: "<?php echo IMG_DIR; ?>calendar_button.png",
 		buttonImageOnly: true,
 		showWeek: true,
         firstDay: 1,
@@ -121,7 +121,7 @@ $(function() {
  <div class='button-line'>
  <button type='submit' onclick=\"this.form.submit()\">
   <img src='<?php echo IMG_DIR; ?>icons/save.png' /> Uložit</button>
- <button type='button' onclick="window.location.replace('index.php')">
+ <button type='button' onclick="window.location.replace('<?php echo VISIT_DIR; ?>')">
   <img src='<?php echo IMG_DIR; ?>icons/storno.png'  /> Storno</button>
 </div>
  

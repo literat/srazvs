@@ -107,8 +107,9 @@ class VisitorModel /* extends Component */
     	$query = "INSERT INTO `kk_visitors` 
      				 (".$query_key_set.", `code`,`reg_daytime`) 
      				 VALUES (".$query_value_set.", CONCAT(LEFT('".$DB_data['name']."',1),LEFT('".$DB_data['surname']."',1),SUBSTRING('".$DB_data['birthday']."',3,2)),'".date('Y-m-d H:i:s')."');";
+     	echo $query;
         $result = mysql_query($query);
-		
+		var_dump($result);
 		$ID_visitor = mysql_insert_id();
 		// visitor's id is empty and i must add one
 		$meals_data['visitor'] = $ID_visitor;

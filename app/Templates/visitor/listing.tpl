@@ -22,7 +22,7 @@
   		<img src='".$ICODIR; ?>small/storno.png'  /> Zpět</button>-->
 		<input type='hidden' name='cms' value='search' />
 	</form>
-	<a class='link' href='?visitor&cms=new&page=visitor'>
+	<a class='link' href='<?php echo VISIT_DIR; ?>/?cms=new&page=visitor'>
 		<img src='<?php echo IMG_DIR; ?>icons/new.png' />NOVÝ ÚČASTNÍK
 	</a>
 </div>
@@ -127,27 +127,27 @@ $(document).ready(function() {
 			<tr class='radek1'>
 				<td><input type='checkbox' name='checker[]'  value='<?php echo $row['id']; ?>' /></td>
 				<td>
-					<a href='?visitor&id=<?php echo $row['id']; ?>&cms=edit&page=visitor' title='Upravit'>
+					<a href='?id=<?php echo $row['id']; ?>&cms=edit&page=visitor' title='Upravit'>
 						<img class='edit' src='<?php echo IMG_DIR; ?>icons/edit.gif' />
 					</a>
 				</td>
 				<td>
-					<a href='?visitor&id=<?php echo $row['id']; ?>&amp;cms=advance&amp;search=<?php echo $data['search']; ?>&page=visitor' title='Záloha'>
+					<a href='?id=<?php echo $row['id']; ?>&amp;cms=advance&amp;search=<?php echo $data['search']; ?>&page=visitor' title='Záloha'>
 						<img class='edit' src='<?php echo IMG_DIR; ?>icons/advance.png' />
 					</a>
 				</td>
 				<td>
-					<a href='?visitor&id=<?php echo $row['id']; ?>&amp;cms=pay&amp;search=<?php echo $data['search']; ?>&page=visitor' title='Zaplatit'>
+					<a href='?id=<?php echo $row['id']; ?>&amp;cms=pay&amp;search=<?php echo $data['search']; ?>&page=visitor' title='Zaplatit'>
 						<img class='edit' src='<?php echo IMG_DIR; ?>icons/pay.png' />
 					</a>
 				</td>
 				<td>
-					<a href='?export&evidence=confirm&vid=<?php echo $row['id']; ?>' title='Doklad'>
+					<a href='/export/?evidence=confirm&vid=<?php echo $row['id']; ?>' title='Doklad'>
 						<img class='edit' src='<?php echo IMG_DIR; ?>icons/pdf.png' />
 					</a>
 				</td>
 				<td>
-					<a href="javascript:confirmation('?visitor&id=<?php echo $row['id']; ?>&amp;cms=delete&amp;search=<?php echo $data['search']; ?>', 'účastník: <?php echo $row['nick']; ?> -> Opravdu SMAZAT tohoto účastníka? Jste si jisti?')" title='Odstranit'>
+					<a href="javascript:confirmation('?id=<?php echo $row['id']; ?>&amp;cms=delete&amp;search=<?php echo $data['search']; ?>', 'účastník: <?php echo $row['nick']; ?> -> Opravdu SMAZAT tohoto účastníka? Jste si jisti?')" title='Odstranit'>
 						<img class='edit' src='<?php echo IMG_DIR; ?>icons/delete.gif' />
 					</a>
 				</td>
