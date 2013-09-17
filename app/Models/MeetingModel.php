@@ -145,7 +145,7 @@ class MeetingModel extends Component
 			$html .= " <tr>\n";
 			while($data = mysql_fetch_assoc($result)){			
 				$html .= "<td class='cat-".$data['style']."' style='text-align:center;'>\n";
-				$html .= "<a class='program' href='../programs/process.php?id=".$data['id']."&cms=edit&page=meetings' title='".$data['name']."'>".$data['name']."</a>\n";
+				$html .= "<a class='program' href='../program/?id=".$data['id']."&cms=edit&page=meeting' title='".$data['name']."'>".$data['name']."</a>\n";
 				$html .= "</td>\n";
 			}
 			$html .= " </tr>\n";
@@ -221,14 +221,14 @@ class MeetingModel extends Component
 					if($data['program'] == 1){ 
 						$html .= "<td class='cat-".$data['style']."'>\n";
 						$html .= "<div>\n";
-						$html .= "<a class='block' href='".BLOCK_DIR."process.php?id=".$data['id']."&cms=edit&page=meetings' title='".$data['name']."'>".$data['name']."</a>\n";
+						$html .= "<a class='block' href='".BLOCK_DIR."/?id=".$data['id']."&cms=edit&page=meeting' title='".$data['name']."'>".$data['name']."</a>\n";
 						$html .= "</div>\n";
 						$html .= $this->getPrograms($data['id']);
 						$html .= "</td>\n";
 					}
 					else {
 						$html .= "<td class='cat-".$data['style']."'>";
-						$html .= "<a class='block' href='".BLOCK_DIR."process.php?id=".$data['id']."&cms=edit&page=meetings' title='".$data['name']."'>".$data['name']."</a>\n";
+						$html .= "<a class='block' href='".BLOCK_DIR."/?id=".$data['id']."&cms=edit&page=meeting' title='".$data['name']."'>".$data['name']."</a>\n";
 						$html .= "</td>\n";
 					}
 					$html .= "</tr>\n";
@@ -297,6 +297,8 @@ class MeetingModel extends Component
 	}
 	
 	/**
+	 * @deprecated
+	 *
 	 * Render data in a table
 	 *
 	 * @return	string	html of a table

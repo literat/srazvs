@@ -6,12 +6,12 @@
 
 <div class='pageRibbon'>nastavení</div>
 
-<form action='?cms=update&page=meetings' method='post'>
+<form action='?meeting' method='post'>
 
 <div class='button-line'>
  <button type='submit' onclick=\"this.form.submit()\">
   <img src='<?php echo IMG_DIR; ?>icons/save.png' /> Uložit</button>
- <button type='button' onclick="window.location.replace('index.php?cms=list-view')">
+ <button type='button' onclick="window.location.replace('#')">
   <img src='<?php echo IMG_DIR; ?>icons/storno.png'  /> Storno</button>
 </div>
 
@@ -111,4 +111,5 @@ $(function() {
 
  <input type='hidden' name='cms' value='modify'>
  <input type='hidden' name='mid' value='<?php echo $data['mid']; ?>'>
+ <input type='hidden' name='page' value='<?php echo $data['page']; ?>'>
 </form>
