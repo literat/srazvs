@@ -6,23 +6,23 @@ require_once('../inc/define.inc.php');
 ########################### AKTUALNI SRAZ ##############################
 
 if(defined('DEBUG') && DEBUG === TRUE){
-	$mid = 1;
-	$disabled = "";
-	$where = "WHERE id = ".$mid;	
+  $mid = 1;
+  $disabled = "";
+  $where = "WHERE id = ".$mid;  
 } else {
-	$where = "";	
+  $where = "";  
 }
 
 
-$sql = "SELECT	id,
-				place,
-				DATE_FORMAT(start_date, '%Y') AS year,
-				UNIX_TIMESTAMP(open_reg) AS open_reg,
-				UNIX_TIMESTAMP(close_reg) as close_reg
-		FROM kk_meetings
-		".$where."
-		ORDER BY id DESC
-		LIMIT 1";
+$sql = "SELECT  id,
+        place,
+        DATE_FORMAT(start_date, '%Y') AS year,
+        UNIX_TIMESTAMP(open_reg) AS open_reg,
+        UNIX_TIMESTAMP(close_reg) as close_reg
+    FROM kk_meetings
+    ".$where."
+    ORDER BY id DESC
+    LIMIT 1";
 $result = mysql_query($sql);
 $data = mysql_fetch_assoc($result);
 
@@ -33,11 +33,11 @@ $meetingHeader = $data['place']." ".$data['year'];
 
 ////otevirani a uzavirani prihlasovani
 if(($data['open_reg'] < time()) && (time() < $data['close_reg']) || DEBUG === TRUE){
-	$disabled = "";
-	$display_registration = TRUE;
+  $disabled = "";
+  $display_registration = TRUE;
 } else {
-	$disabled = "disabled";
-	$display_registration = FALSE;
+  $disabled = "disabled";
+  $display_registration = FALSE;
 }
 
 
@@ -51,41 +51,41 @@ $ProgramHandler = $Container->createProgram();
 $programs = "  <div style='border-bottom:1px solid black;text-align:right;'>výběr programů</div>";
 $programs .= "  <p>info: Rozkliknutím programu zobrazíte jeho detail.</p>";
 
-$progSql = "SELECT 	id,
-					day,
-					DATE_FORMAT(`from`, '%H:%i') AS `from`,
-					DATE_FORMAT(`to`, '%H:%i') AS `to`,
-					name,
-					program
-			FROM kk_blocks
-			WHERE deleted = '0' AND program='1' AND meeting='".$mid."'
-			ORDER BY `day`, `from` ASC";
+$progSql = "SELECT  id,
+          day,
+          DATE_FORMAT(`from`, '%H:%i') AS `from`,
+          DATE_FORMAT(`to`, '%H:%i') AS `to`,
+          name,
+          program
+      FROM kk_blocks
+      WHERE deleted = '0' AND program='1' AND meeting='".$mid."'
+      ORDER BY `day`, `from` ASC";
 
 $progResult = mysql_query($progSql);
 $progRows = mysql_affected_rows();
 
 if($progRows == 0){
-	$programs .= "<div class='emptyTable' style='width:400px;'>Nejsou žádná aktuální data.</div>\n";
+  $programs .= "<div class='emptyTable' style='width:400px;'>Nejsou žádná aktuální data.</div>\n";
 }
 else{
-	//// prasarnicka kvuli programu raftu - resim obsazenost dohromady u dvou polozek
-	//$raftCountSql = "SELECT COUNT(visitor) AS raft FROM `kk_visitor-program` WHERE program='56|57'";
-	//$raftCountResult = mysql_query($raftCountSql);
-	//$raftCountData = mysql_fetch_assoc($raftCountResult);
-	
-	while($progData = mysql_fetch_assoc($progResult)){
-		//nemoznost volit predsnemovni dikusi
-		if($progData['id'] == 63) $notDisplayed = "style='display:none;'";
-		//obsazenost raftu
-		//elseif($raftCountData['raft'] >= 25){
-		//	if($progData['id'] == 86) $notDisplayed = "style='display:none;'";
-		//	else $notDisplayed = "";
-		//}
-		else $notDisplayed = "";
-		$programs .= "<div ".$notDisplayed.">".$progData['day'].", ".$progData['from']." - ".$progData['to']." : ".$progData['name']."</div>\n";
-		if($progData['program'] == 1) $programs .= "<div ".$notDisplayed.">".$ProgramHandler->getProgramsRegistration($progData['id'], $disabled)."</div>";
-		$programs .= "<br />";
-	}
+  //// prasarnicka kvuli programu raftu - resim obsazenost dohromady u dvou polozek
+  //$raftCountSql = "SELECT COUNT(visitor) AS raft FROM `kk_visitor-program` WHERE program='56|57'";
+  //$raftCountResult = mysql_query($raftCountSql);
+  //$raftCountData = mysql_fetch_assoc($raftCountResult);
+  
+  while($progData = mysql_fetch_assoc($progResult)){
+    //nemoznost volit predsnemovni dikusi
+    if($progData['id'] == 63) $notDisplayed = "style='display:none;'";
+    //obsazenost raftu
+    //elseif($raftCountData['raft'] >= 25){
+    //  if($progData['id'] == 86) $notDisplayed = "style='display:none;'";
+    //  else $notDisplayed = "";
+    //}
+    else $notDisplayed = "";
+    $programs .= "<div ".$notDisplayed.">".$progData['day'].", ".$progData['from']." - ".$progData['to']." : ".$progData['name']."</div>\n";
+    if($progData['program'] == 1) $programs .= "<div ".$notDisplayed.">".$ProgramHandler->getProgramsRegistration($progData['id'], $disabled)."</div>";
+    $programs .= "<br />";
+  }
 }
 
 ######################### KONTROLA ########################################
@@ -109,13 +109,13 @@ $cms = requested("cms","");
 //$error = requested("error","");
 
 ////ziskani zvolenych programu
-$blockSql = "SELECT 	id
-			 FROM kk_blocks
-			 WHERE meeting='".$mid."' AND program='1' AND deleted='0'";
+$blockSql = "SELECT   id
+       FROM kk_blocks
+       WHERE meeting='".$mid."' AND program='1' AND deleted='0'";
 $blockResult = mysql_query($blockSql);
 while($blockData = mysql_fetch_assoc($blockResult)){
-	$$blockData['id'] = requested($blockData['id'],0);
-	//echo $blockData['id'].":".$$blockData['id']."|";
+  $$blockData['id'] = requested($blockData['id'],0);
+  //echo $blockData['id'].":".$$blockData['id']."|";
 }
 
 $name = requested("name","");
@@ -146,96 +146,96 @@ $sun_lunch = requested("sun_lunch","");
 ######################## ZPRACOVANI ####################################
 
 if($cms == "create"){
-	$birthday = cleardate2DB($birthday, "Y-m-d");
-	
-	$error = "";
-	//kontrola PSC	
-	if(!isZipCode($postal_code)){
-		$error = "error";
-		$error_postal_code = "zip_code";
-	}
-	
-	//kontrola e-mailu
-	//if(!isEmail($email)){
-	if(!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-		$error = "error";
-		$error_email = "email";
-	}
-	
-	//kontrola e-mailu
-	if(!isGroupNumber($group_num)){
-		$error = "error";
-		$error_group_num = "group_num";
-	}
-	
-	if(isEmpty($name)) $error_name = "empty";
-	if(isEmpty($surname)) $error_surname = "empty";
-	if(isEmpty($nick)) $error_nick = "empty";
-	if(isEmpty($birthday)) $error_birthday = "empty";
-	if(isEmpty($street)) $error_street = "empty";
-	if(isEmpty($city)) $error_city = "empty";
-	if(isEmpty($group_name)) $error_group_name = "empty";
-	
-	if($error == ""){
-		$sql = "INSERT	INTO `kk_visitors` (`name`, `surname`, `nick`, `birthday`, `email`, `street`, `city`, `postal_code`, `province`, `group_num`, `group_name`, `troop_name`, `comment`, `arrival`, `departure`, `bill`, `meeting`, `question`, `code`,`reg_daytime`) 
-			VALUES ('".$name."', '".$surname."', '".$nick."', '".$birthday."', '".$email."', '".$street."', '".$city."', '".$postal_code."', '".$province."', '".$group_num."', '".$group_name."', '".$troop_name."', '".$comment."', '".$arrival."', '".$departure."', '".$bill."', '".$mid."', '".$question."', CONCAT(LEFT('".$name."',1),LEFT('".$surname."',1),SUBSTRING('".$birthday."',3,2)),'".date('Y-m-d H:i:s')."')";
-			
-		$result = mysql_query($sql);
-		$vid = mysql_insert_id();
-		if(!$result)$error = "error";
-		else {$error = "ok";
-			//$vid = 5;
-			$blockSql = "SELECT 	id
-		 				 FROM kk_blocks
-		 				 WHERE meeting='".$mid."' AND program='1' AND deleted='0'";
-			$blockResult = mysql_query($blockSql);
-			while($blockData = mysql_fetch_assoc($blockResult)){
-				$usrProgSql = "INSERT INTO `kk_visitor-program` (`visitor`, `program`)
-							   VALUES ('".$vid."', '".$$blockData['id']."')";
-				$usrProgResult = mysql_query($usrProgSql);
-			}
-			
-			$mealSql = "INSERT	INTO `kk_meals` (`visitor`, `fry_dinner`, `sat_breakfast`, `sat_lunch`, `sat_dinner`, `sun_breakfast`, `sun_lunch`) 
-			VALUES ('".$vid."', '".$fry_dinner."', '".$sat_breakfast."', '".$sat_lunch."', '".$sat_dinner."', '".$sun_breakfast."', '".$sun_lunch."')";
-			$mealResult = mysql_query($mealSql);
-		
-			######################## ODESILAM EMAIL ##########################
+  $birthday = cleardate2DB($birthday, "Y-m-d");
+  
+  $error = "";
+  //kontrola PSC  
+  if(!isZipCode($postal_code)){
+    $error = "error";
+    $error_postal_code = "zip_code";
+  }
+  
+  //kontrola e-mailu
+  //if(!isEmail($email)){
+  if(!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    $error = "error";
+    $error_email = "email";
+  }
+  
+  //kontrola e-mailu
+  if(!isGroupNumber($group_num)){
+    $error = "error";
+    $error_group_num = "group_num";
+  }
+  
+  if(isEmpty($name)) $error_name = "empty";
+  if(isEmpty($surname)) $error_surname = "empty";
+  if(isEmpty($nick)) $error_nick = "empty";
+  if(isEmpty($birthday)) $error_birthday = "empty";
+  if(isEmpty($street)) $error_street = "empty";
+  if(isEmpty($city)) $error_city = "empty";
+  if(isEmpty($group_name)) $error_group_name = "empty";
+  
+  if($error == ""){
+    $sql = "INSERT  INTO `kk_visitors` (`name`, `surname`, `nick`, `birthday`, `email`, `street`, `city`, `postal_code`, `province`, `group_num`, `group_name`, `troop_name`, `comment`, `arrival`, `departure`, `bill`, `meeting`, `question`, `code`,`reg_daytime`) 
+      VALUES ('".$name."', '".$surname."', '".$nick."', '".$birthday."', '".$email."', '".$street."', '".$city."', '".$postal_code."', '".$province."', '".$group_num."', '".$group_name."', '".$troop_name."', '".$comment."', '".$arrival."', '".$departure."', '".$bill."', '".$mid."', '".$question."', CONCAT(LEFT('".$name."',1),LEFT('".$surname."',1),SUBSTRING('".$birthday."',3,2)),'".date('Y-m-d H:i:s')."')";
+      
+    $result = mysql_query($sql);
+    $vid = mysql_insert_id();
+    if(!$result)$error = "error";
+    else {$error = "ok";
+      //$vid = 5;
+      $blockSql = "SELECT   id
+             FROM kk_blocks
+             WHERE meeting='".$mid."' AND program='1' AND deleted='0'";
+      $blockResult = mysql_query($blockSql);
+      while($blockData = mysql_fetch_assoc($blockResult)){
+        $usrProgSql = "INSERT INTO `kk_visitor-program` (`visitor`, `program`)
+                 VALUES ('".$vid."', '".$$blockData['id']."')";
+        $usrProgResult = mysql_query($usrProgSql);
+      }
+      
+      $mealSql = "INSERT  INTO `kk_meals` (`visitor`, `fry_dinner`, `sat_breakfast`, `sat_lunch`, `sat_dinner`, `sun_breakfast`, `sun_lunch`) 
+      VALUES ('".$vid."', '".$fry_dinner."', '".$sat_breakfast."', '".$sat_lunch."', '".$sat_dinner."', '".$sun_breakfast."', '".$sun_lunch."')";
+      $mealResult = mysql_query($mealSql);
+    
+      ######################## ODESILAM EMAIL ##########################
 
-			// zaheshovane udaje, aby se nedali jen tak ziskat data z databaze
-			$code4bank = substr($name, 0, 1).substr($surname, 0, 1).substr($birthday, 2, 2);
-			$hash = ((int)$vid.$mid) * 147 + 49873;	
-							
-			$recipient_mail = $email;
-			$recipient_name = $name." ".$surname;
-			
-			$Container = new Container($GLOBALS['cfg']);
-			$Emailer = $Container->createEmailer();
-			if($return = $Emailer->sendRegistrationSummary($recipient_mail, $recipient_name, $hash, $code4bank)) {
-				redirect("check.php?hash=".$hash."&error=".$error."");
-			} else {
-				echo 'Došlo k chybě při odeslání e-mailu.';
-				echo 'Chybová hláška: ' . $return;
-			}
-		
-		
-			##################################################################
-		}
-	}
+      // zaheshovane udaje, aby se nedali jen tak ziskat data z databaze
+      $code4bank = substr($name, 0, 1).substr($surname, 0, 1).substr($birthday, 2, 2);
+      $hash = ((int)$vid.$mid) * 147 + 49873; 
+              
+      $recipient_mail = $email;
+      $recipient_name = $name." ".$surname;
+      
+      $Container = new Container($GLOBALS['cfg']);
+      $Emailer = $Container->createEmailer();
+      if($return = $Emailer->sendRegistrationSummary($recipient_mail, $recipient_name, $hash, $code4bank)) {
+        redirect("check.php?hash=".$hash."&error=".$error."");
+      } else {
+        echo 'Došlo k chybě při odeslání e-mailu.';
+        echo 'Chybová hláška: ' . $return;
+      }
+    
+    
+      ##################################################################
+    }
+  }
 }
 
 ########################## ROLLS ####################################  
 $province_roll = "<select ".$disabled." style='width: 195px; font-size:11px' name='province'>\n";
 
-$provinceSql = "SELECT	*
-				FROM kk_provinces";
+$provinceSql = "SELECT  *
+        FROM kk_provinces";
 $provinceResult = mysql_query($provinceSql);
 
 while($provinceData = mysql_fetch_assoc($provinceResult)){
-	if($provinceData['id'] == $province){
-		$sel = "selected";
-	}
-	else $sel = "";
-	$province_roll .= "<option value='".$provinceData['id']."' ".$sel.">".$provinceData['province_name']."</option>";
+  if($provinceData['id'] == $province){
+    $sel = "selected";
+  }
+  else $sel = "";
+  $province_roll .= "<option value='".$provinceData['id']."' ".$sel.">".$provinceData['province_name']."</option>";
 }
 $province_roll .= "</select>\n";
 
@@ -243,27 +243,27 @@ $province_roll .= "</select>\n";
 // poradi mus byt nejdrive NE a potom ANO, podle toho, co chci, aby se defaultne zobrazilo ve formulari
 $meal_array = array("ne" => "ne","ano" => "ano");
 $mealDayArray = array("páteční večeře"=>"fry_dinner",
-					  "sobotní snídaně"=>"sat_breakfast",
-					  "sobotní oběd"=>"sat_lunch",
-					  "sobotní večeře"=>"sat_dinner",
-					  "nedělní snídaně"=>"sun_breakfast",
-					  "nedělní oběd"=>"sun_lunch");
+            "sobotní snídaně"=>"sat_breakfast",
+            "sobotní oběd"=>"sat_lunch",
+            "sobotní večeře"=>"sat_dinner",
+            "nedělní snídaně"=>"sun_breakfast",
+            "nedělní oběd"=>"sun_lunch");
 
 $meal_roll = "";
 foreach($mealDayArray as $mealDayKey => $mealDayVal){
-	if(preg_match("/breakfast/", $mealDayVal)) $mealIcon = "breakfast";
-	if(preg_match("/lunch/", $mealDayVal)) $mealIcon = "lunch";
-	if(preg_match("/dinner/", $mealDayVal)) $mealIcon = "dinner";
-	
-	$meal_roll .= "<span style='display:block;font-size:11px;'>".$mealDayKey.":</span><img style='width:18px;' src='".IMG_DIR."icons/".$mealIcon.".png' /><select ".$disabled." style='width:195px; font-size:11px;margin-left:5px;' name='".$mealDayVal."'>\n";
-	foreach ($meal_array as $meal_key => $v2){
-		if($meal_key == $$mealDayVal){
-			$sel2 = "selected";
-		}
-		else $sel2 = "";
-		$meal_roll .= "<option value='".$meal_key."' ".$sel2.">".$v2."</option>";
-	}
-	$meal_roll .= "</select><br />\n";
+  if(preg_match("/breakfast/", $mealDayVal)) $mealIcon = "breakfast";
+  if(preg_match("/lunch/", $mealDayVal)) $mealIcon = "lunch";
+  if(preg_match("/dinner/", $mealDayVal)) $mealIcon = "dinner";
+  
+  $meal_roll .= "<span style='display:block;font-size:11px;'>".$mealDayKey.":</span><img style='width:18px;' src='".IMG_DIR."icons/".$mealIcon.".png' /><select ".$disabled." style='width:195px; font-size:11px;margin-left:5px;' name='".$mealDayVal."'>\n";
+  foreach ($meal_array as $meal_key => $v2){
+    if($meal_key == $$mealDayVal){
+      $sel2 = "selected";
+    }
+    else $sel2 = "";
+    $meal_roll .= "<option value='".$meal_key."' ".$sel2.">".$v2."</option>";
+  }
+  $meal_roll .= "</select><br />\n";
 }
 
 $style .= "<style>";
@@ -305,7 +305,7 @@ echo $error_bill;*/
 <script type="text/javascript" src="<?php echo JS_DIR ?>/jquery/jquery.tinytips.js"></script>
 <script type="text/javascript">
 $(document).ready(function() {
-	$('a.programLink').tinyTips('light', 'title');
+  $('a.programLink').tinyTips('light', 'title');
 });
 </script>
 
@@ -325,21 +325,21 @@ $(document).ready(function() {
 <script src='<?php echo JS_DIR; ?>jquery/jquery-ui.js' type='text/javascript'></script>
 <script type="text/javascript">
 $(function() {
-	$.datepicker.setDefaults($.datepicker.regional['cs']);
-	$( ".datePicker" ).datepicker({
-		showOn: "button",
-		buttonImage: "../images/calendar_button.png",
-		buttonImageOnly: true,
-		showWeek: true,
+  $.datepicker.setDefaults($.datepicker.regional['cs']);
+  $( ".datePicker" ).datepicker({
+    showOn: "button",
+    buttonImage: "../images/calendar_button.png",
+    buttonImageOnly: true,
+    showWeek: true,
         firstDay: 1,
-		showOtherMonths: true,
+    showOtherMonths: true,
         selectOtherMonths: true,
-		showButtonPanel: true,
-		changeMonth: true,
-		changeYear: true,
-		dateFormat: 'dd.mm.yy',
-		maxDate: '0',
-	});
+    showButtonPanel: true,
+    changeMonth: true,
+    changeYear: true,
+    dateFormat: 'dd.mm.yy',
+    maxDate: '0',
+  });
 });
 </script>
 
