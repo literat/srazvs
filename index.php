@@ -58,6 +58,11 @@ else
 }
 
 $getParams = $router->getParams();
+
+if(empty($getParams)) {
+	redirect('?mid='.$data['id']);
+}
+
 //once we have the controller instantiated, execute the default function
 //pass any GET varaibles to the main method
 $controller->init($getParams);
