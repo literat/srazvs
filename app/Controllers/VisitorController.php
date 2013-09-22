@@ -159,7 +159,7 @@ class VisitorController extends BaseController
 	{
 		$this->template = 'form';
 
-		$this->heading = "nový program";
+		$this->heading = "nový účastník";
 		$this->todo = "create";
 		
 		// requested for meals
@@ -271,7 +271,7 @@ class VisitorController extends BaseController
 	{
 		$this->template = 'form';
 
-		$this->heading = "úprava programu";
+		$this->heading = "úprava účastníka";
 		$this->todo = "modify";
 
 		$this->itemId = $id;
