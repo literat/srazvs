@@ -1,35 +1,35 @@
 <!-- start of body -->
- <body>
+  <body>
   <!-- start of canvas -->
   <div id='canvas'>
-   <!-- start of headerCanvas-->
-   <div id='headerCanvas'>
-    <div id="headerContent">
-	 <div id="headerProfileLogout">
-	  <a href="<?php echo HTTP_DIR."srazvs/"; ?>index.php" title="domů"><span>Domů</span></a>&nbsp;|&nbsp;
-	  <a href="<?php echo SET_DIR; ?>index.php" title="nastavení"><span>Nastavení</span></a>&nbsp;|&nbsp;
-      <a href="<?php echo HTTP_DIR."admin/"; ?>" title="administrace"><span>Administrace</span></a>&nbsp;|&nbsp; 
-	  <a href="<?php echo HTTP_DIR."srazvs/registrace"; ?>" title="registrace" target="_blank"><span>Registrace</span></a>&nbsp;|&nbsp;
-	  <a href="<?php echo HTTP_DIR."srazvs/program.php"; ?>" title="program" target="_blank"><span>Veřejný program</span></a>&nbsp;|&nbsp;
-      <a href="<?php echo HTTP_DIR."remote/logout.php?_return=admin/"; ?>" title="odhlásit se"><span>Odhlásit se</span></a>
-	  <div style="margin-top:5px;">
+    <!-- start of headerCanvas-->
+    <div id='headerCanvas'>
+      <div id="headerContent">
+        <div id="headerProfileLogout">
+          <a href="<?php echo HTTP_DIR."srazvs/"; ?>index.php" title="domů"><span>Domů</span></a>&nbsp;|&nbsp;
+          <a href="<?php echo SET_DIR; ?>index.php" title="nastavení"><span>Nastavení</span></a>&nbsp;|&nbsp;
+          <a href="<?php echo HTTP_DIR."admin/"; ?>" title="administrace"><span>Administrace</span></a>&nbsp;|&nbsp; 
+          <a href="<?php echo HTTP_DIR."srazvs/registrace"; ?>" title="registrace" target="_blank"><span>Registrace</span></a>&nbsp;|&nbsp;
+          <a href="<?php echo HTTP_DIR."srazvs/program.php"; ?>" title="program" target="_blank"><span>Veřejný program</span></a>&nbsp;|&nbsp;
+          <a href="<?php echo HTTP_DIR."remote/logout.php?_return=admin/"; ?>" title="odhlásit se"><span>Odhlásit se</span></a>
+          <div style="margin-top:5px;">
 	   uživatel: <span style="font-weight:bold;"><?php echo getUser($_SESSION[SESSION_PREFIX.'user'], "publicname"); ?></span><br />
        poslední přihlášení: <?php echo date("j. n. Y H:i:s",getUser($_SESSION[SESSION_PREFIX.'user'], "activitytime")); ?> |
        ip adresa: <?php echo gethostbyname($_SERVER['HTTP_HOST'])." - ".$_SERVER['HTTP_HOST']; ?> |
        počet přihlášení: <?php echo getUser($_SESSION[SESSION_PREFIX.'user'], "logincounter"); ?>
-	  </div>
-	 </div>
+          </div>
+        </div>
+      </div>
     </div>
-   </div>
-   <!-- end of headerCanvas -->
-   <!-- start of siteCanvas -->  
-   <div id="siteCanvas">
-   	<div id="siteHeader">
+    <!-- end of headerCanvas -->
+    <!-- start of siteCanvas -->  
+    <div id="siteCanvas">
+      <div id="siteHeader">
 	 <?php 
 	 $sql = "SELECT	place,
 					DATE_FORMAT(start_date, '%Y') AS year
 			FROM kk_meetings
-			WHERE id = '".$_SESSION['meetingID']."' AND deleted = 0
+			WHERE id = '".$_SESSION['meetingID']."' AND deleted = '0'
 			LIMIT 1";
 	 $result = mysql_query($sql);
 	 $row = mysql_fetch_array($result);
