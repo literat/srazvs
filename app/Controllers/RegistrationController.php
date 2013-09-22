@@ -121,6 +121,11 @@ class RegistrationController extends BaseController
 			$query_id = $id;	
 		}
 
+		if(isset($getVars['hash'])) {
+			$id = ;
+			$cms = "edit";
+		}
+
 		switch($this->cms) {
 			case "new":
 				$this->__new();
@@ -193,12 +198,15 @@ class RegistrationController extends BaseController
 		// requested for visitors
 		foreach($this->Visitor->dbColumns as $key) {
 				if($key == 'bill') $$key = requested($key, 0);
+				elseif($key == 'birthday') {
+					$$key = cleardate2DB(requested($key, 0), "Y-m-d");
+				}
 				else $$key = requested($key, null);
-				$DB_data[$key] = $$key;	
+				$db_data[$key] = $$key;	
 		}
 
 		// i must add visitor's ID because it is empty
-		$DB_data['meeting'] = $this->meetingId;
+		$db_data['meeting'] = $this->meetingId;
 
 		// requested for meals
 		foreach($this->Meal->dbColumns as $var_name) {
@@ -206,11 +214,30 @@ class RegistrationController extends BaseController
 			$meals_data[$var_name] = $$var_name;
 		}
 		// create
-		if($this->Visitor->create($DB_data, $meals_data, $programs_data)){	
-			redirect("?page=".$this->page."&error=ok");
+		if($vid = $this->Visitor->create($db_data, $meals_data, $programs_data)) {
+			######################## ODESILAM EMAIL ##########################
+
+			// zaheshovane udaje, aby se nedali jen tak ziskat data z databaze
+			$code4bank = substr($db_data['name'], 0, 1).substr($db_data['surname'], 0, 1).substr($db_data['birthday'], 2, 2);
+			$hash = ((int)$vid.$this->meetingId) * 147 + 49873;	
+							
+			$recipient_mail = $db_data['email'];
+			$recipient_name = $db_data['name']." ".$db_data['surname'];
+			
+			if($return = $this->Emailer->sendRegistrationSummary($recipient_mail, $recipient_name, $hash, $code4bank)) {
+				if(is_int($vid)) {
+					$vid = "ok";
+				}
+				redirect("?hash=".$hash."&error=".$vid."");
+			} else {
+				echo 'Došlo k chybě při odeslání e-mailu.';
+				echo 'Chybová hláška: ' . $return;
+			}
+			//redirect("?page=".$this->page."&error=ok");
 		} else {
 			redirect("?page=".$this->page."&error=error");
 		}
+		var_dump($vid);
 	}
 
 	/**

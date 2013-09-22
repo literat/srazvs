@@ -21,7 +21,7 @@ $(document).ready(function() {
 
 <!-- REGISTRACNI FORMULAR SRAZU -->
 
-<form action='index.php' method='post'>
+<form action='?registration' method='post'>
 
 <div class='button-line'>
  <button <?php echo $data['disabled']; ?> type='submit' onclick=\"this.form.submit()\">
@@ -38,7 +38,7 @@ $(function() {
   $.datepicker.setDefaults($.datepicker.regional['cs']);
   $( ".datePicker" ).datepicker({
     showOn: "button",
-    buttonImage: "images/calendar_button.png",
+    buttonImage: "<?php echo IMG_DIR; ?>/calendar_button.png",
     buttonImageOnly: true,
     showWeek: true,
         firstDay: 1,

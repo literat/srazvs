@@ -141,7 +141,8 @@ class VisitorModel /* extends Component */
 			$return = "ERROR_CREATE_VISITOR";
 		}
 
-		return $return;
+		//return $return;
+		return $ID_visitor;
 	}
 	
 	/**

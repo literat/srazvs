@@ -9,7 +9,10 @@
  */
 class MeetingModel extends Component
 {
-	/** @var int meeting ID */
+	/**
+	 * Meeting ID
+	 * @var int
+	 */
 	private $meetingId;
 	
 	/** @var array days of weekend */
@@ -20,6 +23,15 @@ class MeetingModel extends Component
 	
 	/** @var array of database programs table columns */
 	public $dbColumns = array();
+
+	/** @var datetime at what registration opens */
+	public $regOpening = NULL;
+
+	/** @var datetime at what registration ends*/
+	public $regClosing = NULL;
+
+	/** @var string registration heading text */
+	public $regHeading = '';
 	
 	/** Constructor */
 	public function __construct($meetingId = NULL)
@@ -380,6 +392,41 @@ class MeetingModel extends Component
 		
 		return $html_table;
 	}
-	
+
+	public function setRegistrationHandlers($meeting_id = NULL) {
+		$sql = "SELECT	id,
+				place,
+				DATE_FORMAT(start_date, '%Y') AS year,
+				UNIX_TIMESTAMP(open_reg) AS open_reg,
+				UNIX_TIMESTAMP(close_reg) as close_reg
+		FROM kk_meetings
+		".($meeting_id ? "WHERE id = '".$meeting_id."'" : '')."
+		ORDER BY id DESC
+		LIMIT 1";
+
+		$result = mysql_query($sql);
+		$data = mysql_fetch_assoc($result);
+
+		$mid = $data['id'];
+		$meetingHeader = 
+
+		$this->regHeading = $data['place']." ".$data['year'];
+		$this->regClosing = $data['close_reg'];
+		$this->regOpening = $data['open_reg'];
+
+		return TRUE;
+	}
+
+	public function getRegOpening() {
+		return $this->regOpening;
+	}
+
+	public function getRegClosing() {
+		return $this->regClosing;
+	}
+
+	public function getRegHeading() {
+		return $this->regHeading;
+	}
 	
 }
