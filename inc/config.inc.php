@@ -42,4 +42,7 @@ $cfg['mail-language']		= "cz";
 $cfg['mail-encoding']		= 'utf-8';
 $cfg['mail-sender-address']	= 'srazyvs@hkvs.cz';
 $cfg['mail-sender-name']	= 'Srazy VS';
+
+$cfg['gmail_user'] = "srazyvs@gmail.com";
+$cfg['gmail_passwd'] = "n4rG5RpfsS";
 ?>

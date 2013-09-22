@@ -30,8 +30,19 @@ class PHPMailerFactory
 	public function create()
 	{
 		// use PHP function mail()
-		$this->PHPMailer->IsMail();
+		//$this->PHPMailer->IsMail();
 		// e-mail is in HTML format
+		// enable SMTP
+		$this->PHPMailer->IsSMTP();
+
+		$this->PHPMailer->SMTPDebug = 1;  // debugging: 1 = errors and messages, 2 = messages only
+		$this->PHPMailer->SMTPAuth = true;  // authentication enabled
+		$this->PHPMailer->SMTPSecure = 'ssl'; // secure transfer enabled REQUIRED for GMail
+		$this->PHPMailer->Host = 'smtp.gmail.com';
+		$this->PHPMailer->Port = 465; 
+		$this->PHPMailer->Username = $this->configuration['gmail_user'];  
+		$this->PHPMailer->Password = $this->configuration['gmail_passwd'];            
+
 		$this->PHPMailer->IsHTML(true);
 		// encoding
 		$this->PHPMailer->CharSet = $this->configuration['mail-encoding'];
