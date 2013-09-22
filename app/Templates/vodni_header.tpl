@@ -45,7 +45,7 @@
     <link rel="stylesheet" href="<?php echo CSS_DIR ?>tinytips/tinyTips.css" />
     <link rel="alternate" type="application/rss+xml" href="<?php echo HTTP_DIR; ?>remote/rss.php?tp=4&amp;id=-1" title="Nejnovější články" />
     <link rel="shortcut icon" href="<?php echo HTTP_DIR; ?>favicon.ico?1" />
-    <title><?php echo $page_title; ?></title>
+    <title><?php echo $data['page_title']; ?></title>
     
     <!-- GA Tracking Code -->
     <script type="text/javascript">
@@ -60,9 +60,12 @@
         var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
       })();
     
-    </script>
-    
-    <?php echo $style; ?>
+    </script>    
+    <style>
+        #footer {
+            background: url('../plugins/templates/hkvs2/images/outer-bottom-program.png') no-repeat scroll left top transparent;
+        }
+    </style>
     <!-- PlexIS -->
     <title>Program - Sraz vodních skautů</title>
 </head>
