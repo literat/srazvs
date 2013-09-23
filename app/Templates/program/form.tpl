@@ -40,7 +40,7 @@
  </tr>
  <tr>
   <td class='label'><label>Kapacita:</label></td>
-  <td><input type='text' name='capacity' size='10' value='<?php echo $data['capacity']; ?>' /> (omezeno na 255)</td>
+  <td><input type='text' name='capacity' size='10' value='<?php echo $data['capacity']; ?>' placeholder="0" /> (omezeno na 255)</td>
  </tr>
  <tr>
   <td class='label'><label>Nezobrazovat v registraci:</label></td>

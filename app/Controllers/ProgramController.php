@@ -191,18 +191,24 @@ class ProgramController
 	private function create()
 	{
 		foreach($this->Program->formNames as $key) {
-				if($key == 'display_in_reg') {
-					$value = 0;
+				if($key == 'display_in_reg' && !isset($$key)) {
+					$value = 1;
 				} else {
 					$value = NULL;
 				}
-				$$key = requested($key, $value);
+
+				// TODO: better default values validation
+				// defualt input to DB
+				if($key == 'capacity' && !isset($$key)) {
+					$$key = 0;
+				} else {
+					$$key = requested($key, $value);
+				}
 		}
 
 		foreach($this->Program->dbColumns as $key) {
 			$DB_data[$key] = $$key;	
 		}
-		
 		if($this->Program->create($DB_data)){	
 			redirect("?page=".$this->page."&error=ok");
 		}
