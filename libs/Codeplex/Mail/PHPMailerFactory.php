@@ -31,27 +31,33 @@ class PHPMailerFactory
 	{
 		// use PHP function mail()
 		//$this->PHPMailer->IsMail();
-		// e-mail is in HTML format
 		// enable SMTP
 		$this->PHPMailer->IsSMTP();
-
-		$this->PHPMailer->SMTPDebug = 1;  // debugging: 1 = errors and messages, 2 = messages only
-		$this->PHPMailer->SMTPAuth = true;  // authentication enabled
-		$this->PHPMailer->SMTPSecure = 'ssl'; // secure transfer enabled REQUIRED for GMail
+		// debugging: 1 = errors and messages, 2 = messages only
+		$this->PHPMailer->SMTPDebug = 1;
+		// authentication enabled
+		$this->PHPMailer->SMTPAuth = true;
+		// secure transfer enabled REQUIRED for GMail
+		$this->PHPMailer->SMTPSecure = 'ssl';
+		// smtp server
 		$this->PHPMailer->Host = 'smtp.gmail.com';
+		// port
 		$this->PHPMailer->Port = 465; 
+		// user + password
 		$this->PHPMailer->Username = $this->configuration['gmail_user'];  
 		$this->PHPMailer->Password = $this->configuration['gmail_passwd'];            
-
+		// sender name and address
+		$this->PHPMailer->SetFrom($this->configuration['mail-sender-address'], $this->configuration['mail-sender-name']);
+		// e-mail is in HTML format
 		$this->PHPMailer->IsHTML(true);
 		// encoding
 		$this->PHPMailer->CharSet = $this->configuration['mail-encoding'];
 		// language
 		$this->PHPMailer->SetLanguage($this->configuration['mail-language']);
 		// sender e-mail address
-		$this->PHPMailer->From = $this->configuration['mail-sender-address'];
+		//$this->PHPMailer->From = $this->configuration['mail-sender-address'];
 		// sender name
-		$this->PHPMailer->FromName = $this->configuration['mail-sender-name'];
+		//$this->PHPMailer->FromName = $this->configuration['mail-sender-name'];
 		
 		return $this->PHPMailer;
 	}
