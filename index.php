@@ -3,7 +3,6 @@
 use Codeplex\Routers;
 
 require_once('inc/define.inc.php');
-include_once(INC_DIR.'access.inc.php');
 
 $sql = "SELECT id
 		FROM kk_meetings
@@ -35,6 +34,9 @@ $target = CONTROLLER_DIR.$routing['controller'].'Controller.php';
 if(file_exists($target))
 {
 	//print_r(get_declared_classes());
+	if($routing['controller'] != 'Registration') {
+		include_once(INC_DIR.'access.inc.php');
+	}
 	require_once($target);
 
 	//modify page to fit naming convention
