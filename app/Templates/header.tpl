@@ -9,7 +9,7 @@
           <a href="<?php echo HTTP_DIR."srazvs/"; ?>index.php" title="domů"><span>Domů</span></a>&nbsp;|&nbsp;
           <a href="<?php echo SET_DIR; ?>index.php" title="nastavení"><span>Nastavení</span></a>&nbsp;|&nbsp;
           <a href="<?php echo HTTP_DIR."admin/"; ?>" title="administrace"><span>Administrace</span></a>&nbsp;|&nbsp; 
-          <a href="<?php echo HTTP_DIR."srazvs/registrace"; ?>" title="registrace" target="_blank"><span>Registrace</span></a>&nbsp;|&nbsp;
+          <a href="<?php echo HTTP_DIR."srazvs/registration/"; ?>" title="registrace" target="_blank"><span>Registrace</span></a>&nbsp;|&nbsp;
           <a href="<?php echo HTTP_DIR."srazvs/program.php"; ?>" title="program" target="_blank"><span>Veřejný program</span></a>&nbsp;|&nbsp;
           <a href="<?php echo HTTP_DIR."remote/logout.php?_return=admin/"; ?>" title="odhlásit se"><span>Odhlásit se</span></a>
           <div style="margin-top:5px;">
