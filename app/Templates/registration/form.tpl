@@ -23,12 +23,14 @@ $(document).ready(function() {
 <script type="text/javascript">
 $(function() {
   $.datepicker.setDefaults($.datepicker.regional['cs']);
+  // deactivated 2013-09-26
+  // is not usefull as well
   $( ".datePicker" ).datepicker({
     showOn: "button",
     buttonImage: "<?php echo IMG_DIR; ?>/calendar_button.png",
     buttonImageOnly: true,
     showWeek: true,
-    firstDay: 1,
+    firstDay: 7,
     showOtherMonths: true,
     selectOtherMonths: true,
     showButtonPanel: true,
@@ -36,6 +38,12 @@ $(function() {
     changeYear: true,
     dateFormat: 'dd.mm.yy',
     maxDate: '0',
+    minDate: '-100Y',
+    yearRange: 'c-70,c+00',
+    monthNamesShort: ['Led','Úno','Bře','Dub','Kvě','Čer','Čec','Srp','Zář','Říj','Lis','Pro'],
+    dayNamesShort: ['Po', 'Út', 'St', 'Čt', 'Pá', 'So', 'Ne'],
+    dayNamesMin: ['Po', 'Út', 'St', 'Čt', 'Pá', 'So', 'Ne'],
+    weekHeader: 'Tý',
   });
 });
 </script>
@@ -44,9 +52,14 @@ $(function() {
 <script src='<?php echo JS_DIR; ?>jquery/validation/methods_de.js' type='text/javascript'></script> 
 <script type="text/javascript">
   $.validator.addMethod("groupnumber", function(value, element) {
-    if(value.match(/^[0-9]{3}\.[0-9]{2}$/)) return true;
+    if(value.match(/^[1-9]{1}[0-9]{2}\.[0-9]{1}[0-9a-z]{1}$/)) return true;
     else return false;
   }, "Hodnota musí být ve formátu nnn.nn!");
+
+  $.validator.addMethod("postalcode", function(value, element) {
+    if(value.match(/^[1-9]{1}[0-9]{4}$/)) return true;
+    else return false;
+  }, "Hodnota musí být ve formátu nnnnn!");
 
   $(document).ready(function(){
     $("#registration").validate({
@@ -69,7 +82,7 @@ $(function() {
         city: "required",
         postal_code: {
           required: true,
-          number: true,
+          postalcode: true,
           minlength: 5,
           maxlength: 5
         },

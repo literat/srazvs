@@ -72,6 +72,8 @@ class RegistrationController extends BaseController
 	{
 		if($this->meetingId = requested("mid","")){
 			$_SESSION['meetingID'] = $this->meetingId;
+		} elseif(defined('DEBUG') && DEBUG === TRUE) {
+			$this->meetingId = 1;
 		} else {
 			$this->meetingId = $_SESSION['meetingID'];
 		}
