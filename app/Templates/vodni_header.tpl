@@ -22,8 +22,9 @@
     <script type="text/javascript" src="<?php echo HTTP_DIR; ?>remote/lightbox/script.js?1"></script>
     
     <link rel="stylesheet" href="<?php echo CSS_DIR ?>colorbox.css" />
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-    <script type="text/javascript" src="<?php echo JS_DIR ?>colorbox/jquery.colorbox.js"></script>
+    <script type="text/javascript" src="<?php echo JS_DIR; ?>jquery.min.js"></script>
+    <script type="text/javascript" src="<?php echo JS_DIR; ?>jquery/jquery.validate.min.js"></script>
+    <script type="text/javascript" src="<?php echo JS_DIR; ?>colorbox/jquery.colorbox-min.js"></script>
     <script type="text/javascript">
     $(document).ready(function(){
         $(".program-link").colorbox({rel:'programDetail', width:"75%", height:"50%", transition:"fade"});
@@ -35,7 +36,7 @@
     });
     </script>
 
-	<script type="text/javascript" src="<?php echo JS_DIR ?>/jquery/jquery.tinytips.js"></script>
+	<script type="text/javascript" src="<?php echo JS_DIR ?>jquery/jquery.tinytips.js"></script>
     <script type="text/javascript">
     $(document).ready(function() {
         $('a.programLink').tinyTips('light', 'title');
@@ -63,7 +64,7 @@
     </script>    
     <style>
         #footer {
-            background: url('../plugins/templates/hkvs2/images/outer-bottom-program.png') no-repeat scroll left top transparent;
+            background: url('../../plugins/templates/hkvs2/images/outer-bottom-program.png') no-repeat scroll left top transparent;
         }
     </style>
     <!-- PlexIS -->
