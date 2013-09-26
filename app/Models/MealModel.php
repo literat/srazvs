@@ -55,7 +55,7 @@ class MealModel extends Component
 		}
 	 	$query_set = substr($query_set, 0, -1);	
 		
-    	echo $query = "UPDATE `".$this->dbTable."` 
+    	$query = "UPDATE `".$this->dbTable."` 
 					SET ".$query_set."
 					WHERE `visitor`='".$id."' LIMIT 1";
     	$result = mysql_query($query);

@@ -60,6 +60,12 @@ class RegistrationController extends BaseController
 	private $Meal;
 
 	/**
+	 * Error
+	 * @var array
+	 */
+	protected $error = FALSE;
+
+	/**
 	 * Prepare model classes and get meeting id
 	 */
 	public function __construct()
@@ -122,8 +128,11 @@ class RegistrationController extends BaseController
 		}
 
 		if(isset($getVars['hash'])) {
-			$id = ;
-			$cms = "edit";
+			$this->meetingId = (($getVars['hash'] - 49873) / 147)%10;
+			$id = floor((($getVars['hash'] - 49873) / 147)/10);
+			if($this->cms == '') {
+				$this->cms = "edit";
+			}
 		}
 
 		switch($this->cms) {
@@ -213,31 +222,34 @@ class RegistrationController extends BaseController
 			$$var_name = requested($var_name, null);
 			$meals_data[$var_name] = $$var_name;
 		}
-		// create
-		if($vid = $this->Visitor->create($db_data, $meals_data, $programs_data)) {
-			######################## ODESILAM EMAIL ##########################
+		//if(!$this->error) {
+			// create
+			if($vid = $this->Visitor->create($db_data, $meals_data, $programs_data)) {
+				######################## ODESILAM EMAIL ##########################
 
-			// zaheshovane udaje, aby se nedali jen tak ziskat data z databaze
-			$code4bank = substr($db_data['name'], 0, 1).substr($db_data['surname'], 0, 1).substr($db_data['birthday'], 2, 2);
-			$hash = ((int)$vid.$this->meetingId) * 147 + 49873;	
-							
-			$recipient_mail = $db_data['email'];
-			$recipient_name = $db_data['name']." ".$db_data['surname'];
-			
-			if($return = $this->Emailer->sendRegistrationSummary($recipient_mail, $recipient_name, $hash, $code4bank)) {
-				if(is_int($vid)) {
-					$vid = "ok";
+				// zaheshovane udaje, aby se nedali jen tak ziskat data z databaze
+				$code4bank = substr($db_data['name'], 0, 1).substr($db_data['surname'], 0, 1).substr($db_data['birthday'], 2, 2);
+				$hash = ((int)$vid.$this->meetingId) * 147 + 49873;	
+								
+				$recipient_mail = $db_data['email'];
+				$recipient_name = $db_data['name']." ".$db_data['surname'];
+				
+				if($return = $this->Emailer->sendRegistrationSummary($recipient_mail, $recipient_name, $hash, $code4bank)) {
+					if(is_int($vid)) {
+						$vid = "ok";
+					}
+					redirect("?hash=".$hash."&error=".$vid."");
+				} else {
+					echo 'Došlo k chybě při odeslání e-mailu.';
+					echo 'Chybová hláška: ' . $return;
 				}
-				redirect("?hash=".$hash."&error=".$vid."");
+				//redirect("?page=".$this->page."&error=ok");
 			} else {
-				echo 'Došlo k chybě při odeslání e-mailu.';
-				echo 'Chybová hláška: ' . $return;
+				redirect("?page=".$this->page."&error=error");
 			}
-			//redirect("?page=".$this->page."&error=ok");
-		} else {
-			redirect("?page=".$this->page."&error=error");
-		}
-		var_dump($vid);
+		//} else {
+		//	redirect("?page=".$this->page."&error=error");
+		//}
 	}
 
 	/**
@@ -262,12 +274,15 @@ class RegistrationController extends BaseController
 
 		foreach($this->Visitor->dbColumns as $key) {
 				if($key == 'bill') $$key = requested($key, 0);
+				elseif($key == 'birthday') {
+					$$key = cleardate2DB(requested($key, 0), "Y-m-d");
+				}
 				else $$key = requested($key, null);
-				$DB_data[$key] = $$key;	
+				$db_data[$key] = $$key;	
 		}
 
 		// i must add visitor's ID because it is empty
-		$DB_data['meeting'] = $this->meetingId;
+		$db_data['meeting'] = $this->meetingId;
 
 		foreach($this->Meal->dbColumns as $var_name) {
 			$$var_name = requested($var_name, null);
@@ -276,8 +291,26 @@ class RegistrationController extends BaseController
 		// i must add visitor's ID because it is empty
 		$meals_data['visitor'] = $id;
 
-		if($this->Visitor->modify($id, $DB_data, $meals_data, $programs_data)){	
-			redirect("?page=".$this->page."&error=ok");
+		if($vid = $this->Visitor->modify($id, $db_data, $meals_data, $programs_data)){	
+			######################## ODESILAM EMAIL ##########################
+
+			// zaheshovane udaje, aby se nedali jen tak ziskat data z databaze
+			$code4bank = substr($db_data['name'], 0, 1).substr($db_data['surname'], 0, 1).substr($db_data['birthday'], 2, 2);
+			$hash = ((int)$vid.$this->meetingId) * 147 + 49873;	
+							
+			$recipient_mail = $db_data['email'];
+			$recipient_name = $db_data['name']." ".$db_data['surname'];
+			
+			if($return = $this->Emailer->sendRegistrationSummary($recipient_mail, $recipient_name, $hash, $code4bank)) {
+				if(is_numeric($vid)) {
+					$vid = "ok";
+				}
+				redirect("?hash=".$hash."&error=".$vid);
+			} else {
+				echo 'Došlo k chybě při odeslání e-mailu.';
+				echo 'Chybová hláška: ' . $return;
+			}
+			//redirect("?page=".$this->page."&error=ok");
 		} else {
 			redirect("?page=".$this->page."&error=error");
 		}
@@ -393,7 +426,7 @@ class RegistrationController extends BaseController
 			$this->View->assign('surname',			$this->data['surname']);
 			$this->View->assign('nick',				$this->data['nick']);
 			$this->View->assign('email',			$this->data['email']);
-			$this->View->assign('birthday',			$this->data['birthday']);
+			$this->View->assign('birthday',			date_format(date_create($this->data['birthday']),"d.m.Y"));
 			$this->View->assign('street',			$this->data['street']);
 			$this->View->assign('city',				$this->data['city']);
 			$this->View->assign('postal_code',		$this->data['postal_code']);
@@ -408,20 +441,6 @@ class RegistrationController extends BaseController
 			$this->View->assign('question',			$this->data['question']);
 			$this->View->assign('bill',				$this->data['bill']);
 			$this->View->assign('programs',			$program_switcher);
-			
-			$this->View->assign('error_name',			printError($error_name));
-			$this->View->assign('error_surname',		printError($error_surname));
-			$this->View->assign('error_nick',			printError($error_nick));
-			$this->View->assign('error_email',			printError($error_email));
-			$this->View->assign('error_postal_code',	printError($error_postal_code));
-			$this->View->assign('error_surname',		printError($error_surname));
-			$this->View->assign('error_group_num',		printError($error_group_num));
-			$this->View->assign('error_bill',			printError($error_bill));
-			$this->View->assign('error_birthday',		printError($error_birthday));
-			$this->View->assign('error_street',			printError($error_street));
-			$this->View->assign('error_city',			printError($error_city));
-			$this->View->assign('error_group_name',		printError($error_group_name));
-
 		}
 
 		$this->View->render(TRUE);
