@@ -104,8 +104,6 @@ class RegistrationController extends BaseController
 	{
 		######################### PRISTUPOVA PRAVA ################################
 
-		include_once(INC_DIR.'access.inc.php');
-
 		###########################################################################
 
 		$id = requested("id",$this->itemId);
