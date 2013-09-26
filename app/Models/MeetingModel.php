@@ -429,4 +429,15 @@ class MeetingModel extends Component
 		return $this->regHeading;
 	}
 	
+	public function getProvinceNameById($id) {
+		$sql = "SELECT province_name
+			FROM kk_provinces 
+			WHERE id='".$id."'
+			LIMIT 1";
+	
+		$result = mysql_query($sql);
+		$data = mysql_fetch_assoc($result);
+
+		return $data['province_name'];
+	}
 }

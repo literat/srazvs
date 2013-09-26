@@ -323,4 +323,26 @@ class ProgramModel extends Component
 			return $html;
 		}
 	}
+
+	public function getSelectedPrograms($visitor_id) {
+		$programs = "  <div style='border-bottom:1px solid black;text-align:right;'>vybrané programy</div>";
+
+		$progSql = "SELECT  progs.name AS prog_name,
+							day,
+							DATE_FORMAT(`from`, '%H:%i') AS `from`,
+							DATE_FORMAT(`to`, '%H:%i') AS `to`
+					FROM kk_programs AS progs
+					LEFT JOIN `kk_visitor-program` AS visprog ON progs.id = visprog.program
+					LEFT JOIN kk_visitors AS vis ON vis.id = visprog.visitor
+					LEFT JOIN kk_blocks AS blocks ON progs.block = blocks.id
+					WHERE vis.id = '".$visitor_id."'
+					ORDER BY `day`, `from` ASC";
+		$progResult = mysql_query($progSql);
+		while($progData = mysql_fetch_assoc($progResult)){
+			$programs .= $progData['day'].", ".$progData['from']." - ".$progData['to']."";
+			$programs .= "<div style='padding:5px 0px 5px 20px;'>- ".$progData['prog_name']."</div>";
+		}
+
+		return $programs;
+	}
 }

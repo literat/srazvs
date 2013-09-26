@@ -143,7 +143,7 @@ class MealModel extends Component
 					LIMIT 1"; 
 		$DB_data = mysql_fetch_assoc(mysql_query($query));
 		
-		foreach($this->DB_columns as $var_name) {
+		foreach($this->dbColumns as $var_name) {
 			$$var_name = requested($var_name, $DB_data[$var_name]);
 			$meals_data[$var_name] = $$var_name;
 		}

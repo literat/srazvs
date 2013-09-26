@@ -60,10 +60,18 @@ class RegistrationController extends BaseController
 	private $Meal;
 
 	/**
+	 * Program class
+	 * @var Program
+	 */
+	private $Program;
+
+	/**
 	 * Error
 	 * @var array
 	 */
 	protected $error = FALSE;
+
+	protected $hash = NULL;
 
 	/**
 	 * Prepare model classes and get meeting id
@@ -88,6 +96,7 @@ class RegistrationController extends BaseController
 		$this->Export = $this->Container->createExport();
 		$this->Meeting = $this->Container->createMeeting();
 		$this->Meal = $this->Container->createMeal();
+		$this->Program = $this->Container->createProgram();
 
 		if(defined('DEBUG') && DEBUG === TRUE){
 			$this->Meeting->setRegistrationHandlers(1);
@@ -128,6 +137,7 @@ class RegistrationController extends BaseController
 		}
 
 		if(isset($getVars['hash'])) {
+			$this->hash = $getVars['hash'];
 			$this->meetingId = (($getVars['hash'] - 49873) / 147)%10;
 			$id = floor((($getVars['hash'] - 49873) / 147)/10);
 			if($this->cms == '') {
@@ -148,8 +158,8 @@ class RegistrationController extends BaseController
 			case "modify":
 				$this->update($id);
 				break;
-			case "mail":
-				$this->mail();
+			case "check":
+				$this->check($id);
 				break;
 			default:
 				$this->__new();
@@ -238,7 +248,7 @@ class RegistrationController extends BaseController
 					if(is_int($vid)) {
 						$vid = "ok";
 					}
-					redirect("?hash=".$hash."&error=".$vid."");
+					redirect("?hash=".$hash."&error=".$vid."&cms=check");
 				} else {
 					echo 'Došlo k chybě při odeslání e-mailu.';
 					echo 'Chybová hláška: ' . $return;
@@ -305,7 +315,7 @@ class RegistrationController extends BaseController
 				if(is_numeric($vid)) {
 					$vid = "ok";
 				}
-				redirect("?hash=".$hash."&error=".$vid);
+				redirect("?hash=".$hash."&error=".$vid."&cms=check");
 			} else {
 				echo 'Došlo k chybě při odeslání e-mailu.';
 				echo 'Chybová hláška: ' . $return;
@@ -349,20 +359,38 @@ class RegistrationController extends BaseController
 		}
 	}
 
-
 	/**
-	 * Send mail to tutor
+	 * Prepare data for check
 	 * 
+	 * @param  int $id of item
 	 * @return void
 	 */
-	private function mail()
+	private function check($id)
 	{
-		$pid = requested("pid","");
-		if($this->Emailer->tutor($pid, $this->meetingId, "program")) {
-			redirect("?program&error=mail_send");
+		$this->template = 'check';
+
+		$this->heading = "kontrola přihlášky";
+		$this->todo = NULL;
+
+		$this->itemId = $id;
+		
+		$dbData = mysql_fetch_assoc($this->Visitor->getData($id));
+		foreach($this->Visitor->dbColumns as $key) {
+			$this->data[$key] = requested($key, $dbData[$key]);
+		}
+
+		$query = "SELECT	*
+					FROM kk_meals
+					WHERE visitor='".$this->itemId."'
+					LIMIT 1"; 
+
+		$DB_data = mysql_fetch_assoc(mysql_query($query));
+
+		foreach($this->Meal->dbColumns as $var_name) {
+			$$var_name = requested($var_name, $DB_data[$var_name]);
+			$this->mealData[$var_name] = $$var_name;
 		}
 	}
-
 
 	/**
 	 * Render all page
@@ -386,9 +414,16 @@ class RegistrationController extends BaseController
 			$error_city = "";
 			$error_group_name = "";
 
-			$program_switcher = $this->Visitor->renderProgramSwitcher($this->meetingId, $this->itemId);
-			$meals_select = $this->Meal->renderHtmlMealsSelect($this->mealData, $this->disabled);
-			$province_select = $this->Meeting->renderHtmlProvinceSelect($this->data['province']);
+			if($this->cms == 'check') {
+				$meals_select = $this->Meal->getMealsArray($this->itemId);
+				$province_select = $this->Meeting->getProvinceNameById($this->data['province']);
+				$program_switcher = $this->Program->getSelectedPrograms($this->itemId);
+			} else {
+				$meals_select = $this->Meal->renderHtmlMealsSelect($this->mealData, $this->disabled);
+				$province_select = $this->Meeting->renderHtmlProvinceSelect($this->data['province']);
+				$program_switcher = $this->Visitor->renderProgramSwitcher($this->meetingId, $this->itemId);
+			}
+			
 		}
 
 		/* Application Header */
@@ -441,6 +476,7 @@ class RegistrationController extends BaseController
 			$this->View->assign('question',			$this->data['question']);
 			$this->View->assign('bill',				$this->data['bill']);
 			$this->View->assign('programs',			$program_switcher);
+			$this->View->assign('hash',				$this->hash);
 		}
 
 		$this->View->render(TRUE);
