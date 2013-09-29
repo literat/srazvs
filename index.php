@@ -11,6 +11,10 @@ $sql = "SELECT id
 $result = mysql_query($sql);
 $data = mysql_fetch_assoc($result);
 
+if(!isset($_SESSION['meetingID'])) {
+	$_SESSION['meetingID'] = $data['id'];
+}
+
 require_once(LIBS_DIR.'Codeplex/Routers/Router.php');
 
 $router = new Codeplex\Routers\Router();
