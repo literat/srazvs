@@ -24,7 +24,7 @@ $(function() {
 	$.timepicker.setDefaults($.timepicker.regional['cs']);
 	$( ".dateTimePicker" ).datetimepicker({
 		showOn: "button",
-		buttonImage: "../images/calendar_button.png",
+		buttonImage: "<?php echo IMG_DIR; ?>calendar_button.png",
 		buttonImageOnly: true,
 		showWeek: true,
         firstDay: 1,
