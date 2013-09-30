@@ -100,6 +100,12 @@ class ProgramController
 	private $Export;
 
 	/**
+	 * Meeting class
+	 * @var Meeting
+	 */
+	private $Meeting;
+
+	/**
 	 * Prepare model classes and get meeting id
 	 */
 	public function __construct()
@@ -115,6 +121,14 @@ class ProgramController
 		$this->View = $this->Container->createView();
 		$this->Emailer = $this->Container->createEmailer();
 		$this->Export = $this->Container->createExport();
+		$this->Meeting = $this->Container->createMeeting();
+
+		if(defined('DEBUG') && DEBUG === TRUE){
+			$this->Meeting->setRegistrationHandlers(1);
+			$this->meetingId = 1;
+		} else {
+			$this->Meeting->setRegistrationHandlers();
+		}
 	}
 
 	/**
@@ -124,17 +138,16 @@ class ProgramController
 	 */
 	public function init(array $getVars)
 	{
-		######################### PRISTUPOVA PRAVA ################################
-
-		include_once(INC_DIR.'access.inc.php');
-
-		###########################################################################
-
 		$id = requested("id",$this->programId);
 		$this->cms = requested("cms","");
 		$this->error = requested("error","");
 		$this->page = requested("page","");
 
+		######################### PRISTUPOVA PRAVA ################################
+		if($this->cms != 'public') {
+			include_once(INC_DIR.'access.inc.php');
+		}
+		###########################################################################
 
 		switch($this->cms) {
 			case "delete":
@@ -157,6 +170,9 @@ class ProgramController
 				break;
 			case 'export-visitors':
 				$this->Export->printProgramVisitors($id);
+				break;
+			case "public":
+				$this->publicView();
 				break;
 	
 		}
@@ -291,6 +307,16 @@ class ProgramController
 	}
 
 	/**
+	 * View public program
+	 * 
+	 * @return void
+	 */
+	private function publicView()
+	{
+		$this->template = 'view';
+	}
+
+	/**
 	 * Render all page
 	 * 
 	 * @return void
@@ -314,27 +340,30 @@ class ProgramController
 			// time select boxes
 		}
 
-		/* HTTP Header */
-		$this->View->loadTemplate('http_header');
-		$this->View->assign('config',		$GLOBALS['cfg']);
-		$this->View->assign('style',		CategoryModel::getStyles());
-		$this->View->render(TRUE);
+		if($this->cms != 'public') {
+			/* HTTP Header */
+			$this->View->loadTemplate('http_header');
+			$this->View->assign('config',		$GLOBALS['cfg']);
+			$this->View->assign('style',		CategoryModel::getStyles());
+			$this->View->render(TRUE);
 
-		/* Application Header */
-		$this->View->loadTemplate('header');
-		$this->View->assign('config',		$GLOBALS['cfg']);
-		$this->View->render(TRUE);
+			/* Application Header */
+			$this->View->loadTemplate('header');
+			$this->View->assign('config',		$GLOBALS['cfg']);
+			$this->View->render(TRUE);
+		}
 
 		// load and prepare template
 		$this->View->loadTemplate($this->templateDir.'/'.$this->template);
 		$this->View->assign('heading',	$this->heading);
 		$this->View->assign('todo',		$this->todo);
 		$this->View->assign('error',	printError($this->error));
-		
+			
 		$this->View->assign('cms',		$this->cms);
 		$this->View->assign('render',	$this->Program->getData());
 		$this->View->assign('mid',		$this->meetingId);
 		$this->View->assign('page',		$this->page);
+		$this->View->assign('css',		CategoryModel::getStyles());
 
 		if(!empty($this->data)) {
 			$this->View->assign('id',						$this->programId);
@@ -353,12 +382,47 @@ class ProgramController
 			$this->View->assign('block_select',				$block_select);
 			$this->View->assign('display_in_reg_checkbox',	$display_in_reg_checkbox);
 			$this->View->assign('program_visitors',			$this->Program->getProgramVisitors($this->programId));
+		} elseif($this->cms = 'public') {
+			$this->View->assign('meeting_heading',			$this->Meeting->getRegHeading());
+			////otevirani a uzavirani prihlasovani
+			if(($this->Meeting->getRegOpening() < time()) || DEBUG === TRUE){
+				$this->View->assign('display_program',	TRUE);
+			} else {
+				$this->View->assign('display_program',	FALSE);
+			}
+			$this->View->assign('public_program',		$this->Meeting->renderPublicProgramOverview());
+			$this->View->assign('page_title',			'Srazy VS - veřejný program');
+			$this->View->assign('style',	'table {
+            border-collapse:separate;
+            width:100%;
+        }
+
+        td {
+            .width:100%;
+            text-align:center;
+            padding:0px;
+        }
+
+        td.day {
+            border:1px solid black;
+            background-color:#777777;
+            width:80px;
+        }
+
+        td.time {
+            background-color:#cccccc;
+            width:80px;
+        }');
+		} else {
+
 		}
 
 		$this->View->render(TRUE);
 
 		/* Footer */
-		$this->View->loadTemplate('footer');
-		$this->View->render(TRUE);
+		if($this->cms != 'public') {
+			$this->View->loadTemplate('footer');
+			$this->View->render(TRUE);
+		}
 	}
 }

@@ -61,6 +61,7 @@ define('MODEL_DIR',		APP_DIR.'Models/');
 define('VIEW_DIR',		APP_DIR.'Views/');
 define('CONTROLLER_DIR',APP_DIR.'Controllers/');
 define('TEMPLATE_DIR',	APP_DIR.'Templates/');
+define('TPL_DIR',		APP_DIR.'Templates/');
 /* URLs */
 define('BLOCK_DIR',		HTTP_DIR.PROJECT.'/block');
 define('PROG_DIR',		HTTP_DIR.PROJECT.'/program');

@@ -37,7 +37,7 @@ $MeetingHandler = $Container->createMeeting();
 ################## VLOZENE STYLY ##################################
 
 $style = "<style>";
-$style .= Category::getStyles();
+$style .= CategoryModel::getStyles();
 $style .= "
 table {
 	border-collapse:separate;
@@ -62,7 +62,7 @@ td.time {
 }
 
 #footer {
-    background: url('../plugins/templates/hkvs2/images/outer-bottom-program.png') no-repeat scroll left top transparent;
+    background: url('./plugins/templates/hkvs2/images/outer-bottom-program.png') no-repeat scroll left top transparent;
 }
 
 ";
@@ -74,11 +74,11 @@ $page_title = "Program srazu VS";
 
 ?>
 
-<?php include_once(INC_DIR."vodni_header.inc.php"); ?>
+<?php include_once(APP_DIR."Templates/vodni_header.tpl"); ?>
 
-    <!-- content -->
-    <div id="content-program">
-    <div id="content-pad-program">
+	<!-- content -->
+	<div id="content-program">
+	<div id="content-pad-program">
 	<h1>Program srazu vodních skautů</h1>
 	<br />
 	<h2><?php echo $meetingHeader; ?></h2>
@@ -117,4 +117,4 @@ $page_title = "Program srazu VS";
   </div>
 </div>
 
-<?php include_once(INC_DIR."vodni_footer.inc.php"); ?>
+<?php include_once(APP_DIR."Templates/vodni_footer.tpl"); ?>
