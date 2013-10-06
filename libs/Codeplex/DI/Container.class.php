@@ -95,7 +95,8 @@ class Container
 			$this->createMeeting(),
 			$this->createMeal(),
 			$this->createProgram(),
-			$this->createBlock()
+			$this->createBlock(),
+			$this->configuration
 		);
 	}
 	

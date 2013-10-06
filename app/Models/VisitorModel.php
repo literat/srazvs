@@ -35,6 +35,9 @@ class VisitorModel /* extends Component */
 	
 	/** @var int meeting advance */
 	private $meeting_advance;
+
+	/** @var array configuration */
+	public $configuration;
 	
 	/**
 	 * Array of database programs table columns
@@ -51,7 +54,7 @@ class VisitorModel /* extends Component */
 	public $formNames = array();
 	
 	/** konstruktor */
-	public function __construct($meeting_ID, Emailer $Emailer, MeetingModel $Meeting, MealModel $Meals, ProgramModel $Program, BlockModel $Blocks)
+	public function __construct($meeting_ID, Emailer $Emailer, MeetingModel $Meeting, MealModel $Meals, ProgramModel $Program, BlockModel $Blocks, $configuration)
 	{
 		$this->Emailer = $Emailer;
 		$this->Meeting = $Meeting;
@@ -83,6 +86,7 @@ class VisitorModel /* extends Component */
 							);
 		$this->formNames = array("name", "description", "material", "tutor", "email", "capacity", "display_in_reg", "block", "category");
 		$this->dbTable = "kk_visitors";
+		$this->configuration = $configuration;
 	}
 
 	/**
@@ -378,5 +382,23 @@ class VisitorModel /* extends Component */
 		} else {
 			return $result;
 		}
+	}
+
+	/**
+	 * Get visitors mail
+	 *
+	 * @param 	int|string 	$query_id 	id/s of visitors seperated by comma
+	 * @return 	string 					e-mail addresses
+	 */
+	public function getMail($query_id) {
+		$recipient_mails = '';
+
+		$query = "SELECT email FROM kk_visitors WHERE id IN (".$query_id.") GROUP BY email";
+		$query_result = mysql_query($query);
+		while($data = mysql_fetch_assoc($query_result)){
+			$recipient_mails .= $data['email'].",\n";
+		}
+
+		return $recipient_mails;
 	}
 }

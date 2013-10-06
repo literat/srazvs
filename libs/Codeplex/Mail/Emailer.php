@@ -43,7 +43,7 @@ class Emailer
 		// add recipient address and name
 		$this->Emailer->AddAddress($recipient_mail, $recipient_name);
 		// add bcc
-		if(isset($bcc_mail) && $bcc_mail == '') {
+		if(isset($bcc_mail) && $bcc_mail != '') {
 			$this->Emailer->AddBCC($bcc_mail);
 		}
 		// create subject

@@ -56,7 +56,7 @@ $(document).ready(function() {
 	<button onClick="return confirm('Opravdu SMAZAT tyto účastníky? Jste si jisti?')" title='Smazat' value='delete' name='cms' type='submit'>
 		<img class='edit' src='<?php echo IMG_DIR; ?>icons/delete.gif' /> Smazat
 	</button>
-	<button onclick="this.form.action='mail.php';" title='Hromadný e-mail' value='mail' name='cms' type='submit'>
+	<button onclick="this.form.submit();" title='Hromadný e-mail' value='massmail' name='cms' type='submit'>
 		<img src='<?php echo IMG_DIR; ?>icons/mail.png'  /> Hromadný e-mail
 	</button>
 	<table id='VisitorsTable' class='list tablesorter'>
@@ -181,7 +181,7 @@ $(document).ready(function() {
 	<button onClick="return confirm('Opravdu SMAZAT tyto účastníky? Jste si jisti?')" title='Smazat' value='delete' name='cms' type='submit'>
 		<img class='edit' src='<?php echo IMG_DIR; ?>icons/delete.gif' /> Smazat
 	</button>
-	<button onclick="this.form.action='mail.php';" title='Hromadný e-mail' value='mail' name='cms' type='submit'>
+	<button onclick="this.form.submit();" title='Hromadný e-mail' value='massmail' name='cms' type='submit'>
 		<img src='<?php echo IMG_DIR; ?>icons/mail.png'  /> Hromadný e-mail
 	</button>
 

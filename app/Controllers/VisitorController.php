@@ -54,6 +54,12 @@ class VisitorController extends BaseController
 	private $Meal;
 
 	/**
+	 * Recipients
+	 * @var recipients
+	 */
+	private $recipients = NULL;
+
+	/**
 	 * Prepare model classes and get meeting id
 	 */
 	public function __construct()
@@ -124,9 +130,11 @@ class VisitorController extends BaseController
 			case "modify":
 				$this->update($id);
 				break;
-			case "mail":
-				$this->mail();
+			case "massmail":
+				$this->massmail($query_id);
 				break;
+			case "send":
+				$this->send(requested("recipients", ""));
 			// pay full charge
 			case "pay":
 				$this->pay($query_id, 'cost');
@@ -308,15 +316,48 @@ class VisitorController extends BaseController
 	}
 
 	/**
-	 * Send mail to tutor
+	 * Prepare mass mail form
 	 * 
 	 * @return void
 	 */
-	private function mail()
+	private function massmail($query_id)
 	{
-		$pid = requested("pid","");
-		if($this->Emailer->tutor($pid, $this->meetingId, "program")) {
-			redirect("?program&error=mail_send");
+		$this->template = 'mail';
+
+		$recipient_mails = $this->Visitor->getMail($query_id);	
+		$this->recipients = rtrim($recipient_mails, "\n,");
+	}
+
+	/**
+	 * Prepare mass mail form
+	 * 
+	 * @return void
+	 */
+	private function send($recipients)
+	{
+		$bcc_mail = preg_replace("/\n/", "", requested("recipients", ""));
+
+		$recipient_name = $this->Visitor->configuration['mail-sender-name'];
+		$recipient_mail = $this->Visitor->configuration['mail-sender-address'];
+
+		$subject = requested("subject", "");
+
+		// space to &nbsp;
+		$message = str_replace(" ","&nbsp;", requested("message", ""));
+		// new line to <br> and tags stripping
+		$message = nl2br(strip_tags($message));
+
+		$message = "<html><head><title>".$subject."</title></head><body>\n".$message."\n</body>\n</html>";
+			
+		$return = $this->Emailer->sendMail($recipient_mail, $recipient_name, $subject, $message, $bcc_mail);
+			
+		if($return){
+			$error = 'E_MAIL_NOTICE';
+			$error = 'mail_send';
+			redirect("?error=".$error);
+		}
+		else {
+			$error = 'E_MAIL_ERROR';
 		}
 	}
 
@@ -389,6 +430,8 @@ class VisitorController extends BaseController
 		$this->View->assign('visitor-count',	$this->Visitor->getCount());
 		$this->View->assign('meeting-price',	$this->Visitor->meeting_price);
 		$this->View->assign('search',			$this->Visitor->search);
+
+		$this->View->assign('recipient_mails',	$this->recipients);
 
 		if(!empty($this->data)) {
 			$this->View->assign('id',				$this->itemId);
