@@ -114,6 +114,7 @@ require_once(MODEL_DIR.'VisitorModel.php');
 require_once(MODEL_DIR.'MeetingModel.php');
 require_once(MODEL_DIR.'MealModel.php');
 require_once(MODEL_DIR.'ExportModel.php');
+require_once(MODEL_DIR.'SettingsModel.php');
 
 require_once(VIEW_DIR.'View.php');
 

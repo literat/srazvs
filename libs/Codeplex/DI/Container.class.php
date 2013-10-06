@@ -159,4 +159,14 @@ class Container
 	{
 		return new ExportModel($this->meetingId, $this->createPdfFactory(), $this->createView(), $this->createProgram(), $this->createExcelFactory());
 	}
+
+	/**
+	 * Create instance of Settings
+	 *
+	 * @return	SettingsModel
+	 */
+	public function createSettings()
+	{
+		return new SettingsModel();
+	}
 }
