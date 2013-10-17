@@ -69,4 +69,12 @@ class PdfFactory
 		$this->marginTop = $top;
 		$this->marginBottom = $bottom;
 	}
+
+	/**
+	 * Set paper format of PDF
+	 */
+	public function setPaperFormat($paper_format)
+	{
+		$this->paperFormat = $paper_format;
+	}
 }

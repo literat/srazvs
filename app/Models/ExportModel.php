@@ -272,6 +272,45 @@ class ExportModel extends CodeplexModel
 		}
 	}
 	
+	public static function getPdfBlocks($vid)
+	{
+		$programs = "<tr>";
+		$programs .= " <td class='progPart'>";
+		
+		$progSql = "SELECT 	id,
+							day,
+							DATE_FORMAT(`from`, '%H:%i') AS `from`,
+							DATE_FORMAT(`to`, '%H:%i') AS `to`,
+							name,
+							program
+					FROM kk_blocks
+					WHERE deleted = '0' AND program='1' AND meeting='".$_SESSION['meetingID']."'
+					ORDER BY `day` ASC";
+		
+		$progResult = mysql_query($progSql);
+		$progRows = mysql_affected_rows();
+		
+		if($progRows == 0){
+			$programs .= "<div class='emptyTable' style='width:400px;'>Nejsou žádná aktuální data.</div>\n";
+		}
+		else{	
+			while($progData = mysql_fetch_assoc($progResult)){
+				// zbaveni se predsnemovni diskuse
+				if($progData['id'] == 63) $programs .= "";
+				else {
+					$programs .= "<div class='block'>".$progData['day'].", ".$progData['from']." - ".$progData['to']." : ".$progData['name']."</div>\n";
+				
+					if($progData['program'] == 1) $programs .= "<div>".ProgramModel::getPdfPrograms($progData['id'], $vid)."</div>";
+				}
+			}
+		}
+		
+		$programs .= "</td>";
+		$programs .= "</tr>";
+		
+		return $programs;
+	}
+
 	/**
 	 * Print Program into PDF file
 	 *
@@ -280,8 +319,11 @@ class ExportModel extends CodeplexModel
 	 * @param	string	file type
 	 * @return	file	PDF file
 	 */
-	public function printProgramCards($evidence_type, $visitor_id = NULL, $file_type = "pdf")
+	public function printProgramCards($file_type = "pdf")
 	{
+		$filename = "vlastni_programy";
+		$fileaddr = "../tmp/".$filename.".".$file_type;
+
 		$sql = "SELECT	vis.id AS id,
 						name,
 						surname,
@@ -321,7 +363,7 @@ class ExportModel extends CodeplexModel
 		////ziskani zvolenych programu
 		$blockSql = "SELECT 	id
 					 FROM kk_blocks
-					 WHERE meeting='".$mid."' AND program='1' AND deleted='0'";
+					 WHERE meeting='".$this->meetingId."' AND program='1' AND deleted='0'";
 		$blockResult = mysql_query($blockSql);
 		while($blockData = mysql_fetch_assoc($blockResult)){
 			$$blockData['id'] = requested($blockData['id'],0);
@@ -340,7 +382,7 @@ class ExportModel extends CodeplexModel
 
 		$this->Pdf = $this->createPdf();
 
-		$this->Pdf->SetWatermarkImage($GLOBALS['LOGODIR'].'watermark.jpg', 0.1, '');
+		$this->Pdf->SetWatermarkImage(IMG_DIR.'logos/watermark.jpg', 0.1, '');
 		$this->Pdf->showWatermarkImage = true;
 		
 		// write html
@@ -352,6 +394,80 @@ class ExportModel extends CodeplexModel
 			exit('DEBUG_MODE');
 		} else {
 			// download
+			$output_filename = $filename.'.'.$file_type;
+			$this->Pdf->Output($output_filename, "D");
+		}
+	
+	}
+
+	public static function getLargeProgramData($meeting_id, $day_val)
+	{
+		$sql = "SELECT 	id AS id,
+						day,
+						DATE_FORMAT(`from`, '%H:%i') AS `from`,
+						DATE_FORMAT(`to`, '%H:%i') AS `to`,
+						name AS name,
+						program,
+						display_progs
+			FROM kk_blocks AS blocks
+			WHERE deleted = '0' AND day='".$day_val."' AND meeting='".$meeting_id."'
+			ORDER BY `from` ASC";
+
+		$result = mysql_query($sql);
+
+		return $result;
+	}
+
+	/**
+	 * Print Program into PDF file
+	 *
+	 * @param	string	type of evidence
+	 * @param	int		ID of visitor
+	 * @param	string	file type
+	 * @return	file	PDF file
+	 */
+	public function printLargeProgram($file_type = "pdf")
+	{
+		// prepare header
+		$sql = "SELECT	id,
+						place,
+						DATE_FORMAT(start_date, '%Y') AS year,
+						UNIX_TIMESTAMP(open_reg) AS open_reg,
+						UNIX_TIMESTAMP(close_reg) as close_reg
+				FROM kk_meetings
+				WHERE id = '".$this->meetingId."'
+				ORDER BY id DESC
+				LIMIT 1";
+		$result = mysql_query($sql);
+		$data = mysql_fetch_assoc($result);
+		
+		$meeting_header = $data['place']." ".$data['year'];
+		$filename = removeDiacritic($data['place'].$data['year']."-program");
+
+		// load and prepare template
+		$this->View->loadTemplate('exports/program_large');
+		$this->View->assign('header', $meeting_header);
+		$this->View->assign('meeting_id', $this->meetingId);
+
+		$template = $this->View->render(false);
+
+		$this->PdfFactory->setPaperFormat('B1');
+		$this->Pdf = $this->PdfFactory->create();
+
+		$this->Pdf->useOnlyCoreFonts = true;
+		$this->Pdf->SetDisplayMode('fullpage');
+		$this->Pdf->SetAutoFont(0);
+		
+		// write html
+		$this->Pdf->WriteHTML($template, 0);
+		
+		/* debugging */
+		if(defined('DEBUG') && DEBUG === true){
+			echo $template;
+			exit('DEBUG_MODE');
+		} else {
+			// download
+			$output_filename = $filename.'.'.$file_type;
 			$this->Pdf->Output($output_filename, "D");
 		}
 	

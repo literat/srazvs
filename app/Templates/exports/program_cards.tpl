@@ -51,7 +51,7 @@ while($row = mysql_fetch_assoc($data['result'])){
 		<tr>
 	
 		</tr>
-			<?php echo getBlocks($row['id']); ?>
+			<?php echo ExportModel::getPdfBlocks($row['id']); ?>
 		<tr>
 			<td class='meeting'>
 				SRAZ VS - <?php echo $row['place']." ".$row['start_date']." ".$row['end_date']; ?>

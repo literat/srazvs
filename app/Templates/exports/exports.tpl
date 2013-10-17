@@ -17,12 +17,12 @@
       veřejný program
      </a>
      
-     <a style='text-decoration:none; display:block; margin-bottom:4px;' href='exports/program_cards.pdf.php'>
+     <a style='text-decoration:none; display:block; margin-bottom:4px;' href='?program-cards'>
       <img style='border:none;' align='absbottom' src='<?php echo IMG_DIR; ?>icons/pdf.png' />
       osobní program
      </a>
      
-     <a style='text-decoration:none; display:block; margin-bottom:4px;' href='exports/program_large.pdf.php'>
+     <a style='text-decoration:none; display:block; margin-bottom:4px;' href='?program-large'>
       <img style='border:none;' align='absbottom' src='<?php echo IMG_DIR; ?>icons/pdf.png' />
       program srazu - velký formát
      </a>

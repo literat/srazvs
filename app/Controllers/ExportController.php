@@ -54,6 +54,12 @@ class ExportController
 			case 'program-details':
 				$ExportHandler->printProgramDetails();
 				break;
+			case 'program-cards':
+				$ExportHandler->printProgramCards();
+				break;
+			case 'program-large':
+				$ExportHandler->printLargeProgram();
+				break;
 		}
 
 		/* HTTP Header */

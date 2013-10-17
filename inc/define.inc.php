@@ -120,7 +120,7 @@ require_once(VIEW_DIR.'View.php');
 
 require_once(CONTROLLER_DIR.'BaseController.php');
 
-define('DEBUG', TRUE);
+define('DEBUG', FALSE);
 
 
 //debuggovani

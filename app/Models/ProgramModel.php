@@ -345,4 +345,51 @@ class ProgramModel extends Component
 
 		return $programs;
 	}
+
+	public static function getPdfPrograms($id, $vid){
+		$sql = "SELECT 	*
+				FROM kk_programs
+				WHERE block='".$id."' AND deleted='0'
+				LIMIT 10";
+		$result = mysql_query($sql);
+		$rows = mysql_affected_rows();
+
+		if($rows == 0){
+			$html = "";
+		}
+		else{
+
+			$html = "<div class='program'>\n";
+		
+			while($data = mysql_fetch_assoc($result)){			
+				$programSql = "SELECT * FROM `kk_visitor-program` WHERE program = '".$data['id']."' AND visitor = '".$vid."'";
+				$programResult = mysql_query($programSql);
+				$rows = mysql_affected_rows();
+				if($rows == 1) $html .= $data['name'];			
+			}
+			$html .= "</div>\n";
+		}
+		return $html;
+	}
+
+	public static function getProgramsLarge($id){
+		$sql = "SELECT 	progs.name AS name
+				FROM kk_programs AS progs
+				WHERE block='".$id."' AND progs.deleted='0'
+				LIMIT 10";
+		$result = mysql_query($sql);
+		$rows = mysql_affected_rows();
+
+		if($rows == 0) $html = "";
+		else{
+			$html = "<table>";
+			$html .= " <tr>";
+			while($data = mysql_fetch_assoc($result)){			
+				$html .= "<td>".$data['name']."</td>\n";
+			}
+			$html .= " </tr>\n";
+			$html .= "</table>\n";
+		}
+		return $html;
+	}
 }
