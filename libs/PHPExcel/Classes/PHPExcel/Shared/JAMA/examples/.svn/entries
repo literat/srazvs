@@ -1,91 +1,0 @@
-10
-
-dir
-0
-https://github.com:443/literat/SrazyVS.git/libs/PHPExcel/Classes/PHPExcel/Shared/JAMA/examples
-https://github.com:443/literat/SrazyVS.git
-add
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-da9629fa-693e-fe54-b82e-ce57b7db7bff
-
-LagrangeInterpolation2.php
-file
-
-
-
-add
-
-LevenbergMarquardt.php
-file
-
-
-
-add
-
-benchmark.php
-file
-
-
-
-add
-
-MagicSquareExample.php
-file
-
-
-
-add
-
-tile.php
-file
-
-
-
-add
-
-Stats.php
-file
-
-
-
-add
-
-LMQuadTest.php
-file
-
-
-
-add
-
-polyfit.php
-file
-
-
-
-add
-
-LagrangeInterpolation.php
-file
-
-
-
-add
-
