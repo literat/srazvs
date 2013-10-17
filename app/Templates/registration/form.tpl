@@ -230,7 +230,7 @@ $(function() {
 <!-- REGISTRACNI FORMULAR SRAZU -->
 
 <?php } else { ?>
-<div>Registrace není otevřena, sraz se stále ještě připravuje!</div>
+<div>Registrace je uzavřena!</div>
 <?php } ?>
 
 <p> </p>
