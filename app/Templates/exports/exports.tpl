@@ -12,22 +12,22 @@
       příjmový pokladní doklad
      </a>
      
-     <a style='text-decoration:none; display:block; margin-bottom:4px;' href='../program.pdf.php'>
+     <a style='text-decoration:none; display:block; margin-bottom:4px;' href='program.pdf.php'>
       <img style='border:none;' align='absbottom' src='<?php echo IMG_DIR; ?>icons/pdf.png' />
       veřejný program
      </a>
      
-     <a style='text-decoration:none; display:block; margin-bottom:4px;' href='program_cards.pdf.php'>
+     <a style='text-decoration:none; display:block; margin-bottom:4px;' href='exports/program_cards.pdf.php'>
       <img style='border:none;' align='absbottom' src='<?php echo IMG_DIR; ?>icons/pdf.png' />
       osobní program
      </a>
      
-     <a style='text-decoration:none; display:block; margin-bottom:4px;' href='program_large.pdf.php'>
+     <a style='text-decoration:none; display:block; margin-bottom:4px;' href='exports/program_large.pdf.php'>
       <img style='border:none;' align='absbottom' src='<?php echo IMG_DIR; ?>icons/pdf.png' />
       program srazu - velký formát
      </a>
      
-     <a style='text-decoration:none; display:block; margin-bottom:4px;' href='program_badge.pdf.php'>
+     <a style='text-decoration:none; display:block; margin-bottom:4px;' href='exports/program_badge.pdf.php'>
       <img style='border:none;' align='absbottom' src='<?php echo IMG_DIR; ?>icons/pdf.png' />
       program srazu - do visačky
      </a>

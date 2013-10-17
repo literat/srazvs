@@ -157,7 +157,7 @@ class MeetingModel extends Component
 			$html .= " <tr>\n";
 			while($data = mysql_fetch_assoc($result)){			
 				$html .= "<td class='cat-".$data['style']."' style='text-align:center;'>\n";
-				$html .= "<a class='program' href='../program/?id=".$data['id']."&cms=edit&page=meeting' title='".$data['name']."'>".$data['name']."</a>\n";
+				$html .= "<a class='program' href='".PROG_DIR."/?id=".$data['id']."&cms=edit&page=meeting' title='".$data['name']."'>".$data['name']."</a>\n";
 				$html .= "</td>\n";
 			}
 			$html .= " </tr>\n";

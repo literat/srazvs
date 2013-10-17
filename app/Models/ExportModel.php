@@ -255,7 +255,7 @@ class ExportModel extends CodeplexModel
 				$this->View->loadTemplate('exports/evidence');
 				break;
 		}
-		$this->View->assign('LOGODIR', $GLOBALS['LOGODIR']);
+		$this->View->assign('LOGODIR', IMG_DIR.'logos/');
 		$this->View->assign('result', $result);
 		$template = $this->View->render(false);
 		
@@ -435,7 +435,7 @@ class ExportModel extends CodeplexModel
 		var_dump($graph_data['reg_count']);
 		echo 	$width = ceil(($graph_width/$max)*$graph_data['reg_count'])."\n";*/
 			$width = ceil($graph_width/$max_data['max']*$graph_data['reg_count']);
-			$reg_graph .= "<tr><td align='right' style='width:60px;'>".$graph_data['day']."</td><td><img src='images/graph.png' alt='".$graph_data['reg_count']."' style='width:".$width."%;' height='12' border='0'>".$graph_data['reg_count']."</td>";
+			$reg_graph .= "<tr><td align='right' style='width:60px;'>".$graph_data['day']."</td><td><img src='".IMG_DIR."graph.png' alt='".$graph_data['reg_count']."' style='width:".$width."%;' height='12' border='0'>".$graph_data['reg_count']."</td>";
 			
 			$graph_height += 21.5; 
 		}
@@ -784,5 +784,6 @@ class ExportModel extends CodeplexModel
 		
 		$ExcelWriter = PHPExcel_IOFactory::createWriter($this->Excel, 'Excel2007');
 		$ExcelWriter->save('php://output');
+		exit;
 	}
 }

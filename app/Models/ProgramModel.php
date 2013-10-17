@@ -304,7 +304,7 @@ class ProgramModel extends Component
 		} else {
 			$html = "  <div style='border-bottom:1px solid black;text-align:right;'>účastníci</div>";
 			
-			$html .= "<br /><a style='text-decoration:none; display:block; margin-bottom:4px;' href='?cms=program-visitors&id=".$program_id."'>
+			$html .= "<br /><a style='text-decoration:none; display:block; margin-bottom:4px;' href='?cms=export-visitors&id=".$program_id."'>
 	      	<img style='border:none;' align='absbottom' src='".IMG_DIR."icons/pdf.png' />Účastníci programu</a>";
 
 			$query = "SELECT vis.name AS name,

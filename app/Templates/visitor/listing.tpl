@@ -142,7 +142,7 @@ $(document).ready(function() {
 					</a>
 				</td>
 				<td>
-					<a href='/export/?evidence=confirm&vid=<?php echo $row['id']; ?>' title='Doklad'>
+					<a href='<?php echo EXP_DIR; ?>/?evidence=confirm&vid=<?php echo $row['id']; ?>' title='Doklad'>
 						<img class='edit' src='<?php echo IMG_DIR; ?>icons/pdf.png' />
 					</a>
 				</td>

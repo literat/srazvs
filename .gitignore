@@ -10,3 +10,4 @@ srazvs.sublime-workspace
 *.suo
 *.json
 _compareTemp
+*.svn
