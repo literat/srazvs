@@ -392,4 +392,24 @@ class ProgramModel extends Component
 		}
 		return $html;
 	}
+
+	public static function getProgramNames($block_id)
+	{
+		$sql = "SELECT 	name
+				FROM kk_programs
+				WHERE block='".$block_id."' AND deleted='0'
+				LIMIT 10";
+		$result = mysql_query($sql);
+		$rows = mysql_affected_rows();
+
+		$html = '';
+		
+		if($rows == 0) $html = "";
+		else{
+			while($data = mysql_fetch_assoc($result)){			
+				$html .= $data['name'].",\n";
+			}
+		}
+		return $html;
+	}
 }

@@ -60,6 +60,9 @@ class ExportController
 			case 'program-large':
 				$ExportHandler->printLargeProgram();
 				break;
+			case 'program-badge':
+				$ExportHandler->printProgramBadges();
+				break;
 		}
 
 		/* HTTP Header */

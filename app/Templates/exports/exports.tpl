@@ -27,7 +27,7 @@
       program srazu - velký formát
      </a>
      
-     <a style='text-decoration:none; display:block; margin-bottom:4px;' href='exports/program_badge.pdf.php'>
+     <a style='text-decoration:none; display:block; margin-bottom:4px;' href='?program-badge'>
       <img style='border:none;' align='absbottom' src='<?php echo IMG_DIR; ?>icons/pdf.png' />
       program srazu - do visačky
      </a>

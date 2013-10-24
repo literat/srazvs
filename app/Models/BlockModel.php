@@ -165,4 +165,26 @@ class BlockModel extends Component
 
 		return array('result' => $result, 'rows' => $rows);
 	}
+
+	public static function getExportBlocks($meeting_id, $day_val)
+	{
+		$query = "SELECT blocks.id AS id,
+						day,
+						DATE_FORMAT(`from`, '%H:%i') AS `from`,
+						DATE_FORMAT(`to`, '%H:%i') AS `to`,
+						blocks.name AS name,
+						program,
+						display_progs,
+						style,
+						cat.id AS category
+				FROM kk_blocks AS blocks
+				LEFT JOIN kk_categories AS cat ON cat.id = blocks.category
+				/* 18 - pauzy */
+				WHERE blocks.deleted = '0' AND day='".$day_val."' AND meeting='".$meeting_id."' AND category != '18'
+				ORDER BY `from` ASC";
+	
+		$result = mysql_query($query);
+
+		return $result;
+	}
 }

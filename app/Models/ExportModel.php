@@ -472,6 +472,56 @@ class ExportModel extends CodeplexModel
 		}
 	
 	}
+
+	/**
+	 * Print Program into PDF file
+	 *
+	 * @param	string	type of evidence
+	 * @param	int		ID of visitor
+	 * @param	string	file type
+	 * @return	file	PDF file
+	 */
+	public function printProgramBadges($file_type = "pdf")
+	{
+		// prepare header
+		$sql = "SELECT	*
+			FROM kk_visitors AS vis
+			WHERE meeting='".$this->meetingId."' AND vis.deleted='0'";
+		$result = mysql_query($sql);
+		
+		$filename = 'program-badge';
+
+		// load and prepare template
+		$this->View->loadTemplate('exports/program_badge');
+		$this->View->assign('meeting_id', $this->meetingId);
+		$this->View->assign('result', $result);
+
+		/* debugging */
+		if(defined('DEBUG') && DEBUG === true) {
+			$template = $this->View->render(true);
+			exit('DEBUG_MODE');
+		} else {
+			$template = $this->View->render(false);
+		}
+
+		$this->PdfFactory->setMargins(5, 5, 9, 5);
+		$this->Pdf = $this->PdfFactory->create();
+
+		$this->Pdf->useOnlyCoreFonts = true;
+		$this->Pdf->SetDisplayMode('fullpage');
+		$this->Pdf->SetAutoFont(0);
+		
+		// write html
+		$this->Pdf->WriteHTML($template, 0);
+		
+		/* debugging */
+		if(!defined('DEBUG') || DEBUG === FALSE){
+			// download
+			$output_filename = $filename.'.'.$file_type;
+			$this->Pdf->Output($output_filename, "D");
+		}
+	
+	}
 	
 	public function printNameBadges()
 	{
