@@ -95,7 +95,7 @@ $(document).ready(function() {
   <img src='<?php echo IMG_DIR; ?>icons/storno.png'  /> Storno</button>
 </div>
 
-<script src='<?php echo JS_DIR ?>jquery/jquery-ui.js' type='text/javascript'></script>
+<script src='<?php echo JS_DIR ?>jquery/jquery-ui.min.js' type='text/javascript'></script>
 <script src='<?php echo JS_DIR ?>jquery/jquery-ui-timepicker-addon.js' type='text/javascript'></script>
 <script src='<?php echo JS_DIR ?>jquery/jquery-ui-slideraccess-addon.js' type='text/javascript'></script>
 <script type="text/javascript">
