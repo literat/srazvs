@@ -1,5 +1,3 @@
-<link href="../styles/css/default.css" rel="stylesheet" type="text/css" />
-
 <div class='siteContentRibbon'>Správa srazů</div>
 <?php echo $data['error']; ?>
 <div class='pageRibbon'>úprava srazu</div>
