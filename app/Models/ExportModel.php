@@ -402,15 +402,17 @@ class ExportModel extends CodeplexModel
 
 	public static function getLargeProgramData($meeting_id, $day_val)
 	{
-		$sql = "SELECT 	id AS id,
+		$sql = "SELECT 	blocks.id AS id,
 						day,
 						DATE_FORMAT(`from`, '%H:%i') AS `from`,
 						DATE_FORMAT(`to`, '%H:%i') AS `to`,
-						name AS name,
+						blocks.name AS name,
 						program,
-						display_progs
+						display_progs,
+						style
 			FROM kk_blocks AS blocks
-			WHERE deleted = '0' AND day='".$day_val."' AND meeting='".$meeting_id."'
+			LEFT JOIN kk_categories AS cat ON cat.id = blocks.category
+			WHERE blocks.deleted = '0' AND day='".$day_val."' AND meeting='".$meeting_id."'
 			ORDER BY `from` ASC";
 
 		$result = mysql_query($sql);
@@ -452,6 +454,60 @@ class ExportModel extends CodeplexModel
 		$template = $this->View->render(false);
 
 		$this->PdfFactory->setPaperFormat('B1');
+		$this->Pdf = $this->PdfFactory->create();
+
+		$this->Pdf->useOnlyCoreFonts = true;
+		$this->Pdf->SetDisplayMode('fullpage');
+		$this->Pdf->SetAutoFont(0);
+		
+		// write html
+		$this->Pdf->WriteHTML($template, 0);
+		
+		/* debugging */
+		if(defined('DEBUG') && DEBUG === true){
+			echo $template;
+			exit('DEBUG_MODE');
+		} else {
+			// download
+			$output_filename = $filename.'.'.$file_type;
+			$this->Pdf->Output($output_filename, "D");
+		}
+	
+	}
+
+	/**
+	 * Print Program into PDF file
+	 *
+	 * @param	string	type of evidence
+	 * @param	int		ID of visitor
+	 * @param	string	file type
+	 * @return	file	PDF file
+	 */
+	public function printPublicProgram($file_type = "pdf")
+	{
+		// prepare header
+		$sql = "SELECT	id,
+						place,
+						DATE_FORMAT(start_date, '%Y') AS year,
+						UNIX_TIMESTAMP(open_reg) AS open_reg,
+						UNIX_TIMESTAMP(close_reg) as close_reg
+				FROM kk_meetings
+				WHERE id = '".$this->meetingId."'
+				ORDER BY id DESC
+				LIMIT 1";
+		$result = mysql_query($sql);
+		$data = mysql_fetch_assoc($result);
+		
+		$meeting_header = $data['place']." ".$data['year'];
+		$filename = removeDiacritic($data['place'].$data['year']."-program");
+
+		// load and prepare template
+		$this->View->loadTemplate('exports/program_public');
+		$this->View->assign('header', $meeting_header);
+		$this->View->assign('meeting_id', $this->meetingId);
+
+		$template = $this->View->render(false);
+
 		$this->Pdf = $this->PdfFactory->create();
 
 		$this->Pdf->useOnlyCoreFonts = true;

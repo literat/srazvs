@@ -63,6 +63,9 @@ class ExportController
 			case 'program-badge':
 				$ExportHandler->printProgramBadges();
 				break;
+			case 'program-public':
+				$ExportHandler->printPublicProgram();
+				break;
 		}
 
 		/* HTTP Header */

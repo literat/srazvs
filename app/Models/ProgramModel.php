@@ -373,8 +373,10 @@ class ProgramModel extends Component
 	}
 
 	public static function getProgramsLarge($id){
-		$sql = "SELECT 	progs.name AS name
+		$sql = "SELECT 	progs.name AS name,
+						cat.style AS style
 				FROM kk_programs AS progs
+				LEFT JOIN kk_categories AS cat ON cat.id = progs.category
 				WHERE block='".$id."' AND progs.deleted='0'
 				LIMIT 10";
 		$result = mysql_query($sql);
@@ -385,7 +387,7 @@ class ProgramModel extends Component
 			$html = "<table>";
 			$html .= " <tr>";
 			while($data = mysql_fetch_assoc($result)){			
-				$html .= "<td>".$data['name']."</td>\n";
+				$html .= "<td class='cat-".$data['style']."' >".$data['name']."</td>\n";
 			}
 			$html .= " </tr>\n";
 			$html .= "</table>\n";
@@ -410,6 +412,42 @@ class ProgramModel extends Component
 				$html .= $data['name'].",\n";
 			}
 		}
+		return $html;
+	}
+
+	public static function getDetail($id, $type)
+	{
+		$sql = "SELECT	*
+				FROM kk_".$type."s
+				WHERE id='".$id."' AND deleted='0'
+				LIMIT 1";
+		$result = mysql_query($sql);
+		$data = mysql_fetch_assoc($result);
+
+		$name = requested("name",$data['name']);
+		$description = requested("description",$data['description']);
+		$tutor = requested("tutor",$data['tutor']);
+		$email = requested("email",$data['email']);
+
+		if($type == "program"){
+			$capacity = requested("capacity",$data['capacity']);
+			
+			$countSql = "SELECT COUNT(visitor) AS visitors
+						 FROM `kk_visitor-program` AS visprog 
+						 LEFT JOIN kk_visitors AS vis ON vis.id = visprog.visitor
+						 WHERE program = '".$data['id']."' AND vis.deleted = '0'";
+			$countResult = mysql_query($countSql);
+			$countData = mysql_fetch_assoc($countResult);
+			
+			$inner_html = "<tr>\n";
+			$inner_html .= " <td class=\"label\">Obsazenost programu:</td>\n";
+			$inner_html .= " <td class=\"text\">".$countData['visitors']."/".$capacity."</td>\n";
+		    $inner_html .= "</tr>\n";
+		}
+		else $inner_html = "";
+
+		$html = '<html><head><meta http-equiv="Content-Type" content="text/html; charset='.$cfg['http-encoding'].'" /></head><body><style>td.text {text-align:left;}</style><table class="form"><tr><td class="label">Program:</td><td class="text">'.$name.'</td></tr><tr><td class="label">Popis:</td><td class="text">'.$description.'</td></tr><tr><td class="label">Lektor:</td><td class="text">'.$tutor.'</td></tr><tr><td class="label">E-mail:</td><td class="text"><a href="mailto:'.$email.'" title="e-mail">'.$email.'</a></td></tr>'.$inner_html.'</table></body></html>';
+
 		return $html;
 	}
 }

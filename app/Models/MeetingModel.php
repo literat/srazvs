@@ -184,7 +184,7 @@ class MeetingModel extends Component
 			$html .= " <tr>\n";
 			while($data = mysql_fetch_assoc($result)){			
 				$html .= "<td class='cat-".$data['style']."' style='text-align:center;'>\n";
-				$html .= "<a class='programLink' rel='programDetail' href='detail.php?id=".$data['id']."&type=program' rel='programDetail' title='".file_get_contents(HTTP_DIR.'srazvs/detail.php?id='.$data['id'].'&type=program')."'>".$data['name']."</a>\n";
+				$html .= "<a class='programLink' rel='programDetail' href='#' rel='programDetail' title='".ProgramModel::getDetail($data['id'], 'program')."'>".$data['name']."</a>\n";
 				$html .= "</td>\n";
 			}
 			$html .= " </tr>\n";
@@ -289,14 +289,14 @@ class MeetingModel extends Component
 					if(($data['program'] == 1) && ($data['display_progs'] == 1)){ 
 						$html .= "<td class='cat-".$data['style']."' class='daytime'>\n";
 						$html .= "<div>\n";
-						$html .= "<a class='programLink rel='programDetail' href='detail.php?id=".$data['id']."&type=block' rel='programDetail' title='".file_get_contents(HTTP_DIR.'srazvs/detail.php?id='.$data['id'].'&type=block')."'>".$data['name']."</a>\n";
+						$html .= "<a class='programLink rel='programDetail' href='#' rel='programDetail' title='".ProgramModel::getDetail($data['id'], 'block')."'>".$data['name']."</a>\n";
 						$html .= "</div>\n";
 						$html .= $this->getPublicPrograms($data['id']);
 						$html .= "</td>\n";
 					}
 					else {
 						$html .= "<td class='cat-".$data['style']."'>";
-						$html .= "<a class='programLink rel='programDetail' href='detail.php?id=".$data['id']."&type=block' rel='programDetail' title='".file_get_contents(HTTP_DIR.'srazvs/detail.php?id='.$data['id'].'&type=block')."'>".$data['name']."</a>\n";
+						$html .= "<a class='programLink rel='programDetail' href='#' rel='programDetail' title='".ProgramModel::getDetail($data['id'], 'block')."'>".$data['name']."</a>\n";
 						$html .= "</td>\n";
 					}
 					$html .= "</tr>\n";
