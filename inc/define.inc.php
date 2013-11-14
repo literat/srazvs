@@ -43,18 +43,24 @@ else {
  *
  * * do not forget to add slash at the end
  */
-define('PROJECT',		'srazvs');
+
 /* System Directories */
+define('PRJ_DIR',		HTTP_DIR.'srazvs/');
 define('INC_DIR',		ROOT_DIR.'inc/');
-define('IMG_DIR',		HTTP_DIR.PROJECT.'/images/');
-define('CSS_DIR',		HTTP_DIR.PROJECT.'/css/');
-define('JS_DIR',		HTTP_DIR.PROJECT.'/js/');
+define('IMG_DIR',		PRJ_DIR.'images/');
+define('CSS_DIR',		PRJ_DIR.'css/');
+define('JS_DIR',		PRJ_DIR.'js/');
 define('LIBS_DIR',		ROOT_DIR.'libs/');
+
+/* Libraries */
+define('FRAMEWORK',		LIBS_DIR.'Codeplex/');
+
 /* Temporary Files */
 define('TEMP_DIR',		ROOT_DIR.'temp/');
 define('LOG_DIR',		TEMP_DIR.'log/');
 define('SESSION_DIR',	TEMP_DIR.'session/');
 define('CACHE_DIR',		TEMP_DIR.'cache/');
+
 /* Application */
 define('APP_DIR',		ROOT_DIR.'app/');
 define('MODEL_DIR',		APP_DIR.'Models/');
@@ -62,14 +68,15 @@ define('VIEW_DIR',		APP_DIR.'Views/');
 define('CONTROLLER_DIR',APP_DIR.'Controllers/');
 define('TEMPLATE_DIR',	APP_DIR.'Templates/');
 define('TPL_DIR',		APP_DIR.'Templates/');
+
 /* URLs */
-define('BLOCK_DIR',		HTTP_DIR.PROJECT.'/block');
-define('PROG_DIR',		HTTP_DIR.PROJECT.'/program');
-define('MEET_DIR',		HTTP_DIR.PROJECT.'/meeting');
-define('VISIT_DIR',		HTTP_DIR.PROJECT.'/visitor');
-define('CAT_DIR',		HTTP_DIR.PROJECT.'/category');
-define('EXP_DIR',		HTTP_DIR.PROJECT.'/export');
-define('SET_DIR',		HTTP_DIR.PROJECT.'/settings');
+define('BLOCK_DIR',		PRJ_DIR.'block');
+define('PROG_DIR',		PRJ_DIR.'program');
+define('MEET_DIR',		PRJ_DIR.'meeting');
+define('VISIT_DIR',		PRJ_DIR.'visitor');
+define('CAT_DIR',		PRJ_DIR.'category');
+define('EXP_DIR',		PRJ_DIR.'export');
+define('SET_DIR',		PRJ_DIR.'settings');
 
 define('SESSION_PREFIX', md5($cfg['db_host'].$cfg['db_database'].$cfg['db_user'].$cfg['prefix'])."-");
 
@@ -84,32 +91,32 @@ require_once(INC_DIR.'db_connect.inc.php');
 require_once(INC_DIR.'errors.inc.php');
 
 /* Libraries */	
-require_once(LIBS_DIR.'Codeplex/ComponentModel/IModel.php');
-require_once(LIBS_DIR.'Codeplex/ComponentModel/IComponent.php');
-require_once(LIBS_DIR.'Codeplex/ComponentModel/Component.php');
-require_once(LIBS_DIR.'Codeplex/ComponentModel/CodeplexModel.php');
+require_once(FRAMEWORK.'ComponentModel/IModel.php');
+require_once(FRAMEWORK.'ComponentModel/IComponent.php');
+require_once(FRAMEWORK.'ComponentModel/Component.php');
+require_once(FRAMEWORK.'ComponentModel/CodeplexModel.php');
 
 require_once(LIBS_DIR.'PHPMailer/class.phpmailer.php');
 require_once(LIBS_DIR.'Mpdf/mpdf.php');
 require_once(LIBS_DIR.'PHPExcel/Classes/PHPExcel.php');
 
-require_once(LIBS_DIR.'Codeplex/DI/Container.class.php');
-require_once(LIBS_DIR.'Codeplex/Mail/PHPMailerFactory.php');
-require_once(LIBS_DIR.'Codeplex/Exporting/PdfFactory.php');
-require_once(LIBS_DIR.'Codeplex/Exporting/ExcelFactory.php');
+require_once(FRAMEWORK.'DI/Container.class.php');
+require_once(FRAMEWORK.'Mail/PHPMailerFactory.php');
+require_once(FRAMEWORK.'Exporting/PdfFactory.php');
+require_once(FRAMEWORK.'Exporting/ExcelFactory.php');
 
-require_once(LIBS_DIR.'Codeplex/Http/Http.php');
-require_once(LIBS_DIR.'Codeplex/Http/Request.php');
-require_once(LIBS_DIR.'Codeplex/Http/Response.php');
+require_once(FRAMEWORK.'Http/Http.php');
+require_once(FRAMEWORK.'Http/Request.php');
+require_once(FRAMEWORK.'Http/Response.php');
 
-require_once(LIBS_DIR.'Codeplex/Utils/Tools.php');
+require_once(FRAMEWORK.'Utils/Tools.php');
 
 /* Application */
-require_once(LIBS_DIR.'Codeplex/Mail/Emailer.php');
+require_once(FRAMEWORK.'Mail/Emailer.php');
 require_once(MODEL_DIR.'CategoryModel.php');
 require_once(MODEL_DIR.'BlockModel.php');
 require_once(MODEL_DIR.'ProgramModel.php');
-require_once(LIBS_DIR.'Codeplex/Forms/Form.php');
+require_once(FRAMEWORK.'Forms/Form.php');
 require_once(MODEL_DIR.'VisitorModel.php');
 require_once(MODEL_DIR.'MeetingModel.php');
 require_once(MODEL_DIR.'MealModel.php');
