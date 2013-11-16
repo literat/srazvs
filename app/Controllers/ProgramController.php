@@ -174,6 +174,8 @@ class ProgramController
 			case "public":
 				$this->publicView();
 				break;
+			case "annotation":
+				$this->annotation($id);
 	
 		}
 
@@ -252,7 +254,7 @@ class ProgramController
 		foreach($this->Program->dbColumns as $key) {
 			$DB_data[$key] = $$key;	
 		}
-		
+
 		if($this->Program->update($id, $DB_data)){	
 			redirect("?page=".$this->page."&error=ok");
 		}
@@ -317,6 +319,28 @@ class ProgramController
 	}
 
 	/**
+	 * Prepare data for editing
+	 * 
+	 * @param  int $id of item
+	 * @return void
+	 */
+	private function annotation($id)
+	{
+		$this->template = 'annotation';
+
+		$this->heading = "úprava programu";
+		$this->todo = "modify";
+
+		$this->programId = $id;
+		
+		$dbData = mysql_fetch_assoc($this->Program->getData($id));
+		
+		foreach($this->Program->formNames as $key) {
+			$this->data[$key] = requested($key, $dbData[$key]);
+		}
+	}
+
+	/**
 	 * Render all page
 	 * 
 	 * @return void
@@ -340,7 +364,7 @@ class ProgramController
 			// time select boxes
 		}
 
-		if($this->cms != 'public') {
+		if($this->cms != 'public' && $this->cms != 'annotation') {
 			/* HTTP Header */
 			$this->View->loadTemplate('http_header');
 			$this->View->assign('config',		$GLOBALS['cfg']);
@@ -373,6 +397,8 @@ class ProgramController
 			$this->View->assign('email',					$this->data['email']);
 			$this->View->assign('material',					$this->data['material']);
 			$this->View->assign('capacity',					$this->data['capacity']);
+			$this->View->assign('block',					$this->data['block']);
+			$this->View->assign('category',					$this->data['category']);
 			$this->View->assign('error_name',				printError($error_name));
 			$this->View->assign('error_description',		printError($error_description));
 			$this->View->assign('error_tutor',				printError($error_tutor));
@@ -382,6 +408,8 @@ class ProgramController
 			$this->View->assign('block_select',				$block_select);
 			$this->View->assign('display_in_reg_checkbox',	$display_in_reg_checkbox);
 			$this->View->assign('program_visitors',			$this->Program->getProgramVisitors($this->programId));
+			$this->View->assign('page_title',				'Registrace programů pro lektory');
+			$this->View->assign('meeting_heading',			$this->Meeting->getRegHeading());
 		} elseif($this->cms = 'public') {
 			$this->View->assign('meeting_heading',			$this->Meeting->getRegHeading());
 			////otevirani a uzavirani prihlasovani
@@ -420,7 +448,7 @@ class ProgramController
 		$this->View->render(TRUE);
 
 		/* Footer */
-		if($this->cms != 'public') {
+		if($this->cms != 'public' && $this->cms != 'annotation') {
 			$this->View->loadTemplate('footer');
 			$this->View->render(TRUE);
 		}

@@ -64,7 +64,7 @@
     </script>
     <style>
         #footer {
-            background: url('../../plugins/templates/hkvs2/images/outer-bottom-program.png') no-repeat scroll left top transparent;
+            background: url('<?php echo HTTP_DIR; ?>plugins/templates/hkvs2/images/outer-bottom-program.png') no-repeat scroll left top transparent;
         }
 
         <?php echo $data['css']; ?>
