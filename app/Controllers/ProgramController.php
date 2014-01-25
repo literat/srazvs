@@ -8,7 +8,7 @@
  * @created 2013-06-05
  * @author Tomas Litera <tomaslitera@hotmail.com>
  */
-class ProgramController
+class ProgramController extends BaseController
 {
 	/**
 	 * This template variable will hold the 'this->View' portion of our MVC for this 
@@ -175,7 +175,8 @@ class ProgramController
 				$this->publicView();
 				break;
 			case "annotation":
-				$this->annotation($id);
+				$formkey = intval(requested("formkey",""));
+				$this->annotation($formkey);
 	
 		}
 
@@ -255,8 +256,12 @@ class ProgramController
 			$DB_data[$key] = $$key;	
 		}
 
-		if($this->Program->update($id, $DB_data)){	
-			redirect("?page=".$this->page."&error=ok");
+		if($this->Program->update($id, $DB_data)) {
+			if($this->page == 'annotation') {
+				redirect("?cms=".$this->page."&error=ok&formkey=".requested("formkey", "")."&type=".requested("type", ""));
+			} else {
+				redirect("?page=".$this->page."&error=ok");
+			}
 		}
 	}
 
@@ -324,12 +329,15 @@ class ProgramController
 	 * @param  int $id of item
 	 * @return void
 	 */
-	private function annotation($id)
+	private function annotation($formkey)
 	{
 		$this->template = 'annotation';
 
 		$this->heading = "úprava programu";
 		$this->todo = "modify";
+
+		$mid = (($hash - 39147) / 116)%10;
+		$id = (($formkey - 39147) / 116);
 
 		$this->programId = $id;
 		
@@ -338,6 +346,8 @@ class ProgramController
 		foreach($this->Program->formNames as $key) {
 			$this->data[$key] = requested($key, $dbData[$key]);
 		}
+		$this->data['formkey'] = requested("formkey", "");
+		$this->data['type'] = requested("type", "");
 	}
 
 	/**
@@ -410,6 +420,8 @@ class ProgramController
 			$this->View->assign('program_visitors',			$this->Program->getProgramVisitors($this->programId));
 			$this->View->assign('page_title',				'Registrace programů pro lektory');
 			$this->View->assign('meeting_heading',			$this->Meeting->getRegHeading());
+			$this->View->assign('type',						$this->data['type']);
+			$this->View->assign('hash',						$this->data['formkey']);
 		} elseif($this->cms = 'public') {
 			$this->View->assign('meeting_heading',			$this->Meeting->getRegHeading());
 			////otevirani a uzavirani prihlasovani
@@ -420,27 +432,23 @@ class ProgramController
 			}
 			$this->View->assign('public_program',		$this->Meeting->renderPublicProgramOverview());
 			$this->View->assign('page_title',			'Srazy VS - veřejný program');
-			$this->View->assign('style',	'table {
-            border-collapse:separate;
-            width:100%;
-        }
-
-        td {
-            .width:100%;
-            text-align:center;
-            padding:0px;
-        }
-
-        td.day {
-            border:1px solid black;
-            background-color:#777777;
-            width:80px;
-        }
-
-        td.time {
-            background-color:#cccccc;
-            width:80px;
-        }');
+			$this->View->assign('style',				'table { border-collapse:separate; width:100%; }
+														td { .width:100%; text-align:center; padding:0px; }
+														td.day { border:1px solid black; background-color:#777777; width:80px; }
+														td.time { background-color:#cccccc; width:80px; }'
+			);
+		} elseif($this->cms = 'annotation') {
+			var_dump('rimmer');
+			$this->View->assign('meeting_heading',			$this->Meeting->getRegHeading());
+			////otevirani a uzavirani prihlasovani
+			if(($this->Meeting->getRegOpening() < time()) || DEBUG === TRUE){
+				$this->View->assign('display_program',	TRUE);
+			} else {
+				$this->View->assign('display_program',	FALSE);
+			}
+			var_dump($this->data);
+			$this->View->assign('type',		$this->data['type']);
+			$this->View->assign('formkey',	$this->data['formkey']);
 		} else {
 
 		}
