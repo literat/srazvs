@@ -2,7 +2,7 @@
 /**
  * This file handles the retrieval and serving of news articles
  */
-class CategoryController
+class CategoryController extends BaseController
 {
 	/**
 	 * template

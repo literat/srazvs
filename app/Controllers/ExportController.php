@@ -4,7 +4,7 @@
  *
  * This file handles the retrieval and serving of exports
  */
-class ExportController
+class ExportController extends BaseController
 {
 	/**
 	 * This template variable will hold the 'view' portion of our MVC for this 

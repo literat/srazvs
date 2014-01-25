@@ -15,61 +15,67 @@ abstract class BaseController
 	 * template
 	 * @var string
 	 */
-	protected $template = 'listing';
+	private $template = 'listing';
 
 	/**
 	 * template directory
 	 * @var string
 	 */
-	protected $templateDir = '';
+	private $templateDir = '';
 
 	/**
 	 * meeting ID
 	 * @var integer
 	 */
-	protected $meetingId = 0;
+	private $meetingId = 0;
 
 	/**
 	 * category ID
 	 * @var integer
 	 */
-	protected $itemId = NULL;
+	private $itemId = NULL;
 
 	/**
 	 * action what to do
 	 * @var string
 	 */
-	protected $cms = '';
+	private $cms = '';
 
 	/**
 	 * page where to return
 	 * @var string
 	 */
-	protected $page = '';
+	private $page = '';
 
 	/**
 	 * heading tetxt
 	 * @var string
 	 */
-	protected $heading = '';
+	private $heading = '';
 
 	/**
 	 * action what to do next
 	 * @var string
 	 */
-	protected $todo = '';
+	private $todo = '';
 
 	/**
 	 * data
 	 * @var array
 	 */
-	protected $data = array();
+	private $data = array();
 
 	/**
 	 * error handler
 	 * @var string
 	 */
-	protected $error = '';
+	private $error = '';
+
+	/**
+	 * error handler
+	 * @var string
+	 */
+	private $routing = '';
 
 	/**
 	 * This is the default function that will be called by Router.php
@@ -116,5 +122,10 @@ abstract class BaseController
 		}
 
 		$this->render();
+	}
+
+	public function setRouting($routing)
+	{
+		$this->routing = $routing;
 	}
 }

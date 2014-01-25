@@ -7,7 +7,7 @@
  * @created 2013-06-03
  * @author Tomas Litera <tomaslitera@hotmail.com>
  */
-class BlockController
+class BlockController extends BaseController
 {
 	/**
 	 * This template variable will hold the 'this->View' portion of our MVC for this 

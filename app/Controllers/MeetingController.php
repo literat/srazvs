@@ -2,7 +2,7 @@
 /**
  * This file handles the retrieval and serving of news articles
  */
-class MeetingController
+class MeetingController extends BaseController
 {
 	/**
 	 * This template variable will hold the 'view' portion of our MVC for this 

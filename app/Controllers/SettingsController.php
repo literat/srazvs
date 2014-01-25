@@ -2,7 +2,7 @@
 /**
  * This file handles the retrieval and serving of news articles
  */
-class SettingsController
+class SettingsController extends BaseController
 {
 	/**
 	 * template

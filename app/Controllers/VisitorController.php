@@ -71,6 +71,7 @@ class VisitorController extends BaseController
 		}
 
 		$this->templateDir = 'visitor';
+		$this->template = "listing";
 		$this->page = 'visitor';
 
 		$this->Container = new Container($GLOBALS['cfg'], $this->meetingId);

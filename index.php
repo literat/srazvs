@@ -30,6 +30,7 @@ $router->setDefaults(array(
 $router->connect('/', array(), true, true);
 //$router->connect('/<:controller>/<:action>', array(), true, true);
 $router->connect('/<:controller>', array(), true, true);
+$router->connect('/<:controller>/<:action>', array(), true, true);
 $routing = $router->getRouting();
 
 $target = CONTROLLER_DIR.$routing['controller'].'Controller.php';
@@ -38,7 +39,9 @@ $target = CONTROLLER_DIR.$routing['controller'].'Controller.php';
 if(file_exists($target))
 {
 	//print_r(get_declared_classes());
-	if($routing['controller'] != 'Registration' && (!isset($_GET['cms']) || $_GET['cms'] != 'public')) {
+	if($routing['controller'] != 'Registration'
+		&& (!isset($_GET['cms']) || $_GET['cms'] != 'public')
+		|| (!isset($_GET['cms']) || $_GET['cms'] != 'annotation')) {
 		include_once(INC_DIR.'access.inc.php');
 	}
 	require_once($target);
@@ -50,6 +53,7 @@ if(file_exists($target))
 	if(class_exists($class))
 	{
 		$controller = new $class;
+		$controller->setRouting($routing);
 	}
 	else
 	{
