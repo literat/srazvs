@@ -104,7 +104,7 @@
 		<div class='pageRibbon'><span>Formulář na jmenovky</span></div>
 		<div>
 			<form action='?name-badges' method='post'>
-				<label>Jména:</label>
+				<label>Jména (slova oddělená čárkou):</label>
 				<textarea style="max-width:100%;" name="names" cols="120" rows="5"></textarea>
 				<div class='button-line'>
 					<button type='submit' onclick=\"this.form.submit()\">
