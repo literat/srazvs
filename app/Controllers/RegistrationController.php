@@ -86,6 +86,8 @@ class RegistrationController extends BaseController
 			$this->meetingId = $_SESSION['meetingID'];
 		}
 
+		$this->item = '';
+
 		$this->templateDir = 'registration';
 		$this->page = 'registration';
 
@@ -117,7 +119,7 @@ class RegistrationController extends BaseController
 
 		###########################################################################
 
-		$id = requested("id",$this->itemId);
+		$id = requested("id",(isset($this->itemId)) ? $this->itemId : '');
 		$this->cms = requested("cms","");
 		$this->error = requested("error","");
 		$this->page = requested("page","");
@@ -422,7 +424,7 @@ class RegistrationController extends BaseController
 			} else {
 				$meals_select = $this->Meal->renderHtmlMealsSelect($this->mealData, $this->disabled);
 				$province_select = $this->Meeting->renderHtmlProvinceSelect($this->data['province']);
-				$program_switcher = $this->Visitor->renderProgramSwitcher($this->meetingId, $this->itemId);
+				$program_switcher = $this->Visitor->renderProgramSwitcher($this->meetingId, NULL);
 			}
 			
 		}
@@ -457,7 +459,7 @@ class RegistrationController extends BaseController
 
 
 		if(!empty($this->data)) {
-			$this->View->assign('id',				$this->itemId);
+			$this->View->assign('id',				(isset($this->itemId)) ? $this->itemId : '');
 			$this->View->assign('name',				$this->data['name']);
 			$this->View->assign('surname',			$this->data['surname']);
 			$this->View->assign('nick',				$this->data['nick']);
