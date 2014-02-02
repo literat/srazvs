@@ -14,6 +14,8 @@
  ?>
 	<button type='button' onclick="window.location.replace('?cms=mail&pid=<?php echo $data['id']; ?>')">
 		<img src='<?php echo IMG_DIR; ?>icons/mail.png'  /> Odeslat lektorovi</button>
+  <button type='button' onclick="this.target='_blank';window.location.replace('?cms=annotation&type=block&formkey=<?php echo $data['formkey']; ?>')">
+      <img src='<?php echo IMG_DIR; ?>icons/search.png'  /> Náhled anotace</button>
  <?php } ?>
 </div>
 

@@ -91,17 +91,18 @@ class BlockController extends BaseController
 	 */
 	public function init(array $getVars)
 	{
-		######################### PRISTUPOVA PRAVA ################################
-
-		include_once(INC_DIR.'access.inc.php');
-
-		###########################################################################
-
 		$id = requested("id",$this->blockId);
 		$this->cms = requested("cms","");
 		$this->error = requested("error","");
 		$this->page = requested("page","");
 
+		######################### PRISTUPOVA PRAVA ################################
+
+		if($this->cms != 'annotation') {
+			include_once(INC_DIR.'access.inc.php');
+		}
+
+		###########################################################################
 
 		switch($this->cms) {
 			case "delete":
@@ -121,6 +122,10 @@ class BlockController extends BaseController
 				break;
 			case "mail":
 				$this->mail();
+				break;
+			case "annotation":
+				$formkey = intval(requested("formkey",""));
+				$this->annotation($formkey);
 				break;
 		}
 
@@ -276,6 +281,33 @@ class BlockController extends BaseController
 	}
 
 	/**
+	 * Prepare data for annotation
+	 * 
+	 * @param  int $id of item
+	 * @return void
+	 */
+	private function annotation($formkey)
+	{
+		$this->template = 'annotation';
+
+		$this->heading = "úprava bloku";
+		$this->todo = "modify";
+
+		$mid = (($hash - 39147) / 116)%10;
+		$id = floor((($formkey - 39147) / 116) / 10);
+
+		$this->blockId = $id;
+		
+		$dbData = mysql_fetch_assoc($this->Block->getData($id));
+		
+		foreach($this->Block->formNames as $key) {
+			$this->data[$key] = requested($key, $dbData[$key]);
+		}
+		$this->data['formkey'] = requested("formkey", "");
+		$this->data['type'] = requested("type", "");
+	}
+
+	/**
 	 * Render all page
 	 * 
 	 * @return void
@@ -307,16 +339,18 @@ class BlockController extends BaseController
 			$display_progs_checkbox = Form::renderHtmlCheckBox('display_progs', 0, $this->data['display_progs']);
 		}
 
-		/* HTTP Header */
-		$this->View->loadTemplate('http_header');
-		$this->View->assign('config',		$GLOBALS['cfg']);
-		$this->View->assign('style',		CategoryModel::getStyles());
-		$this->View->render(TRUE);
+		if($this->cms != 'annotation') {
+			/* HTTP Header */
+			$this->View->loadTemplate('http_header');
+			$this->View->assign('config',		$GLOBALS['cfg']);
+			$this->View->assign('style',		CategoryModel::getStyles());
+			$this->View->render(TRUE);
 
-		/* Application Header */
-		$this->View->loadTemplate('header');
-		$this->View->assign('config',		$GLOBALS['cfg']);
-		$this->View->render(TRUE);
+			/* Application Header */
+			$this->View->loadTemplate('header');
+			$this->View->assign('config',		$GLOBALS['cfg']);
+			$this->View->render(TRUE);
+		}
 
 		// load and prepare template
 		$this->View->loadTemplate('blocks/'.$this->template);
@@ -347,6 +381,9 @@ class BlockController extends BaseController
 			$this->View->assign('end_minute_roll',		$end_minute_roll);
 			$this->View->assign('program_checkbox',		$program_checkbox);
 			$this->View->assign('display_progs_checkbox',$display_progs_checkbox);
+			$this->View->assign('type',					$this->data['type']);
+			$this->View->assign('hash',					$this->data['formkey']);
+			$this->View->assign('formkey',				((int)$this->blockId.$this->meetingId) * 116 + 39147);
 		}
 
 		$this->View->render(TRUE);

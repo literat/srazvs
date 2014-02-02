@@ -144,7 +144,7 @@ class ProgramController extends BaseController
 		$this->page = requested("page","");
 
 		######################### PRISTUPOVA PRAVA ################################
-		if($this->cms != 'public') {
+		if($this->cms != 'public' && $this->cms != 'annotation') {
 			include_once(INC_DIR.'access.inc.php');
 		}
 		###########################################################################
@@ -177,7 +177,7 @@ class ProgramController extends BaseController
 			case "annotation":
 				$formkey = intval(requested("formkey",""));
 				$this->annotation($formkey);
-	
+				break;
 		}
 
 		$this->render();
@@ -324,7 +324,7 @@ class ProgramController extends BaseController
 	}
 
 	/**
-	 * Prepare data for editing
+	 * Prepare data for annotation
 	 * 
 	 * @param  int $id of item
 	 * @return void
@@ -337,7 +337,7 @@ class ProgramController extends BaseController
 		$this->todo = "modify";
 
 		$mid = (($hash - 39147) / 116)%10;
-		$id = (($formkey - 39147) / 116);
+		$id = floor((($formkey - 39147) / 116) / 10);
 
 		$this->programId = $id;
 		
@@ -422,6 +422,7 @@ class ProgramController extends BaseController
 			$this->View->assign('meeting_heading',			$this->Meeting->getRegHeading());
 			$this->View->assign('type',						$this->data['type']);
 			$this->View->assign('hash',						$this->data['formkey']);
+			$this->View->assign('formkey',					((int)$this->programId.$this->meetingId) * 116 + 39147);
 		} elseif($this->cms = 'public') {
 			$this->View->assign('meeting_heading',			$this->Meeting->getRegHeading());
 			////otevirani a uzavirani prihlasovani
