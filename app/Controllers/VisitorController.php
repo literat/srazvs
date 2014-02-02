@@ -220,8 +220,24 @@ class VisitorController extends BaseController
 			$meals_data[$var_name] = $$var_name;
 		}
 		// create
-		if($this->Visitor->create($DB_data, $meals_data, $programs_data)){	
-			redirect("?page=".$this->page."&error=ok");
+		if($this->Visitor->create($DB_data, $meals_data, $programs_data)){
+			######################## ODESILAM EMAIL ##########################
+
+			// zaheshovane udaje, aby se nedali jen tak ziskat data z databaze
+			$code4bank = substr($DB_data['name'], 0, 1).substr($DB_data['surname'], 0, 1).substr($DB_data['birthday'], 2, 2);
+			$hash = ((int)$vid.$this->meetingId) * 147 + 49873;	
+								
+			$recipient_mail = $DB_data['email'];
+			$recipient_name = $DB_data['name']." ".$DB_data['surname'];
+				
+			if($return = $this->Emailer->sendRegistrationSummary($recipient_mail, $recipient_name, $hash, $code4bank)) {
+				if(is_int($vid)) {
+					$vid = "ok";
+				}
+				redirect("?page=".$this->page."&error=ok");
+			} else {
+				redirect("?page=".$this->page."&error=error");
+			}
 		} else {
 			redirect("?page=".$this->page."&error=error");
 		}
