@@ -220,7 +220,7 @@ class VisitorController extends BaseController
 			$meals_data[$var_name] = $$var_name;
 		}
 		// create
-		if($this->Visitor->create($DB_data, $meals_data, $programs_data)){
+		if($vid = $this->Visitor->create($DB_data, $meals_data, $programs_data)){
 			######################## ODESILAM EMAIL ##########################
 
 			// zaheshovane udaje, aby se nedali jen tak ziskat data z databaze

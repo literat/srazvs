@@ -140,6 +140,7 @@ class RegistrationController extends BaseController
 			$this->hash = $getVars['hash'];
 			$this->meetingId = (($getVars['hash'] - 49873) / 147)%10;
 			$id = floor((($getVars['hash'] - 49873) / 147)/10);
+			$this->Meeting->setRegistrationHandlers($this->meetingId);
 			if($this->cms == '') {
 				$this->cms = "edit";
 			}
