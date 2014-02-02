@@ -579,27 +579,43 @@ class ExportModel extends CodeplexModel
 	
 	}
 	
-	public function printNameBadges()
+	public function printNameBadges($names = NULL)
 	{
 		$output_filename = "jmenovky.pdf";
-		
-		$sql = "SELECT	vis.id AS id,
-						nick
-				FROM kk_visitors AS vis
-				WHERE meeting='".$this->meetingId."' AND vis.deleted='0'
-				";
-		$result = mysql_query($sql);
+
+		$_data = array();
+
+		if(empty($names)) {
+			$sql = "SELECT	vis.id AS id,
+							nick
+					FROM kk_visitors AS vis
+					WHERE meeting='".$this->meetingId."' AND vis.deleted='0'
+					";
+			$result = mysql_query($sql);
+			
+			while($row = mysql_fetch_assoc($result)) {
+				array_push($_data, $row);
+			}
+		} else {
+			$names = preg_replace('/\s+/','',$names);
+
+			$values = explode(',',$names);
+			foreach($values as $value) {
+				$row['nick'] = $value;
+				array_push($_data, $row);
+			}
+		}
 		
 		// load and prepare template
 		$this->View->loadTemplate('exports/name_badge');
-		$this->View->assign('result', $result);
+		$this->View->assign('result', $_data);
 		$template = $this->View->render(FALSE);
 		
 		$this->PdfFactory->setMargins(15, 15, 10, 5);
 		$this->Pdf = $this->PdfFactory->create();
 		
 		// set watermark
-		$this->Pdf->SetWatermarkImage($GLOBALS['LOGODIR'].'watermark-waves.jpg', 0.1, '');
+		$this->Pdf->SetWatermarkImage(IMG_DIR.'logos/watermark-waves.jpg', 0.1, '');
 		$this->Pdf->showWatermarkImage = TRUE;
 		
 		// write html

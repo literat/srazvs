@@ -27,8 +27,8 @@
 <body>
 <?php
 $i = 0;
-while($row = mysql_fetch_assoc($data['result'])){
-	if($i%2 == 0){
+foreach($data['result'] as $row) {
+	if($i%2 == 0) {
 ?>	
 	<table>
 		<tr>
@@ -43,7 +43,7 @@ while($row = mysql_fetch_assoc($data['result'])){
 			</td>
 		</tr>
 	</table>
-<?php if($i%2 == 0){ ?>
+<?php if($i%2 == 0) { ?>
 	</td>
 <?php }	else { ?>
 			</td>

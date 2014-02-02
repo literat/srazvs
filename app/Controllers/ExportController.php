@@ -49,7 +49,8 @@ class ExportController extends BaseController
 				$ExportHandler->printMealTicket();
 				break;
 			case 'name-badges':
-				$ExportHandler->printNameBadges();
+				$names = requested('names', '');
+				$ExportHandler->printNameBadges($names);
 				break;
 			case 'program-details':
 				$ExportHandler->printProgramDetails();
