@@ -107,7 +107,7 @@ class Container
 	 */
 	public function createMeeting()
 	{
-		return new MeetingModel($this->meetingId);
+		return new MeetingModel($this->meetingId, $this->configuration);
 	}
 	
 	/**
@@ -117,7 +117,7 @@ class Container
 	 */
 	public function createProgram()
 	{
-		return new ProgramModel($this->meetingId);
+		return new ProgramModel($this->meetingId, $this->configuration);
 	}
 	
 	/**

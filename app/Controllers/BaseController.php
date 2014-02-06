@@ -33,7 +33,7 @@ abstract class BaseController
 	 * category ID
 	 * @var integer
 	 */
-	private $itemId = NULL;
+	protected $itemId = NULL;
 
 	/**
 	 * action what to do
@@ -51,13 +51,13 @@ abstract class BaseController
 	 * heading tetxt
 	 * @var string
 	 */
-	private $heading = '';
+	protected $heading = '';
 
 	/**
 	 * action what to do next
 	 * @var string
 	 */
-	private $todo = '';
+	protected $todo = '';
 
 	/**
 	 * data

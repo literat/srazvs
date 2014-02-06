@@ -25,14 +25,17 @@ class ProgramModel extends Component
 	 * @var array	form_names[]
 	 */
 	public $formNames = array();
+
+	private $configuration;
 	
 	/** Constructor */
-	public function __construct($meeting_id)
+	public function __construct($meeting_id, $configuration)
 	{
 		$this->meetingId = $meeting_id;
 		$this->dbColumns = array("name", "block", "display_in_reg", "description", "tutor", "email", "category", "material", "capacity");
 		$this->formNames = array("name", "description", "material", "tutor", "email", "capacity", "display_in_reg", "block", "category");
 		$this->dbTable = "kk_programs";
+		$this->configuration = $configuration;
 	}
 
 	/**
@@ -415,7 +418,7 @@ class ProgramModel extends Component
 		return $html;
 	}
 
-	public static function getDetail($id, $type)
+	public static function getDetail($id, $type, $cfg)
 	{
 		$sql = "SELECT	*
 				FROM kk_".$type."s

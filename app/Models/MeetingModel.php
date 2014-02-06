@@ -32,9 +32,11 @@ class MeetingModel extends Component
 
 	/** @var string registration heading text */
 	public $regHeading = '';
+
+	private $configuration;
 	
 	/** Constructor */
-	public function __construct($meetingId = NULL)
+	public function __construct($meetingId = NULL, $configuration)
 	{
 		$this->meetingId = $meetingId;
 		$this->weekendDays = array("pátek", "sobota", "neděle");
@@ -65,6 +67,7 @@ class MeetingModel extends Component
 			"numbering"
 		);
 		$this->dbTable = "kk_meetings";
+		$this->configuration = $configuration;
 	}
 	
 	/**
@@ -184,7 +187,7 @@ class MeetingModel extends Component
 			$html .= " <tr>\n";
 			while($data = mysql_fetch_assoc($result)){			
 				$html .= "<td class='cat-".$data['style']."' style='text-align:center;'>\n";
-				$html .= "<a class='programLink' rel='programDetail' href='#' rel='programDetail' title='".ProgramModel::getDetail($data['id'], 'program')."'>".$data['name']."</a>\n";
+				$html .= "<a class='programLink' rel='programDetail' href='#' rel='programDetail' title='".ProgramModel::getDetail($data['id'], 'program', $this->configuration)."'>".$data['name']."</a>\n";
 				$html .= "</td>\n";
 			}
 			$html .= " </tr>\n";
@@ -289,14 +292,14 @@ class MeetingModel extends Component
 					if(($data['program'] == 1) && ($data['display_progs'] == 1)){ 
 						$html .= "<td class='cat-".$data['style']."' class='daytime'>\n";
 						$html .= "<div>\n";
-						$html .= "<a class='programLink rel='programDetail' href='#' rel='programDetail' title='".ProgramModel::getDetail($data['id'], 'block')."'>".$data['name']."</a>\n";
+						$html .= "<a class='programLink rel='programDetail' href='#' rel='programDetail' title='".ProgramModel::getDetail($data['id'], 'block', $this->configuration)."'>".$data['name']."</a>\n";
 						$html .= "</div>\n";
 						$html .= $this->getPublicPrograms($data['id']);
 						$html .= "</td>\n";
 					}
 					else {
 						$html .= "<td class='cat-".$data['style']."'>";
-						$html .= "<a class='programLink rel='programDetail' href='#' rel='programDetail' title='".ProgramModel::getDetail($data['id'], 'block')."'>".$data['name']."</a>\n";
+						$html .= "<a class='programLink rel='programDetail' href='#' rel='programDetail' title='".ProgramModel::getDetail($data['id'], 'block', $this->configuration)."'>".$data['name']."</a>\n";
 						$html .= "</td>\n";
 					}
 					$html .= "</tr>\n";

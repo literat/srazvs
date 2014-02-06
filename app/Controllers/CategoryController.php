@@ -41,18 +41,6 @@ class CategoryController extends BaseController
 	private $page = 'category';
 
 	/**
-	 * heading tetxt
-	 * @var string
-	 */
-	private $heading = '';
-
-	/**
-	 * action what to do next
-	 * @var string
-	 */
-	private $todo = '';
-
-	/**
 	 * data
 	 * @var array
 	 */
