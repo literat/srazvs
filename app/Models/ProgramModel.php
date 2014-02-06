@@ -88,13 +88,13 @@ class ProgramModel extends Component
 				}
 				// if the capacity is full
 				if($DB_full_program['visitors'] >= $data['capacity']){
-					$html_input .= "<input ".$checked." disabled type='radio' name='".$block_id."' value='".$data['id']."' />\n";
+					$html_input .= "<input id='".$data['id'].$block_id."' ".$checked." disabled type='radio' name='".$block_id."' value='".$data['id']."' />\n";
 					$fullProgramInfo = " (NELZE ZAPSAT - kapacita programu je již naplněna!)";
 				} else {
-					$html_input .= "<input ".$checked." type='radio' name='".$block_id."' value='".$data['id']."' /> \n";
+					$html_input .= "<input id='".$data['id'].$block_id."' ".$checked." type='radio' name='".$block_id."' value='".$data['id']."' /> \n";
 					$fullProgramInfo = "";
 				}
-				$html_input .= $data['name'];
+				$html_input .= '<label for="'.$data['id'].$block_id.'">'.$data['name'].'</label>';
 				$html_input .= $fullProgramInfo;
 				$html_input .= "<br />\n";
 			}

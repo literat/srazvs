@@ -417,6 +417,8 @@ a.programLink:hover {color: #ce8b10;}
 label {font-weight:bold;}
 label.required {color:#FF0000;}
 
+#registration label {font-weight:normal;}
+
 input, textarea, select, .picker {
 	background-color:#e5e5e5;
 	text-align: left;
