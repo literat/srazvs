@@ -54,6 +54,7 @@ class BlockController extends BaseController
 	private $Block;
 	private $View;
 	private $Emailer;
+	private $Meeting;
 
 	/**
 	 * Prepare model classes and get meeting id
@@ -70,6 +71,7 @@ class BlockController extends BaseController
 		$this->Block = $this->Container->createBlock();
 		$this->View = $this->Container->createView();
 		$this->Emailer = $this->Container->createEmailer();
+		$this->Meeting = $this->Container->createMeeting();
 	}
 
 	/**
@@ -263,7 +265,7 @@ class BlockController extends BaseController
 	private function mail()
 	{
 		$pid = requested("pid","");
-		if($this->Emailer->tutor($pid, $mid, "block")) {
+		if($this->Emailer->tutor($pid, $this->meetingId, "block")) {
 			redirect("?block&error=mail_send");
 		}
 	}
@@ -281,7 +283,7 @@ class BlockController extends BaseController
 		$this->heading = "úprava bloku";
 		$this->todo = "modify";
 
-		$mid = (($hash - 39147) / 116)%10;
+		$mid = (($formkey - 39147) / 116)%10;
 		$id = floor((($formkey - 39147) / 116) / 10);
 
 		$this->blockId = $id;
@@ -308,6 +310,7 @@ class BlockController extends BaseController
 			$error_description = "";
 			$error_tutor = "";
 			$error_email = "";
+			$error_material = "";
 
 
 			$hours_array = array (0 => "00","01","02","03","04","05","06","07","08","09","10","11","12","13","14","15","16","17","18","19","20","21","22","23");
@@ -372,6 +375,13 @@ class BlockController extends BaseController
 			$this->View->assign('type',					isset($this->data['type']) ? $this->data['type'] : NULL);
 			$this->View->assign('hash',					isset($this->data['formkey']) ? $this->data['formkey'] : NULL);
 			$this->View->assign('formkey',				((int)$this->blockId.$this->meetingId) * 116 + 39147);
+			$this->View->assign('meeting_heading',		$this->Meeting->getRegHeading());
+			$this->View->assign('capacity',				$this->data['capacity']);
+			$this->View->assign('category',				$this->data['category']);
+			$this->View->assign('block',				$this->itemId);
+			$this->View->assign('error_material',		printError($error_material));
+			$this->View->assign('material',				$this->data['material']);
+			$this->View->assign('page_title',			'Registrace programů pro lektory');
 		}
 
 		$this->View->render(TRUE);

@@ -113,7 +113,7 @@ class Emailer
 		// multiple recipients
 		$recipient_mail = $data['email'];
 		$recipient_name = $data['tutor'];
-		$tutor_form_url = "http://vodni.skauting.cz/srazvs/program/?cms=annotation&type=".$type."&formkey=".$hash;
+		$tutor_form_url = PRJ_DIR.$type."/?cms=annotation&type=".$type."&formkey=".$hash;
 		
 		// e-mail templates
 		$templates = $this->getTemplates('tutor');

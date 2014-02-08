@@ -296,7 +296,7 @@ class ProgramController extends BaseController
 	private function mail()
 	{
 		$pid = requested("pid","");
-		if($this->Emailer->tutor($pid, $mid, "program")) {
+		if($this->Emailer->tutor($pid, $this->meetingId, "program")) {
 			redirect("?program&error=mail_send");
 		}
 	}
@@ -324,7 +324,7 @@ class ProgramController extends BaseController
 		$this->heading = "úprava programu";
 		$this->todo = "modify";
 
-		$mid = (($hash - 39147) / 116)%10;
+		$mid = (($formkey - 39147) / 116)%10;
 		$id = floor((($formkey - 39147) / 116) / 10);
 
 		$this->programId = $id;
