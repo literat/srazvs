@@ -34,12 +34,6 @@ class MeetingController extends BaseController
 	 */
 	private $error = '';
 
-	/**
-	 * action what to do next
-	 * @var string
-	 */
-	private $todo = '';
-
 	private $render = NULL;
 
 	/**
@@ -168,7 +162,7 @@ class MeetingController extends BaseController
 		}
 
 		if($this->Meeting->create($db_data)){	
-			redirect("?page=".$this->page."&error=ok");
+			redirect(PRJ_DIR.$this->page."?error=ok");
 		}
 	}
 
@@ -202,7 +196,7 @@ class MeetingController extends BaseController
 		}
 		
 		if($this->Meeting->update($this->meetingId, $db_data)){
-			redirect("?page=".$this->page."&error=ok");
+			redirect(PRJ_DIR.$this->page."?error=ok");
 		}
 	}
 

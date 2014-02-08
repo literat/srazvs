@@ -23,18 +23,6 @@ class ProgramController extends BaseController
 	private $templateDir = 'program';
 
 	/**
-	 * Heading of the page
-	 * @var string
-	 */
-	private $heading = '';
-
-	/**
-	 * Action what to do next
-	 * @var string
-	 */
-	private $todo = '';
-
-	/**
 	 * ID of item
 	 * @var integer
 	 */
@@ -229,7 +217,7 @@ class ProgramController extends BaseController
 			$DB_data[$key] = $$key;	
 		}
 		if($this->Program->create($DB_data)){	
-			redirect("?page=".$this->page."&error=ok");
+			redirect(PRJ_DIR.$this->page."?error=ok");
 		}
 	}
 
@@ -260,7 +248,7 @@ class ProgramController extends BaseController
 			if($this->page == 'annotation') {
 				redirect("?cms=".$this->page."&error=ok&formkey=".requested("formkey", "")."&type=".requested("type", ""));
 			} else {
-				redirect("?page=".$this->page."&error=ok");
+				redirect(PRJ_DIR.$this->page."?error=ok");
 			}
 		}
 	}
@@ -420,8 +408,8 @@ class ProgramController extends BaseController
 			$this->View->assign('program_visitors',			$this->Program->getProgramVisitors($this->programId));
 			$this->View->assign('page_title',				'Registrace programů pro lektory');
 			$this->View->assign('meeting_heading',			$this->Meeting->getRegHeading());
-			$this->View->assign('type',						$this->data['type']);
-			$this->View->assign('hash',						$this->data['formkey']);
+			$this->View->assign('type',						isset($this->data['type']) ? $this->data['type'] : NULL);
+			$this->View->assign('hash',						isset($this->data['formkey']) ? $this->data['formkey'] : NULL);
 			$this->View->assign('formkey',					((int)$this->programId.$this->meetingId) * 116 + 39147);
 		} elseif($this->cms = 'public') {
 			$this->View->assign('meeting_heading',			$this->Meeting->getRegHeading());

@@ -20,6 +20,7 @@ $(document).ready(function() {
 </script>
 
 <script src='<?php echo JS_DIR; ?>jquery/jquery-ui.min.js' type='text/javascript'></script>
+<script src='<?php echo JS_DIR; ?>jquery/jquery-ui-datepicker-validation.min.js' type='text/javascript'></script>
 <script type="text/javascript">
 $(function() {
 	$.datepicker.setDefaults($.datepicker.regional['cs']);
@@ -81,14 +82,22 @@ $(function() {
 				},
 				email: {
 					required: true,
-					email: true
+					email: true,
+					maxlength: 30
 				},
 				birthday: {
 					required: true,
-					date: true
+					date: true,
+					dpDate: true
 				},
-				street: "required",
-				city: "required",
+				street: {
+					required: true,
+					maxlength: 30
+				},
+				city: {
+					required: true,
+					maxlength: 64
+				},
 				postal_code: {
 					required: true,
 					postalcode: true,
@@ -101,19 +110,26 @@ $(function() {
 					maxlength: 6,
 					minlength: 6
 				},
-				group_name: "required"
+				group_name: {
+					required: true,
+					maxlength: 50
+				},
+				troop_name: {
+					maxlength: 50
+				}
 			},
-			 messages: {
+			messages: {
 				name:         "Jméno musí být vyplněno (max 20 znaků)!",
 				surname:      "Příjmení musí být vyplněno (max 30 znaků)!",
 				nick:         "Přezdívka musí být vyplněna (max 20 znaků)!",
-				email:        "Zadejte validní e-mailovou adresu!",
+				email:        "Zadejte validní e-mailovou adresu (max 30 znaků)!",
 				birthday:     "Zadejte datum narození ve správném formátu!",
-				street:       "Ulice musí být vyplněna!",
-				city:         "Město musí být vyplněno!",
+				street:       "Ulice musí být vyplněna (max 30 znaků)!",
+				city:         "Město musí být vyplněno (max 64 znaků)!",
 				postal_code:  "Zadejte PSČ ve správném formátu!",
 				group_num:    "Zadejte číslo střediska/přístavu ve správném formátu!",
-				group_name:   "Název střediska/přístavu musí být vyplněno!"
+				group_name:   "Název střediska/přístavu musí být vyplněno (max 50 znaků)!",
+				troop_name:   "Název oddílu nemůže být delší jak 50 znaků!"
 			}
 		});
 	});

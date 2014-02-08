@@ -16,18 +16,6 @@ class BlockController extends BaseController
 	private $template = 'listing';
 
 	/**
-	 * Heading of the page
-	 * @var string
-	 */
-	private $heading = '';
-
-	/**
-	 * Action what to do next
-	 * @var string
-	 */
-	private $todo = '';
-
-	/**
 	 * ID of item
 	 * @var integer
 	 */
@@ -189,7 +177,7 @@ class BlockController extends BaseController
 		}
 
 		if($this->Block->create($db_data)){	
-			redirect("?page=".$this->page."&error=ok");
+			redirect(PRJ_DIR.$this->page."?error=ok");
 		}
 	}
 
@@ -249,8 +237,8 @@ class BlockController extends BaseController
 			$DB_data['meeting'] = $this->meetingId;
 		}
 		
-		if($this->Block->update($id, $DB_data)){	
-			redirect("?page=".$this->page."&error=ok");
+		if($this->Block->update($id, $DB_data)){
+			redirect(PRJ_DIR.$this->page."?error=ok");
 		}
 	}
 
@@ -381,8 +369,8 @@ class BlockController extends BaseController
 			$this->View->assign('end_minute_roll',		$end_minute_roll);
 			$this->View->assign('program_checkbox',		$program_checkbox);
 			$this->View->assign('display_progs_checkbox',$display_progs_checkbox);
-			$this->View->assign('type',					$this->data['type']);
-			$this->View->assign('hash',					$this->data['formkey']);
+			$this->View->assign('type',					isset($this->data['type']) ? $this->data['type'] : NULL);
+			$this->View->assign('hash',					isset($this->data['formkey']) ? $this->data['formkey'] : NULL);
 			$this->View->assign('formkey',				((int)$this->blockId.$this->meetingId) * 116 + 39147);
 		}
 
