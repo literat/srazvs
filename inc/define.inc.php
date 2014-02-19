@@ -53,7 +53,7 @@ define('JS_DIR',		PRJ_DIR.'js/');
 define('LIBS_DIR',		ROOT_DIR.'libs/');
 
 /* Libraries */
-define('FRAMEWORK',		LIBS_DIR.'Codeplex/');
+define('FRAMEWORK',		LIBS_DIR.'Nix/');
 
 /* Temporary Files */
 define('TEMP_DIR',		ROOT_DIR.'temp/');
@@ -94,7 +94,7 @@ require_once(INC_DIR.'errors.inc.php');
 require_once(FRAMEWORK.'ComponentModel/IModel.php');
 require_once(FRAMEWORK.'ComponentModel/IComponent.php');
 require_once(FRAMEWORK.'ComponentModel/Component.php');
-require_once(FRAMEWORK.'ComponentModel/CodeplexModel.php');
+require_once(FRAMEWORK.'ComponentModel/NixModel.php');
 
 require_once(LIBS_DIR.'PHPMailer/class.phpmailer.php');
 require_once(LIBS_DIR.'Mpdf/mpdf.php');
@@ -127,7 +127,7 @@ require_once(VIEW_DIR.'View.php');
 
 require_once(CONTROLLER_DIR.'BaseController.php');
 
-define('DEBUG', FALSE);
+define('DEBUG', TRUE);
 
 
 //debuggovani
