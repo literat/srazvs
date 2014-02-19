@@ -1,0 +1,3 @@
+[submodule "libs/Nix"]
+	path = libs/Nix
+	url = https://github.com/literat/Nix.git

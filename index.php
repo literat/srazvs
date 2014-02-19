@@ -4,6 +4,8 @@ use Codeplex\Routers;
 
 require_once('inc/define.inc.php');
 
+require_once(FRAMEWORK.'loader.php');
+
 $sql = "SELECT id
 		FROM kk_meetings
 		ORDER BY id DESC
@@ -15,9 +17,9 @@ if(!isset($_SESSION['meetingID'])) {
 	$_SESSION['meetingID'] = $data['id'];
 }
 
-require_once(LIBS_DIR.'Codeplex/Routers/Router.php');
+require_once(FRAMEWORK.'Routers/Router.php');
 
-$router = new Codeplex\Routers\Router();
+$router = new Nix\Routers\Router();
 
 $router->setDefaults(array(
     'controller' => 'meeting',
