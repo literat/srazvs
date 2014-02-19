@@ -2,12 +2,12 @@
 !*/.*
 *dwsync.xml
 libs
-!libs/Codeplex
+vendor
 *deprecated*
-srazvs.sublime-project
-srazvs.sublime-workspace
+*.sublime-*
 *.sln
 *.suo
 *.json
 _compareTemp
 *.svn
+composer.*

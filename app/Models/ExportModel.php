@@ -7,7 +7,7 @@
  * @created 2012-09-21
  * @author Tomas Litera <tomaslitera@hotmail.com>
  */
-class ExportModel extends CodeplexModel
+class ExportModel extends NixModel
 {
 	/** @var int meeting ID */
 	private $meetingId;

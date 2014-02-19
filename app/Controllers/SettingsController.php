@@ -35,18 +35,6 @@ class SettingsController extends BaseController
 	private $page = 'settings';
 
 	/**
-	 * heading tetxt
-	 * @var string
-	 */
-	private $heading = '';
-
-	/**
-	 * action what to do next
-	 * @var string
-	 */
-	private $todo = '';
-
-	/**
 	 * data
 	 * @var array
 	 */
