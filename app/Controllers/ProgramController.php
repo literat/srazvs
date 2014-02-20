@@ -206,7 +206,7 @@ class ProgramController extends BaseController
 
 				// TODO: better default values validation
 				// defualt input to DB
-				if($key == 'capacity' && !isset($$key)) {
+				if($key == 'capacity' && !requested($key, $value)) {
 					$$key = 0;
 				} else {
 					$$key = requested($key, $value);
@@ -216,6 +216,7 @@ class ProgramController extends BaseController
 		foreach($this->Program->dbColumns as $key) {
 			$DB_data[$key] = $$key;	
 		}
+
 		if($this->Program->create($DB_data)){	
 			redirect(PRJ_DIR.$this->page."?error=ok");
 		}
