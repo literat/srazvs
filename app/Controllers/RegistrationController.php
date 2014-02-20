@@ -480,6 +480,7 @@ class RegistrationController extends BaseController
 			$this->View->assign('bill',				$this->data['bill']);
 			$this->View->assign('programs',			$program_switcher);
 			$this->View->assign('hash',				$this->hash);
+			$this->View->assign('is-reg-open',		$this->Meeting->isRegOpen());
 		}
 
 		$this->View->render(TRUE);

@@ -420,16 +420,33 @@ class MeetingModel extends Component
 		return TRUE;
 	}
 
-	public function getRegOpening() {
+	public function getRegOpening()
+	{
 		return $this->regOpening;
 	}
 
-	public function getRegClosing() {
+	public function getRegClosing()
+	{
 		return $this->regClosing;
 	}
 
-	public function getRegHeading() {
+	public function getRegHeading()
+	{
 		return $this->regHeading;
+	}
+
+	/**
+	 * Is registration open?
+	 *
+	 * @return 	boolean
+	 */
+	public function isRegOpen()
+	{
+		if($this->getRegOpening() < time() && time() < $this->getRegClosing()) {
+			return TRUE;
+		} else {
+			return FALSE;
+		}
 	}
 	
 	public function getProvinceNameById($id) {
