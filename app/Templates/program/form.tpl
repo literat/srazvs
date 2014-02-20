@@ -7,7 +7,7 @@
 	<div class='button-line'>
 		<button type='submit' onclick=\"this.form.submit()\">
 			<img src='<?php echo IMG_DIR; ?>icons/save.png' /> Uložit</button>
-		<button type='button' onclick="window.location.replace('<?php echo PROG_DIR; ?>')">
+		<button type='button' onclick="window.location.replace('<?php echo PRJ_DIR.$data['page']; ?>')">
 			<img src='<?php echo IMG_DIR; ?>icons/storno.png'  /> Storno</button>
 	 <?php
 	 if($data['cms'] == "edit") {
