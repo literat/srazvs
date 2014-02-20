@@ -108,6 +108,10 @@
 			<td class='label'><label>Zaplaceno:</label></td>
 			<td><input type='text' name='bill' size='15' value='<?php echo $data['bill']; ?>' /> ,- Kč <?php echo $data['error_bill']; ?></td>
 		</tr>
+		<tr>
+			<td class='label'><label>Poplatek:</label></td>
+			<td><input type='text' name='cost' size='15' value='<?php echo $data['cost']; ?>' /> ,- Kč <?php echo $data['error_cost']; ?></td>
+		</tr>
 	</table>
 
 	<div style='border-bottom:1px solid black;text-align:right;'>výběr programů</div>

@@ -416,6 +416,7 @@ class VisitorController extends BaseController
 			$error_postal_code = "";
 			$error_group_num = "";
 			$error_bill = "";
+			$error_cost = "";
 
 			$program_switcher = $this->Visitor->renderProgramSwitcher($this->meetingId, $this->itemId);
 			$meals_select = $this->Meal->renderHtmlMealsSelect($this->mealData, $this->disabled);
@@ -470,6 +471,7 @@ class VisitorController extends BaseController
 			$this->View->assign('comment',			$this->data['comment']);
 			$this->View->assign('question',			$this->data['question']);
 			$this->View->assign('bill',				$this->data['bill']);
+			$this->View->assign('cost',				$this->data['cost']);
 			$this->View->assign('program_switcher',	$program_switcher);
 			
 			$this->View->assign('error_name',			printError($error_name));
@@ -480,6 +482,7 @@ class VisitorController extends BaseController
 			$this->View->assign('error_surname',		printError($error_surname));
 			$this->View->assign('error_group_num',		printError($error_group_num));
 			$this->View->assign('error_bill',			printError($error_bill));
+			$this->View->assign('error_cost',			printError($error_cost));
 		}
 
 		$this->View->render(TRUE);

@@ -239,6 +239,7 @@ $(function() {
 	<input <?php echo $data['disabled']; ?> type='hidden' name='mid' value='<?php echo $data['mid'];  ?>' />
 	<input <?php echo $data['disabled']; ?> type='hidden' name='id' value='<?php echo $data['id'];  ?>' />
 	<input <?php echo $data['disabled']; ?> type="hidden" name="bill" value="0" />
+	<input <?php echo $data['disabled']; ?> type="hidden" name="cost" value='<?php echo $data['cost']; ?>' />
 	 
 	<?php echo $data['programs']; ?>
 	 

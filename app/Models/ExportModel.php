@@ -218,7 +218,7 @@ class ExportModel extends NixModel
 					UPPER(LEFT(place, 2)) AS abbr_place,
 					DATE_FORMAT(start_date, '%d. %m. %Y') AS date,
 					DATE_FORMAT(start_date, '%Y') AS year,
-					cost - bill AS balance,
+					vis.cost - bill AS balance,
 					DATE_FORMAT(birthday, '%d. %m. %Y') AS birthday,
 					group_num,
 					numbering
@@ -724,8 +724,8 @@ class ExportModel extends NixModel
 	public function getMoney($type)
 	{
 		$query = "SELECT SUM(bill) AS account,
-							COUNT(bill) * cost AS suma,
-							COUNT(bill) * cost - SUM(bill) AS balance
+							COUNT(bill) * vis.cost AS suma,
+							COUNT(bill) * vis.cost - SUM(bill) AS balance
 					FROM kk_visitors AS vis
 					LEFT JOIN kk_meetings AS meets ON vis.meeting = meets.id
 					WHERE meeting = '".$this->meetingId."' AND vis.deleted = '0'";

@@ -77,6 +77,7 @@ class VisitorModel /* extends Component */
 								"group_name",
 								"troop_name",
 								"bill",
+								"cost",
 								"email",
 								"comment",
 								"arrival",
@@ -366,6 +367,7 @@ class VisitorModel /* extends Component */
 								city,
 								province_name AS province,
 								bill,
+								cost,
 								birthday
 								/*CONCAT(LEFT(name,1),LEFT(surname,1),SUBSTRING(birthday,3,2)) AS code*/
 						FROM kk_visitors AS vis
