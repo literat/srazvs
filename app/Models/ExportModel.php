@@ -708,7 +708,7 @@ class ExportModel extends NixModel
 		while($data = mysql_fetch_assoc($result)){
 			if($data['material'] == "") $material = "(žádný)";
 			else $material = $data['material'];
-			$html .= "<div><a rel='programDetail' href='../programs/process.php?id=".$data['id']."&cms=edit' title='".$data['name']."'>".$data['name'].":</a>\n</div>";
+			$html .= "<div><a rel='programDetail' href='".PRJ_DIR."program/?id=".$data['id']."&cms=edit&page=export' title='".$data['name']."'>".$data['name']."</a>:\n</div>";
 			$html .= "<div style='margin-left:10px;font-size:12px;font-weight:bold;'>".$material."</div>";
 		}
 		

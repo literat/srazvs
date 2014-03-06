@@ -146,7 +146,7 @@ class ProgramModel extends Component
 					$fullProgramInfo = "<span style='font-size:12px; font-weight:bold;'>".$fullProgramData['visitors']."/".$data['capacity']."</span>";
 				}
 				$html .= "<td style='min-width:270px;'>";
-				$html .= "<a rel='programDetail' href='../programs/process.php?id=".$data['id']."&cms=edit' title='".$data['name']."'>".$data['name']."</a>\n";
+				$html .= "<a rel='programDetail' href='".PRJ_DIR."program/?id=".$data['id']."&cms=edit&page=export' title='".$data['name']."'>".$data['name']."</a>\n";
 				$html .= "</td>";
 				$html .= "<td>";
 				$html .= $fullProgramInfo;
