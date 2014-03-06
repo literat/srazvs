@@ -424,7 +424,7 @@ class RegistrationController extends BaseController
 			} else {
 				$meals_select = $this->Meal->renderHtmlMealsSelect($this->mealData, $this->disabled);
 				$province_select = $this->Meeting->renderHtmlProvinceSelect($this->data['province']);
-				$program_switcher = $this->Visitor->renderProgramSwitcher($this->meetingId, NULL);
+				$program_switcher = $this->Visitor->renderProgramSwitcher($this->meetingId, $this->itemId);
 			}
 			
 		}
