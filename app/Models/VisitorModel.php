@@ -166,7 +166,8 @@ class VisitorModel /* extends Component */
 	 	foreach($DB_data as $key => $value) {
 			$query_set .= "`".$key."` = '".$value."',";	
 		}
-	 	$query_set = substr($query_set, 0, -1);	
+		$query_set .= "`code` = CONCAT(LEFT('".$DB_data['name']."',1),LEFT('".$DB_data['surname']."',1),SUBSTRING('".$DB_data['birthday']."',3,2))";
+		//$query_set = substr($query_set, 0, -1);
 		
 		// updating visitor data
     	$query = "UPDATE `kk_visitors` 
