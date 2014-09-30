@@ -19,7 +19,10 @@ class ExportController extends BaseController
 	 */
 	public function init(array $getVars)
 	{
-		include_once(INC_DIR.'access.inc.php');
+		// program detail and program public must be public
+		if((key($_GET) != 'program-public') && (key($_GET) != 'program-details')) {
+			include_once(INC_DIR.'access.inc.php');
+		}
 
 		if($mid = requested("mid","")){
 			$_SESSION['meetingID'] = $mid;

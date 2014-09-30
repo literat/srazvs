@@ -19,12 +19,12 @@
 	<a style="text-decoration:none; padding-right:4px;" href="<?php echo EXP_DIR; ?>/?program-public">
     	<img style='border:none;' align='absbottom' src='<?php echo IMG_DIR; ?>icons/pdf.png' />
     </a>
-	<a href="<?php echo EXP_DIR; ?>/?program-public">Stáhněte si program srazu ve formátu PDF</a>
+	<a href="<?php echo EXP_DIR; ?>/?program-public&cms=public">Stáhněte si program srazu ve formátu PDF</a>
     <br />
     <a style="text-decoration:none; padding-right:4px;" href="<?php echo EXP_DIR; ?>/?program-details">
     	<img style='border:none;' align='absbottom' src='<?php echo IMG_DIR; ?>icons/pdf.png' />
     </a>
-	<a href="<?php echo EXP_DIR; ?>/?program-details">Stáhněte si detaily programů srazu ve formátu PDF</a>
+	<a href="<?php echo EXP_DIR; ?>/?program-details&cms=public">Stáhněte si detaily programů srazu ve formátu PDF</a>
 	<p style="text-align:center; font-size:medium;">Změna programu vyhrazena!</p>
 
 	<!-- PROGRAM SRAZU -->
