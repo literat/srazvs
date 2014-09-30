@@ -5,20 +5,18 @@ require_once('config.inc.php');
 
 /* nastaveni cest */
 //pokud jsem na vyvojovem stroji
-$ISDEV = ($_SERVER["SERVER_NAME"] == 'localhost' || $_SERVER["SERVER_NAME"] == 'vodni.skauting.pp')?true:false; 
-if($ISDEV){
+$ISDEV = ($_SERVER["SERVER_NAME"] == 'localhost' || $_SERVER["SERVER_NAME"] == 'vodni.skauting.local') ? true : false; 
+if($ISDEV) {
 	//vyvojova masina
-	if($_SERVER["SERVER_NAME"] == 'vodni.poutnicikolin.cz'){
+	if($_SERVER["SERVER_NAME"] == 'vodni.poutnicikolin.cz') {
 		//define('ROOT_DIR',"../");
-  	  	//define('ROOT_DIR', "/home/www/poutnicikolin.cz/subdomains/dev/admin/");
+		//define('ROOT_DIR', "/home/www/poutnicikolin.cz/subdomains/dev/admin/");
 		define('HTTP_DIR','http://'.$_SERVER['HTTP_HOST']."/vodni/srazvs/");
 		//echo ROOT_DIR;
-  	}
-  	elseif($_SERVER["SERVER_NAME"] == 'vodni.skauting.pp') {
-		define('HTTP_DIR','http://'.$_SERVER['HTTP_HOST']."/srazvs/");
+	} elseif($_SERVER["SERVER_NAME"] == 'vodni.skauting.local') {
+		define('ROOT_DIR',$_SERVER['DOCUMENT_ROOT'].'/srazvs/');
 		define('HTTP_DIR','http://'.$_SERVER['HTTP_HOST'].'/');
-  	}
-	else {
+	} else {
 		define('ROOT_DIR',$_SERVER['DOCUMENT_ROOT'].'/skauting/vodni/srazvs/');
 		define('HTTP_DIR','http://'.$_SERVER['HTTP_HOST'].'/skauting/vodni/');
 	}
@@ -27,7 +25,6 @@ if($ISDEV){
 else {
 	// na ostrem stroji musi byt vzdy za ROOT_DIR slash "/"
 	define('ROOT_DIR', '/var/www/virtual/vodni/web/www/srazvs/');
-	//define('ROOT_DIR', $_SERVER['DOCUMENT_ROOT'].'/srazvs/');
 	define('HTTP_DIR', 'http://'.$_SERVER['HTTP_HOST'].'/');
 }
 
