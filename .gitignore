@@ -11,3 +11,4 @@ vendor
 _compareTemp
 *.svn
 composer.*
+inc/config.inc.php

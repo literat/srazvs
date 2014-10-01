@@ -4,9 +4,9 @@
  */
 
 /* prihlasovani do databaze */
-$cfg['db_user']			= 'vodni';
-$cfg['db_passwd']		= 'aY%79%2me4xJsuw#rFrA2DmP';
-$cfg['db_database'] 	= 'vodni';
+$cfg['db_user']			= 'dbuser';
+$cfg['db_passwd']		= 'dbpassword';
+$cfg['db_database'] 	= 'database';
 $cfg['db_host']			= 'localhost';
 
 /* nastaveni kodovani */
@@ -19,15 +19,15 @@ $cfg['hash']			= '';
 
 $cfg['timeout']			= '-15 minutes';
 
-$cfg['prefix']			= "sunlight";
+$cfg['prefix']			= "prefix";
 
 $cfg['paper-format']	= "A4";
 
 
 /* nastaveni hlavicky */
-$cfg['title']			= 'Srazy VS | CodePlex::admin';
-$cfg['description']		= 'administrační systém pro Srazy K + K';
-$cfg['keywords']		= 'plexis, administrace, cms';
+$cfg['title']			= 'some title';
+$cfg['description']		= 'some description';
+$cfg['keywords']		= 'some keywords';
 $cfg['author']			= 'LITERA Tomáš(slunda); tomaslitera(zavinac)hotmail(tecka)com';
 $cfg['owner']			= 'Litera Tomáš, Kolín';
 
@@ -40,9 +40,9 @@ $cfg['mail-html-header'] = "<!DOCTYPE html PUBLIC '-//W3C//DTD XHTML 1.0 Strict/
 
 $cfg['mail-language']		= "cz";
 $cfg['mail-encoding']		= 'utf-8';
-$cfg['mail-sender-address']	= 'srazyvs@hkvs.cz';
-$cfg['mail-sender-name']	= 'Srazy VS';
+$cfg['mail-sender-address']	= 'mail@example';
+$cfg['mail-sender-name']	= 'some name';
 
-$cfg['gmail_user'] = "srazyvs@gmail.com";
-$cfg['gmail_passwd'] = "n4rG5RpfsS";
+$cfg['gmail_user'] = "example@gmail.com";
+$cfg['gmail_passwd'] = "password";
 ?>
