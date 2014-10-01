@@ -64,7 +64,7 @@ class VisitorController extends BaseController
 	 */
 	public function __construct()
 	{
-		if($this->meetingId = requested("mid","")){
+		if($this->meetingId = requested("mid","")) {
 			$_SESSION['meetingID'] = $this->meetingId;
 		} else {
 			$this->meetingId = $_SESSION['meetingID'];
@@ -180,6 +180,7 @@ class VisitorController extends BaseController
 		// requested for visitors fields
 		foreach($this->Visitor->dbColumns as $key) {
 			if($key == 'bill') $value = 0;
+			elseif($key == 'cost') $value = 0;
 			else $value = "";
 			$this->data[$key] = requested($key, $value);	
 		}
@@ -207,6 +208,7 @@ class VisitorController extends BaseController
 		// requested for visitors
 		foreach($this->Visitor->dbColumns as $key) {
 				if($key == 'bill') $$key = requested($key, 0);
+				elseif($key == 'cost') $$key = requested($key, 0);
 				else $$key = requested($key, null);
 				$DB_data[$key] = $$key;	
 		}
