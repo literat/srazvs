@@ -94,6 +94,7 @@ require_once(FRAMEWORK.'ComponentModel/Component.php');
 require_once(FRAMEWORK.'ComponentModel/NixModel.php');
 
 require_once(LIBS_DIR.'PHPMailer/class.phpmailer.php');
+require_once(LIBS_DIR.'PHPMailer/class.smtp.php');
 require_once(LIBS_DIR.'Mpdf/mpdf.php');
 require_once(LIBS_DIR.'PHPExcel/Classes/PHPExcel.php');
 
