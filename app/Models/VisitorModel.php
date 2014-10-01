@@ -83,7 +83,8 @@ class VisitorModel /* extends Component */
 								"arrival",
 								"departure",
 								"question",
-								"meeting"
+								"meeting",
+								"hash"
 							);
 		$this->formNames = array("name", "description", "material", "tutor", "email", "capacity", "display_in_reg", "block", "category");
 		$this->dbTable = "kk_visitors";

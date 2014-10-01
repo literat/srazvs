@@ -140,8 +140,15 @@ class RegistrationController extends BaseController
 
 		if(isset($getVars['hash'])) {
 			$this->hash = $getVars['hash'];
-			$this->meetingId = (($getVars['hash'] - 49873) / 147)%10;
-			$id = floor((($getVars['hash'] - 49873) / 147)/10);
+			$query = "SELECT id, meeting FROM kk_visitors WHERE hash = '".$this->hash."';";
+			$result = mysql_query($query);
+			$data = mysql_fetch_array($result);
+
+			//$this->meetingId = (($getVars['hash'] - 49873) / 147)%10;
+			//$id = floor((($getVars['hash'] - 49873) / 147)/10);
+			$this->meetingId = $data['meeting'];
+			$id = $data['id'];
+
 			$this->Meeting->setRegistrationHandlers($this->meetingId);
 			if($this->cms == '') {
 				$this->cms = "edit";
@@ -229,6 +236,7 @@ class RegistrationController extends BaseController
 
 		// i must add visitor's ID because it is empty
 		$db_data['meeting'] = $this->meetingId;
+		$db_data['hash'] = hash('sha1', microtime());
 
 		// requested for meals
 		foreach($this->Meal->dbColumns as $var_name) {
@@ -242,8 +250,9 @@ class RegistrationController extends BaseController
 
 				// zaheshovane udaje, aby se nedali jen tak ziskat data z databaze
 				$code4bank = substr($db_data['name'], 0, 1).substr($db_data['surname'], 0, 1).substr($db_data['birthday'], 2, 2);
-				$hash = ((int)$vid.$this->meetingId) * 147 + 49873;	
-								
+				//$hash = ((int)$vid.$this->meetingId) * 147 + 49873;	
+				$hash = $db_data['hash'];
+
 				$recipient_mail = $db_data['email'];
 				$recipient_name = $db_data['name']." ".$db_data['surname'];
 				
@@ -296,6 +305,7 @@ class RegistrationController extends BaseController
 
 		// i must add visitor's ID because it is empty
 		$db_data['meeting'] = $this->meetingId;
+		$db_data['hash'] = hash('sha1', microtime());
 
 		foreach($this->Meal->dbColumns as $var_name) {
 			$$var_name = requested($var_name, null);
@@ -309,7 +319,8 @@ class RegistrationController extends BaseController
 
 			// zaheshovane udaje, aby se nedali jen tak ziskat data z databaze
 			$code4bank = substr($db_data['name'], 0, 1).substr($db_data['surname'], 0, 1).substr($db_data['birthday'], 2, 2);
-			$hash = ((int)$vid.$this->meetingId) * 147 + 49873;	
+			//$hash = ((int)$vid.$this->meetingId) * 147 + 49873;
+			$hash = $db_data['hash'];
 							
 			$recipient_mail = $db_data['email'];
 			$recipient_name = $db_data['name']." ".$db_data['surname'];
