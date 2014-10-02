@@ -88,7 +88,7 @@ class BlockController extends BaseController
 
 		######################### PRISTUPOVA PRAVA ################################
 
-		if($this->cms != 'annotation') {
+		if($this->cms != 'annotation' && $this->page != 'annotation') {
 			include_once(INC_DIR.'access.inc.php');
 		}
 

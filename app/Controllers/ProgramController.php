@@ -132,7 +132,11 @@ class ProgramController extends BaseController
 		$this->page = requested("page","");
 
 		######################### PRISTUPOVA PRAVA ################################
-		if($this->cms != 'public' && $this->cms != 'annotation') {
+		if(
+			$this->cms != 'public'
+			&& $this->cms != 'annotation'
+			&& $this->page != 'annotation'
+		) {
 			include_once(INC_DIR.'access.inc.php');
 		}
 		###########################################################################
@@ -240,12 +244,12 @@ class ProgramController extends BaseController
 			$$key = requested($key, $value);
 		}
 
-
 		foreach($this->Program->dbColumns as $key) {
 			$DB_data[$key] = $$key;	
 		}
 
 		if($this->Program->update($id, $DB_data)) {
+
 			if($this->page == 'annotation') {
 				redirect("?cms=".$this->page."&error=ok&formkey=".requested("formkey", "")."&type=".requested("type", ""));
 			} else {

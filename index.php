@@ -41,8 +41,14 @@ $target = CONTROLLER_DIR.$routing['controller'].'Controller.php';
 if(file_exists($target))
 {
 	//print_r(get_declared_classes());
-	if(($routing['controller'] != 'Registration' && (!isset($_GET['cms']) || $_GET['cms'] != 'public'))
-		&& (!isset($_GET['cms']) || $_GET['cms'] != 'annotation')) {
+	if(
+		(
+			$routing['controller'] != 'Registration'
+			&& (!isset($_GET['cms']) || $_GET['cms'] != 'public')
+		)
+			&& (!isset($_GET['cms']) || $_GET['cms'] != 'annotation')
+			&& (!isset($_POST['page']) || $_POST['page'] != 'annotation')
+	) {
 		include_once(INC_DIR.'access.inc.php');
 	}
 	require_once($target);
