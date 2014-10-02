@@ -286,6 +286,8 @@ class BlockController extends BaseController
 		$mid = (($formkey - 39147) / 116)%10;
 		$id = floor((($formkey - 39147) / 116) / 10);
 
+		$this->Meeting->setRegistrationHandlers();
+
 		$this->blockId = $id;
 		
 		$dbData = mysql_fetch_assoc($this->Block->getData($id));

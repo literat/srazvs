@@ -332,6 +332,7 @@ class ProgramController extends BaseController
 		$mid = (($formkey - 39147) / 116)%10;
 		$id = floor((($formkey - 39147) / 116) / 10);
 
+		$this->Meeting->setRegistrationHandlers();
 		$this->programId = $id;
 		
 		$dbData = mysql_fetch_assoc($this->Program->getData($id));
@@ -416,7 +417,7 @@ class ProgramController extends BaseController
 			$this->View->assign('type',						isset($this->data['type']) ? $this->data['type'] : NULL);
 			$this->View->assign('hash',						isset($this->data['formkey']) ? $this->data['formkey'] : NULL);
 			$this->View->assign('formkey',					((int)$this->programId.$this->meetingId) * 116 + 39147);
-		} elseif($this->cms = 'public') {
+		} elseif($this->cms == 'public') {
 			$this->View->assign('meeting_heading',			$this->Meeting->getRegHeading());
 			////otevirani a uzavirani prihlasovani
 			if(($this->Meeting->getRegOpening() < time()) || DEBUG === TRUE){
@@ -431,8 +432,7 @@ class ProgramController extends BaseController
 														td.day { border:1px solid black; background-color:#777777; width:80px; }
 														td.time { background-color:#cccccc; width:80px; }'
 			);
-		} elseif($this->cms = 'annotation') {
-			var_dump('rimmer');
+		} elseif($this->cms == 'annotation') {
 			$this->View->assign('meeting_heading',			$this->Meeting->getRegHeading());
 			////otevirani a uzavirani prihlasovani
 			if(($this->Meeting->getRegOpening() < time()) || DEBUG === TRUE){
@@ -440,7 +440,6 @@ class ProgramController extends BaseController
 			} else {
 				$this->View->assign('display_program',	FALSE);
 			}
-			var_dump($this->data);
 			$this->View->assign('type',		$this->data['type']);
 			$this->View->assign('formkey',	$this->data['formkey']);
 		} else {
