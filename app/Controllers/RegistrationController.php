@@ -256,14 +256,17 @@ class RegistrationController extends BaseController
 				$recipient_mail = $db_data['email'];
 				$recipient_name = $db_data['name']." ".$db_data['surname'];
 				
-				if($return = $this->Emailer->sendRegistrationSummary($recipient_mail, $recipient_name, $hash, $code4bank)) {
+				$return = $this->Emailer->sendRegistrationSummary($recipient_mail, $recipient_name, $hash, $code4bank);
+
+				if($return === TRUE) {
 					if(is_int($vid)) {
 						$vid = "ok";
 					}
 					redirect("?hash=".$hash."&error=".$vid."&cms=check");
 				} else {
-					echo 'Došlo k chybě při odeslání e-mailu.';
-					echo 'Chybová hláška: ' . $return;
+					redirect("?hash=".$hash."&error=email&cms=check");
+					//echo 'Došlo k chybě při odeslání e-mailu.';
+					//echo 'Chybová hláška: ' . $return;
 				}
 				//redirect("?page=".$this->page."&error=ok");
 			} else {
@@ -325,14 +328,17 @@ class RegistrationController extends BaseController
 			$recipient_mail = $db_data['email'];
 			$recipient_name = $db_data['name']." ".$db_data['surname'];
 			
-			if($return = $this->Emailer->sendRegistrationSummary($recipient_mail, $recipient_name, $hash, $code4bank)) {
+			$return = $this->Emailer->sendRegistrationSummary($recipient_mail, $recipient_name, $hash, $code4bank);
+
+			if($return === TRUE) {
 				if(is_numeric($vid)) {
 					$vid = "ok";
 				}
 				redirect("?hash=".$hash."&error=".$vid."&cms=check");
 			} else {
-				echo 'Došlo k chybě při odeslání e-mailu.';
-				echo 'Chybová hláška: ' . $return;
+				redirect("?hash=".$hash."&error=email&cms=check");
+				//echo 'Došlo k chybě při odeslání e-mailu.';
+				//echo 'Chybová hláška: ' . $return;
 			}
 			//redirect("?page=".$this->page."&error=ok");
 		} else {
