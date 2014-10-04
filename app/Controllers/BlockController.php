@@ -72,6 +72,13 @@ class BlockController extends BaseController
 		$this->View = $this->Container->createView();
 		$this->Emailer = $this->Container->createEmailer();
 		$this->Meeting = $this->Container->createMeeting();
+
+		if(defined('DEBUG') && DEBUG === TRUE){
+			$this->Meeting->setRegistrationHandlers(1);
+			$this->meetingId = 1;
+		} else {
+			$this->Meeting->setRegistrationHandlers();
+		}
 	}
 
 	/**
@@ -165,7 +172,7 @@ class BlockController extends BaseController
 
 		$from = date("H:i:s",mktime($start_hour,$start_minute,0,0,0,0));
 		$to = date("H:i:s",mktime($end_hour,$end_minute,0,0,0,0));
-		
+
 		//TODO: dodelat osetreni chyb
 		if($from > $to) echo "chyba";
 		else {
@@ -199,7 +206,7 @@ class BlockController extends BaseController
 		$this->blockId = $id;
 		
 		$dbData = mysql_fetch_assoc($this->Block->getData($id));
-		
+
 		foreach($this->Block->formNames as $key) {
 			$this->data[$key] = requested($key, $dbData[$key]);
 		}
@@ -221,26 +228,35 @@ class BlockController extends BaseController
 				elseif($key == 'program') $value = 0;
 				elseif($key == 'display_progs') $value = 1;
 				else $value = "";
-				$$key = requested($key, $value);	
+				$$key = requested($key, $value);
 		}
 
-		$from = date("H:i:s",mktime($start_hour,$start_minute,0,0,0,0));
-		$to = date("H:i:s",mktime($end_hour,$end_minute,0,0,0,0));
-		
 		//TODO: dodelat osetreni chyb
 		if($from > $to) echo "chyba";
 		else {
 			foreach($this->Block->dbColumns as $key) {
 				$DB_data[$key] = $$key;	
 			}
-			$DB_data['from'] = $from;
-			$DB_data['to'] = $to;
-			$DB_data['capacity'] = 0;
-			$DB_data['meeting'] = $this->meetingId;
+
+			if($this->page != 'annotation') {
+				$from = date("H:i:s",mktime($start_hour,$start_minute,0,0,0,0));
+				$to = date("H:i:s",mktime($end_hour,$end_minute,0,0,0,0));
+				$DB_data['from'] = $from;
+				$DB_data['to'] = $to;
+				//$DB_data['capacity'] = 0;
+			} else {
+				$DB_data['program'] = $_POST['program'];
+			}
+
+			//$DB_data['meeting'] = $this->meetingId;
 		}
-		
-		if($this->Block->update($id, $DB_data)){
-			redirect(PRJ_DIR.$this->page."?error=ok");
+
+		if($this->Block->update($id, $DB_data)) {
+			if($this->page == 'annotation') {
+				redirect("?cms=".$this->page."&error=ok&formkey=".requested("formkey", "")."&type=".requested("type", ""));
+			} else {
+				redirect(PRJ_DIR.$this->page."?error=ok");
+			}
 		}
 	}
 
@@ -289,7 +305,7 @@ class BlockController extends BaseController
 		$this->Meeting->setRegistrationHandlers();
 
 		$this->blockId = $id;
-		
+
 		$dbData = mysql_fetch_assoc($this->Block->getData($id));
 		
 		foreach($this->Block->formNames as $key) {
@@ -368,6 +384,10 @@ class BlockController extends BaseController
 			$this->View->assign('error_email',			printError($error_email));
 			$this->View->assign('cat_roll',				$cat_roll);
 			$this->View->assign('day_roll',				$day_roll);
+			$this->View->assign('day',					$this->data['day']);
+			$this->View->assign('from',					$this->data['from']);
+			$this->View->assign('to',					$this->data['to']);
+			$this->View->assign('program',				$this->data['program']);
 			$this->View->assign('hour_roll',			$hour_roll);
 			$this->View->assign('minute_roll',			$minute_roll);
 			$this->View->assign('end_hour_roll',		$end_hour_roll);

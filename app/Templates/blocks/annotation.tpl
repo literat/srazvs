@@ -65,8 +65,11 @@
 			<input type='hidden' name='id' value='<?= $data['id']; ?>'>
 			<input type='hidden' name='formkey' value='<?= $data['hash']; ?>'>
 			<input type='hidden' name='type' value='<?= $data['type']; ?>'>
-			<input type='hidden' name='block' value='<?= $data['block']; ?>'>
+			<input type='hidden' name='program' value='<?= $data['program']; ?>'>
 			<input type='hidden' name='category' value='<?= $data['category']; ?>'>
+			<input type='hidden' name='from' value='<?= $data['from']; ?>'>
+			<input type='hidden' name='to' value='<?= $data['to']; ?>'>
+			<input type='hidden' name='day' value='<?= $data['day']; ?>'>
 			<input type='hidden' name='page' value='annotation'>
  
 			<div class='button-line'>

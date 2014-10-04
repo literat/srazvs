@@ -61,7 +61,10 @@ class BlockModel extends Component
 			"email",
 			"category",
 			"material",
-			"capacity"
+			"capacity",
+			"day",
+			"from",
+			"to"
 		);
 		$this->dbTable = "kk_blocks";
 	}
@@ -79,7 +82,9 @@ class BlockModel extends Component
 						   		DATE_FORMAT(`to`,'%H') AS end_hour,
 						   		DATE_FORMAT(`from`,'%i') AS start_minute,
 						   		DATE_FORMAT(`to`,'%i') AS end_minute,
-								day,
+								`day`,
+								`from`,
+								`to`,
 								program,
 								display_progs,
 								description,

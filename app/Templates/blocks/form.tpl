@@ -57,6 +57,10 @@
   <td><?php echo $data['display_progs_checkbox']; ?></td>
  </tr>
  <tr>
+  <td class='label'><label>Kapacita:</label></td>
+  <td><input type='text' name='capacity' size='10' value='<?php echo $data['capacity']; ?>' placeholder="0" /> (omezeno na 255)</td>
+ </tr>
+ <tr>
   <td class="label"><label>Kategorie:</label></td>
   <td><?php echo $data['cat_roll']; ?></td>
  </tr>
