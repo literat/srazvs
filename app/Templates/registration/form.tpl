@@ -53,7 +53,7 @@ $(function() {
 <script src='<?php echo JS_DIR; ?>jquery/validation/methods_de.js' type='text/javascript'></script> 
 <script type="text/javascript">
 	$.validator.addMethod("groupnumber", function(value, element) {
-		if(value.match(/^[1-9]{1}[0-9]{2}\.[0-9]{1}[0-9a-z]{1}$/)) return true;
+		if(value.match(/^[1-9]{1}[0-9a-zA-Z]{2}\.[0-9a-zA-Z]{1}[0-9a-zA-Z]{1}$/)) return true;
 		else return false;
 	}, "Hodnota musí být ve formátu nnn.nn!");
 
