@@ -111,7 +111,7 @@ class BlockModel extends Component
 							style
 					FROM kk_blocks AS blocks
 					LEFT JOIN kk_categories AS cat ON cat.id = blocks.category
-					WHERE meeting = '".$this->meetingId."' AND blocks.deleted = '0'
+					WHERE blocks.meeting = '".$this->meetingId."' AND blocks.deleted = '0'
 					ORDER BY day, `from` ASC";
 			$result = mysql_query($query);
 			$rows = mysql_affected_rows();

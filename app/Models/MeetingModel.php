@@ -220,7 +220,7 @@ class MeetingModel extends Component
 							style
 					FROM kk_blocks AS blocks
 					LEFT JOIN kk_categories AS cat ON cat.id = blocks.category
-					WHERE blocks.deleted = '0' AND day='".$value."' AND meeting='".$this->meetingId."'
+					WHERE blocks.deleted = '0' AND day='".$value."' AND blocks.meeting='".$this->meetingId."'
 					ORDER BY `from` ASC";
 		
 			$result = mysql_query($sql);
