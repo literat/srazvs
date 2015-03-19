@@ -66,7 +66,7 @@
 	<tr>
 		<td class='label'>Název střediska/přístavu:</td>
 		<td>
-			<div style="margin:2px 0px 2px 0px; font-weight:bold;">Junák - svaz skautů a skautek ČR</div>
+			<div style="margin:2px 0px 2px 0px; font-weight:bold;">Junák - český skaut, z. s.</div>
 			<?php echo $data['group_name']; ?>
 		</td>
 	</tr>

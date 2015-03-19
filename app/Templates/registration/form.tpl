@@ -181,7 +181,7 @@ $(function() {
 		</tr>
 		<tr>
 			<td></td>
-			<td><div style="margin:2px 0px 2px 0px; font-weight:bold;">Junák - svaz skautů a skautek ČR</div></td>
+			<td><div style="margin:2px 0px 2px 0px; font-weight:bold;">Junák - český skaut, z. s.</div></td>
 		</tr>
 		<tr>
 			<td class='label'><label><span class="required">*</span>Číslo střediska/přístavu:</label></td>

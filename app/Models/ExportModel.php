@@ -230,7 +230,7 @@ class ExportModel extends NixModel
 		$result = mysql_query($query);
 
 		// summary header
-		$hkvs_header = "Junák ČR, Kapitanát vodních skautů | ";
+		$hkvs_header = "Junák - český skaut, Kapitanát vodních skautů, z. s. | ";
 		$hkvs_header .= "Senovážné náměstí 977/24, Praha 1, 116 47 | ";
 		$hkvs_header .= "IČ: 65991753, ČÚ: 2300183549/2010";
 

@@ -72,7 +72,7 @@
 		</tr>
 		<tr>
 			<td class='label'><label class="required">Název střediska/přístavu:</label></td>
-			<td><div style="margin:2px 0px 2px 0px; font-weight:bold;">Junák - svaz skautů a skautek ČR</div>
+			<td><div style="margin:2px 0px 2px 0px; font-weight:bold;">Junák - český skaut, z. s.</div>
 			<input type='text' name='group_name' size='30' value='<?php echo $data['group_name']; ?>' /> (2. přístav Poutníci Kolín)
 			</td>
 		</tr>
