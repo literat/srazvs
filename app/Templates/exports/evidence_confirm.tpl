@@ -18,7 +18,7 @@
 	   			&nbsp;&nbsp;http://vodni.skauting.cz/ | mustek@hkvs.cz | +420 777 222 141  <br />
 	  		</td>
 	  		<td>
-	   			<strong>číslo:</strong> <?php echo $row['numbering']."/PZ".$i; ?><br />
+	   			<strong>číslo:</strong> <?php echo $row['numbering']."/PZ".sprintf("%03d", $i); ?><br />
 	   			<strong>ze dne:</strong> <?php echo $row['date']; ?><br />
 	  		</td>
 	 	</tr>
