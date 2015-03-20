@@ -231,7 +231,7 @@ class ExportModel extends NixModel
 
 		// summary header
 		$hkvs_header = "Junák - český skaut, Kapitanát vodních skautů, z. s. | ";
-		$hkvs_header .= "Senovážné náměstí 977/24, Praha 1, 116 47 | ";
+		$hkvs_header .= "Senovážné náměstí 977/24, Praha 1, 110 00 | ";
 		$hkvs_header .= "IČ: 65991753, ČÚ: 2300183549/2010";
 
 		$this->Pdf = $this->createPdf();

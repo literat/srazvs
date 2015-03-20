@@ -12,7 +12,7 @@
             </td>
             <td width="450">
                 <b>Junák - český skaut, Kapitanát vodních skautů, z. s.</b><br />
-                &nbsp;&nbsp;Senovážné náměstí 977/24, Praha 1, 116 47 <br />
+                &nbsp;&nbsp;Senovážné náměstí 977/24, Praha 1, 110 00 <br />
                 &nbsp;&nbsp;IČ: 65991753, číslo účtu: 2300183549/2010, Fio banka a.s.<br />
                 &nbsp;&nbsp;http://vodni.skauting.cz/ | mustek@hkvs.cz | +420 777 222 141  <br />
             </td>
