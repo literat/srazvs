@@ -12,3 +12,4 @@ _compareTemp
 *.svn
 composer.*
 inc/config.inc.php
+.phpintel
