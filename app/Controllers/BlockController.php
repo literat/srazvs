@@ -288,7 +288,7 @@ class BlockController extends BaseController
 
 	/**
 	 * Prepare data for annotation
-	 * 
+	 *
 	 * @param  int $id of item
 	 * @return void
 	 */
@@ -299,15 +299,15 @@ class BlockController extends BaseController
 		$this->heading = "úprava bloku";
 		$this->todo = "modify";
 
-		$mid = (($formkey - 39147) / 116)%10;
-		$id = floor((($formkey - 39147) / 116) / 10);
+		$mid = (($formkey - 39147) / 116)%100;
+		$id = floor((($formkey - 39147) / 116) / 100);
 
 		$this->Meeting->setRegistrationHandlers();
 
 		$this->blockId = $id;
 
 		$dbData = mysql_fetch_assoc($this->Block->getData($id));
-		
+
 		foreach($this->Block->formNames as $key) {
 			$this->data[$key] = requested($key, $dbData[$key]);
 		}

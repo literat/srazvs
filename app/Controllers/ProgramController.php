@@ -318,7 +318,7 @@ class ProgramController extends BaseController
 
 	/**
 	 * Prepare data for annotation
-	 * 
+	 *
 	 * @param  int $id of item
 	 * @return void
 	 */
@@ -329,14 +329,14 @@ class ProgramController extends BaseController
 		$this->heading = "úprava programu";
 		$this->todo = "modify";
 
-		$mid = (($formkey - 39147) / 116)%10;
-		$id = floor((($formkey - 39147) / 116) / 10);
+		$mid = (($formkey - 39147) / 116)%100;
+		$id = floor((($formkey - 39147) / 116) / 100);
 
 		$this->Meeting->setRegistrationHandlers();
 		$this->programId = $id;
-		
+
 		$dbData = mysql_fetch_assoc($this->Program->getData($id));
-		
+
 		foreach($this->Program->formNames as $key) {
 			$this->data[$key] = requested($key, $dbData[$key]);
 		}
