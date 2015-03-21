@@ -60,11 +60,11 @@ define('CACHE_DIR',		TEMP_DIR.'cache/');
 
 /* Application */
 define('APP_DIR',		ROOT_DIR.'app/');
-define('MODEL_DIR',		APP_DIR.'Models/');
-define('VIEW_DIR',		APP_DIR.'Views/');
-define('CONTROLLER_DIR',APP_DIR.'Controllers/');
-define('TEMPLATE_DIR',	APP_DIR.'Templates/');
-define('TPL_DIR',		APP_DIR.'Templates/');
+define('MODEL_DIR',		APP_DIR.'models/');
+define('VIEW_DIR',		APP_DIR.'views/');
+define('CONTROLLER_DIR',APP_DIR.'controllers/');
+define('TEMPLATE_DIR',	APP_DIR.'templates/');
+define('TPL_DIR',		APP_DIR.'templates/');
 
 /* URLs */
 define('BLOCK_DIR',		PRJ_DIR.'block');
