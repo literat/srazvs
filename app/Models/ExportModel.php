@@ -186,7 +186,63 @@ class ExportModel extends NixModel
 			$this->Pdf->Output($output_filename, "D");
 		}
 	}
-	
+
+	/**
+	 * Print name list into PDF file
+	 *
+	 * @param	string	file type
+	 * @return	file	PDF file
+	 */
+	public function printNameList($file_type = "pdf")
+	{
+		// output file name
+		$output_filename = "name_list.".$file_type;
+
+		$query = "SELECT	vis.id AS id,
+						name,
+						surname,
+						nick,
+						DATE_FORMAT(birthday, '%d. %m. %Y') AS birthday,
+						street,
+						city,
+						postal_code,
+						group_num,
+						group_name,
+						place,
+						DATE_FORMAT(start_date, '%Y') AS year
+				FROM kk_visitors AS vis
+				LEFT JOIN kk_meetings AS meets ON meets.id = vis.meeting
+				WHERE meeting='".$this->meetingId."' AND vis.deleted='0'
+				ORDER BY surname ASC
+				";
+		$result = mysql_query($query);
+
+		// load and prepare template
+		$this->View->loadTemplate('exports/name_list');
+		$this->View->assign('result', $result);
+		$template = $this->View->render(false);
+
+		// prepare header
+		$header_data = mysql_fetch_assoc($result);
+		$namelist_header = $header_data['place']." ".$header_data['year'];
+
+		$this->Pdf = $this->createPdf();
+
+		// set header
+		$this->Pdf->SetHeader($namelist_header.'|sraz VS|Jméno, Příjmení, Přezdívka');
+		// write html
+		$this->Pdf->WriteHTML($template, 0);
+
+		/* debugging */
+		if(defined('DEBUG') && DEBUG === true){
+			echo $template;
+			exit('DEBUG_MODE');
+		} else {
+			// download
+			$this->Pdf->Output($output_filename, "D");
+		}
+	}
+
 	/**
 	 * Print Evidence into PDF file
 	 *

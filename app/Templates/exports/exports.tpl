@@ -42,6 +42,11 @@
 				prezenční listina
 			</a>
 
+			<a style='text-decoration:none; display:block; margin-bottom:4px;' href='?name-list'>
+				<img style='border:none;' align='absbottom' src='<?php echo IMG_DIR; ?>icons/pdf.png' />
+				jmenný seznam
+			</a>
+
 			<a style='text-decoration:none; display:block; margin-bottom:4px;' href='?meal-ticket'>
 				<img style='border:none;' align='absbottom' src='<?php echo IMG_DIR; ?>icons/pdf.png' />
 				stravenky

@@ -70,6 +70,9 @@ class ExportController extends BaseController
 			case 'program-public':
 				$ExportHandler->printPublicProgram();
 				break;
+			case 'name-list':
+				$ExportHandler->printNameList();
+				break;
 		}
 
 		/* HTTP Header */
