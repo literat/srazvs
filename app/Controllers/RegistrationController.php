@@ -16,7 +16,7 @@ class RegistrationController extends BaseController
 	 * @var string
 	 */
 	protected $template = 'form';
-	
+
 	/**
 	 * Object farm container
 	 * @var Container
@@ -110,7 +110,7 @@ class RegistrationController extends BaseController
 
 	/**
 	 * This is the default function that will be called by Router.php
-	 * 
+	 *
 	 * @param array $getVars the GET variables posted to index.php
 	 */
 	public function init(array $getVars)
@@ -135,7 +135,7 @@ class RegistrationController extends BaseController
 			$query_id = rtrim($query_id, ',');
 		}
 		else {
-			$query_id = $id;	
+			$query_id = $id;
 		}
 
 		if(isset($getVars['hash'])) {
@@ -181,7 +181,7 @@ class RegistrationController extends BaseController
 
 	/**
 	 * Prepare page for new item
-	 * 
+	 *
 	 * @return void
 	 */
 	private function __new()
@@ -190,24 +190,24 @@ class RegistrationController extends BaseController
 
 		$this->heading = "nový program";
 		$this->todo = "create";
-		
+
 		// requested for meals
 		foreach($this->Meal->dbColumns as $var_name) {
 			$$var_name = requested($var_name, "ne");
 			$this->mealData[$var_name] = $$var_name;
 		}
-	
+
 		// requested for visitors fields
 		foreach($this->Visitor->dbColumns as $key) {
 			if($key == 'bill') $value = 0;
 			else $value = "";
-			$this->data[$key] = requested($key, $value);	
+			$this->data[$key] = requested($key, $value);
 		}
 	}
 
 	/**
 	 * Process data from form
-	 * 
+	 *
 	 * @return void
 	 */
 	private function create()
@@ -231,7 +231,7 @@ class RegistrationController extends BaseController
 					$$key = cleardate2DB(requested($key, 0), "Y-m-d");
 				}
 				else $$key = requested($key, null);
-				$db_data[$key] = $$key;	
+				$db_data[$key] = $$key;
 		}
 
 		// i must add visitor's ID because it is empty
@@ -250,12 +250,12 @@ class RegistrationController extends BaseController
 
 				// zaheshovane udaje, aby se nedali jen tak ziskat data z databaze
 				$code4bank = substr($db_data['name'], 0, 1).substr($db_data['surname'], 0, 1).substr($db_data['birthday'], 2, 2);
-				//$hash = ((int)$vid.$this->meetingId) * 147 + 49873;	
+				//$hash = ((int)$vid.$this->meetingId) * 147 + 49873;
 				$hash = $db_data['hash'];
 
 				$recipient_mail = $db_data['email'];
 				$recipient_name = $db_data['name']." ".$db_data['surname'];
-				
+
 				$return = $this->Emailer->sendRegistrationSummary($recipient_mail, $recipient_name, $hash, $code4bank);
 
 				if($return === TRUE) {
@@ -279,7 +279,7 @@ class RegistrationController extends BaseController
 
 	/**
 	 * Process data from editing
-	 * 
+	 *
 	 * @param  int 	$id 	of item
 	 * @return void
 	 */
@@ -303,7 +303,7 @@ class RegistrationController extends BaseController
 					$$key = cleardate2DB(requested($key, 0), "Y-m-d");
 				}
 				else $$key = requested($key, null);
-				$db_data[$key] = $$key;	
+				$db_data[$key] = $$key;
 		}
 
 		// i must add visitor's ID because it is empty
@@ -317,17 +317,17 @@ class RegistrationController extends BaseController
 		// i must add visitor's ID because it is empty
 		$meals_data['visitor'] = $id;
 
-		if($vid = $this->Visitor->modify($id, $db_data, $meals_data, $programs_data)){	
+		if($vid = $this->Visitor->modify($id, $db_data, $meals_data, $programs_data)){
 			######################## ODESILAM EMAIL ##########################
 
 			// zaheshovane udaje, aby se nedali jen tak ziskat data z databaze
 			$code4bank = substr($db_data['name'], 0, 1).substr($db_data['surname'], 0, 1).substr($db_data['birthday'], 2, 2);
 			//$hash = ((int)$vid.$this->meetingId) * 147 + 49873;
 			$hash = $db_data['hash'];
-							
+
 			$recipient_mail = $db_data['email'];
 			$recipient_name = $db_data['name']." ".$db_data['surname'];
-			
+
 			$return = $this->Emailer->sendRegistrationSummary($recipient_mail, $recipient_name, $hash, $code4bank);
 
 			if($return === TRUE) {
@@ -348,7 +348,7 @@ class RegistrationController extends BaseController
 
 	/**
 	 * Prepare data for editing
-	 * 
+	 *
 	 * @param  int $id of item
 	 * @return void
 	 */
@@ -360,7 +360,7 @@ class RegistrationController extends BaseController
 		$this->todo = "modify";
 
 		$this->itemId = $id;
-		
+
 		$dbData = mysql_fetch_assoc($this->Visitor->getData($id));
 		foreach($this->Visitor->dbColumns as $key) {
 			$this->data[$key] = requested($key, $dbData[$key]);
@@ -369,7 +369,7 @@ class RegistrationController extends BaseController
 		$query = "SELECT	*
 					FROM kk_meals
 					WHERE visitor='".$this->itemId."'
-					LIMIT 1"; 
+					LIMIT 1";
 
 		$DB_data = mysql_fetch_assoc(mysql_query($query));
 
@@ -381,7 +381,7 @@ class RegistrationController extends BaseController
 
 	/**
 	 * Prepare data for check
-	 * 
+	 *
 	 * @param  int $id of item
 	 * @return void
 	 */
@@ -393,7 +393,7 @@ class RegistrationController extends BaseController
 		$this->todo = NULL;
 
 		$this->itemId = $id;
-		
+
 		$dbData = mysql_fetch_assoc($this->Visitor->getData($id));
 		foreach($this->Visitor->dbColumns as $key) {
 			$this->data[$key] = requested($key, $dbData[$key]);
@@ -402,7 +402,7 @@ class RegistrationController extends BaseController
 		$query = "SELECT	*
 					FROM kk_meals
 					WHERE visitor='".$this->itemId."'
-					LIMIT 1"; 
+					LIMIT 1";
 
 		$DB_data = mysql_fetch_assoc(mysql_query($query));
 
@@ -414,7 +414,7 @@ class RegistrationController extends BaseController
 
 	/**
 	 * Render all page
-	 * 
+	 *
 	 * @return void
 	 */
 	public function render()
@@ -443,7 +443,7 @@ class RegistrationController extends BaseController
 				$province_select = $this->Meeting->renderHtmlProvinceSelect($this->data['province']);
 				$program_switcher = $this->Visitor->renderProgramSwitcher($this->meetingId, $this->itemId);
 			}
-			
+
 		}
 
 		/* Application Header */
@@ -457,7 +457,7 @@ class RegistrationController extends BaseController
 		$this->View->assign('heading',	$this->heading);
 		$this->View->assign('todo',		$this->todo);
 		$this->View->assign('error',	printError($this->error));
-		
+
 		$this->View->assign('cms',		$this->cms);
 		$this->View->assign('render',	$this->Visitor->getData());
 		$this->View->assign('mid',		$this->meetingId);

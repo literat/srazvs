@@ -9,53 +9,53 @@ use Nix\Utils\Tools;
  *
  * @created 2012-11-07
  * @author Tomas Litera <tomaslitera@hotmail.com>
- */ 
+ */
 class VisitorModel /* extends Component */
 {
 	/** @var int meeting ID */
 	private $meeting_ID;
-	
+
 	/** @var string	search pattern */
 	public $search;
-	
+
 	/** @var Emailer Emailer class */
 	private $Emailer;
-	
+
 	/** @var Meeting Meeting class */
 	public $Meeting;
-	
+
 	/** @var Meal Meals class */
 	public $Meals;
-	
+
 	/** @var Program Programs class */
 	public $Programs;
-	
+
 	/** @var Blocks Blocks class */
 	public $Blocks;
-	
+
 	/** @var int meeting price */
 	public $meeting_price;
-	
+
 	/** @var int meeting advance */
 	private $meeting_advance;
 
 	/** @var array configuration */
 	public $configuration;
-	
+
 	/**
 	 * Array of database programs table columns
 	 *
 	 * @var array	dbColumns[]
 	 */
 	public $dbColumns = array();
-	
+
 	/**
 	 * Array of form names
 	 *
 	 * @var array	formNames[]
 	 */
 	public $formNames = array();
-	
+
 	/** konstruktor */
 	public function __construct($meeting_ID, Emailer $Emailer, MeetingModel $Meeting, MealModel $Meals, ProgramModel $Program, BlockModel $Blocks, $configuration)
 	{
@@ -102,7 +102,7 @@ class VisitorModel /* extends Component */
 	public function create(array $DB_data, $meals_data, $programs_data)
 	{
 		$return = true;
-		
+
 		$query_key_set = "";
 		$query_value_set = "";
 
@@ -111,7 +111,7 @@ class VisitorModel /* extends Component */
 			$query_value_set .= "'".$value."',";
 		}
 		$query_key_set = substr($query_key_set, 0, -1);
-		$query_value_set = substr($query_value_set, 0, -1);	
+		$query_value_set = substr($query_value_set, 0, -1);
 
     	$query = "INSERT INTO `kk_visitors` 
      				 (".$query_key_set.", `code`,`reg_daytime`) 
@@ -120,11 +120,11 @@ class VisitorModel /* extends Component */
 		$ID_visitor = mysql_insert_id();
 		// visitor's id is empty and i must add one
 		$meals_data['visitor'] = $ID_visitor;
-		
+
 		if($result){
 			// gets data from database
 			$program_blocks = $this->Blocks->getProgramBlocks($DB_data['meeting']);
-			
+
 			while($DB_blocks_data = mysql_fetch_assoc($program_blocks['result'])){
 				// insert into binding table
 				// var programs_data contains requested values in format block-id => program-id
@@ -137,7 +137,7 @@ class VisitorModel /* extends Component */
 					break;
 				}
 			}
-						
+
 			if($return) {
 				// create meals for visitor
 				if(!$return = $this->Meals->create($meals_data)){
@@ -151,7 +151,7 @@ class VisitorModel /* extends Component */
 		//return $return;
 		return $ID_visitor;
 	}
-	
+
 	/**
 	 * Modify a visitor
 	 *
@@ -159,7 +159,7 @@ class VisitorModel /* extends Component */
 	 * @param	array	$db_data		Visitor's database data
 	 * @param	array	$meals_data		Data of meals
 	 * @param	array	$programs_data	Program's data
-	 * @return	mixed					TRUE or array of errors 
+	 * @return	mixed					TRUE or array of errors
 	 */
 	public function modify($ID_visitor, $DB_data, $meals_data, $programs_data)
 	{
@@ -168,18 +168,18 @@ class VisitorModel /* extends Component */
 		// preparation for query
 	 	$query_set = "";
 	 	foreach($DB_data as $key => $value) {
-			$query_set .= "`".$key."` = '".$value."',";	
+			$query_set .= "`".$key."` = '".$value."',";
 		}
 		$query_set .= "`code` = CONCAT(LEFT('".$DB_data['name']."',1),LEFT('".$DB_data['surname']."',1),SUBSTRING('".$DB_data['birthday']."',3,2))";
 		//$query_set = substr($query_set, 0, -1);
-		
+
 		// updating visitor data
     	$query = "UPDATE `kk_visitors` 
 					SET ".$query_set."
 					WHERE `id`='".$ID_visitor."' LIMIT 1";
     	$result = mysql_query($query);
 		$error['visitor'] = $result;
-		
+
 		if($result){
 			// change meals
 			$result = $this->Meals->modify($ID_visitor, $meals_data);
@@ -201,7 +201,7 @@ class VisitorModel /* extends Component */
 				}
 			}
 		}
-		
+
 		// return array of errors if error exists
 		if(array_search(FALSE, $error)){
 			return $result;
@@ -209,21 +209,21 @@ class VisitorModel /* extends Component */
 			return $ID_visitor;
 		}
 	}
-	
+
 	/**
 	 * Delete one or multiple record/s
 	 *
 	 * @param	int		ID/s of record
-	 * @return	boolean 
+	 * @return	boolean
 	 */
 	public function delete($id)
 	{
     	$query = "UPDATE ".$this->dbTable." SET deleted = '1' WHERE id IN (".$id.")";
 	    $result = mysql_query($query);
-		
+
 		return $result;
 	}
-	
+
 	/**
 	 * Get count of visitors
 	 *
@@ -237,10 +237,10 @@ class VisitorModel /* extends Component */
 					WHERE meeting='".$this->meeting_ID."' AND deleted='0'";
 		$result = mysql_query($query);
 		$data = mysql_fetch_assoc($result);
-		
+
 		return $data['visitors_count'];
 	}
-	
+
 	/**
 	 * Set search variable
 	 *
@@ -256,7 +256,7 @@ class VisitorModel /* extends Component */
 	 *
 	 * @param	string	what we want to find
 	 * @return	string	search query for database
-	 */	
+	 */
 	public function getSearch($search)
 	{
 		if($search != ""){
@@ -268,10 +268,10 @@ class VisitorModel /* extends Component */
 							OR `city` REGEXP '".$search."' 
 							OR `group_name` REGEXP '".$search."')";
 		} else $search_query = "";
-		
+
 		return $search_query;
 	}
-	
+
 	/**
 	 * Modify the visitor's bill
 	 *
@@ -290,7 +290,7 @@ class VisitorModel /* extends Component */
 					SET bill = '".$this->Meeting->getPrice($type)."'
 					WHERE id IN (".$query_id.")";
 			$payResult = mysql_query($paySql);
-		
+
 			if($return = $this->Emailer->sendPaymentInfo($query_id, $type)) {
 				return true;
 			} else {
@@ -306,17 +306,17 @@ class VisitorModel /* extends Component */
 	 *
 	 * @param	int		ID of visitor
 	 * @return	mixed	result
-	 */	
+	 */
 	public function getVisitorPrograms($ID_visitor)
 	{
 		$query = "SELECT id, program
 					FROM `kk_visitor-program`
 					WHERE `visitor` = ".$ID_visitor."";
 		$result = mysql_query($query);
-		
+
 		return $result;
 	}
-	
+
 	/**
 	 * Render program switcher for unique visitor
 	 *
@@ -327,14 +327,14 @@ class VisitorModel /* extends Component */
 	public function renderProgramSwitcher($ID_meeting, $ID_visitor)
 	{
 		$html = "";
-		
+
 		// gets data from database
 		$program_blocks = $this->Blocks->getProgramBlocks($ID_meeting);
-		
+
 		// table is empty
 		if($program_blocks['rows'] == 0){
 			$html .= "<div class='emptyTable' style='width:400px;'>Nejsou žádná aktuální data.</div>\n";
-		} else {	
+		} else {
 			while($DB_data = mysql_fetch_assoc($program_blocks['result'])){
 				$html .= "<div class='".Tools::toCoolUrl($DB_data['day'])."'>".$DB_data['day'].", ".$DB_data['from']." - ".$DB_data['to']." : ".$DB_data['name']."</div>\n";
 				// rendering programs in block
@@ -344,10 +344,10 @@ class VisitorModel /* extends Component */
 				$html .= "<br />";
 			}
 		}
-		
+
 		return $html;
 	}
-	
+
 	/**
 	 * Render data in a table
 	 *
@@ -365,7 +365,7 @@ class VisitorModel /* extends Component */
 								code,
 								name,
 								surname,
-								nick, 
+								nick,
 								email,
 								group_name,
 								group_num,
@@ -380,10 +380,10 @@ class VisitorModel /* extends Component */
 						WHERE meeting='".$this->meeting_ID."' AND deleted='0' ".$this->getSearch($this->search)."
 						ORDER BY vis.id ASC";
 		}
-				
+
 		$result = mysql_query($query);
 		$rows = mysql_affected_rows();
-		
+
 		if($rows == 0) {
 			return 0;
 		} else {
