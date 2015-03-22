@@ -504,6 +504,12 @@ img.ui-datepicker-trigger {
     width: 20px;
 }
 
+div.programs.patek.ubytovani-z-duvodu-omezene-kapacity-je-treba-si-vybrat-ubytovani-na-celou-dobu-srazu {
+	background-color: #F2DEDE;
+	border: 1px solid #EBCCD1;
+	color: #A94442;
+}
+
 /*---------------------------------------------------------------------------------------------------------
 		8) Help
 ---------------------------------------------------------------------------------------------------------*/

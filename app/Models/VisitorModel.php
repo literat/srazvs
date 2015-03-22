@@ -1,4 +1,7 @@
 <?php
+
+use Nix\Utils\Tools;
+
 /**
  * Visitor
  *
@@ -333,10 +336,10 @@ class VisitorModel /* extends Component */
 			$html .= "<div class='emptyTable' style='width:400px;'>Nejsou žádná aktuální data.</div>\n";
 		} else {	
 			while($DB_data = mysql_fetch_assoc($program_blocks['result'])){
-				$html .= "<div>".$DB_data['day'].", ".$DB_data['from']." - ".$DB_data['to']." : ".$DB_data['name']."</div>\n";
+				$html .= "<div class='".Tools::toCoolUrl($DB_data['day'])."'>".$DB_data['day'].", ".$DB_data['from']." - ".$DB_data['to']." : ".$DB_data['name']."</div>\n";
 				// rendering programs in block
 				if($DB_data['program'] == 1){
-					$html .= "<div>".$this->Programs->getPrograms($DB_data['id'], $ID_visitor)."</div>";
+					$html .= "<div class='programs ".Tools::toCoolUrl($DB_data['day'])." ".Tools::toCoolUrl($DB_data['name'])."'>".$this->Programs->getPrograms($DB_data['id'], $ID_visitor)."</div>";
 				}
 				$html .= "<br />";
 			}
