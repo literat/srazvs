@@ -92,6 +92,7 @@ class ExportModel extends NixModel
 				arrival,
 				departure,
 				question,
+				question2,
 				fry_dinner,
 				sat_breakfast,
 				sat_lunch,
@@ -341,6 +342,7 @@ class ExportModel extends NixModel
 						arrival,
 						departure,
 						question,
+						question2,
 						fry_dinner,
 						sat_breakfast,
 						sat_lunch,
@@ -957,6 +959,7 @@ class ExportModel extends NixModel
 			arrival,
 			departure,
 			question,
+			question2,
 			`all`,
 			fry_dinner,
 			sat_breakfast,
@@ -996,6 +999,7 @@ class ExportModel extends NixModel
 			$list->setCellValue('Q'.$i, $data['arrival']);
 			$list->setCellValue('R'.$i, $data['departure']);
 			$list->setCellValue('S'.$i, $data['question']);
+			$list->setCellValue('S'.$i, $data['question2']);
 			$list->setCellValue('T'.$i, $data['all']);
 			$list->setCellValue('U'.$i, $data['fry_dinner']);
 			$list->setCellValue('V'.$i, $data['sat_breakfast']);

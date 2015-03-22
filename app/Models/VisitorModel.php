@@ -86,6 +86,7 @@ class VisitorModel /* extends Component */
 								"arrival",
 								"departure",
 								"question",
+								"question2",
 								"meeting",
 								"hash"
 							);

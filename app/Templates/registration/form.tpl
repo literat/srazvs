@@ -231,6 +231,14 @@ $(function() {
 			<td class='label'><label>Vaše nabídka:</label></td>
 			<td><textarea <?php echo $data['disabled']; ?> name='question' cols="50" rows="8" ><?php echo $data['question']; ?></textarea></td>
 		</tr>
+		<tr>
+			<td style="font-weight:bold;" colspan="2">Počet a typy lodí, které sebou přivezete (pokud je hodláte dovézt)
+			</td>
+		</tr>
+		<tr>
+			<td class='label'><label>Počet a typy lodí:</label></td>
+			<td><textarea <?php echo $data['disabled']; ?> name='question2' cols="50" rows="8" ><?php echo $data['question2']; ?></textarea></td>
+		</tr>
 	</table>
 
 	<input <?php echo $data['disabled']; ?> type='hidden' name='cms' value='<?php echo (isset($_GET['hash']) ? 'modify' : 'create'); ?>' />

@@ -105,6 +105,10 @@
 			<td><textarea name='question' cols="50" rows="8" ><?php echo $data['question']; ?></textarea></td>
 		</tr>
 		<tr>
+			<td class='label'><label>Počet a typy lodí:</label></td>
+			<td><textarea name='question2' cols="50" rows="8" ><?php echo $data['question2']; ?></textarea></td>
+		</tr>
+		<tr>
 			<td class='label'><label>Zaplaceno:</label></td>
 			<td><input type='text' name='bill' size='15' value='<?php echo $data['bill']; ?>' /> ,- Kč <?php echo $data['error_bill']; ?></td>
 		</tr>

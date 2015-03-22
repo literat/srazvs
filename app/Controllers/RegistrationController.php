@@ -494,6 +494,7 @@ class RegistrationController extends BaseController
 			$this->View->assign('departure',		$this->data['departure']);
 			$this->View->assign('comment',			$this->data['comment']);
 			$this->View->assign('question',			$this->data['question']);
+			$this->View->assign('question2',			$this->data['question2']);
 			$this->View->assign('bill',				$this->data['bill']);
 			$this->View->assign('cost',				$this->Meeting->getPrice('cost'));
 			$this->View->assign('programs',			$program_switcher);

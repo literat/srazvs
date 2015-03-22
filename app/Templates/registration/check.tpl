@@ -102,11 +102,16 @@
 		<td><?php echo $data['comment']; ?></td>
 	</tr>
 	<tr>
-		<td class='label'>Vaše otázka:</td>
+		<td class='label'>Sdílení zkušeností:</td>
 		<td><?php echo $data['question']; ?></td>
 	</tr>
+	<tr>
+		<td class='label'>Počet a typy lodí:</td>
+		<td><?php echo $data['question2']; ?></td>
+	</tr>
+
 </table>
- 
+
 <?php echo $data['programs']; ?>
 
 <p><h3>Děkujeme za přihlášení na sraz VS.</h3></p>
@@ -132,6 +137,6 @@
 			<p></p>
 			<p style="text-align: center;"> </p>    </div>
 		</div>
-		<div class="cleaner"></div>  
+		<div class="cleaner"></div>
 	</div>
 </div>
