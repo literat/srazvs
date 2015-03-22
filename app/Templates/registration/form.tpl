@@ -1,5 +1,3 @@
-
-
 <?php $page_title = "Registrace srazu VS"; ?>
 
 	<!-- content -->
@@ -225,14 +223,14 @@ $(function() {
 			<td class='label'><label>Dotazy, přání, připomínky, stížnosti:</label></td>
 			<td><textarea <?php echo $data['disabled']; ?> name='comment' cols="50" rows="8" ><?php echo $data['comment']; ?></textarea></td>
 		</tr>
-	<!-- <tr>
-			<td style="font-weight:bold;" colspan="2">Máte nezodpovězené otázky ohledně Junáka a celé organizace nebo HKVS? Nerozumíte něčemu? Trápí vás to? Nevyznáte se v něčem? Potřebujete poradit? Zde napiště svoji otázku a my vám na ní odpovíme! Odpovědi najdete na jarním srazu nebo později na webu HKVS.
+		<tr>
+			<td style="font-weight:bold;" colspan="2">Vaše nabídka na sdílení dobré praxe (co u vás umíte dobře a jste ochotni se o to podělit)
 			</td>
 		</tr>
 		<tr>
-			<td class='label'><label>Vaše otázka:</label></td>
+			<td class='label'><label>Vaše nabídka:</label></td>
 			<td><textarea <?php echo $data['disabled']; ?> name='question' cols="50" rows="8" ><?php echo $data['question']; ?></textarea></td>
-		</tr>-->
+		</tr>
 	</table>
 
 	<input <?php echo $data['disabled']; ?> type='hidden' name='cms' value='<?php echo (isset($_GET['hash']) ? 'modify' : 'create'); ?>' />
@@ -240,9 +238,9 @@ $(function() {
 	<input <?php echo $data['disabled']; ?> type='hidden' name='id' value='<?php echo $data['id'];  ?>' />
 	<input <?php echo $data['disabled']; ?> type="hidden" name="bill" value="0" />
 	<input <?php echo $data['disabled']; ?> type="hidden" name="cost" value='<?php echo $data['cost']; ?>' />
-	 
+
 	<?php echo $data['programs']; ?>
-	 
+
 	<div class='button-line'>
 		<button <?php echo $data['disabled']; ?> type='submit'>
 			<img src='<?php echo IMG_DIR; ?>icons/save.png' /> Uložit</button>
