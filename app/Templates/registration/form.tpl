@@ -232,7 +232,7 @@ $(function() {
 			<td><textarea <?php echo $data['disabled']; ?> name='question' cols="50" rows="8" ><?php echo $data['question']; ?></textarea></td>
 		</tr>
 		<tr>
-			<td style="font-weight:bold;" colspan="2">Počet a typy lodí, které sebou přivezete (pokud je hodláte dovézt)
+			<td style="font-weight:bold;" colspan="2">Počet a typy lodí, které sebou přivezete (vyplňte pokud ano)
 			</td>
 		</tr>
 		<tr>
@@ -255,6 +255,8 @@ $(function() {
 		<button type='button' onClick="window.location.replace('<?php echo HTTP_DIR ?>sraz-kk-setkani-cinovniku.p77.html')">
 			<img src='<?php echo IMG_DIR; ?>icons/storno.png'  /> Storno</button>
 	</div>
+
+
 
 </form>
 
