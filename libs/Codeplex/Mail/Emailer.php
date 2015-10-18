@@ -39,7 +39,9 @@ class Emailer
 	 * @return	mixed	true or error information
 	 */
 	public function sendMail($recipient_mail, $recipient_name, $subject, $message, $bcc_mail = NULL)
-	{	
+	{
+		$this->Emailer->clearAddresses();
+		$this->Emailer->clearAllRecipients();
 		// add recipient address and name
 		$this->Emailer->AddAddress($recipient_mail, $recipient_name);
 		// add bcc
@@ -56,10 +58,8 @@ class Emailer
 		$this->Emailer->WordWrap = 50;
 		// sending e-mail or error status
 		if(!$this->Emailer->Send()) {
-			$this->Emailer->clearAllRecipients();
 			return $this->Emailer->ErrorInfo;
 		} else {
-			$this->Emailer->clearAllRecipients();
 			return true;
 		}
 	}
@@ -69,7 +69,7 @@ class Emailer
 	 *
 	 * @param	string	type of template
 	 * @return	array	subject and message
-	 */	
+	 */
 	public function getTemplates($type)
 	{
 		$query = "SELECT * FROM kk_settings WHERE name = 'mail_".$type."'";
@@ -107,7 +107,7 @@ class Emailer
 		if($data['email'] == ""){
 			redirect("process.php?id=".$contentId."&error=email&cms=edit");
 			die();
-		}	
+		}
 	
 		// zaheshovane udaje, aby se nedali jen tak ziskat data z databaze
 		$hash = ((int)$contentId.$meetingId) * 116 + 39147;	
@@ -173,7 +173,7 @@ class Emailer
 			}
 			$query_id = rtrim($query_id, ',');
 		} else {
-			$query_id = $id;	
+			$query_id = $id;
 		}
 		
 		$sql = "SELECT	* FROM kk_visitors AS vis
@@ -185,12 +185,14 @@ class Emailer
 			$recipient_mail = $data['email']; // note the comma
 			$recipient_name = $data['name']." ".$data['surname'];
 		
-			// send it		
+			// send it
 			if(!$this->sendMail($recipient_mail, $recipient_name, $subject, $message)) {
 				$return = $EmailHandler->ErrorInfo;
 			} else {
 				$return = true;
 			}
+
+			var_dump($this->getToAdresses());
 		}
 		
 		return $return;
@@ -202,7 +204,7 @@ class Emailer
 	 * @param	mixed	id numbers in row
 	 * @param	string	type of template
 	 * @return	array	subject and message
-	 */		
+	 */
 	public function sendPaymentInfo($query_id, $type)
 	{
 		// e-mail templates
