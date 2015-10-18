@@ -56,8 +56,10 @@ class Emailer
 		$this->Emailer->WordWrap = 50;
 		// sending e-mail or error status
 		if(!$this->Emailer->Send()) {
+			$this->Emailer->clearAllRecipients();
 			return $this->Emailer->ErrorInfo;
 		} else {
+			$this->Emailer->clearAllRecipients();
 			return true;
 		}
 	}
