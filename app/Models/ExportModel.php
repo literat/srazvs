@@ -213,7 +213,7 @@ class ExportModel extends NixModel
 				FROM kk_visitors AS vis
 				LEFT JOIN kk_meetings AS meets ON meets.id = vis.meeting
 				WHERE meeting='".$this->meetingId."' AND vis.deleted='0'
-				ORDER BY surname ASC
+				ORDER BY nick ASC
 				";
 		$result = mysql_query($query);
 
