@@ -414,6 +414,7 @@ class ExportModel extends NixModel
 				LEFT JOIN kk_provinces AS provs ON vis.province = provs.id
 				LEFT JOIN kk_meetings AS meets ON meets.id = vis.meeting
 				WHERE meeting='".$this->meetingId."' AND vis.deleted='0'
+				ORDER BY nick ASC
 				";
 		$result = mysql_query($sql);
 		//$data = mysql_fetch_assoc($result);
