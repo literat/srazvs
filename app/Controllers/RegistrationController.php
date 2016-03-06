@@ -249,7 +249,7 @@ class RegistrationController extends BaseController
 			// create
 			if($vid = $this->Visitor->create($db_data, $meals_data, $programs_data)) {
 				######################## ODESILAM EMAIL ##########################
-				Debugger::log('Info: Creating Visitor ' . $vid);
+				Debugger::log('Creating Visitor ' . $vid, 'info');
 				// zaheshovane udaje, aby se nedali jen tak ziskat data z databaze
 				$code4bank = substr($db_data['name'], 0, 1).substr($db_data['surname'], 0, 1).substr($db_data['birthday'], 2, 2);
 				//$hash = ((int)$vid.$this->meetingId) * 147 + 49873;
@@ -261,20 +261,20 @@ class RegistrationController extends BaseController
 				$return = $this->Emailer->sendRegistrationSummary($recipient_mail, $recipient_name, $hash, $code4bank);
 
 				if($return === TRUE) {
-					Debugger::log('Info: Mail send to ' . $recipient_mail);
+					Debugger::log('Mail send to ' . $recipient_mail, 'info');
 					if(is_int($vid)) {
 						$vid = "ok";
 					}
 					redirect("?hash=".$hash."&error=".$vid."&cms=check");
 				} else {
-					Debugger::log('Error: Mail not send to ' . $recipient_mail);
+					Debugger::log('Mail not send to ' . $recipient_mail, 'error');
 					redirect("?hash=".$hash."&error=email&cms=check");
 					//echo 'Došlo k chybě při odeslání e-mailu.';
 					//echo 'Chybová hláška: ' . $return;
 				}
 				//redirect("?page=".$this->page."&error=ok");
 			} else {
-				Debugger::log('Error: Visitor not created');
+				Debugger::log('Visitor not created', 'error');
 				redirect("?page=".$this->page."&error=error");
 			}
 		//} else {
@@ -324,7 +324,7 @@ class RegistrationController extends BaseController
 
 		if($vid = $this->Visitor->modify($id, $db_data, $meals_data, $programs_data)){
 			######################## ODESILAM EMAIL ##########################
-			Debugger::log('Info: Visitor ' . $id . ' was modified');
+			Debugger::log('Visitor ' . $id . ' was modified', 'info');
 			// zaheshovane udaje, aby se nedali jen tak ziskat data z databaze
 			$code4bank = substr($db_data['name'], 0, 1).substr($db_data['surname'], 0, 1).substr($db_data['birthday'], 2, 2);
 			//$hash = ((int)$vid.$this->meetingId) * 147 + 49873;
@@ -336,20 +336,20 @@ class RegistrationController extends BaseController
 			$return = $this->Emailer->sendRegistrationSummary($recipient_mail, $recipient_name, $hash, $code4bank);
 
 			if($return === TRUE) {
-				Debugger::log('Info: Mail send to ' . $recipient_mail);
+				Debugger::log('Mail send to ' . $recipient_mail, 'info');
 				if(is_numeric($vid)) {
 					$vid = "ok";
 				}
 				redirect("?hash=".$hash."&error=".$vid."&cms=check");
 			} else {
-				Debugger::log('Error: Mail not send to ' . $recipient_mail);
+				Debugger::log('Mail not send to ' . $recipient_mail, 'error');
 				redirect("?hash=".$hash."&error=email&cms=check");
 				//echo 'Došlo k chybě při odeslání e-mailu.';
 				//echo 'Chybová hláška: ' . $return;
 			}
 			//redirect("?page=".$this->page."&error=ok");
 		} else {
-			Debugger::log('Error: Visitor modification failed!');
+			Debugger::log('Visitor modification failed!', 'error');
 			redirect("?page=".$this->page."&error=error");
 		}
 	}
