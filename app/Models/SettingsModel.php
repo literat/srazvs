@@ -1,4 +1,7 @@
 <?php
+
+use Nette\Utils\Json;
+
 /**
  * Settings
  * 
@@ -24,7 +27,7 @@ class SettingsModel extends Component
 	}
 	
 	/**
-	 * Render a table of categories
+	 * Get all settings
 	 *
 	 * @return	string	html table
 	 */
@@ -50,16 +53,14 @@ class SettingsModel extends Component
 	 */
 	public function modifyMailJSON($type, $subject, $message)
 	{
-		$json_encoded = array('subject' => $subject, 'message' => $message);
-		$json_encoded = json_encode($json_encoded);
-		$json_encoded = mysql_real_escape_string($json_encoded);
-		
-		echo $update_query = "UPDATE kk_settings
-						 SET value = '".$json_encoded."'
-						 WHERE name = 'mail_".$type."'";
-		$update_result = mysql_query($update_query);
-		
-		if($update_query){
+		$mailData = array('subject' => $subject, 'message' => $message);
+
+		$value = array('value' => Json::encode($mailData));
+
+		global $database;
+		$result = $database->table('kk_settings')->where('name', 'mail_' . $type)->update($value);
+
+		if($result){
 			$error = 'E_UPDATE_NOTICE';
 			$error = 'ok';
 		}
@@ -71,10 +72,9 @@ class SettingsModel extends Component
 	}
 
 	public static function getMailJSON($type) {
-		$query = "SELECT * FROM kk_settings WHERE name = 'mail_".$type."'";
-		$result = mysql_query($query);
-		$data = mysql_fetch_assoc($result);
+		global $database;
+		$mailJson = $database->query('SELECT * FROM kk_settings WHERE name = ?', 'mail_' . $type)->fetch();
 
-		return json_decode($data['value']);
+		return json_decode($mailJson->value);
 	}
 }
