@@ -2,25 +2,38 @@
 
 use Codeplex\Routers;
 use Tracy\Debugger;
+use Nette\Database\Connection;
+use Nette\Database\Context;
+use Nette\Caching\Storages\FileStorage;
+use Nette\Database\Structure;
 
 require_once('inc/define.inc.php');
 
 require_once(FRAMEWORK.'loader.php');
 
+/**
+ * Composer Autoloading
+ */
 require_once(__DIR__ . '/vendor/autoload.php');
 
+/**
+ * Enabling Debugger
+ */
 Debugger::enable(Debugger::DETECT, __DIR__ . '/temp/log');
 Debugger::$email = $cfg['mail-admin'];
 
-$sql = "SELECT id
-		FROM kk_meetings
-		ORDER BY id DESC
-		LIMIT 1";
-$result = mysql_query($sql);
-$data = mysql_fetch_assoc($result);
+/**
+ * Connecting to Database
+ */
+$connection = new Connection('mysql:host=' . $cfg['db_host'] . ';dbname=' . $cfg['db_database'], $cfg['db_user'], $cfg['db_passwd']);
+$cacheStorage = new FileStorage(__DIR__ . '/temp/cache');
+$structure   = new Structure($connection, $cacheStorage);
+$database = new Context($connection, $structure);
+
+$actualMeetingId = $database->query('SELECT id FROM kk_meetings ORDER BY id DESC LIMIT 1')->fetchField();
 
 if(!isset($_SESSION['meetingID'])) {
-	$_SESSION['meetingID'] = $data['id'];
+	$_SESSION['meetingID'] = $actualMeetingId;
 }
 
 require_once(FRAMEWORK.'Routers/Router.php');
@@ -29,7 +42,7 @@ $router = new Nix\Routers\Router();
 
 $router->setDefaults(array(
     'controller' => 'meeting',
-    'id' => $data['id']
+    'id' => $actualMeetingId
 ));
 
 /**
