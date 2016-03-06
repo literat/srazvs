@@ -48,7 +48,7 @@ $(function() {
 </script>
 
 <script src='<?php echo JS_DIR; ?>jquery/validation/messages_cs.js' type='text/javascript'></script>
-<script src='<?php echo JS_DIR; ?>jquery/validation/methods_de.js' type='text/javascript'></script> 
+<script src='<?php echo JS_DIR; ?>jquery/validation/methods_de.js' type='text/javascript'></script>
 <script type="text/javascript">
 	$.validator.addMethod("groupnumber", function(value, element) {
 		if(value.match(/^[1-9]{1}[0-9a-zA-Z]{2}\.[0-9a-zA-Z]{1}[0-9a-zA-Z]{1}$/)) return true;
