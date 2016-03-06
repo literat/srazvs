@@ -76,7 +76,7 @@ if(file_exists($target))
 }
 else
 {
-	//can't find the file in 'controllers'! 
+	//can't find the file in 'controllers'!
 	die('page does not exist!');
 }
 
