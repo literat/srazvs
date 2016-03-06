@@ -1,6 +1,7 @@
 <?php
 
 use Nette\Utils\Json;
+use Tracy\Debugger;
 
 /**
  * Settings
@@ -19,11 +20,16 @@ class SettingsModel extends Component
 	 */
 	public $dbColumns = array();
 
+	/**
+	 * Database connection
+	 */
+	private $database;
+
 	/** Constructor */
-	public function __construct()
+	public function __construct($database)
 	{
-		$this->dbColumns = array("name", "bgcolor", "bocolor", "focolor");
 		$this->dbTable = "kk_settings";
+		$this->database = $database;
 	}
 
 	/**
@@ -33,11 +39,9 @@ class SettingsModel extends Component
 	 */
 	public function getData()
 	{
-		$query = "SELECT * FROM kk_settings WHERE deleted = '0' ORDER BY name";
-		$result = mysql_query($query);
-		$rows = mysql_affected_rows();
+		$data = $this->database->table($this->dbTable)->where('deleted', 0)->order('name')->fetchAll();
 
-		if($rows == 0) {
+		if($data->rowCount() == 0) {
 			return 0;
 		} else {
 			return $result;
@@ -57,24 +61,24 @@ class SettingsModel extends Component
 
 		$value = array('value' => Json::encode($mailData));
 
-		global $database;
-		$result = $database->table('kk_settings')->where('name', 'mail_' . $type)->update($value);
+		$result = $this->database->table($this->dbTable)->where('name', 'mail_' . $type)->update($value);
 
-		if($result){
+		if($result) {
+			Debugger::log('Settings: mail type ' . $type . ' successfully modified!', Debugger::INFO);
 			$error = 'E_UPDATE_NOTICE';
 			$error = 'ok';
-		}
-		else {
+		} else {
+			Debugger::log('Settings: mail type ' . $type . ' modification failed!', Debugger::ERROR);
 			$error = 'E_UPDATE_ERROR';
 		}
 
 		return $error;
 	}
 
-	public static function getMailJSON($type) {
-		global $database;
-		$mailJson = $database->query('SELECT * FROM kk_settings WHERE name = ?', 'mail_' . $type)->fetch();
+	public function getMailJSON($type)
+	{
+		$mailJson = $this->database->table($this->dbTable)->where('name', 'mail_' . $type)->fetch();
 
-		return json_decode($mailJson->value);
+		return Json::decode($mailJson->value);
 	}
 }
