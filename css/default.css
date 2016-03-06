@@ -1,16 +1,16 @@
 /*---------------------------------------------------------------------------------------------------------
 		CONTENT:
-				
+
 			1/ HTML tags
-			2/ Universal Styles (display, float, margin, text-align...) 
+			2/ Universal Styles (display, float, margin, text-align...)
 			3/ Layout
-			4/ Design			
+			4/ Design
 			5/ Index, login, Projekt
 			6/ Program
 			7/ Forms, registration, editation
 			8/ Help
 ---------------------------------------------------------------------------------------------------------*/
-  
+
 /*---------------------------------------------------------------------------------------------------------
 		1) HTML tags
 ---------------------------------------------------------------------------------------------------------*/
@@ -205,7 +205,7 @@ a:hover {
 }
 
 #headerProfileLogout a:hover {
-	color:#cccccc;	
+	color:#cccccc;
 	text-decoration:underline;
 }
 
@@ -218,7 +218,7 @@ a:hover {
 #menuContent a {
 	display:block;
 	font-size:11px;
-	padding-bottom:2px;	
+	padding-bottom:2px;
 	padding-top:2px;
 	background-image:url("../images/layout/subnav-gradient.png");
 	background-repeat:repeat-x;
@@ -424,7 +424,7 @@ label.required {color:#FF0000;}
 input, textarea, select, .picker {
 	background-color:#e5e5e5;
 	text-align: left;
-	border: 1px solid #336698;	
+	border: 1px solid #336698;
 	color: #000000;
 	font-size: 11px;
 	padding:2px;
@@ -464,7 +464,7 @@ td.label {width:120px;}
 
 .button {
 	cursor:pointer;
-	padding:2px 5px 3px 5px;	
+	padding:2px 5px 3px 5px;
 	background-color:#E5E5E0;
 	color:#529900;
 	font-weight:bold;
