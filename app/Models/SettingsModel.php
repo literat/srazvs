@@ -4,7 +4,7 @@ use Nette\Utils\Json;
 
 /**
  * Settings
- * 
+ *
  * class for handling settings
  *
  * @created 2012-03-06
@@ -18,21 +18,21 @@ class SettingsModel extends Component
 	 * @var array	DB_columns[]
 	 */
 	public $dbColumns = array();
-	
+
 	/** Constructor */
 	public function __construct()
 	{
 		$this->dbColumns = array("name", "bgcolor", "bocolor", "focolor");
 		$this->dbTable = "kk_settings";
 	}
-	
+
 	/**
 	 * Get all settings
 	 *
 	 * @return	string	html table
 	 */
 	public function getData()
-	{		
+	{
 		$query = "SELECT * FROM kk_settings WHERE deleted = '0' ORDER BY name";
 		$result = mysql_query($query);
 		$rows = mysql_affected_rows();
@@ -43,7 +43,7 @@ class SettingsModel extends Component
 			return $result;
 		}
 	}
-	
+
 	/**
 	 * Modify mail subject and message
 	 *
@@ -67,7 +67,7 @@ class SettingsModel extends Component
 		else {
 			$error = 'E_UPDATE_ERROR';
 		}
-		
+
 		return $error;
 	}
 
