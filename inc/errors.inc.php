@@ -1,12 +1,12 @@
 <?php
 function printError($error)
-{	
+{
 	// soubor chyb
 	$errors = array(
 		""					=>	"",
 		"ok"				=> "Údaje byly úspěšně nahrány!",
 		"rodne_cislo"		=> "Špatně zadané rodné číslo!",
-		"email"				=> "Špatně zadaná e-mailová adresa!",		
+		"email"				=> "Špatně zadaná e-mailová adresa!",
 		"jabber"			=> "Špatně zadané Jabber ID!",
 		"live"				=> "Špatně zadané Live ID!",
 		"phone"				=> "Špatně zadané telefoní číslo!",
@@ -29,12 +29,12 @@ function printError($error)
 		"del"				=> "Položka byla smazána!",
 		"checked"			=> "Položka byla zkontrolována!",
 	);
-	
+
 	//pokud nic neprslo, neni co vypisovat
 	if(($error == "ok") || ($error == "mail_send")) $html = "<span class='ok'>".$errors[$error]."</span>";
 	elseif($error != "") $html = "<span class='error'>".$errors[$error]."</span>";
 	else $html = "";
-	
+
 	echo $html;
 }
 ?>
