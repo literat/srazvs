@@ -294,7 +294,9 @@ a:hover {
 }
 
 table tr.radek1 {background-color: #f5f5f5;}
-table tr.radek1:hover, table tr.radek2:hover {background-color: silver;}
+table tr.radek1:hover, table tr.radek2:hover, table tr.radek1.checked:hover {background-color: silver;}
+
+table tr.radek1.checked {background-color: #add8e6;}
 
 table.list {
  border-collapse:separate;
