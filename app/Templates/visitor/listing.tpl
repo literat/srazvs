@@ -107,6 +107,7 @@ $(document).ready(function() {
 			<tr class='radek1'>
 				<td><input disabled type='checkbox' /></td>
 				<td><img class='edit' src='<?php echo IMG_DIR; ?>icons/edit2.gif' /></td>
+				<td><img class='edit' src='<?php echo IMG_DIR; ?>icons/check2.png' /></td>
 				<td><img class='edit' src='<?php echo IMG_DIR; ?>icons/delete2.gif' /></td>
 				<td><img class='edit' src='<?php echo IMG_DIR; ?>icons/advance2.png' /></td>
 				<td><img class='edit' src='<?php echo IMG_DIR; ?>icons/pay2.png' /></td>
@@ -123,12 +124,17 @@ $(document).ready(function() {
 					} else {
 						$payment = "<acronym title='Nezaplaceno'><img src='".IMG_DIR."icons/notpaid.png' alt='nezaplaceno' /></acronym>";
 					}
-		?>						
-			<tr class='radek1'>
+		?>
+			<tr class='radek1<?php echo $row['checked'] ? ' checked' : ''; ?>'>
 				<td><input type='checkbox' name='checker[]'  value='<?php echo $row['id']; ?>' /></td>
 				<td>
 					<a href='?id=<?php echo $row['id']; ?>&cms=edit&page=visitor' title='Upravit'>
 						<img class='edit' src='<?php echo IMG_DIR; ?>icons/edit.gif' />
+					</a>
+				</td>
+				<td>
+					<a href='?id=<?php echo $row['id']; ?>&cms=checked&page=visitor' title='Zkontrolováno'>
+						<img class='edit' src='<?php echo IMG_DIR; ?>icons/check.png' />
 					</a>
 				</td>
 				<td>
