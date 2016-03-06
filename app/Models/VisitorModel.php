@@ -115,10 +115,10 @@ class VisitorModel /* extends Component */
 		$query_key_set = substr($query_key_set, 0, -1);
 		$query_value_set = substr($query_value_set, 0, -1);
 
-    	$query = "INSERT INTO `kk_visitors` 
-     				 (".$query_key_set.", `code`,`reg_daytime`) 
-     				 VALUES (".$query_value_set.", CONCAT(LEFT('".$DB_data['name']."',1),LEFT('".$DB_data['surname']."',1),SUBSTRING('".$DB_data['birthday']."',3,2)),'".date('Y-m-d H:i:s')."');";
-        $result = mysql_query($query);
+		$query = "INSERT INTO `kk_visitors` 
+					 (".$query_key_set.", `code`,`reg_daytime`) 
+					 VALUES (".$query_value_set.", CONCAT(LEFT('".$DB_data['name']."',1),LEFT('".$DB_data['surname']."',1),SUBSTRING('".$DB_data['birthday']."',3,2)),'".date('Y-m-d H:i:s')."');";
+		$result = mysql_query($query);
 		$ID_visitor = mysql_insert_id();
 		// visitor's id is empty and i must add one
 		$meals_data['visitor'] = $ID_visitor;
@@ -168,18 +168,18 @@ class VisitorModel /* extends Component */
 		// for returning specific error
 		$error = array('visitor' => TRUE, 'meal' => TRUE, 'program' => TRUE);
 		// preparation for query
-	 	$query_set = "";
-	 	foreach($DB_data as $key => $value) {
+		$query_set = "";
+		foreach($DB_data as $key => $value) {
 			$query_set .= "`".$key."` = '".$value."',";
 		}
 		$query_set .= "`code` = CONCAT(LEFT('".$DB_data['name']."',1),LEFT('".$DB_data['surname']."',1),SUBSTRING('".$DB_data['birthday']."',3,2))";
 		//$query_set = substr($query_set, 0, -1);
 
 		// updating visitor data
-    	$query = "UPDATE `kk_visitors` 
+		$query = "UPDATE `kk_visitors` 
 					SET ".$query_set."
 					WHERE `id`='".$ID_visitor."' LIMIT 1";
-    	$result = mysql_query($query);
+		$result = mysql_query($query);
 		$error['visitor'] = $result;
 
 		if($result){
@@ -220,8 +220,8 @@ class VisitorModel /* extends Component */
 	 */
 	public function delete($id)
 	{
-    	$query = "UPDATE ".$this->dbTable." SET deleted = '1' WHERE id IN (".$id.")";
-	    $result = mysql_query($query);
+		$query = "UPDATE ".$this->dbTable." SET deleted = '1' WHERE id IN (".$id.")";
+		$result = mysql_query($query);
 
 		return $result;
 	}
@@ -234,8 +234,8 @@ class VisitorModel /* extends Component */
 	 */
 	public function checked($id)
 	{
-    	$query = "UPDATE ".$this->dbTable." SET checked = '1' WHERE id IN (".$id.")";
-	    $result = mysql_query($query);
+		$query = "UPDATE ".$this->dbTable." SET checked = '1' WHERE id IN (".$id.")";
+		$result = mysql_query($query);
 
 		return $result;
 	}
@@ -277,7 +277,7 @@ class VisitorModel /* extends Component */
 	{
 		if($search != ""){
 			$search_query = "AND (`code` REGEXP '".$search."' 
-					  		OR `group_num` REGEXP '".$search."' 
+							OR `group_num` REGEXP '".$search."' 
 							OR `name` REGEXP '".$search."' 
 							OR `surname` REGEXP '".$search."'
 							OR `nick` REGEXP '".$search."'
