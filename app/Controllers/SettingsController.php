@@ -81,7 +81,7 @@ class SettingsController extends BaseController
 			$this->meetingId = $_SESSION['meetingID'];
 		}
 		global $database;
-		$this->Container = new Container($GLOBALS['cfg'], $database, $this->meetingId);
+		$this->Container = new Container($GLOBALS['cfg'], $this->meetingId, $database);
 		$this->Settings = $this->Container->createSettings();
 		$this->View = $this->Container->createView();
 		$this->Emailer = $this->Container->createEmailer();
