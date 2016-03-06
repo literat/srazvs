@@ -10,6 +10,6 @@ vendor
 *.json
 _compareTemp
 *.svn
-composer.*
+composer.phar
 inc/config.inc.php
 .phpintel

@@ -1,0 +1,7 @@
+{
+    "require": {
+        "dg/ftp-deployment": "~2.1",
+        "skautis/skautis": "^2.0",
+        "tracy/tracy": "^2.3"
+    }
+}
