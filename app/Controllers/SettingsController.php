@@ -89,7 +89,7 @@ class SettingsController extends BaseController
 
 	/**
 	 * This is the default function that will be called by router.php
-	 * 
+	 *
 	 * @param array $getVars the GET variables posted to index.php
 	 */
 	public function init(array $getVars)
@@ -138,7 +138,7 @@ class SettingsController extends BaseController
 	{
 		$error = $this->Settings->modifyMailJSON($type, requested('subject', ''), requested('message', ''));
 
-		if($error == 'ok') {	
+		if($error == 'ok') {
 			redirect("?page=".$this->page."&error=ok");
 		}
 	}
@@ -151,7 +151,7 @@ class SettingsController extends BaseController
 	 * @return 	void
 	 */
 	private function mail($type, $test_mail)
-	{	
+	{
 		if($this->Emailer->sendMail($test_mail,
 									$test_mail,
 									$this->Settings->getMailJSON($type)->subject,
