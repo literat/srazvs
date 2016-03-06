@@ -10,6 +10,7 @@ require_once(FRAMEWORK.'loader.php');
 require_once(__DIR__ . '/vendor/autoload.php');
 
 Debugger::enable(Debugger::DETECT, __DIR__ . '/temp/log');
+Debugger::$email = $cfg['mail-admin'];
 
 $sql = "SELECT id
 		FROM kk_meetings
