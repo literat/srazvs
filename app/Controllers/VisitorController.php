@@ -154,6 +154,9 @@ class VisitorController extends BaseController
 			case "export":
 				$this->Export->printVisitorsExcel();
 				break;
+			case "checked":
+				$this->Visitor->checked($id);
+				break;
 		}
 
 		$this->render();
@@ -402,6 +405,19 @@ class VisitorController extends BaseController
 	}
 
 	/**
+	 * Set item as checked by id
+	 *
+	 * @param  int $id of item
+	 * @return void
+	 */
+	private function checked($id)
+	{
+		if($this->Visitor->checked($id)) {
+			  redirect("?error=checked");
+		}
+	}
+
+	/**
 	 * Render all page
 	 * 
 	 * @return void
@@ -475,6 +491,7 @@ class VisitorController extends BaseController
 			$this->View->assign('question2',		$this->data['question2']);
 			$this->View->assign('bill',				$this->data['bill']);
 			$this->View->assign('cost',				$this->data['cost']);
+			$this->View->assign('checked',			$this->data['checked']);
 			$this->View->assign('program_switcher',	$program_switcher);
 			
 			$this->View->assign('error_name',			printError($error_name));

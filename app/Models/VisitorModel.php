@@ -87,6 +87,7 @@ class VisitorModel /* extends Component */
 								"departure",
 								"question",
 								"question2",
+								"checked",
 								"meeting",
 								"hash"
 							);
@@ -220,6 +221,20 @@ class VisitorModel /* extends Component */
 	public function delete($id)
 	{
     	$query = "UPDATE ".$this->dbTable." SET deleted = '1' WHERE id IN (".$id.")";
+	    $result = mysql_query($query);
+
+		return $result;
+	}
+
+	/**
+	 * Set as checked one or multiple record/s
+	 *
+	 * @param	int		ID/s of record
+	 * @return	boolean
+	 */
+	public function checked($id)
+	{
+    	$query = "UPDATE ".$this->dbTable." SET checked = '1' WHERE id IN (".$id.")";
 	    $result = mysql_query($query);
 
 		return $result;
@@ -374,8 +389,9 @@ class VisitorModel /* extends Component */
 								province_name AS province,
 								bill,
 								cost,
-								birthday
+								birthday,
 								/*CONCAT(LEFT(name,1),LEFT(surname,1),SUBSTRING(birthday,3,2)) AS code*/
+								checked
 						FROM kk_visitors AS vis
 						LEFT JOIN kk_provinces AS provs ON vis.province = provs.id
 						WHERE meeting='".$this->meeting_ID."' AND deleted='0' ".$this->getSearch($this->search)."
