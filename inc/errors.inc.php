@@ -26,7 +26,8 @@ function printError($error)
 		"group_num"			=> "Číslo střediska/přístavu nemá požadovaný tvar!",
 		"mail_send"			=> "E-mail byl úspěšně odeslán!",
 		"already_paid"		=> "Poplatek byl již zaplacen!",
-		"del"				=> "Položka byla smazána!"
+		"del"				=> "Položka byla smazána!",
+		"checked"			=> "Položka byla zkontrolována!",
 	);
 	
 	//pokud nic neprslo, neni co vypisovat
