@@ -3,6 +3,7 @@
         "dg/ftp-deployment": "~2.1",
         "skautis/skautis": "^2.0",
         "tracy/tracy": "^2.3",
-        "phpmailer/phpmailer": "^5.2"
+        "phpmailer/phpmailer": "^5.2",
+        "nette/database": "^2.3"
     }
 }
