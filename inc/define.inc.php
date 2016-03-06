@@ -5,7 +5,7 @@ require_once('config.inc.php');
 
 /* nastaveni cest */
 //pokud jsem na vyvojovem stroji
-$ISDEV = ($_SERVER["SERVER_NAME"] == 'localhost' || $_SERVER["SERVER_NAME"] == 'vodni.skauting.local') ? true : false; 
+$ISDEV = ($_SERVER["SERVER_NAME"] == 'localhost' || $_SERVER["SERVER_NAME"] == 'vodni.skauting.local') ? true : false;
 if($ISDEV) {
 	//vyvojova masina
 	if($_SERVER["SERVER_NAME"] == 'vodni.poutnicikolin.cz') {
@@ -20,7 +20,7 @@ if($ISDEV) {
 		define('ROOT_DIR',$_SERVER['DOCUMENT_ROOT'].'/skauting/vodni/srazvs/');
 		define('HTTP_DIR','http://'.$_SERVER['HTTP_HOST'].'/skauting/vodni/');
 	}
-} 
+}
 //ostra masina
 else {
 	// na ostrem stroji musi byt vzdy za ROOT_DIR slash "/"
@@ -87,7 +87,7 @@ require_once(INC_DIR.'db_connect.inc.php');
 //include_once($INCDIR.'access.inc.php');
 require_once(INC_DIR.'errors.inc.php');
 
-/* Libraries */	
+/* Libraries */
 require_once(FRAMEWORK.'ComponentModel/IModel.php');
 require_once(FRAMEWORK.'ComponentModel/IComponent.php');
 require_once(FRAMEWORK.'ComponentModel/Component.php');
