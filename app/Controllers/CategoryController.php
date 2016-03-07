@@ -81,7 +81,8 @@ class CategoryController extends BaseController
 			$this->meetingId = $_SESSION['meetingID'];
 		}
 
-		$this->Container = new Container($GLOBALS['cfg'], $this->meetingId);
+		global $database;
+		$this->Container = new Container($GLOBALS['cfg'], $this->meetingId, $database);
 		$this->Category = $this->Container->createCategory();
 		$this->View = $this->Container->createView();
 	}

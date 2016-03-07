@@ -1,4 +1,7 @@
 <?php
+
+use Tracy\Debugger;
+
 /**
  * Category
  * 
@@ -15,29 +18,38 @@ class CategoryModel extends Component
 	 * @var array	DB_columns[]
 	 */
 	public $dbColumns = array();
-	
+
+	/**
+	 * Database connection
+	 */
+	private $database;
+
 	/** Constructor */
-	public function __construct()
+	public function __construct($database)
 	{
 		$this->dbColumns = array("name", "bgcolor", "bocolor", "focolor");
 		$this->dbTable = "kk_categories";
+		$this->database = $database;
 	}
-	
+
 	/**
 	 * Render a table of categories
 	 *
 	 * @return	string	html table
 	 */
 	public function getData()
-	{		
-		$query = "SELECT * FROM kk_categories WHERE deleted = '0' ORDER BY name";
-		$result = mysql_query($query);
-		$rows = mysql_affected_rows();
+	{
+		$data = $this->database
+			->table($this->dbTable)
+			->where('deleted', '0')
+			->order('name')
+			->fetchAll();
 
-		if($rows == 0) {
-			return 0;
+		if(!$data) {
+			Debugger::log('Category: no data found!', Debugger::ERROR);
+			return NULL;
 		} else {
-			return $result;
+			return $data;
 		}
 	}
 
