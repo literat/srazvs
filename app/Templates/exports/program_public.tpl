@@ -49,7 +49,7 @@
 					?>
 					<tr>
 						<td class='time'><?php echo $row['from']." - ".$row['to']; ?></td>
-						<td class='cat-<?php echo $row['style']; ?>' style='border:1px solid black;'>
+						<td class='category cat-<?php echo $row['style']; ?>' style='border:1px solid black;'>
 							<div><?php echo $row['name']; ?></div>
 							<?php echo ProgramModel::getProgramsLarge($row['id']); ?>
 						</td>

@@ -113,22 +113,23 @@ class CategoryModel extends Component
 	 *
 	 * @return	string	CSS
 	 */
-	public static function getStyles()
+	public function getStyles()
 	{
 		$style = "";
 
-		$query = "SELECT * FROM kk_categories WHERE deleted = '0'";
-		$result = mysql_query($query);
+		$data = $this->database
+			->table($this->dbTable)
+			->where('deleted', '0')
+			->fetchAll();
 
-		while($DB_data = mysql_fetch_assoc($result)){
-			$style .= ".cat-".$DB_data['style']." {
-							border: 2px solid #".$DB_data['bocolor'].";
-							background-color: #".$DB_data['bgcolor'].";
-							color: #".$DB_data['focolor'].";
-							padding: 0px;
-							margin-bottom: 1px;
-							min-width:125px;
-						}";
+		foreach($data as $id => $category) {
+			$style .= "
+				.cat-" . $category->style . " {
+					border: 2px solid #" . $category->bocolor . ";
+					background-color: #" . $category->bgcolor . ";
+					color: #" . $category->focolor . ";
+				}
+			";
 		}
 
 		return $style;
@@ -151,7 +152,7 @@ class CategoryModel extends Component
 			if($DB_data['id'] == $selected_category) $selected = "selected";
 			else $selected = "";
 
-			$html_select .= "<option ".$selected." class='cat-".$DB_data['style']."' value='".$DB_data['id']."'>".$DB_data['name']."</option>\n";
+			$html_select .= "<option ".$selected." class='category cat-".$DB_data['style']."' value='".$DB_data['id']."'>".$DB_data['name']."</option>\n";
 		}
 
 		$html_select .= "</select>\n";

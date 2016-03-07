@@ -88,7 +88,7 @@
 					<td class='text'><?php echo $row['email']; ?></td>
 					<td class='text'><?php echo $row['block']; ?></td>
 					<td class='text'><?php echo $row['capacity']; ?></td>
-					<td class='text'><div class='cat-<?php echo $row['style']; ?>'><?php echo $row['cat_name']; ?></div></td>
+					<td class='text'><div class='category cat-<?php echo $row['style']; ?>'><?php echo $row['cat_name']; ?></div></td>
 				</tr>
 				<?php
 					}

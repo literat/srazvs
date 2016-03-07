@@ -71,9 +71,11 @@ class MeetingController extends BaseController
 			$this->meetingId = $_SESSION['meetingID'];
 		}
 
+		global $database;
 		$this->Container = new Container($GLOBALS['cfg'], $this->meetingId);
 		$this->Meeting = $this->Container->createMeeting();
 		$this->View = $this->Container->createView();
+		$this->Category = $this->Container->createCategory($database);
 	}
 
 	/**
@@ -214,7 +216,7 @@ class MeetingController extends BaseController
 		$error_login = "";
 
 		// styles in header
-		$style = CategoryModel::getStyles();
+		$style = $this->Category->getStyles();
 
 		/* HTTP Header */
 		$this->View->loadTemplate('http_header');

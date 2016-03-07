@@ -337,6 +337,12 @@ a.pageIndexControl:hover {color:#ce8b10;}
 .selected, .selected:hover {background-color:#529900; color:#ffffff;}
 /* end formaty tabulek */
 
+.category {
+	padding: 0px;
+	margin-bottom: 1px;
+	min-width:125px;
+}
+
 /* ----------------------------------------------------------------------------------------------------------
 		4) Error
 ---------------------------------------------------------------------------------------------------------- */

@@ -389,8 +389,8 @@ class ProgramModel extends Component
 		else{
 			$html = "<table>";
 			$html .= " <tr>";
-			while($data = mysql_fetch_assoc($result)){			
-				$html .= "<td class='cat-".$data['style']."' >".$data['name']."</td>\n";
+			while($data = mysql_fetch_assoc($result)){
+				$html .= "<td class='category cat-".$data['style']."' >".$data['name']."</td>\n";
 			}
 			$html .= " </tr>\n";
 			$html .= "</table>\n";
