@@ -41,10 +41,11 @@ class SettingsModel extends Component
 	{
 		$data = $this->database->table($this->dbTable)->where('deleted', 0)->order('name')->fetchAll();
 
-		if($data->rowCount() == 0) {
-			return 0;
+		if(!$data) {
+			Debugger::log('Settings: no data found!', Debugger::ERROR);
+			return NULL;
 		} else {
-			return $result;
+			return $data;
 		}
 	}
 
