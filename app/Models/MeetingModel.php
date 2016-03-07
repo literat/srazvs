@@ -158,8 +158,8 @@ class MeetingModel extends Component
 		else{
 			$html = "<table class='programs'>\n";
 			$html .= " <tr>\n";
-			while($data = mysql_fetch_assoc($result)){			
-				$html .= "<td class='cat-".$data['style']."' style='text-align:center;'>\n";
+			while($data = mysql_fetch_assoc($result)){
+				$html .= "<td class='category cat-".$data['style']."' style='text-align:center;'>\n";
 				$html .= "<a class='program' href='".PROG_DIR."/?id=".$data['id']."&cms=edit&page=meeting' title='".$data['name']."'>".$data['name']."</a>\n";
 				$html .= "</td>\n";
 			}
@@ -185,8 +185,8 @@ class MeetingModel extends Component
 		else{
 			$html = "<table>\n";
 			$html .= " <tr>\n";
-			while($data = mysql_fetch_assoc($result)){			
-				$html .= "<td class='cat-".$data['style']."' style='text-align:center;'>\n";
+			while($data = mysql_fetch_assoc($result)){
+				$html .= "<td class='category cat-".$data['style']."' style='text-align:center;'>\n";
 				$html .= "<a class='programLink' rel='programDetail' href='#' rel='programDetail' title='".ProgramModel::getDetail($data['id'], 'program', $this->configuration)."'>".$data['name']."</a>\n";
 				$html .= "</td>\n";
 			}
@@ -233,8 +233,8 @@ class MeetingModel extends Component
 				while($data = mysql_fetch_assoc($result)){
 					$html .= "<tr>\n";
 					$html .= "<td class='time'>".$data['from']." - ".$data['to']."</td>\n";
-					if($data['program'] == 1){ 
-						$html .= "<td class='cat-".$data['style']."'>\n";
+					if($data['program'] == 1){
+						$html .= "<td class='category cat-".$data['style']."'>\n";
 						$html .= "<div>\n";
 						$html .= "<a class='block' href='".BLOCK_DIR."/?id=".$data['id']."&cms=edit&page=meeting' title='".$data['name']."'>".$data['name']."</a>\n";
 						$html .= "</div>\n";
@@ -242,7 +242,7 @@ class MeetingModel extends Component
 						$html .= "</td>\n";
 					}
 					else {
-						$html .= "<td class='cat-".$data['style']."'>";
+						$html .= "<td class='category cat-".$data['style']."'>";
 						$html .= "<a class='block' href='".BLOCK_DIR."/?id=".$data['id']."&cms=edit&page=meeting' title='".$data['name']."'>".$data['name']."</a>\n";
 						$html .= "</td>\n";
 					}
@@ -289,8 +289,8 @@ class MeetingModel extends Component
 				while($data = mysql_fetch_assoc($result)){
 					$html .= "<tr>\n";
 					$html .= "<td class='time'>".$data['from']." - ".$data['to']."</td>\n";
-					if(($data['program'] == 1) && ($data['display_progs'] == 1)){ 
-						$html .= "<td class='cat-".$data['style']."' class='daytime'>\n";
+					if(($data['program'] == 1) && ($data['display_progs'] == 1)){
+						$html .= "<td class='category cat-".$data['style']."' class='daytime'>\n";
 						$html .= "<div>\n";
 						$html .= "<a class='programLink rel='programDetail' href='#' rel='programDetail' title='".ProgramModel::getDetail($data['id'], 'block', $this->configuration)."'>".$data['name']."</a>\n";
 						$html .= "</div>\n";
@@ -298,7 +298,7 @@ class MeetingModel extends Component
 						$html .= "</td>\n";
 					}
 					else {
-						$html .= "<td class='cat-".$data['style']."'>";
+						$html .= "<td class='category cat-".$data['style']."'>";
 						$html .= "<a class='programLink rel='programDetail' href='#' rel='programDetail' title='".ProgramModel::getDetail($data['id'], 'block', $this->configuration)."'>".$data['name']."</a>\n";
 						$html .= "</td>\n";
 					}
