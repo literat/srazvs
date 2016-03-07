@@ -14,13 +14,13 @@ class MeetingModel extends Component
 	 * @var int
 	 */
 	private $meetingId;
-	
+
 	/** @var array days of weekend */
 	private $weekendDays = array();
-	
+
 	/** @var array of form names */
 	public $form_names = array();
-	
+
 	/** @var array of database programs table columns */
 	public $dbColumns = array();
 
@@ -34,7 +34,7 @@ class MeetingModel extends Component
 	public $regHeading = '';
 
 	private $configuration;
-	
+
 	/** Constructor */
 	public function __construct($meetingId = NULL, $configuration)
 	{
@@ -69,7 +69,7 @@ class MeetingModel extends Component
 		$this->dbTable = "kk_meetings";
 		$this->configuration = $configuration;
 	}
-	
+
 	/**
 	 * Return meeting data
 	 *
@@ -105,12 +105,12 @@ class MeetingModel extends Component
 		$query = "SELECT cost, advance FROM kk_meetings WHERE id='".$this->meetingId."' LIMIT 1";
 		$result = mysql_query($query);
 		$data = mysql_fetch_assoc($result);
-		
+
 		if($type == 'cost') return $data['cost'];
 		elseif($type == 'advance') return $data['advance'];
 		else return -1;
 	}
-	
+
 	/**
 	 * Render HTML Provinces <select>
 	 *
@@ -123,7 +123,7 @@ class MeetingModel extends Component
 
 		$query = "SELECT * FROM kk_provinces";
 		$result = mysql_query($query);
-		
+
 		while($data = mysql_fetch_assoc($result)){
 			if($data['id'] == $selected_province){
 				$sel = "selected";
@@ -131,9 +131,9 @@ class MeetingModel extends Component
 			else $sel = "";
 			$html_select .= "<option value='".$data['id']."' ".$sel.">".$data['province_name']."</option>";
 		}
-		
+
 		$html_select .= "</select>\n";
-				
+
 		return $html_select;
 	}
 
@@ -153,7 +153,7 @@ class MeetingModel extends Component
 				LIMIT 10";
 		$result = mysql_query($sql);
 		$rows = mysql_affected_rows();
-	
+
 		if($rows == 0) $html = "";
 		else{
 			$html = "<table class='programs'>\n";
@@ -168,7 +168,7 @@ class MeetingModel extends Component
 		}
 		return $html;
 	}
-	
+
 	/** Public program same as getPrograms*/
 	public function getPublicPrograms($block_id){
 		$sql = "SELECT 	progs.id AS id,
@@ -180,7 +180,7 @@ class MeetingModel extends Component
 				LIMIT 10";
 		$result = mysql_query($sql);
 		$rows = mysql_affected_rows();
-	
+
 		if($rows == 0) $html = "";
 		else{
 			$html = "<table>\n";
@@ -195,7 +195,7 @@ class MeetingModel extends Component
 		}
 		return $html;
 	}
-	
+
 	/**
 	 * Render Program Overview
 	 *
@@ -210,7 +210,7 @@ class MeetingModel extends Component
 			$html .= " <tr>\n";
 			$html .= "  <td class='day' colspan='2' >".$value."</td>\n";
 			$html .= " </tr>\n";
-		
+
 			$sql = "SELECT 	blocks.id AS id,
 							day,
 							DATE_FORMAT(`from`, '%H:%i') AS `from`,
@@ -222,10 +222,10 @@ class MeetingModel extends Component
 					LEFT JOIN kk_categories AS cat ON cat.id = blocks.category
 					WHERE blocks.deleted = '0' AND day='".$value."' AND blocks.meeting='".$this->meetingId."'
 					ORDER BY `from` ASC";
-		
+
 			$result = mysql_query($sql);
 			$rows = mysql_affected_rows();
-		
+
 			if($rows == 0){
 				$html .= "<td class='emptyTable' style='width:400px;'>Nejsou žádná aktuální data.</td>\n";
 			}
@@ -251,21 +251,21 @@ class MeetingModel extends Component
 			}
 			$html .= "</table>\n";
 		}
-		
+
 		return $html;
 	}
-	
+
 	public function renderPublicProgramOverview()
 	{
 		$days = array("pátek", "sobota", "neděle");
 		$html = "";
-		
+
 		foreach($days as $dayKey => $dayVal){
 			$html .= "<table>\n";
 			$html .= " <tr>\n";
 			$html .= "  <td class='day' colspan='2' >".$dayVal."</td>\n";
 			$html .= " </tr>\n";
-		
+
 			$sql = "SELECT 	blocks.id AS id,
 							day,
 							DATE_FORMAT(`from`, '%H:%i') AS `from`,
@@ -278,10 +278,10 @@ class MeetingModel extends Component
 					LEFT JOIN kk_categories AS cat ON cat.id = blocks.category
 					WHERE blocks.deleted = '0' AND day='".$dayVal."' AND meeting='".$this->meetingId."'
 					ORDER BY `from` ASC";
-		
+
 			$result = mysql_query($sql);
 			$rows = mysql_affected_rows();
-		
+
 			if($rows == 0){
 				$html .= "<td class='emptyTable' style='width:400px;'>Nejsou žádná aktuální data.</td>\n";
 			}
@@ -307,10 +307,10 @@ class MeetingModel extends Component
 			}
 			$html .= "</table>\n";
 		}
-		
+
 		return $html;
 	}
-	
+
 	/**
 	 * @deprecated
 	 *
@@ -334,9 +334,9 @@ class MeetingModel extends Component
 				LIMIT 30";
 		$result = mysql_query($sql);
 		$rows = mysql_affected_rows();
-		
+
 		$html_row = "";
-		
+
 		if($rows == 0){
 			$html_row .= "<tr class='radek1'>";
 			$html_row .= "<td><img class='edit' src='".IMG_DIR."icons/edit2.gif' /></td>\n";
@@ -345,7 +345,7 @@ class MeetingModel extends Component
 			$html_row .= "</tr>";
 		}
 		else{
-			while($data = mysql_fetch_assoc($result)){			
+			while($data = mysql_fetch_assoc($result)){
 				$html_row .= "<tr class='radek1'>";
 				$html_row .= "\t\t\t<td><a href='process.php?id=".$data['id']."&cms=edit&page=meetings' title='Upravit'><img class='edit' src='".IMG_DIR."icons/edit.gif' /></a></td>\n";
 				$html_row .= "\t\t\t<td><a href=\"javascript:confirmation('?id=".$data['id']."&amp;cms=del', 'sraz: ".$data['place']." ".$data['start_date']." -> Opravdu SMAZAT tento sraz? Jste si jisti?')\" title='Odstranit'><img class='edit' src='".IMG_DIR."icons/delete.gif' /></a></td>\n";
@@ -361,7 +361,7 @@ class MeetingModel extends Component
 				$html_row .= "</tr>";
 			}
 		}
-		
+
 		// table head
 		$html_thead = "\t<tr>\n";
 		$html_thead .= "\t\t<th></th>\n";
@@ -376,7 +376,7 @@ class MeetingModel extends Component
 		$html_thead .= "\t\t<th class='tab1'>e-mail</th>\n";
 		$html_thead .= "\t\t<th class='tab1'>telefon</th>\n";
 		$html_thead .= "\t</tr>\n";
-		
+
 		// table foot
 		$html_tfoot = $html_thead;
 
@@ -392,7 +392,7 @@ class MeetingModel extends Component
 		$html_table .= $html_row;
 		$html_table .= "\t</tbody>\n";
 		$html_table .= "</table>\n";
-		
+
 		return $html_table;
 	}
 
@@ -411,7 +411,7 @@ class MeetingModel extends Component
 		$data = mysql_fetch_assoc($result);
 
 		$mid = $data['id'];
-		$meetingHeader = 
+		$meetingHeader =
 
 		$this->regHeading = $data['place']." ".$data['year'];
 		$this->regClosing = $data['close_reg'];
@@ -448,13 +448,13 @@ class MeetingModel extends Component
 			return FALSE;
 		}
 	}
-	
+
 	public function getProvinceNameById($id) {
 		$sql = "SELECT province_name
-			FROM kk_provinces 
+			FROM kk_provinces
 			WHERE id='".$id."'
 			LIMIT 1";
-	
+
 		$result = mysql_query($sql);
 		$data = mysql_fetch_assoc($result);
 

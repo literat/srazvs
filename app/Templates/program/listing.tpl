@@ -64,7 +64,7 @@
 				<?php
 				} else {
 					while($row = mysql_fetch_assoc($data['render'])) {
-				?>	
+				?>
 				<tr class='radek1'>
 					<td>
 						<a href='?id=<?php echo $row['id']; ?>&cms=edit&page=program' title='Upravit'>

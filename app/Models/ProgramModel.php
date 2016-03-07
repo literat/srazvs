@@ -6,19 +6,19 @@
  *
  * @created 2012-10-01
  * @author Tomas Litera <tomaslitera@hotmail.com>
- */ 
+ */
 class ProgramModel extends Component
 {
 	/** @var int meeting ID */
 	private $meetingId;
-	
+
 	/**
 	 * Array of database programs table columns
 	 *
 	 * @var array	DB_columns[]
 	 */
 	public $dbColumns = array();
-	
+
 	/**
 	 * Array of form names
 	 *
@@ -27,7 +27,7 @@ class ProgramModel extends Component
 	public $formNames = array();
 
 	private $configuration;
-	
+
 	/** Constructor */
 	public function __construct($meeting_id, $configuration)
 	{
@@ -53,7 +53,7 @@ class ProgramModel extends Component
 				LIMIT 10";
 		$result = mysql_query($query);
 		$rows = mysql_affected_rows();
-	
+
 		if($rows == 0){
 			$html = "";
 		} else {
@@ -63,9 +63,9 @@ class ProgramModel extends Component
 						LEFT JOIN kk_visitors AS vis ON vis.id = visprog.visitor
 						WHERE vis.id = '".$id."'";
 				$progResult = mysql_query($progSql);*/
-	
+
 			$html = "<div>\n";
-			
+
 			$checked_flag = false;
 			$html_input = "";
 			while($data = mysql_fetch_assoc($result)){
@@ -75,7 +75,7 @@ class ProgramModel extends Component
 									WHERE program = '".$data['id']."' AND vis.deleted = '0'";
 				$full_program_result = mysql_query($full_program_query);
 				$DB_full_program = mysql_fetch_assoc($full_program_result);
-				
+
 				// if the program is checked
 				$program_query = "SELECT * FROM `kk_visitor-program` WHERE program = '".$data['id']."' AND visitor = '".$vid."'";
 				$program_result = mysql_query($program_query);
@@ -98,20 +98,20 @@ class ProgramModel extends Component
 				$html_input .= $fullProgramInfo;
 				$html_input .= "<br />\n";
 			}
-			
+
 			// pokud uz jednou bylo zaskrtnuto, nezaskrtavam znovu
 			if(!$checked_flag) $checked = "checked='checked'";
 			else $checked = "";
-			
+
 			$html .= "<input ".$checked." type='radio' name='".$block_id."' value='0' /> Nebudu přítomen <br />\n";
 			$html .= $html_input;
-			
+
 			$html .= "</div>\n";
 		}
-		
+
 		return $html;
 	}
-	
+
 	public function getExportPrograms($blockId)
 	{
 		$sql = "SELECT 	*
@@ -120,7 +120,7 @@ class ProgramModel extends Component
 				LIMIT 10";
 		$result = mysql_query($sql);
 		$rows = mysql_affected_rows();
-	
+
 		if($rows == 0){
 			$html = "";
 		}
@@ -129,14 +129,14 @@ class ProgramModel extends Component
 			while($data = mysql_fetch_assoc($result)){
 				$html .= "<tr>";
 				//// resim kapacitu programu a jeho naplneni navstevniky
-				$fullProgramSql = "SELECT COUNT(visitor) AS visitors 
+				$fullProgramSql = "SELECT COUNT(visitor) AS visitors
 								   FROM `kk_visitor-program` AS visprog
 								   LEFT JOIN `kk_visitors` AS vis ON vis.id = visprog.visitor
 								   WHERE program = '".$data['id']."'
 										AND vis.deleted = '0'";
 				$fullProgramResult = mysql_query($fullProgramSql);
 				$fullProgramData = mysql_fetch_assoc($fullProgramResult);
-			
+
 				if($fullProgramData['visitors'] >= $data['capacity']){
 					//$html .= "<input disabled type='radio' name='".$id."' value='".$data['id']."' />\n";
 					$fullProgramInfo = "<span style='font-size:12px; font-weight:bold;'>".$fullProgramData['visitors']."/".$data['capacity']."</span> (kapacita programu je naplněna!)";
@@ -157,7 +157,7 @@ class ProgramModel extends Component
 		}
 		return $html;
 	}
-	
+
 	public function renderExportPrograms()
 	{
 		$programs = "";
@@ -171,10 +171,10 @@ class ProgramModel extends Component
 					FROM kk_blocks
 					WHERE deleted = '0' AND program='1' AND meeting='".$this->meetingId."'
 					ORDER BY `day`, `from` ASC";
-		
+
 		$progResult = mysql_query($progSql);
 		$progRows = mysql_affected_rows();
-		
+
 		if($progRows == 0){
 			$programs .= "<div class='emptyTable' style='width:400px;'>Nejsou žádná aktuální data.</div>\n";
 		}
@@ -183,7 +183,7 @@ class ProgramModel extends Component
 			$raftCountSql = "SELECT COUNT(visitor) AS raft FROM `kk_visitor-program` WHERE program='56|57'";
 			$raftCountResult = mysql_query($raftCountSql);
 			$raftCountData = mysql_fetch_assoc($raftCountResult);
-			
+
 			while($progData = mysql_fetch_assoc($progResult)){
 				//nemoznost volit predsnemovni dikusi
 				if($progData['id'] == 63) $notDisplayed = "style='display:none;'";
@@ -198,10 +198,10 @@ class ProgramModel extends Component
 				$programs .= "<br />";
 			}
 		}
-		
+
 		return $programs;
 	}
-	
+
 	/**
 	 * Render data in a table
 	 *
@@ -213,7 +213,7 @@ class ProgramModel extends Component
 			$query = "SELECT	*
 					FROM kk_programs
 					WHERE id='".$program_id."' AND deleted='0'
-					LIMIT 1"; ; 
+					LIMIT 1"; ;
 			$result = mysql_query($query);
 			$rows = mysql_affected_rows();
 		} else {
@@ -231,18 +231,18 @@ class ProgramModel extends Component
 				LEFT JOIN kk_categories AS cat ON cat.id = programs.category
 				WHERE blocks.meeting = '".$this->meetingId."' AND programs.deleted = '0' AND blocks.deleted='0'
 				ORDER BY programs.id ASC";
-				
+
 			$result = mysql_query($query);
 			$rows = mysql_affected_rows();
 		}
-		
+
 		if($rows == 0) {
 			return 0;
 		} else {
 			return $result;
 		}
 	}
-	
+
 	/**
 	 * Get programs on registration
 	 *
@@ -258,7 +258,7 @@ class ProgramModel extends Component
 			LIMIT 10";
 		$result = mysql_query($query);
 		$rows = mysql_affected_rows();
-	
+
 		if($rows == 0){
 			$html = "";
 		}
@@ -272,11 +272,11 @@ class ProgramModel extends Component
 									WHERE program = '".$data['id']."' AND vis.deleted = '0'";
 				$fullProgramResult = mysql_query($fullProgramSql);
 				$fullProgramData = mysql_fetch_assoc($fullProgramResult);
-			
+
 				// nezobrazeni programu v registraci, v adminu zaskrtavatko u programu
 				if($data['display_in_reg'] == 0) $notDisplayedProg = "style='display:none;'";
 				else $notDisplayedProg = "";
-			
+
 				if($fullProgramData['visitors'] >= $data['capacity']){
 					$html .= "<div ".$notDisplayedProg."><input disabled type='radio' name='".$id."' value='".$data['id']."' />\n";
 					$fullProgramInfo = " (NELZE ZAPSAT - kapacita programu je již naplněna!)";
@@ -293,7 +293,7 @@ class ProgramModel extends Component
 		}
 		return $html;
 	}
-	
+
 	/**
 	 * Get visitors registred on program
 	 *
@@ -306,7 +306,7 @@ class ProgramModel extends Component
 			return NULL;
 		} else {
 			$html = "  <div style='border-bottom:1px solid black;text-align:right;'>účastníci</div>";
-			
+
 			$html .= "<br /><a style='text-decoration:none; display:block; margin-bottom:4px;' href='?cms=export-visitors&id=".$program_id."'>
 	      	<img style='border:none;' align='absbottom' src='".IMG_DIR."icons/pdf.png' />Účastníci programu</a>";
 
@@ -363,12 +363,12 @@ class ProgramModel extends Component
 		else{
 
 			$html = "<div class='program'>\n";
-		
-			while($data = mysql_fetch_assoc($result)){			
+
+			while($data = mysql_fetch_assoc($result)){
 				$programSql = "SELECT * FROM `kk_visitor-program` WHERE program = '".$data['id']."' AND visitor = '".$vid."'";
 				$programResult = mysql_query($programSql);
 				$rows = mysql_affected_rows();
-				if($rows == 1) $html .= $data['name'];			
+				if($rows == 1) $html .= $data['name'];
 			}
 			$html .= "</div>\n";
 		}
@@ -408,10 +408,10 @@ class ProgramModel extends Component
 		$rows = mysql_affected_rows();
 
 		$html = '';
-		
+
 		if($rows == 0) $html = "";
 		else{
-			while($data = mysql_fetch_assoc($result)){			
+			while($data = mysql_fetch_assoc($result)){
 				$html .= $data['name'].",\n";
 			}
 		}
@@ -434,14 +434,14 @@ class ProgramModel extends Component
 
 		if($type == "program"){
 			$capacity = requested("capacity",$data['capacity']);
-			
+
 			$countSql = "SELECT COUNT(visitor) AS visitors
-						 FROM `kk_visitor-program` AS visprog 
+						 FROM `kk_visitor-program` AS visprog
 						 LEFT JOIN kk_visitors AS vis ON vis.id = visprog.visitor
 						 WHERE program = '".$data['id']."' AND vis.deleted = '0'";
 			$countResult = mysql_query($countSql);
 			$countData = mysql_fetch_assoc($countResult);
-			
+
 			$inner_html = "<tr>\n";
 			$inner_html .= " <td class=\"label\">Obsazenost programu:</td>\n";
 			$inner_html .= " <td class=\"text\">".$countData['visitors']."/".$capacity."</td>\n";

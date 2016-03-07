@@ -5,7 +5,7 @@
 class MeetingController extends BaseController
 {
 	/**
-	 * This template variable will hold the 'view' portion of our MVC for this 
+	 * This template variable will hold the 'view' portion of our MVC for this
 	 * controller
 	 */
 	public $template = 'view';
@@ -80,7 +80,7 @@ class MeetingController extends BaseController
 
 	/**
 	 * This is the default function that will be called by router.php
-	 * 
+	 *
 	 * @param array $getVars the GET variables posted to index.php
 	 */
 	public function init(array $getVars)
@@ -135,9 +135,9 @@ class MeetingController extends BaseController
 		$this->heading = "nová kategorie";
 		$this->todo = "create";
 		$this->template = "form";
-			
+
 		foreach($this->Meeting->dbColumns as $key) {
-			$this->data[$key] = requested($key, "");	
+			$this->data[$key] = requested($key, "");
 		}
 	}
 
@@ -148,7 +148,7 @@ class MeetingController extends BaseController
 	 */
 	private function delete($id)
 	{
-		if($this->Meeting->delete($id)){			
+		if($this->Meeting->delete($id)){
 	  		redirect("?error=del");
 		}
 	}
@@ -160,10 +160,10 @@ class MeetingController extends BaseController
 	private function create()
 	{
 		foreach($this->Meeting->dbColumns as $key) {
-			$db_data[$key] = requested($key, "");	
+			$db_data[$key] = requested($key, "");
 		}
 
-		if($this->Meeting->create($db_data)){	
+		if($this->Meeting->create($db_data)){
 			redirect(PRJ_DIR.$this->page."?error=ok");
 		}
 	}
@@ -180,7 +180,7 @@ class MeetingController extends BaseController
 		$this->todo = "modify";
 		// get meeting's data
 		$this->data = mysql_fetch_assoc($this->Meeting->getData($id));
-		
+
 		foreach($this->Meeting->dbColumns as $key) {
 			$$key = requested($key, $this->data[$key]);
 		}
@@ -196,7 +196,7 @@ class MeetingController extends BaseController
 		foreach($this->Meeting->dbColumns as $key) {
 			$db_data[$key] = requested($key, "");
 		}
-		
+
 		if($this->Meeting->update($this->meetingId, $db_data)){
 			redirect(PRJ_DIR.$this->page."?error=ok");
 		}
