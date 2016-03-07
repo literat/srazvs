@@ -89,7 +89,7 @@ class CategoryController extends BaseController
 
 	/**
 	 * This is the default function that will be called by router.php
-	 * 
+	 *
 	 * @param array $getVars the GET variables posted to index.php
 	 */
 	public function init(array $getVars)
@@ -136,9 +136,9 @@ class CategoryController extends BaseController
 		$this->heading = "nová kategorie";
 		$this->todo = "create";
 		$this->template = "form";
-			
+
 		foreach($this->Category->dbColumns as $key) {
-			$this->data[$key] = requested($key, "");	
+			$this->data[$key] = requested($key, "");
 		}
 	}
 
@@ -149,7 +149,7 @@ class CategoryController extends BaseController
 	 */
 	private function delete($id)
 	{
-		if($this->Category->delete($id)){			
+		if($this->Category->delete($id)){
 	  		redirect("?category&error=del");
 		}
 	}
@@ -161,10 +161,10 @@ class CategoryController extends BaseController
 	private function create()
 	{
 		foreach($this->Category->dbColumns as $key) {
-			$db_data[$key] = requested($key, "");	
+			$db_data[$key] = requested($key, "");
 		}
 
-		if($this->Category->create($db_data)){	
+		if($this->Category->create($db_data)){
 			redirect("?".$this->page."&error=ok");
 		}
 	}
@@ -180,12 +180,12 @@ class CategoryController extends BaseController
 		$this->todo = "modify";
 		$this->template = "form";
 		$this->categoryId = $id;
-				
-		$query = "SELECT * FROM kk_categories WHERE id = ".$id." LIMIT 1"; 
+
+		$query = "SELECT * FROM kk_categories WHERE id = ".$id." LIMIT 1";
 		$db_data = mysql_fetch_assoc(mysql_query($query));
-				
+
 		foreach($this->Category->dbColumns as $key) {
-			$this->data[$key] = requested($key, $db_data[$key]);	
+			$this->data[$key] = requested($key, $db_data[$key]);
 		}
 	}
 

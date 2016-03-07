@@ -4,7 +4,7 @@ use Tracy\Debugger;
 
 /**
  * Category
- * 
+ *
  * class for handling category and category styles
  *
  * @created 2012-03-06
@@ -71,17 +71,17 @@ class CategoryModel extends Component
 			$query_value_set .= "'".$value."',";
 		}
 		$query_key_set = substr($query_key_set, 0, -1);
-		$query_value_set = substr($query_value_set, 0, -1);	
+		$query_value_set = substr($query_value_set, 0, -1);
 
-    	$query = "INSERT INTO `kk_categories` 
-     				 (".$query_key_set.", `style`) 
+    	$query = "INSERT INTO `kk_categories`
+     				 (".$query_key_set.", `style`)
      				 VALUES (".$query_value_set.", '".$style."');";
 					 var_dump($query);
     	$result = mysql_query($query);
-		
+
 		return $result;
 	}
-	
+
 	/**
 	 * Modify category details
 	 *
@@ -92,22 +92,22 @@ class CategoryModel extends Component
 	public function modify($id, array $DB_data)
 	{
 		$style = removeDiacritic($DB_data['name']);
-   		$style = str_replace(" ", "_", $style); 
-     
+   		$style = str_replace(" ", "_", $style);
+
 	 	$query_set = "";
 	 	foreach($DB_data as $key => $value) {
-			$query_set .= "`".$key."` = '".$value."',";	
+			$query_set .= "`".$key."` = '".$value."',";
 		}
-	 	$query_set = substr($query_set, 0, -1);	
-		
-    	$query = "UPDATE `kk_categories` 
+	 	$query_set = substr($query_set, 0, -1);
+
+    	$query = "UPDATE `kk_categories`
 					SET ".$query_set.", `style` = '".$style."'
 					WHERE `id`='".$id."' LIMIT 1";
     	$result = mysql_query($query);
-		
+
 		return $result;
 	}
-		
+
 	/**
 	 * Render CSS coding of styles
 	 *
@@ -119,7 +119,7 @@ class CategoryModel extends Component
 
 		$query = "SELECT * FROM kk_categories WHERE deleted = '0'";
 		$result = mysql_query($query);
-		
+
 		while($DB_data = mysql_fetch_assoc($result)){
 			$style .= ".cat-".$DB_data['style']." {
 							border: 2px solid #".$DB_data['bocolor'].";
@@ -130,10 +130,10 @@ class CategoryModel extends Component
 							min-width:125px;
 						}";
 		}
-		
+
 		return $style;
 	}
-	
+
 	/**
 	 * Render HTML <select>
 	 *
@@ -150,12 +150,12 @@ class CategoryModel extends Component
 		while($DB_data = mysql_fetch_assoc($result)){
 			if($DB_data['id'] == $selected_category) $selected = "selected";
 			else $selected = "";
-		
+
 			$html_select .= "<option ".$selected." class='cat-".$DB_data['style']."' value='".$DB_data['id']."'>".$DB_data['name']."</option>\n";
 		}
-		
+
 		$html_select .= "</select>\n";
-		
+
 		return $html_select;
 	}
 }
