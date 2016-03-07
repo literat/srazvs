@@ -3,7 +3,7 @@
 <div class='pageRibbon'>informace a exporty</div>
 <div>
 	počet účastníků: <span style="font-size:12px; font-weight:bold;"><?php echo $data['visitor-count']; ?></span>
-	<span style="margin-left:10px; margin-right:10px;">|</span> 
+	<span style="margin-left:10px; margin-right:10px;">|</span>
 	<a style='text-decoration:none; padding-right:2px;' href='?visitor&cms=export'>
 		<img style='border:none;' align='absbottom' src='<?php echo IMG_DIR; ?>icons/xlsx.png' />
 		export účastníků
