@@ -38,6 +38,7 @@ $(document).ready(function() {
 			3: { sorter: false},
 			4: { sorter: false},
 			5: { sorter: false},
+			6: { sorter: false},
 			12: { sorter: false},
 		}
 	} );
@@ -68,6 +69,7 @@ $(document).ready(function() {
 				<th></th>
 				<th></th>
 				<th></th>
+				<th></th>
 				<th class='tab1'>ID</th>
 				<th class='tab1'>symbol</th>
 				<th class='tab1'>evidence</th>
@@ -83,6 +85,7 @@ $(document).ready(function() {
 		</thead>
 		<tfoot>
 			<tr>
+				<th></th>
 				<th></th>
 				<th></th>
 				<th></th>
