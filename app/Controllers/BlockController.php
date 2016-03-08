@@ -55,6 +55,7 @@ class BlockController extends BaseController
 	private $View;
 	private $Emailer;
 	private $Meeting;
+	private $Category;
 
 	/**
 	 * Prepare model classes and get meeting id
@@ -67,11 +68,13 @@ class BlockController extends BaseController
 			$this->meetingId = $_SESSION['meetingID'];
 		}
 
-		$this->Container = new Container($GLOBALS['cfg'], $this->meetingId);
+		global $database;
+		$this->Container = new Container($GLOBALS['cfg'], $this->meetingId, $database);
 		$this->Block = $this->Container->createBlock();
 		$this->View = $this->Container->createView();
 		$this->Emailer = $this->Container->createEmailer();
 		$this->Meeting = $this->Container->createMeeting();
+		$this->Category = $this->Container->createCategory();
 
 		if(defined('DEBUG') && DEBUG === TRUE){
 			$this->Meeting->setRegistrationHandlers(1);
@@ -352,7 +355,7 @@ class BlockController extends BaseController
 			/* HTTP Header */
 			$this->View->loadTemplate('http_header');
 			$this->View->assign('config',		$GLOBALS['cfg']);
-			$this->View->assign('style',		CategoryModel::getStyles());
+			$this->View->assign('style',		$this->Category->getStyles());
 			$this->View->render(TRUE);
 
 			/* Application Header */

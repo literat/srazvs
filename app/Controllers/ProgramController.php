@@ -88,6 +88,12 @@ class ProgramController extends BaseController
 	private $Export;
 
 	/**
+	 * Category class
+	 * @var Category
+	 */
+	private $Category;
+
+	/**
 	 * Meeting class
 	 * @var Meeting
 	 */
@@ -104,12 +110,14 @@ class ProgramController extends BaseController
 			$this->meetingId = $_SESSION['meetingID'];
 		}
 
-		$this->Container = new Container($GLOBALS['cfg'], $this->meetingId);
+		global $database;
+		$this->Container = new Container($GLOBALS['cfg'], $this->meetingId, $database);
 		$this->Program = $this->Container->createProgram();
 		$this->View = $this->Container->createView();
 		$this->Emailer = $this->Container->createEmailer();
 		$this->Export = $this->Container->createExport();
 		$this->Meeting = $this->Container->createMeeting();
+		$this->Category = $this->Container->createCategory();
 
 		if(defined('DEBUG') && DEBUG === TRUE){
 			$this->Meeting->setRegistrationHandlers(1);
@@ -372,7 +380,7 @@ class ProgramController extends BaseController
 			/* HTTP Header */
 			$this->View->loadTemplate('http_header');
 			$this->View->assign('config',		$GLOBALS['cfg']);
-			$this->View->assign('style',		CategoryModel::getStyles());
+			$this->View->assign('style',		$this->Category->getStyles());
 			$this->View->render(TRUE);
 
 			/* Application Header */
@@ -386,12 +394,12 @@ class ProgramController extends BaseController
 		$this->View->assign('heading',	$this->heading);
 		$this->View->assign('todo',		$this->todo);
 		$this->View->assign('error',	printError($this->error));
-			
+
 		$this->View->assign('cms',		$this->cms);
 		$this->View->assign('render',	$this->Program->getData());
 		$this->View->assign('mid',		$this->meetingId);
 		$this->View->assign('page',		$this->page);
-		$this->View->assign('css',		CategoryModel::getStyles());
+		$this->View->assign('css',		$this->Category->getStyles());
 
 		if(!empty($this->data)) {
 			$this->View->assign('id',						$this->programId);

@@ -54,6 +54,12 @@ class VisitorController extends BaseController
 	private $Meal;
 
 	/**
+	 * Category class
+	 * @var Category
+	 */
+	private $Category;
+
+	/**
 	 * Recipients
 	 * @var recipients
 	 */
@@ -74,13 +80,15 @@ class VisitorController extends BaseController
 		$this->template = "listing";
 		$this->page = 'visitor';
 
-		$this->Container = new Container($GLOBALS['cfg'], $this->meetingId);
+		global $database;
+		$this->Container = new Container($GLOBALS['cfg'], $this->meetingId, $database);
 		$this->Visitor = $this->Container->createVisitor();
 		$this->View = $this->Container->createView();
 		$this->Emailer = $this->Container->createEmailer();
 		$this->Export = $this->Container->createExport();
 		$this->Meeting = $this->Container->createMeeting();
 		$this->Meal = $this->Container->createMeal();
+		$this->Category = $this->Container->createCategory();
 	}
 
 	/**
@@ -444,7 +452,7 @@ class VisitorController extends BaseController
 		/* HTTP Header */
 		$this->View->loadTemplate('http_header');
 		$this->View->assign('config',		$GLOBALS['cfg']);
-		$this->View->assign('style',		CategoryModel::getStyles());
+		$this->View->assign('style',		$this->Category->getStyles());
 		$this->View->render(TRUE);
 
 		/* Application Header */

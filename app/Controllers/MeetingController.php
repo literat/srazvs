@@ -72,10 +72,10 @@ class MeetingController extends BaseController
 		}
 
 		global $database;
-		$this->Container = new Container($GLOBALS['cfg'], $this->meetingId);
+		$this->Container = new Container($GLOBALS['cfg'], $this->meetingId, $database);
 		$this->Meeting = $this->Container->createMeeting();
 		$this->View = $this->Container->createView();
-		$this->Category = $this->Container->createCategory($database);
+		$this->Category = $this->Container->createCategory();
 	}
 
 	/**
