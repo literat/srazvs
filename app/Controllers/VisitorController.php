@@ -93,7 +93,7 @@ class VisitorController extends BaseController
 
 	/**
 	 * This is the default function that will be called by Router.php
-	 * 
+	 *
 	 * @param array $getVars the GET variables posted to index.php
 	 */
 	public function init(array $getVars)
@@ -120,7 +120,7 @@ class VisitorController extends BaseController
 			$query_id = rtrim($query_id, ',');
 		}
 		else {
-			$query_id = $id;	
+			$query_id = $id;
 		}
 
 		switch($this->cms) {
@@ -148,7 +148,7 @@ class VisitorController extends BaseController
 			case "pay":
 				$this->pay($query_id, 'cost');
 				break;
-			// pay advance	
+			// pay advance
 			case "advance":
 				$this->pay($query_id, 'advance');
 				break;
@@ -172,7 +172,7 @@ class VisitorController extends BaseController
 
 	/**
 	 * Prepare page for new item
-	 * 
+	 *
 	 * @return void
 	 */
 	private function __new()
@@ -181,25 +181,25 @@ class VisitorController extends BaseController
 
 		$this->heading = "nový účastník";
 		$this->todo = "create";
-		
+
 		// requested for meals
 		foreach($this->Meal->dbColumns as $var_name) {
 			$$var_name = requested($var_name, "ne");
 			$this->mealData[$var_name] = $$var_name;
 		}
-	
+
 		// requested for visitors fields
 		foreach($this->Visitor->dbColumns as $key) {
 			if($key == 'bill') $value = 0;
 			elseif($key == 'cost') $value = 0;
 			else $value = "";
-			$this->data[$key] = requested($key, $value);	
+			$this->data[$key] = requested($key, $value);
 		}
 	}
 
 	/**
 	 * Process data from form
-	 * 
+	 *
 	 * @return void
 	 */
 	private function create()
@@ -221,7 +221,7 @@ class VisitorController extends BaseController
 				if($key == 'bill') $$key = requested($key, 0);
 				elseif($key == 'cost') $$key = requested($key, 0);
 				else $$key = requested($key, null);
-				$DB_data[$key] = $$key;	
+				$DB_data[$key] = $$key;
 		}
 
 		// i must add visitor's ID because it is empty
@@ -238,11 +238,11 @@ class VisitorController extends BaseController
 
 			// zaheshovane udaje, aby se nedali jen tak ziskat data z databaze
 			$code4bank = substr($DB_data['name'], 0, 1).substr($DB_data['surname'], 0, 1).substr($DB_data['birthday'], 2, 2);
-			$hash = ((int)$vid.$this->meetingId) * 147 + 49873;	
-								
+			$hash = ((int)$vid.$this->meetingId) * 147 + 49873;
+
 			$recipient_mail = $DB_data['email'];
 			$recipient_name = $DB_data['name']." ".$DB_data['surname'];
-				
+
 			if($return = $this->Emailer->sendRegistrationSummary($recipient_mail, $recipient_name, $hash, $code4bank)) {
 				if(is_int($vid)) {
 					$vid = "ok";
@@ -258,7 +258,7 @@ class VisitorController extends BaseController
 
 	/**
 	 * Process data from editing
-	 * 
+	 *
 	 * @param  int 	$id 	of item
 	 * @return void
 	 */
@@ -279,7 +279,7 @@ class VisitorController extends BaseController
 		foreach($this->Visitor->dbColumns as $key) {
 				if($key == 'bill') $$key = requested($key, 0);
 				else $$key = requested($key, null);
-				$DB_data[$key] = $$key;	
+				$DB_data[$key] = $$key;
 		}
 
 		// i must add visitor's ID because it is empty
@@ -292,7 +292,7 @@ class VisitorController extends BaseController
 		// i must add visitor's ID because it is empty
 		$meals_data['visitor'] = $id;
 
-		if($this->Visitor->modify($id, $DB_data, $meals_data, $programs_data)){	
+		if($this->Visitor->modify($id, $DB_data, $meals_data, $programs_data)){
 			redirect("?page=".$this->page."&error=ok");
 		} else {
 			redirect("?page=".$this->page."&error=error");
@@ -301,7 +301,7 @@ class VisitorController extends BaseController
 
 	/**
 	 * Prepare data for editing
-	 * 
+	 *
 	 * @param  int $id of item
 	 * @return void
 	 */
@@ -313,7 +313,7 @@ class VisitorController extends BaseController
 		$this->todo = "modify";
 
 		$this->itemId = $id;
-		
+
 		$dbData = mysql_fetch_assoc($this->Visitor->getData($id));
 		foreach($this->Visitor->dbColumns as $key) {
 			$this->data[$key] = requested($key, $dbData[$key]);
@@ -322,7 +322,7 @@ class VisitorController extends BaseController
 		$query = "SELECT	*
 					FROM kk_meals
 					WHERE visitor='".$this->itemId."'
-					LIMIT 1"; 
+					LIMIT 1";
 
 		$DB_data = mysql_fetch_assoc(mysql_query($query));
 
@@ -334,33 +334,33 @@ class VisitorController extends BaseController
 
 	/**
 	 * Delete item by id
-	 * 
+	 *
 	 * @param  int $id of item
 	 * @return void
 	 */
 	private function delete($id)
 	{
-		if($this->Visitor->delete($id)) {	
+		if($this->Visitor->delete($id)) {
 			  redirect("?error=del");
 		}
 	}
 
 	/**
 	 * Prepare mass mail form
-	 * 
+	 *
 	 * @return void
 	 */
 	private function massmail($query_id)
 	{
 		$this->template = 'mail';
 
-		$recipient_mails = $this->Visitor->getMail($query_id);	
+		$recipient_mails = $this->Visitor->getMail($query_id);
 		$this->recipients = rtrim($recipient_mails, "\n,");
 	}
 
 	/**
 	 * Prepare mass mail form
-	 * 
+	 *
 	 * @return void
 	 */
 	private function send($recipients)
@@ -378,9 +378,9 @@ class VisitorController extends BaseController
 		$message = nl2br(strip_tags($message));
 
 		$message = "<html><head><title>".$subject."</title></head><body>\n".$message."\n</body>\n</html>";
-			
+
 		$return = $this->Emailer->sendMail($recipient_mail, $recipient_name, $subject, $message, $bcc_mail);
-			
+
 		if($return){
 			$error = 'E_MAIL_NOTICE';
 			$error = 'mail_send';
@@ -393,7 +393,7 @@ class VisitorController extends BaseController
 
 	/**
 	 * Pay charge
-	 * 
+	 *
 	 * @param  int 		$query_id     of visitors
 	 * @param  string 	$payment_type cost|advance
 	 * @return void
@@ -404,7 +404,7 @@ class VisitorController extends BaseController
 			redirect("?".$this->page."&error=mail_send");
 		} else {
 			if($return == 'already_paid') {
-				$error = $return;	
+				$error = $return;
 			} else {
 				echo 'Došlo k chybě při odeslání e-mailu.';
 				echo 'Chybová hláška: ' . $return;
@@ -427,7 +427,7 @@ class VisitorController extends BaseController
 
 	/**
 	 * Render all page
-	 * 
+	 *
 	 * @return void
 	 */
 	public function render()
@@ -465,7 +465,7 @@ class VisitorController extends BaseController
 		$this->View->assign('heading',	$this->heading);
 		$this->View->assign('todo',		$this->todo);
 		$this->View->assign('error',	printError($this->error));
-		
+
 		$this->View->assign('cms',		$this->cms);
 		$this->View->assign('render',	$this->Visitor->getData());
 		$this->View->assign('mid',		$this->meetingId);
@@ -501,7 +501,7 @@ class VisitorController extends BaseController
 			$this->View->assign('cost',				$this->data['cost']);
 			$this->View->assign('checked',			$this->data['checked']);
 			$this->View->assign('program_switcher',	$program_switcher);
-			
+
 			$this->View->assign('error_name',			printError($error_name));
 			$this->View->assign('error_surname',		printError($error_surname));
 			$this->View->assign('error_nick',			printError($error_nick));

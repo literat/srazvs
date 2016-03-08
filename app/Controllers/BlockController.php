@@ -10,7 +10,7 @@
 class BlockController extends BaseController
 {
 	/**
-	 * This template variable will hold the 'this->View' portion of our MVC for this 
+	 * This template variable will hold the 'this->View' portion of our MVC for this
 	 * controller
 	 */
 	private $template = 'listing';
@@ -86,7 +86,7 @@ class BlockController extends BaseController
 
 	/**
 	 * This is the default function that will be called by Router.php
-	 * 
+	 *
 	 * @param array $getVars the GET variables posted to index.php
 	 */
 	public function init(array $getVars)
@@ -134,7 +134,7 @@ class BlockController extends BaseController
 
 	/**
 	 * Prepare page for new item
-	 * 
+	 *
 	 * @return void
 	 */
 	private function __new()
@@ -143,7 +143,7 @@ class BlockController extends BaseController
 
 		$this->heading = "nový blok";
 		$this->todo = "create";
-		
+
 		foreach($this->Block->formNames as $key) {
 				if($key == 'start_hour') $value = date("H");
 				elseif($key == 'end_hour') $value = date("H")+1;
@@ -170,7 +170,7 @@ class BlockController extends BaseController
 				elseif($key == 'program') $value = 0;
 				elseif($key == 'display_progs') $value = 1;
 				else $value = "";
-				$$key = requested($key, $value);	
+				$$key = requested($key, $value);
 		}
 
 		$from = date("H:i:s",mktime($start_hour,$start_minute,0,0,0,0));
@@ -180,7 +180,7 @@ class BlockController extends BaseController
 		if($from > $to) echo "chyba";
 		else {
 			foreach($this->Block->dbColumns as $key) {
-				$db_data[$key] = $$key;	
+				$db_data[$key] = $$key;
 			}
 			$db_data['from'] = $from;
 			$db_data['to'] = $to;
@@ -188,14 +188,14 @@ class BlockController extends BaseController
 			$db_data['meeting'] = $this->meetingId;
 		}
 
-		if($this->Block->create($db_data)){	
+		if($this->Block->create($db_data)){
 			redirect(PRJ_DIR.$this->page."?error=ok");
 		}
 	}
 
 	/**
 	 * Prepare data for editing
-	 * 
+	 *
 	 * @param  int $id of Block
 	 * @return void
 	 */
@@ -207,7 +207,7 @@ class BlockController extends BaseController
 		$this->todo = "modify";
 
 		$this->blockId = $id;
-		
+
 		$dbData = mysql_fetch_assoc($this->Block->getData($id));
 
 		foreach($this->Block->formNames as $key) {
@@ -217,7 +217,7 @@ class BlockController extends BaseController
 
 	/**
 	 * Process data from editing
-	 * 
+	 *
 	 * @param  int 	$id 	of Block
 	 * @return void
 	 */
@@ -238,7 +238,7 @@ class BlockController extends BaseController
 		if($from > $to) echo "chyba";
 		else {
 			foreach($this->Block->dbColumns as $key) {
-				$DB_data[$key] = $$key;	
+				$DB_data[$key] = $$key;
 			}
 
 			if($this->page != 'annotation') {
@@ -265,20 +265,20 @@ class BlockController extends BaseController
 
 	/**
 	 * Delete block by id
-	 * 
+	 *
 	 * @param  int $id of Block
 	 * @return void
 	 */
 	private function delete($id)
 	{
-		if($this->Block->delete($id)) {	
+		if($this->Block->delete($id)) {
 			  	redirect("?block&error=del");
 		}
 	}
 
 	/**
 	 * Send mail to tutor
-	 * 
+	 *
 	 * @return void
 	 */
 	private function mail()
@@ -320,7 +320,7 @@ class BlockController extends BaseController
 
 	/**
 	 * Render all page
-	 * 
+	 *
 	 * @return void
 	 */
 	public function render()
@@ -369,7 +369,7 @@ class BlockController extends BaseController
 		$this->View->assign('heading',	$this->heading);
 		$this->View->assign('todo',		$this->todo);
 		$this->View->assign('error',	printError($this->error));
-		
+
 		$this->View->assign('cms',		$this->cms);
 		$this->View->assign('render',	$this->Block->getData());
 		$this->View->assign('mid',		$this->meetingId);

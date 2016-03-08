@@ -11,7 +11,7 @@
 class ProgramController extends BaseController
 {
 	/**
-	 * This template variable will hold the 'this->View' portion of our MVC for this 
+	 * This template variable will hold the 'this->View' portion of our MVC for this
 	 * controller
 	 */
 	private $template = 'listing';
@@ -129,7 +129,7 @@ class ProgramController extends BaseController
 
 	/**
 	 * This is the default function that will be called by Router.php
-	 * 
+	 *
 	 * @param array $getVars the GET variables posted to index.php
 	 */
 	public function init(array $getVars)
@@ -185,7 +185,7 @@ class ProgramController extends BaseController
 
 	/**
 	 * Prepare page for new item
-	 * 
+	 *
 	 * @return void
 	 */
 	private function __new()
@@ -194,7 +194,7 @@ class ProgramController extends BaseController
 
 		$this->heading = "nový program";
 		$this->todo = "create";
-		
+
 		foreach($this->Program->formNames as $key) {
 				if($key == 'display_in_reg') $value = 1;
 				else $value = "";
@@ -204,7 +204,7 @@ class ProgramController extends BaseController
 
 	/**
 	 * Process data from form
-	 * 
+	 *
 	 * @return void
 	 */
 	private function create()
@@ -226,10 +226,10 @@ class ProgramController extends BaseController
 		}
 
 		foreach($this->Program->dbColumns as $key) {
-			$DB_data[$key] = $$key;	
+			$DB_data[$key] = $$key;
 		}
 
-		if($this->Program->create($DB_data)){	
+		if($this->Program->create($DB_data)){
 			redirect(PRJ_DIR.$this->page."?error=ok");
 		}
 	}
@@ -237,7 +237,7 @@ class ProgramController extends BaseController
 
 	/**
 	 * Process data from editing
-	 * 
+	 *
 	 * @param  int 	$id 	of item
 	 * @return void
 	 */
@@ -253,7 +253,7 @@ class ProgramController extends BaseController
 		}
 
 		foreach($this->Program->dbColumns as $key) {
-			$DB_data[$key] = $$key;	
+			$DB_data[$key] = $$key;
 		}
 
 		if($this->Program->update($id, $DB_data)) {
@@ -268,7 +268,7 @@ class ProgramController extends BaseController
 
 	/**
 	 * Prepare data for editing
-	 * 
+	 *
 	 * @param  int $id of item
 	 * @return void
 	 */
@@ -280,9 +280,9 @@ class ProgramController extends BaseController
 		$this->todo = "modify";
 
 		$this->programId = $id;
-		
+
 		$dbData = mysql_fetch_assoc($this->Program->getData($id));
-		
+
 		foreach($this->Program->formNames as $key) {
 			$this->data[$key] = requested($key, $dbData[$key]);
 		}
@@ -290,20 +290,20 @@ class ProgramController extends BaseController
 
 	/**
 	 * Delete item by id
-	 * 
+	 *
 	 * @param  int $id of item
 	 * @return void
 	 */
 	private function delete($id)
 	{
-		if($this->Program->delete($id)) {	
+		if($this->Program->delete($id)) {
 			  	redirect("?program&error=del");
 		}
 	}
 
 	/**
 	 * Send mail to tutor
-	 * 
+	 *
 	 * @return void
 	 */
 	private function mail()
@@ -316,7 +316,7 @@ class ProgramController extends BaseController
 
 	/**
 	 * View public program
-	 * 
+	 *
 	 * @return void
 	 */
 	private function publicView()
@@ -354,7 +354,7 @@ class ProgramController extends BaseController
 
 	/**
 	 * Render all page
-	 * 
+	 *
 	 * @return void
 	 */
 	public function render()
