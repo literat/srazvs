@@ -78,7 +78,7 @@ if(file_exists($target))
 	//instantiate the appropriate class
 	if(class_exists($class))
 	{
-		$controller = new $class;
+		$controller = new $class($database);
 		$controller->setRouting($routing);
 	}
 	else

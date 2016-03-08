@@ -73,7 +73,7 @@ class CategoryController extends BaseController
 	/**
 	 * Prepare initial values
 	 */
-	public function __construct()
+	public function __construct($database)
 	{
 		if($this->meetingId = requested("mid","")){
 			$_SESSION['meetingID'] = $this->meetingId;
@@ -81,8 +81,8 @@ class CategoryController extends BaseController
 			$this->meetingId = $_SESSION['meetingID'];
 		}
 
-		global $database;
-		$this->Container = new Container($GLOBALS['cfg'], $this->meetingId, $database);
+		$this->database = $database;
+		$this->Container = new Container($GLOBALS['cfg'], $this->meetingId, $this->database);
 		$this->Category = $this->Container->createCategory();
 		$this->View = $this->Container->createView();
 	}

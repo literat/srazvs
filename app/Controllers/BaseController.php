@@ -78,6 +78,12 @@ abstract class BaseController
 	private $routing = '';
 
 	/**
+	 * database connection
+	 * @var string
+	 */
+	private $database = NULL;
+
+	/**
 	 * This is the default function that will be called by Router.php
 	 * 
 	 * @param array $getVars the GET variables posted to index.php

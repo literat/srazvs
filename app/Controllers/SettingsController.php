@@ -73,15 +73,15 @@ class SettingsController extends BaseController
 	/**
 	 * Prepare initial values
 	 */
-	public function __construct()
+	public function __construct($database)
 	{
 		if($this->meetingId = requested("mid","")){
 			$_SESSION['meetingID'] = $this->meetingId;
 		} else {
 			$this->meetingId = $_SESSION['meetingID'];
 		}
-		global $database;
-		$this->Container = new Container($GLOBALS['cfg'], $this->meetingId, $database);
+		$this->database = $database;
+		$this->Container = new Container($GLOBALS['cfg'], $this->meetingId, $this->database);
 		$this->Settings = $this->Container->createSettings();
 		$this->View = $this->Container->createView();
 		$this->Emailer = $this->Container->createEmailer();
