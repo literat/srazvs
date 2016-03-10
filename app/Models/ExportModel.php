@@ -1,7 +1,7 @@
 <?php
 /**
  * Export Model
- * 
+ *
  * class for exporting materials for printing
  *
  * @created 2012-09-21
@@ -11,22 +11,22 @@ class ExportModel extends NixModel
 {
 	/** @var int meeting ID */
 	private $meetingId;
-	
+
 	/** @var MpdfFactory */
 	private $PdfFactory;
-	
+
 	/** @var Pdf */
 	public $Pdf;
-	
+
 	/** @var View */
 	private $View;
-	
+
 	/** @var Program Programs class */
 	public $Program;
-	
+
 	/** @var PHPExcel PHPExcel class */
 	private $Excel;
-	
+
 	/** @var int graph height */
 	private $graphHeight;
 
@@ -45,18 +45,19 @@ class ExportModel extends NixModel
 		$this->View = $View;
 		$this->Program = $Program;
 		$this->Excel = $ExcelFactory->create();
+		$this->database = $database;
 	}
-	
+
 	public function setGraphHeight($height)
 	{
-		$this->graphHeight = $height;	
+		$this->graphHeight = $height;
 	}
-	
+
 	public function getGraphHeight()
 	{
 		return $this->graphHeight;
 	}
-	
+
 	/**
 	 * Create PDF
 	 *
@@ -66,7 +67,7 @@ class ExportModel extends NixModel
 	{
 		return $this->PdfFactory->create();
 	}
-	
+
 	/**
 	 * Print Attendance into PDF file
 	 *
@@ -77,7 +78,7 @@ class ExportModel extends NixModel
 	{
 		// output file name
 		$outputFilename= "vlastni_stravenky.".$fileType;
-		
+
 		$query = "SELECT	vis.id AS id,
 				name,
 				surname,
@@ -123,7 +124,7 @@ class ExportModel extends NixModel
 
 		// write html
 		$this->Pdf->WriteHTML($template, 0);
-		
+
 		/* debugging */
 		if(defined('DEBUG') && DEBUG === true){
 			echo $template;
@@ -133,7 +134,7 @@ class ExportModel extends NixModel
 			$this->Pdf->Output($outputFilename, "D");
 		}
 	}
-	
+
 	/**
 	 * Print Attendance into PDF file
 	 *
@@ -144,7 +145,7 @@ class ExportModel extends NixModel
 	{
 		// output file name
 		$output_filename = "attendance_list.".$file_type;
-		
+
 		$query = "SELECT	vis.id AS id,
 						name,
 						surname,
@@ -168,18 +169,18 @@ class ExportModel extends NixModel
 		$this->View->loadTemplate('exports/attendance');
 		$this->View->assign('result', $result);
 		$template = $this->View->render(false);
-		
+
 		// prepare header
 		$header_data = mysql_fetch_assoc($result);
 		$attendance_header = $header_data['place']." ".$header_data['year'];
 
 		$this->Pdf = $this->createPdf();
-	
+
 		// set header
 		$this->Pdf->SetHeader($attendance_header.'|sraz VS|Prezenční listina');
 		// write html
 		$this->Pdf->WriteHTML($template, 0);
-		
+
 		/* debugging */
 		if(defined('DEBUG') && DEBUG === true){
 			echo $template;
@@ -258,15 +259,15 @@ class ExportModel extends NixModel
 	{
 		$evidence_limit = "";
 		$specific_visitor = "";
-		
+
 		if(isset($visitor_id) && $visitor_id != NULL){
 			$evidence_limit = "LIMIT 1";
 			$specific_visitor = "vis.id='".$visitor_id."' AND";
 		}
-		
+
 		// output file name
 		$output_filename = "faktura.".$file_type;
-		
+
 		$query = "SELECT	vis.id AS id,
 					name,
 					surname,
@@ -318,10 +319,10 @@ class ExportModel extends NixModel
 		$this->View->assign('LOGODIR', IMG_DIR.'logos/');
 		$this->View->assign('result', $result);
 		$template = $this->View->render(false);
-		
+
 		// write html
 		$this->Pdf->WriteHTML($template, 0);
-		
+
 		/* debugging */
 		if(defined('DEBUG') && DEBUG === true){
 			echo $template;
@@ -331,12 +332,12 @@ class ExportModel extends NixModel
 			$this->Pdf->Output($output_filename, "D");
 		}
 	}
-	
+
 	public static function getPdfBlocks($vid)
 	{
 		$programs = "<tr>";
 		$programs .= " <td class='progPart'>";
-		
+
 		$progSql = "SELECT 	id,
 							day,
 							DATE_FORMAT(`from`, '%H:%i') AS `from`,
@@ -346,28 +347,28 @@ class ExportModel extends NixModel
 					FROM kk_blocks
 					WHERE deleted = '0' AND program='1' AND meeting='".$_SESSION['meetingID']."'
 					ORDER BY `day` ASC";
-		
+
 		$progResult = mysql_query($progSql);
 		$progRows = mysql_affected_rows();
-		
+
 		if($progRows == 0){
 			$programs .= "<div class='emptyTable' style='width:400px;'>Nejsou žádná aktuální data.</div>\n";
 		}
-		else{	
+		else{
 			while($progData = mysql_fetch_assoc($progResult)){
 				// zbaveni se predsnemovni diskuse
 				if($progData['id'] == 63) $programs .= "";
 				else {
 					$programs .= "<div class='block'>".$progData['day'].", ".$progData['from']." - ".$progData['to']." : ".$progData['name']."</div>\n";
-				
+
 					if($progData['program'] == 1) $programs .= "<div>".ProgramModel::getPdfPrograms($progData['id'], $vid)."</div>";
 				}
 			}
 		}
-		
+
 		$programs .= "</td>";
 		$programs .= "</tr>";
-		
+
 		return $programs;
 	}
 
@@ -421,7 +422,7 @@ class ExportModel extends NixModel
 				";
 		$result = mysql_query($sql);
 		//$data = mysql_fetch_assoc($result);
-		
+
 		////ziskani zvolenych programu
 		$blockSql = "SELECT 	id
 					 FROM kk_blocks
@@ -431,13 +432,13 @@ class ExportModel extends NixModel
 			$$blockData['id'] = requested($blockData['id'],0);
 			//echo $blockData['id'].":".$$blockData['id']."|";
 		}
-	
+
 		// load and prepare template
 		$this->View->loadTemplate('exports/program_cards');
 		$this->View->assign('result', $result);
 		//$this->View->assign('blocks' getBlocks($data['id']));
 		$template = $this->View->render(false);
-		
+
 		// prepare header
 		$header_data = mysql_fetch_assoc($result);
 		$attendance_header = $header_data['place']." ".$header_data['year'];
@@ -446,10 +447,10 @@ class ExportModel extends NixModel
 
 		$this->Pdf->SetWatermarkImage(IMG_DIR.'logos/watermark.jpg', 0.1, '');
 		$this->Pdf->showWatermarkImage = true;
-		
+
 		// write html
 		$this->Pdf->WriteHTML($template, 0);
-		
+
 		/* debugging */
 		if(defined('DEBUG') && DEBUG === true){
 			echo $template;
@@ -459,7 +460,7 @@ class ExportModel extends NixModel
 			$output_filename = $filename.'.'.$file_type;
 			$this->Pdf->Output($output_filename, "D");
 		}
-	
+
 	}
 
 	public static function getLargeProgramData($meeting_id, $day_val)
@@ -504,7 +505,7 @@ class ExportModel extends NixModel
 				LIMIT 1";
 		$result = mysql_query($sql);
 		$data = mysql_fetch_assoc($result);
-		
+
 		$meeting_header = $data['place']." ".$data['year'];
 		$filename = removeDiacritic($data['place'].$data['year']."-program");
 
@@ -521,10 +522,10 @@ class ExportModel extends NixModel
 		$this->Pdf->useOnlyCoreFonts = true;
 		$this->Pdf->SetDisplayMode('fullpage');
 		$this->Pdf->SetAutoFont(0);
-		
+
 		// write html
 		$this->Pdf->WriteHTML($template, 0);
-		
+
 		/* debugging */
 		if(defined('DEBUG') && DEBUG === true){
 			echo $template;
@@ -534,7 +535,7 @@ class ExportModel extends NixModel
 			$output_filename = $filename.'.'.$file_type;
 			$this->Pdf->Output($output_filename, "D");
 		}
-	
+
 	}
 
 	/**
@@ -559,7 +560,7 @@ class ExportModel extends NixModel
 				LIMIT 1";
 		$result = mysql_query($sql);
 		$data = mysql_fetch_assoc($result);
-		
+
 		$meeting_header = $data['place']." ".$data['year'];
 		$filename = removeDiacritic($data['place'].$data['year']."-program");
 
@@ -575,10 +576,10 @@ class ExportModel extends NixModel
 		$this->Pdf->useOnlyCoreFonts = true;
 		$this->Pdf->SetDisplayMode('fullpage');
 		$this->Pdf->SetAutoFont(0);
-		
+
 		// write html
 		$this->Pdf->WriteHTML($template, 0);
-		
+
 		/* debugging */
 		if(defined('DEBUG') && DEBUG === true){
 			echo $template;
@@ -588,7 +589,7 @@ class ExportModel extends NixModel
 			$output_filename = $filename.'.'.$file_type;
 			$this->Pdf->Output($output_filename, "D");
 		}
-	
+
 	}
 
 	/**
@@ -606,7 +607,7 @@ class ExportModel extends NixModel
 			FROM kk_visitors AS vis
 			WHERE meeting='".$this->meetingId."' AND vis.deleted='0'";
 		$result = mysql_query($sql);
-		
+
 		$filename = 'program-badge';
 
 		// load and prepare template
@@ -628,19 +629,19 @@ class ExportModel extends NixModel
 		$this->Pdf->useOnlyCoreFonts = true;
 		$this->Pdf->SetDisplayMode('fullpage');
 		$this->Pdf->SetAutoFont(0);
-		
+
 		// write html
 		$this->Pdf->WriteHTML($template, 0);
-		
+
 		/* debugging */
 		if(!defined('DEBUG') || DEBUG === FALSE){
 			// download
 			$output_filename = $filename.'.'.$file_type;
 			$this->Pdf->Output($output_filename, "D");
 		}
-	
+
 	}
-	
+
 	public function printNameBadges($names = NULL)
 	{
 		$output_filename = "jmenovky.pdf";
@@ -654,7 +655,7 @@ class ExportModel extends NixModel
 					WHERE meeting='".$this->meetingId."' AND vis.deleted='0'
 					";
 			$result = mysql_query($sql);
-			
+
 			while($row = mysql_fetch_assoc($result)) {
 				array_push($_data, $row);
 			}
@@ -667,22 +668,22 @@ class ExportModel extends NixModel
 				array_push($_data, $row);
 			}
 		}
-		
+
 		// load and prepare template
 		$this->View->loadTemplate('exports/name_badge');
 		$this->View->assign('result', $_data);
 		$template = $this->View->render(FALSE);
-		
+
 		$this->PdfFactory->setMargins(15, 15, 10, 5);
 		$this->Pdf = $this->PdfFactory->create();
-		
+
 		// set watermark
 		$this->Pdf->SetWatermarkImage(IMG_DIR.'logos/watermark-waves.jpg', 0.1, '');
 		$this->Pdf->showWatermarkImage = TRUE;
-		
+
 		// write html
 		$this->Pdf->WriteHTML($template, 0);
-		
+
 		/* debugging */
 		if(defined('DEBUG') && DEBUG === TRUE){
 			echo $template;
@@ -692,7 +693,7 @@ class ExportModel extends NixModel
 			$this->Pdf->Output($output_filename, "D");
 		}
 	}
-	
+
 	/**
 	 * Generate registration graph
 	 *
@@ -724,7 +725,7 @@ class ExportModel extends NixModel
 					  $this->meetingId, '0')->fetch();
 
 		$reg_graph = "<table style='width:100%;'>";
-		
+
 		$graph_height = 0;
 
 		foreach($graph as $graphRow) {
@@ -738,16 +739,16 @@ class ExportModel extends NixModel
 
 			$graph_height += 21.5;
 		}
-				   
+
 		$reg_graph .= "</table>";
-		
+
 		if($graph_height < 290) $graph_height = 290;
-		
+
 		$this->setGraphHeight($graph_height);
-		
+
 		return $reg_graph;
 	}
-	
+
 	/**
 	 * Get materials for each program
 	 *
@@ -764,7 +765,7 @@ class ExportModel extends NixModel
 					AND bls.meeting = '".$this->meetingId."'
 					AND bls.deleted = '0'";
 		$result = mysql_query($sql);
-		
+
 		$html = "";
 		while($data = mysql_fetch_assoc($result)){
 			if($data['material'] == "") $material = "(žádný)";
@@ -772,10 +773,10 @@ class ExportModel extends NixModel
 			$html .= "<div><a rel='programDetail' href='".PRJ_DIR."program/?id=".$data['id']."&cms=edit&page=export' title='".$data['name']."'>".$data['name']."</a>:\n</div>";
 			$html .= "<div style='margin-left:10px;font-size:12px;font-weight:bold;'>".$material."</div>";
 		}
-		
+
 		return $html;
 	}
-	
+
 	/**
 	 * Get materials for each program
 	 *
@@ -791,8 +792,8 @@ class ExportModel extends NixModel
 					LEFT JOIN kk_meetings AS meets ON vis.meeting = meets.id
 					WHERE meeting = '".$this->meetingId."' AND vis.deleted = '0'";
 		$result = mysql_query($query);
-		$data = mysql_fetch_assoc($result);	
-		
+		$data = mysql_fetch_assoc($result);
+
 		switch($type){
 			case "account":
 				return $data['account'];
@@ -814,7 +815,7 @@ class ExportModel extends NixModel
 	 *
 	 * @param	string	name of meal
 	 * @return	array	meal name => count
-	 */	
+	 */
 	public function getMealCount($meal)
 	{
 		$sql = "SELECT count(". $meal.") AS ". $meal."
@@ -826,7 +827,7 @@ class ExportModel extends NixModel
 					AND ". $meal." = 'ano'";
 		$result = mysql_query($sql);
 		$data = mysql_fetch_assoc($result);
-		
+
 		return $data[$meal];
 	}
 
@@ -843,20 +844,20 @@ class ExportModel extends NixModel
 						  "sat_dinner" => "sobotní večeře",
 						  "sun_breakfast" => "nedělní snídaně",
 						  "sun_lunch" => "nedělní oběd");
-		
+
 		$meals = "<table>";
-		
+
 		foreach($mealsArr as $mealsKey => $mealsVal){
 			$mealCount = $this->getMealCount($mealsKey);
-			
+
 			$meals .= "<tr><td>".$mealsVal.":</td><td><span style='font-size:12px; font-weight:bold;'>".$mealCount."</span></td></tr>";
 		}
-		
+
 		$meals .= "</table>";
-		
+
 		return $meals;
 	}
-	
+
 	/**
 	 * Print visitors on program into PDF file
 	 *
@@ -868,7 +869,7 @@ class ExportModel extends NixModel
 	public function printProgramVisitors($programId)
 	{
 		$output_filename = "ucastnici-programu.pdf";
-		
+
 		$query = "SELECT vis.name AS name,
 							vis.surname AS surname,
 							vis.nick AS nick,
@@ -878,7 +879,7 @@ class ExportModel extends NixModel
 					LEFT JOIN `kk_programs` AS prog ON prog.id = visprog.program
 					WHERE visprog.program = '".$programId."' AND vis.deleted = '0'";
 		$result = mysql_query($query);
-		
+
 		// load and prepare template
 		$this->View->loadTemplate('exports/program_visitors');
 		$this->View->assign('result', $result);
@@ -890,12 +891,12 @@ class ExportModel extends NixModel
 		$program_header = $header_data['program'];
 
 		$this->Pdf = $this->createPdf();
-	
+
 		// set header
 		$this->Pdf->SetHeader($program_header.'|sraz VS|Účastnící programu');
 		// write html
 		$this->Pdf->WriteHTML($template, 0);
-		
+
 		/* debugging */
 		if(defined('DEBUG') && DEBUG === true){
 			echo $template;
@@ -905,7 +906,7 @@ class ExportModel extends NixModel
 			$this->Pdf->Output($output_filename, "D");
 		}
 	}
-	
+
 	/**
 	 * Print details of program into PDF file
 	 *
@@ -915,7 +916,7 @@ class ExportModel extends NixModel
 	public function printProgramDetails()
 	{
 		$output_filename = "vypis-programu.pdf";
-		
+
 		$query = "SELECT prog.name AS name,
 						 prog.description AS description,
 						 prog.tutor AS tutor,
@@ -926,19 +927,19 @@ class ExportModel extends NixModel
 						AND prog.deleted = '0'
 						AND block.deleted = '0'";
 		$result = mysql_query($query);
-		
+
 		// load and prepare template
 		$this->View->loadTemplate('exports/program_details');
 		$this->View->assign('result', $result);
 		$template = $this->View->render(false);
 
 		$this->Pdf = $this->createPdf();
-	
+
 		// set header
 		$this->Pdf->SetHeader('Výpis programů|sraz VS');
 		// write html
 		$this->Pdf->WriteHTML($template, 0);
-		
+
 		/* debugging */
 		if(defined('DEBUG') && DEBUG === true){
 			echo $template;
@@ -948,20 +949,20 @@ class ExportModel extends NixModel
 			$this->Pdf->Output($output_filename, "D");
 		}
 	}
-	
+
 	/**
 	 * Print data of visitors into excel file
 	 *
 	 * @return	file	*.xlsx file type
-	 */	
+	 */
 	public function printVisitorsExcel()
 	{
 		$this->Excel->getProperties()->setCreator("HKVS Srazy K + K")->setTitle("Návštěvníci");
-		
+
 		// Zde si vyvoláme aktivní list (nastavený nahoře) a vyplníme buňky A1 a A2
-		
+
 		$list = $this->Excel->setActiveSheetIndex(0);
-		
+
 		$list->setCellValue('A1', 'ID');
 		$list->setCellValue('B1', 'symbol');
 		$list->setCellValue('C1', 'Jméno');
@@ -981,23 +982,23 @@ class ExportModel extends NixModel
 		$list->setCellValue('Q1', 'Příjezd');
 		$list->setCellValue('R1', 'Odjezd');
 		$list->setCellValue('S1', 'Otázka');
-		
+
 		$this->Excel->getActiveSheet()->getStyle('A1:Z1')->getFont()->setBold(true);
-		
-		$this->Excel->getActiveSheet()->getColumnDimension('C')->setWidth(15);  
-		$this->Excel->getActiveSheet()->getColumnDimension('D')->setWidth(15);  
-		$this->Excel->getActiveSheet()->getColumnDimension('F')->setWidth(15);  
-		$this->Excel->getActiveSheet()->getColumnDimension('G')->setWidth(30);  
+
+		$this->Excel->getActiveSheet()->getColumnDimension('C')->setWidth(15);
+		$this->Excel->getActiveSheet()->getColumnDimension('D')->setWidth(15);
+		$this->Excel->getActiveSheet()->getColumnDimension('F')->setWidth(15);
+		$this->Excel->getActiveSheet()->getColumnDimension('G')->setWidth(30);
 		$this->Excel->getActiveSheet()->getColumnDimension('H')->setWidth(20);
 		$this->Excel->getActiveSheet()->getColumnDimension('I')->setWidth(15);
 		$this->Excel->getActiveSheet()->getColumnDimension('K')->setWidth(20);
-		$this->Excel->getActiveSheet()->getColumnDimension('M')->setWidth(30);  
+		$this->Excel->getActiveSheet()->getColumnDimension('M')->setWidth(30);
 		$this->Excel->getActiveSheet()->getColumnDimension('N')->setWidth(20);
 		$this->Excel->getActiveSheet()->getColumnDimension('P')->setWidth(20);
 		$this->Excel->getActiveSheet()->getColumnDimension('Q')->setWidth(20);
 		$this->Excel->getActiveSheet()->getColumnDimension('R')->setWidth(20);
 		$this->Excel->getActiveSheet()->getColumnDimension('S')->setWidth(20);
-		
+
 		$sql = "
 		SELECT vis.id AS id,
 			code,
@@ -1034,9 +1035,9 @@ class ExportModel extends NixModel
 		LEFT JOIN `kk_meals` AS mls ON mls.visitor = vis.id
 		WHERE vis.deleted = '0' AND meeting = '".$this->meetingId."'
 		";
-		
+
 		$query = mysql_query($sql);
-		
+
 		$i = 2;
 		while($data = mysql_fetch_assoc($query)){
 			$list->setCellValue('A'.$i, $data['id']);
@@ -1067,22 +1068,22 @@ class ExportModel extends NixModel
 			$list->setCellValue('Y'.$i, $data['sun_breakfast']);
 			$list->setCellValue('Z'.$i, $data['sun_lunch']);
 			$i++;
-		
+
 		}
-		
+
 		// stahnuti souboru
 		$filename = 'export-MS-'.date('Y-m-d',time()).'.xlsx';
-		
+
 		$this->Excel->setActiveSheetIndex(0);
-		
+
 		// clean output
 		ob_clean();
 		flush();
-		
+
 		header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 		header('Content-Disposition: attachment;filename="'.$filename.'"');
 		header('Cache-Control: max-age=0');
-		
+
 		$ExcelWriter = PHPExcel_IOFactory::createWriter($this->Excel, 'Excel2007');
 		$ExcelWriter->save('php://output');
 		exit;
