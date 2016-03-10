@@ -59,25 +59,11 @@ class CategoryModel extends Component
 	 * @param	array	Data to DB
 	 * @return	boolean
 	 */
-	public function create(array $DB_data)
+	public function create(array $dbData)
 	{
-		$style = removeDiacritic($DB_data['name']);
-
-		$query_key_set = "";
-		$query_value_set = "";
-
-		foreach($DB_data as $key => $value) {
-			$query_key_set .= "`".$key."`,";
-			$query_value_set .= "'".$value."',";
-		}
-		$query_key_set = substr($query_key_set, 0, -1);
-		$query_value_set = substr($query_value_set, 0, -1);
-
-    	$query = "INSERT INTO `kk_categories`
-     				 (".$query_key_set.", `style`)
-     				 VALUES (".$query_value_set.", '".$style."');";
-					 var_dump($query);
-    	$result = mysql_query($query);
+		$style = removeDiacritic($dbData['name']);
+		$dbData['style'] = $style;
+		$result = $this->database->table($this->dbTable)->insert($dbData);
 
 		return $result;
 	}
@@ -89,21 +75,12 @@ class CategoryModel extends Component
 	 * @param	array	Data to DB
 	 * @return	boolean
 	 */
-	public function modify($id, array $DB_data)
+	public function modify($id, array $dbData)
 	{
-		$style = removeDiacritic($DB_data['name']);
-   		$style = str_replace(" ", "_", $style);
-
-	 	$query_set = "";
-	 	foreach($DB_data as $key => $value) {
-			$query_set .= "`".$key."` = '".$value."',";
-		}
-	 	$query_set = substr($query_set, 0, -1);
-
-    	$query = "UPDATE `kk_categories`
-					SET ".$query_set.", `style` = '".$style."'
-					WHERE `id`='".$id."' LIMIT 1";
-    	$result = mysql_query($query);
+		$style = removeDiacritic($dbData['name']);
+		$style = str_replace(" ", "_", $style);
+		$dbData['style'] = $style;
+		$result = $this->database->table($this->dbTable)->where('id', $id)->update($dbData);
 
 		return $result;
 	}
