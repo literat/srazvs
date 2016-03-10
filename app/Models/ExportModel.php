@@ -29,9 +29,12 @@ class ExportModel extends NixModel
 	
 	/** @var int graph height */
 	private $graphHeight;
-	
+
+	/** @var Connection database */
+	private $database;
+
 	/** Constructor */
-	public function __construct($meetingId, PdfFactory $PdfFactory, View $View, ProgramModel $Program, ExcelFactory $ExcelFactory)
+	public function __construct($meetingId, PdfFactory $PdfFactory, View $View, ProgramModel $Program, ExcelFactory $ExcelFactory, $database)
 	{
 		$this->meetingId = $meetingId;
 		// use PdfFactory
@@ -699,42 +702,41 @@ class ExportModel extends NixModel
 	{
 		$graph_width = 94;
 
-		$graph_query = "SELECT DATE_FORMAT(reg_daytime, '%d. %m. %Y') AS day, 
+		$graph = $this->database->query('SELECT DATE_FORMAT(reg_daytime, "%d. %m. %Y") AS day,
 							   COUNT(reg_daytime) AS reg_count
 						FROM `kk_visitors` AS vis
-						LEFT JOIN kk_meetings AS meet ON meet.id = vis.meeting 
-						WHERE meet.id = ".$this->meetingId." AND vis.deleted='0'
+						LEFT JOIN kk_meetings AS meet ON meet.id = vis.meeting
+						WHERE meet.id = ? AND vis.deleted = ?
 						GROUP BY day
-						ORDER BY reg_daytime ASC";
-		$graph_result = mysql_query($graph_query);
-		
-		$max_query = "SELECT MAX( reg_count ) AS max
+						ORDER BY reg_daytime ASC',
+						$this->meetingId, '0')->fetchAll();
+
+		$graphMax = $this->database->query('SELECT MAX( reg_count ) AS max
 					  FROM (
-						SELECT DATE_FORMAT( reg_daytime, '%d. %m. %Y' ) AS
+						SELECT DATE_FORMAT( reg_daytime, "%d. %m. %Y" ) AS
 							DAY , COUNT( reg_daytime ) AS reg_count
 						FROM `kk_visitors` AS vis
 						LEFT JOIN kk_meetings AS meet ON meet.id = vis.meeting
-						WHERE meet.id = '".$this->meetingId."'
-							AND vis.deleted = '0'
+						WHERE meet.id = ?
+							AND vis.deleted = ?
 						GROUP BY DAY
-					  ) AS cnt";
-		$max_result = mysql_query($max_query);
-		$max_data = mysql_fetch_assoc($max_result);
-		
+					  ) AS cnt',
+					  $this->meetingId, '0')->fetch();
+
 		$reg_graph = "<table style='width:100%;'>";
 		
 		$graph_height = 0;
-		
-		while($graph_data = mysql_fetch_array($graph_result)){
+
+		foreach($graph as $graphRow) {
 				// trojclenka pro zjisteni pomeru sirky grafu...(aby nam to nevylezlo mimo obrazovku)
 		/*var_dump($max);
 		var_dump($graph_width);
 		var_dump($graph_data['reg_count']);
 		echo 	$width = ceil(($graph_width/$max)*$graph_data['reg_count'])."\n";*/
-			$width = ceil($graph_width/$max_data['max']*$graph_data['reg_count']);
-			$reg_graph .= "<tr><td align='right' style='width:60px;'>".$graph_data['day']."</td><td><img src='".IMG_DIR."graph.png' alt='".$graph_data['reg_count']."' style='width:".$width."%;' height='12' border='0'>".$graph_data['reg_count']."</td>";
-			
-			$graph_height += 21.5; 
+			$width = ceil($graph_width/$graphMax['max']*$graphRow['reg_count']);
+			$reg_graph .= "<tr><td align='right' style='width:60px;'>".$graphRow['day']."</td><td><img src='".IMG_DIR."graph.png' alt='".$graphRow['reg_count']."' style='width:".$width."%;' height='12' border='0'>".$graphRow['reg_count']."</td>";
+
+			$graph_height += 21.5;
 		}
 				   
 		$reg_graph .= "</table>";
