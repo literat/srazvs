@@ -14,12 +14,12 @@ $menuItems = $data['database']->query(
 $menu = "<!-- start of menuCanvas -->\n";
 $menu .= "<div id='menuCanvas'>\n";
 $menu .= " <div id='menuContent'>\n";
- 
+
 $menu .= "  <div class='menuItem'>všechny srazy</div>\n";
 $menu .= "   <ul>";
 $menu .= "    <li><a href='".MEET_DIR."/?cms=list-view'>seznam srazů</a></li>\n";
 $menu .= "   </ul>";
- 
+
 $menu .= "  <div class='menuItem'>jednotlivé srazy</div>\n";
 $menu .= "   <ul>";
 
