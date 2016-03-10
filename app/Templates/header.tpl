@@ -13,10 +13,10 @@
           <a href="<?php echo HTTP_DIR."srazvs/program/?cms=public"; ?>" title="program" target="_blank"><span>Veřejný program</span></a>&nbsp;|&nbsp;
           <a href="<?php echo HTTP_DIR."remote/logout.php?_return=admin/"; ?>" title="odhlásit se"><span>Odhlásit se</span></a>
           <div style="margin-top:5px;">
-	   uživatel: <span style="font-weight:bold;"><?php echo getUser($_SESSION[SESSION_PREFIX.'user'], "publicname"); ?></span><br />
-       poslední přihlášení: <?php echo date("j. n. Y H:i:s",getUser($_SESSION[SESSION_PREFIX.'user'], "activitytime")); ?> |
+	   uživatel: <span style="font-weight:bold;"><?php echo getUser($_SESSION[SESSION_PREFIX.'user'], "publicname", $data['database']); ?></span><br />
+       poslední přihlášení: <?php echo date("j. n. Y H:i:s",getUser($_SESSION[SESSION_PREFIX.'user'], "activitytime", $data['database'])); ?> |
        ip adresa: <?php echo gethostbyname($_SERVER['HTTP_HOST'])." - ".$_SERVER['HTTP_HOST']; ?> |
-       počet přihlášení: <?php echo getUser($_SESSION[SESSION_PREFIX.'user'], "logincounter"); ?>
+       počet přihlášení: <?php echo getUser($_SESSION[SESSION_PREFIX.'user'], "logincounter", $data['database']); ?>
           </div>
         </div>
       </div>

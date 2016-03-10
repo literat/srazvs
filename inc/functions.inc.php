@@ -495,13 +495,10 @@ function requested($var, $default = NULL)
  *
  *
  */
-function getUser($uid, $index){
-	$sql = "SELECT *
-			FROM `sunlight-users` AS usr
-			WHERE id = '".$uid."' 
-			LIMIT 0,1";
-	$result = mysql_query($sql);
-	$user = mysql_fetch_assoc($result);	
+function getUser($uid, $index, $database)
+{
+	$user = $database->table('sunlight-users')->where('id', $uid)->fetch();
+
 	return $user[$index];
 }
 

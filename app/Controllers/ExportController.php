@@ -83,6 +83,7 @@ class ExportController extends BaseController
 		/* Application Header */
 		$ViewHandler->loadTemplate('header');
 		$ViewHandler->assign('config',		$GLOBALS['cfg']);
+		$this->View->assign('database',		$this->database);
 		$ViewHandler->render(TRUE);
 
 		// load and prepare template

@@ -386,6 +386,7 @@ class ProgramController extends BaseController
 			/* Application Header */
 			$this->View->loadTemplate('header');
 			$this->View->assign('config',		$GLOBALS['cfg']);
+			$this->View->assign('database',		$this->database);
 			$this->View->render(TRUE);
 		}
 
