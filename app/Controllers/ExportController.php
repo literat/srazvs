@@ -7,14 +7,14 @@
 class ExportController extends BaseController
 {
 	/**
-	 * This template variable will hold the 'view' portion of our MVC for this 
+	 * This template variable will hold the 'view' portion of our MVC for this
 	 * controller
 	 */
 	public $template = 'export';
 
 	/**
 	 * This is the default function that will be called by router.php
-	 * 
+	 *
 	 * @param 	array 	$getVars 	the GET variables posted to index.php
 	 */
 	public function init(array $getVars)

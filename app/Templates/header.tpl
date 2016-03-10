@@ -8,7 +8,7 @@
         <div id="headerProfileLogout">
           <a href="<?php echo HTTP_DIR."srazvs/"; ?>index.php" title="domů"><span>Domů</span></a>&nbsp;|&nbsp;
           <a href="<?php echo SET_DIR; ?>/" title="nastavení"><span>Nastavení</span></a>&nbsp;|&nbsp;
-          <a href="<?php echo HTTP_DIR."admin/"; ?>" title="administrace"><span>Administrace</span></a>&nbsp;|&nbsp; 
+          <a href="<?php echo HTTP_DIR."admin/"; ?>" title="administrace"><span>Administrace</span></a>&nbsp;|&nbsp;
           <a href="<?php echo HTTP_DIR."srazvs/registration/"; ?>" title="registrace" target="_blank"><span>Registrace</span></a>&nbsp;|&nbsp;
           <a href="<?php echo HTTP_DIR."srazvs/program/?cms=public"; ?>" title="program" target="_blank"><span>Veřejný program</span></a>&nbsp;|&nbsp;
           <a href="<?php echo HTTP_DIR."remote/logout.php?_return=admin/"; ?>" title="odhlásit se"><span>Odhlásit se</span></a>
@@ -22,10 +22,10 @@
       </div>
     </div>
     <!-- end of headerCanvas -->
-    <!-- start of siteCanvas -->  
+    <!-- start of siteCanvas -->
     <div id="siteCanvas">
       <div id="siteHeader">
-	 <?php 
+	 <?php
 	 $sql = "SELECT	place,
 					DATE_FORMAT(start_date, '%Y') AS year
 			FROM kk_meetings
@@ -49,8 +49,8 @@
       <img src="<?php echo IMG_DIR; ?>exports.png" alt="exporty" /> exporty</a> |
 	 <a href="<?php echo CAT_DIR; ?>" title="kategorie">
       <img src="<?php echo IMG_DIR; ?>categories.png" alt="kategorie" /> kategorie</a>
-    </div>  
-	
+    </div>
+
     <?php include_once(INC_DIR.'menu.inc.php'); ?>
    <!-- start of siteContent -->
    <div id='siteContent'>

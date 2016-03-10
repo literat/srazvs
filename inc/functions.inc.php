@@ -36,7 +36,7 @@ function formatDateFromDB ($input_date, $date_format)
  * @param string $db - databaze
  * @param string $encoding - kodovani pouzite pro spojeni
  * @return int $connected - vraci 0 (false) nebo 1 (true)
- */			
+ */
 function formatTimeDB ($input_cas, $format_cas)
 			{
 			//list ($h, $m, $s) = split('[:]', $input_cas);
@@ -55,7 +55,7 @@ function formatTimeDB ($input_cas, $format_cas)
  * @param datetime $input_datetime - datum a cas z databaze
  * @param string $format_datetime - PHP format data a casu
  * @return datetime $output_datetime - vraci zformatovany datum a cas
- */			
+ */
 function formatDateTimeFromDB($input_datetime, $format_datetime)
 			{
 			//mezera je oddelovac mezi datem a casem
@@ -79,12 +79,12 @@ function formatDateTimeFromDB($input_datetime, $format_datetime)
  * @param datetime $input_datetime - datum a cas z databaze
  * @param string $format_datetime - PHP format data a casu
  * @return datetime $output_datetime - vraci zformatovany datum a cas
- */			
+ */
 function formatDateTime2DB($date, $hour, $minute, $format)
 			{
 			//list($d, $m, $r) = split("[/.-]", $date);
 			list($d, $m, $r) = preg_split("[/|\.|-]", $date);
-			
+
 			// beru prvni znak a delam z nej integer
 			$rtest = $r{0};
 			$rtest += 0;
@@ -94,10 +94,10 @@ function formatDateTime2DB($date, $hour, $minute, $format)
 			// pokud je to nula, musim odstranit prvni znak
 			if(($rtest) == 0) $r = substr($r, 1);
 			if(($mtest) == 0) $m = substr($m, 1);
-			
+
 			$d += 0; $m += 0; $r += 0;
-				
-				
+
+
 			//mezera je oddelovac mezi datem a casem
 			//$input_datet = str_replace(" ","/",$input_date);
 			//rozsekam do promennych
@@ -110,7 +110,7 @@ function formatDateTime2DB($date, $hour, $minute, $format)
 			}
 
 function cleardate2DB ($input_datum, $format_datum)
-{			
+{
 			//list($d, $m, $r) = split("[/.-]", $input_datum);
 			list($d, $m, $r) = preg_split("[/|\.|-]", $input_datum);
 			// beru prvni znak a delam z nej integer
@@ -122,7 +122,7 @@ function cleardate2DB ($input_datum, $format_datum)
 			// pokud je to nula, musim odstranit prvni znak
 			if(($rtest) == 0) $r = substr($r, 1);
 			if(($mtest) == 0) $m = substr($m, 1);
-			
+
 			$d += 0; $m += 0; $r += 0;
 			$datum = date("$format_datum",mktime(0,0,0,$m,$d,$r));
 			return $datum;
@@ -136,7 +136,7 @@ function cleardate2DB ($input_datum, $format_datum)
  *
  * @param string $string - retezec znaku
  * @return string $string - ocisteny retezec
- */	
+ */
 function clearString($string)
 {
 	//specialni znaky
@@ -147,8 +147,8 @@ function clearString($string)
 	$string = stripslashes($string);
 	return $string;
 }
-	
-	
+
+
 
 function getAge($rodne_cislo)
 {
@@ -156,7 +156,7 @@ function getAge($rodne_cislo)
 	$today_year = date("Y");
 	$today_month = date("n");
 	$today_day = date("j");
-	//datum narozeni - rok, mesic, den	
+	//datum narozeni - rok, mesic, den
 	$year = number_format($rodne_cislo/100000000) + 1900;
 	$month = substr($rodne_cislo,2,2);
 	$day = substr($rodne_cislo,4,2);
@@ -173,7 +173,7 @@ function getAge($rodne_cislo)
 		}
 	return $age;
 }
-	
+
 function isRC($rc)
 {
     // "be liberal in what you receive"
@@ -197,7 +197,7 @@ function isRC($rc)
     // cislo je OK
     return TRUE;
 }
-	
+
 function getDateOfBirth($rodne_cislo)
 {
 	//matematicke operace jsou prece jenom rychlejsi
@@ -218,8 +218,8 @@ function getSex($rodne_cislo)
 	else $sex = "muž";
 	return $sex;
 }
-	
-//---Check Czech phone number optional interneational preposition 
+
+//---Check Czech phone number optional interneational preposition
 //---+420 and gaps betweeen trinity of numbers
 //---Kontroluje Ceske teefonni cislo, nepovinny mezinarodni predpona
 //--- +420 a nepovinne mezery mezi trojicemi cisel
@@ -286,7 +286,7 @@ $month_name = array(1 => "leden", "únor", "březen", "duben", "květen", "červ
 /**
  * getCategoryStyle()
  * - funkce vytvori styly pro vlozeni kategorii
- * 
+ *
  * @return string <style>...</style>
  */
 function getCategoryStyle()
@@ -305,7 +305,7 @@ function getCategoryStyle()
 		}\n";
 	}
 	$style .= "</style>\n";
-	
+
 	return $style;
 }
 
@@ -316,12 +316,12 @@ function getCategoryStyle()
  * @author tomas.litera@gmail.com
  *
  * @param string $location - misto presmerovani
- */	
+ */
 function redirect($location)
 {
 	header("Location: $location");
 	//header("Connection: close");
-	
+
 	/*echo "<script type='javascript'>
 	   	   window.location='".$location."';
 	</script>";*/
@@ -347,7 +347,7 @@ function shortenText($text, $limit, $delimiter)
     		$pos = strrpos($text, $delimiter); // v PHP 5 by se dal použít parametr offset
     		$out_text = substr($text, 0, ($pos ? $pos : -1)) . "...";
 		}
-		
+
 		return $out_text;
 }
 
@@ -395,12 +395,12 @@ function wordGen($length = 10, $numlength = 3)
 		}
   	$t =! $t;
 	}
-  
+
   	//ciselna cast
   	if($numlength != 0){
     	$output .= mt_rand(pow(10, $numlength - 1), pow(10, $numlength) - 1);
   	}
-  
+
 	return $output;
 }
 
@@ -412,7 +412,7 @@ function wordGen($length = 10, $numlength = 3)
  * - vraci vysledek v poli (0 -hash, 1 - salt, 2 - vstup)
  *
  * @author sunlight CMS
- * 
+ *
  * @param string $string - vstupni retezec znaku
  * @param mixed var $hash_key - sifrovaci klic (cisla i pismena)
  * @param mixed var $usesalt - moznost vlozeni vlastni soli
@@ -486,8 +486,8 @@ function requested($var, $default = NULL)
 		elseif(isset($_POST[$var])) $out = clearString($_POST[$var]);
 		else $out = $default;
 		//$_SESSION['data'][$var] = $out;
-	//}	
-	
+	//}
+
 	return $out;
 }
 
@@ -556,7 +556,7 @@ function number2word($number, $zero = false)
 		elseif($number{0}==3 OR $number{0}==4)	return $jednotky[$number{0}]."sta".number2word(substr($number,1));
 		else						  			return $jednotky[$number{0}]."set".number2word(substr($number,1));
 	}
-	
+
 	return false;
 }
 
