@@ -146,24 +146,23 @@ class ExportModel extends NixModel
 		// output file name
 		$output_filename = "attendance_list.".$file_type;
 
-		$query = "SELECT	vis.id AS id,
+		$header_data = $this->database->query('SELECT	vis.id AS id,
 						name,
 						surname,
 						nick,
-						DATE_FORMAT(birthday, '%d. %m. %Y') AS birthday,
+						DATE_FORMAT(birthday, "%d. %m. %Y") AS birthday,
 						street,
 						city,
 						postal_code,
 						group_num,
 						group_name,
 						place,
-						DATE_FORMAT(start_date, '%Y') AS year
+						DATE_FORMAT(start_date, "%Y") AS year
 				FROM kk_visitors AS vis
 				LEFT JOIN kk_meetings AS meets ON meets.id = vis.meeting
-				WHERE meeting='".$this->meetingId."' AND vis.deleted='0'
-				ORDER BY surname ASC
-				";
-		$result = mysql_query($query);
+				WHERE meeting = ? AND vis.deleted = ?
+				ORDER BY surname ASC',
+				$this->meetingId, '0')->fetch();
 
 		// load and prepare template
 		$this->View->loadTemplate('exports/attendance');
@@ -171,7 +170,6 @@ class ExportModel extends NixModel
 		$template = $this->View->render(false);
 
 		// prepare header
-		$header_data = mysql_fetch_assoc($result);
 		$attendance_header = $header_data['place']." ".$header_data['year'];
 
 		$this->Pdf = $this->createPdf();
@@ -785,14 +783,13 @@ class ExportModel extends NixModel
 	 */
 	public function getMoney($type)
 	{
-		$query = "SELECT SUM(bill) AS account,
+		$data = $this->database->query('SELECT SUM(bill) AS account,
 							COUNT(bill) * vis.cost AS suma,
 							COUNT(bill) * vis.cost - SUM(bill) AS balance
 					FROM kk_visitors AS vis
 					LEFT JOIN kk_meetings AS meets ON vis.meeting = meets.id
-					WHERE meeting = '".$this->meetingId."' AND vis.deleted = '0'";
-		$result = mysql_query($query);
-		$data = mysql_fetch_assoc($result);
+					WHERE meeting = ? AND vis.deleted = ?',
+					$this->meetingId, '0')->fetch();
 
 		switch($type){
 			case "account":
@@ -818,15 +815,13 @@ class ExportModel extends NixModel
 	 */
 	public function getMealCount($meal)
 	{
-		$sql = "SELECT count(". $meal.") AS ". $meal."
+		$data = $this->database->query('SELECT count(?) AS ?
 				FROM `kk_meals` AS mls
 				LEFT JOIN `kk_visitors` AS vis ON vis.id = mls.visitor
-				WHERE vis.deleted = '0'
-					AND vis.meeting = '".$_SESSION['meetingID']."'
-					AND vis.deleted = '0'
-					AND ". $meal." = 'ano'";
-		$result = mysql_query($sql);
-		$data = mysql_fetch_assoc($result);
+				WHERE vis.deleted = ?
+					AND vis.meeting = ?
+					AND ' . $meal . ' = ?',
+					$meal, $meal, '0', $_SESSION['meetingID'], 'ano')->fetch();
 
 		return $data[$meal];
 	}
