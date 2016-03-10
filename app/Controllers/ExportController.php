@@ -30,7 +30,9 @@ class ExportController extends BaseController
 			$mid = $_SESSION['meetingID'];
 		}
 
-		$Container = new Container($GLOBALS['cfg'], $mid);
+		global $database;
+		$this->database = $database;
+		$Container = new Container($GLOBALS['cfg'], $mid, $this->database);
 		$ExportHandler = $Container->createExport();
 		$ViewHandler = $Container->createView();
 
@@ -83,7 +85,7 @@ class ExportController extends BaseController
 		/* Application Header */
 		$ViewHandler->loadTemplate('header');
 		$ViewHandler->assign('config',		$GLOBALS['cfg']);
-		$this->View->assign('database',		$this->database);
+		$ViewHandler->assign('database',		$this->database);
 		$ViewHandler->render(TRUE);
 
 		// load and prepare template
