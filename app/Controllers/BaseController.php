@@ -2,10 +2,10 @@
 
 /**
  * Base Controller
- * 
+ *
  * abstract base class for all controllers
- * 
- * @author Tomas Litera 
+ *
+ * @author Tomas Litera
  * @copyright 2013-06-12 <tomaslitera@hotmail.com>
  * @package srazvs
  */
@@ -85,7 +85,7 @@ abstract class BaseController
 
 	/**
 	 * This is the default function that will be called by Router.php
-	 * 
+	 *
 	 * @param array $getVars the GET variables posted to index.php
 	 */
 	public function init(array $getVars)
@@ -124,7 +124,7 @@ abstract class BaseController
 			case 'export-visitors':
 				$this->Export->printProgramVisitors($id);
 				break;
-	
+
 		}
 
 		$this->render();
