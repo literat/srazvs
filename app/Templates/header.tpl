@@ -26,15 +26,12 @@
     <div id="siteCanvas">
       <div id="siteHeader">
 	 <?php
-	 $sql = "SELECT	place,
-					DATE_FORMAT(start_date, '%Y') AS year
+   $meeting = $data['database']->query('SELECT	place, DATE_FORMAT(start_date, "%Y") AS year
 			FROM kk_meetings
-			WHERE id = '".$_SESSION['meetingID']."' AND deleted = '0'
-			LIMIT 1";
-	 $result = mysql_query($sql);
-	 $row = mysql_fetch_array($result);
+			WHERE id = ? AND deleted = ?
+			LIMIT 1', $_SESSION['meetingID'], '0')->fetch();
 	 ?>
-	 <h1>Srazy VS :::: <?php echo $row['place']." ".$row['year']; ?></h1>
+	 <h1>Srazy VS :::: <?php echo $meeting['place']." ".$meeting['year']; ?></h1>
 	</div>
     <div id="siteNavbar">
 	 <a href="<?php echo MEET_DIR."/?mid=".$_SESSION['meetingID']; ?>" title="sraz">
