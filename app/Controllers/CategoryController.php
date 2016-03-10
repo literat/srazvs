@@ -181,11 +181,10 @@ class CategoryController extends BaseController
 		$this->template = "form";
 		$this->categoryId = $id;
 
-		$query = "SELECT * FROM kk_categories WHERE id = ".$id." LIMIT 1";
-		$db_data = mysql_fetch_assoc(mysql_query($query));
+		$category = $this->database->table('kk_categories')->where('id', $id)->limit('1')->fetch();
 
 		foreach($this->Category->dbColumns as $key) {
-			$this->data[$key] = requested($key, $db_data[$key]);
+			$this->data[$key] = requested($key, $category[$key]);
 		}
 	}
 
