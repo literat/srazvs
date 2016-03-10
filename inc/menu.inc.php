@@ -1,12 +1,13 @@
 <?php
 
-$sql = "SELECT  id AS mid,
-				place,
-				DATE_FORMAT(start_date, '%Y') AS year
-		FROM kk_meetings
-		WHERE deleted = '0'
-		ORDER BY id DESC";
-$result = mysql_query($sql);
+$menuItems = $data['database']->query(
+	'SELECT id AS mid,
+			place,
+			DATE_FORMAT(start_date, "%Y") AS year
+	FROM kk_meetings
+	WHERE deleted = ?
+	ORDER BY id DESC',
+	'0')->fetchAll();
 
 ############################## GENEROVANI STRANKY ###############################333
 
@@ -22,8 +23,8 @@ $menu .= "   </ul>";
 $menu .= "  <div class='menuItem'>jednotlivé srazy</div>\n";
 $menu .= "   <ul>";
 
-while($data = mysql_fetch_array($result)){
-	$menu .= "    <li><a href='?mid=".$data['mid']."'>".$data['place']." ".$data['year']."</a></li>\n";
+foreach($menuItems as $item) {
+	$menu .= "    <li><a href='?mid=".$item['mid']."'>".$item['place']." ".$item['year']."</a></li>\n";
 }
 
 $menu .= "   </ul>";
