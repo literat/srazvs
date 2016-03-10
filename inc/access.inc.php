@@ -134,12 +134,11 @@ else $_SESSION['user']["logged"] = true;
 
 if(isset($_SESSION['user']['logged']) && ($_SESSION['user']['logged'] == true)) {
 	// neverim session z jineho systemu, takze overuju, jestli jsou udaje pravdive
-	$sql = "SELECT * FROM `".$cfg['prefix']."-users` WHERE id = '".$_SESSION[SESSION_PREFIX.'user']."'";
-	$result = mysql_query($sql);
-	if(mysql_num_rows($result)) {
-		$user = mysql_fetch_array($result);
+	$user = $database->table($cfg['prefix'] . '-users')->where('id', $_SESSION[SESSION_PREFIX.'user'])->fetch();
+
+	if($user) {
 		if($_SESSION[SESSION_PREFIX.'password'] != $user['password']) {
-			echo "Chybné heslo!";
+			Tracy\Debugger::log('Access: bad password!', Tracy\Debugger::ERROR);
 		}
 		else {
 			$nologin = false;
@@ -152,8 +151,9 @@ if(isset($_SESSION['user']['logged']) && ($_SESSION['user']['logged'] == true)) 
 		if(($uid != 19) && ($uid != 7) && ($uid != 105) && ($uid != 21) && ($uid != 20) && ($uid != 155) && ($uid != 165) && ($uid != 46) && ($uid != 2) && ($uid != 13) && ($uid != 178)){
 			header("Location: ".HTTP_DIR."admin/");
 		}
+	} else {
+		Tracy\Debugger::log('Access: user data does not exist!', Tracy\Debugger::ERROR);
 	}
-	mysql_free_result($result);
 }
 else {
 	session_unset();
