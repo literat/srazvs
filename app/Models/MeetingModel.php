@@ -34,9 +34,10 @@ class MeetingModel extends Component
 	public $regHeading = '';
 
 	private $configuration;
+	private $database;
 
 	/** Constructor */
-	public function __construct($meetingId = NULL, $configuration)
+	public function __construct($meetingId = NULL, $configuration, $database)
 	{
 		$this->meetingId = $meetingId;
 		$this->weekendDays = array("pátek", "sobota", "neděle");
@@ -68,6 +69,7 @@ class MeetingModel extends Component
 		);
 		$this->dbTable = "kk_meetings";
 		$this->configuration = $configuration;
+		$this->database = $database;
 	}
 
 	/**
@@ -102,9 +104,11 @@ class MeetingModel extends Component
 	 */
 	public function getPrice($type)
 	{
-		$query = "SELECT cost, advance FROM kk_meetings WHERE id='".$this->meetingId."' LIMIT 1";
-		$result = mysql_query($query);
-		$data = mysql_fetch_assoc($result);
+		$data = $this->database
+			->table($this->dbTable)
+			->where('id', $this->meetingId)
+			->limit(1)
+			->fetch();
 
 		if($type == 'cost') return $data['cost'];
 		elseif($type == 'advance') return $data['advance'];
