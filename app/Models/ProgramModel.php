@@ -27,15 +27,17 @@ class ProgramModel extends Component
 	public $formNames = array();
 
 	private $configuration;
+	private $database;
 
 	/** Constructor */
-	public function __construct($meeting_id, $configuration)
+	public function __construct($meeting_id, $configuration, $database)
 	{
 		$this->meetingId = $meeting_id;
 		$this->dbColumns = array("name", "block", "display_in_reg", "description", "tutor", "email", "category", "material", "capacity");
 		$this->formNames = array("name", "description", "material", "tutor", "email", "capacity", "display_in_reg", "block", "category");
 		$this->dbTable = "kk_programs";
 		$this->configuration = $configuration;
+		$this->database = $database;
 	}
 
 	/**
@@ -114,28 +116,25 @@ class ProgramModel extends Component
 
 	public function getExportPrograms($blockId)
 	{
-		$sql = "SELECT 	*
-				FROM kk_programs
-				WHERE block='".$blockId."' AND deleted='0'
-				LIMIT 10";
-		$result = mysql_query($sql);
-		$rows = mysql_affected_rows();
+		$exportPrograms = $this->database
+			->table($this->dbTable)
+			->where('block ? AND deleted ?', $blockId, '0')
+			->limit(10)
+			->fetchAll();
 
-		if($rows == 0){
+		if(!$exportPrograms) {
 			$html = "";
-		}
-		else{
+		} else {
 			$html = "<table>\n";
-			while($data = mysql_fetch_assoc($result)){
+			foreach($exportPrograms as $data){
 				$html .= "<tr>";
 				//// resim kapacitu programu a jeho naplneni navstevniky
-				$fullProgramSql = "SELECT COUNT(visitor) AS visitors
+				$fullProgramData = $this->database->query('SELECT COUNT(visitor) AS visitors
 								   FROM `kk_visitor-program` AS visprog
 								   LEFT JOIN `kk_visitors` AS vis ON vis.id = visprog.visitor
-								   WHERE program = '".$data['id']."'
-										AND vis.deleted = '0'";
-				$fullProgramResult = mysql_query($fullProgramSql);
-				$fullProgramData = mysql_fetch_assoc($fullProgramResult);
+								   WHERE program = ?
+										AND vis.deleted = ?',
+									$data['id'], '0')->fetch();
 
 				if($fullProgramData['visitors'] >= $data['capacity']){
 					//$html .= "<input disabled type='radio' name='".$id."' value='".$data['id']."' />\n";
@@ -162,29 +161,29 @@ class ProgramModel extends Component
 	{
 		$programs = "";
 
-		$progSql = "SELECT 	id,
+		$progSql = $this->database->query('SELECT 	id,
 							day,
-							DATE_FORMAT(`from`, '%H:%i') AS `from`,
-							DATE_FORMAT(`to`, '%H:%i') AS `to`,
+							DATE_FORMAT(`from`, "%H:%i") AS `from`,
+							DATE_FORMAT(`to`, "%H:%i") AS `to`,
 							name,
 							program
 					FROM kk_blocks
-					WHERE deleted = '0' AND program='1' AND meeting='".$this->meetingId."'
-					ORDER BY `day`, `from` ASC";
+					WHERE deleted = ? AND program = ? AND meeting = ?
+					ORDER BY `day`, `from` ASC',
+					'0', '1', $this->meetingId)->fetchAll();
 
-		$progResult = mysql_query($progSql);
-		$progRows = mysql_affected_rows();
+		//$progResult = mysql_query($progSql);
+		//$progRows = mysql_affected_rows();
 
-		if($progRows == 0){
+		if(!$progSql){
 			$programs .= "<div class='emptyTable' style='width:400px;'>Nejsou žádná aktuální data.</div>\n";
-		}
-		else{
+		} else {
 			//// prasarnicka kvuli programu raftu - resim obsazenost dohromady u dvou polozek
-			$raftCountSql = "SELECT COUNT(visitor) AS raft FROM `kk_visitor-program` WHERE program='56|57'";
-			$raftCountResult = mysql_query($raftCountSql);
-			$raftCountData = mysql_fetch_assoc($raftCountResult);
+			//$raftCountSql = "SELECT COUNT(visitor) AS raft FROM `kk_visitor-program` WHERE program='56|57'";
+			//$raftCountResult = mysql_query($raftCountSql);
+			//$raftCountData = mysql_fetch_assoc($raftCountResult);
 
-			while($progData = mysql_fetch_assoc($progResult)){
+			foreach($progSql as $progData){
 				//nemoznost volit predsnemovni dikusi
 				if($progData['id'] == 63) $notDisplayed = "style='display:none;'";
 				//obsazenost raftu
