@@ -401,7 +401,7 @@ class MeetingModel extends Component
 	}
 
 	public function setRegistrationHandlers($meeting_id = NULL) {
-		$sql = "SELECT	id,
+		$data = $this->database->query("SELECT	id,
 				place,
 				DATE_FORMAT(start_date, '%Y') AS year,
 				UNIX_TIMESTAMP(open_reg) AS open_reg,
@@ -409,10 +409,7 @@ class MeetingModel extends Component
 		FROM kk_meetings
 		".($meeting_id ? "WHERE id = '".$meeting_id."'" : '')."
 		ORDER BY id DESC
-		LIMIT 1";
-
-		$result = mysql_query($sql);
-		$data = mysql_fetch_assoc($result);
+		LIMIT 1")->fetch();
 
 		$mid = $data['id'];
 		$meetingHeader =
