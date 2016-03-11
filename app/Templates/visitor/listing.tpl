@@ -119,7 +119,7 @@ $(document).ready(function() {
 			</tr>";
 		<?php
 			} else {
-				while($row = mysql_fetch_assoc($data['render'])) {
+				foreach($data['render'] as $row) {
 					if($data['meeting-price'] <= $row['bill']) {
 						$payment = "<acronym title='Zaplaceno'><img src='".IMG_DIR."icons/paid.png' alt='zaplaceno' /></acronym>";
 					} elseif(200 <= $row['bill']) {

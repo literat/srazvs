@@ -42,6 +42,9 @@ class VisitorModel /* extends Component */
 	/** @var array configuration */
 	public $configuration;
 
+	/** @var array configuration */
+	private $database;
+
 	/**
 	 * Array of database programs table columns
 	 *
@@ -57,8 +60,16 @@ class VisitorModel /* extends Component */
 	public $formNames = array();
 
 	/** konstruktor */
-	public function __construct($meeting_ID, Emailer $Emailer, MeetingModel $Meeting, MealModel $Meals, ProgramModel $Program, BlockModel $Blocks, $configuration)
-	{
+	public function __construct(
+		$meeting_ID,
+		Emailer $Emailer,
+		MeetingModel $Meeting,
+		MealModel $Meals,
+		ProgramModel $Program,
+		BlockModel $Blocks,
+		$configuration,
+		$database
+	) {
 		$this->Emailer = $Emailer;
 		$this->Meeting = $Meeting;
 		$this->meeting_price = $this->Meeting->getPrice('cost');
@@ -94,6 +105,7 @@ class VisitorModel /* extends Component */
 		$this->formNames = array("name", "description", "material", "tutor", "email", "capacity", "display_in_reg", "block", "category");
 		$this->dbTable = "kk_visitors";
 		$this->configuration = $configuration;
+		$this->database = $database;
 	}
 
 	/**
@@ -247,14 +259,12 @@ class VisitorModel /* extends Component */
 	 */
 	public function getCount()
 	{
-		//// ziskam pocet ucastniku
-		$query = "SELECT COUNT(id) AS visitors_count
-					FROM kk_visitors
-					WHERE meeting='".$this->meeting_ID."' AND deleted='0'";
-		$result = mysql_query($query);
-		$data = mysql_fetch_assoc($result);
+		$visitorsCount = $this->database
+			->table($this->dbTable)
+			->where('meeting ? AND deleted ?', $this->meeting_ID, '0')
+			->count('id');
 
-		return $data['visitors_count'];
+		return $visitorsCount;
 	}
 
 	/**
@@ -376,8 +386,13 @@ class VisitorModel /* extends Component */
 						FROM kk_visitors
 						WHERE id='".$visitor_id."' AND deleted = '0'
 						LIMIT 1";
+			$data = $this->database
+				->table($this->dbTable)
+				->where('id ? AND deleted ?', $visitor_id, '0')
+				->limit(1)
+				->fetch();
 		} else {
-			$query = "SELECT 	vis.id AS id,
+			$data = $this->database->query('SELECT 	vis.id AS id,
 								code,
 								name,
 								surname,
@@ -394,17 +409,15 @@ class VisitorModel /* extends Component */
 								checked
 						FROM kk_visitors AS vis
 						LEFT JOIN kk_provinces AS provs ON vis.province = provs.id
-						WHERE meeting='".$this->meeting_ID."' AND deleted='0' ".$this->getSearch($this->search)."
-						ORDER BY vis.id ASC";
+						WHERE meeting = ? AND deleted = ? ' . $this->getSearch($this->search) . '
+						ORDER BY vis.id ASC',
+						$this->meeting_ID, '0')->fetchAll();
 		}
 
-		$result = mysql_query($query);
-		$rows = mysql_affected_rows();
-
-		if($rows == 0) {
+		if(!$data) {
 			return 0;
 		} else {
-			return $result;
+			return $data;
 		}
 	}
 
