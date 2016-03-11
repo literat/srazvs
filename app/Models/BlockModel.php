@@ -23,13 +23,19 @@ class BlockModel extends Component
 	 * @var array
 	 */
 	public $formNames = array();
-	
+
+	/**
+	 * Database connection
+	 * @var Connection
+	 */
+	private $database;
+
 	/**
 	 * Init variables
 	 * 
 	 * @param int $meeting_ID ID of meeting
 	 */
-	public function __construct($meeting_ID)
+	public function __construct($meeting_ID, $database)
 	{
 		$this->meetingId = $meeting_ID;
 		$this->dbColumns = array(
@@ -67,8 +73,10 @@ class BlockModel extends Component
 			"to"
 		);
 		$this->dbTable = "kk_blocks";
+
+		$this->database = $database;
 	}
-	
+
 	/**
 	 * Get data from database
 	 *
@@ -77,11 +85,11 @@ class BlockModel extends Component
 	public function getData($block_id = NULL)
 	{
 		if(isset($block_id)) {
-			$query = "SELECT 	name,
-						   		DATE_FORMAT(`from`,'%H') AS start_hour,
-						   		DATE_FORMAT(`to`,'%H') AS end_hour,
-						   		DATE_FORMAT(`from`,'%i') AS start_minute,
-						   		DATE_FORMAT(`to`,'%i') AS end_minute,
+			$data = $this->database->query('SELECT 	name,
+								DATE_FORMAT(`from`,"%H") AS start_hour,
+								DATE_FORMAT(`to`,"%H") AS end_hour,
+								DATE_FORMAT(`from`,"%i") AS start_minute,
+								DATE_FORMAT(`to`,"%i") AS end_minute,
 								`day`,
 								`from`,
 								`to`,
@@ -94,33 +102,31 @@ class BlockModel extends Component
 								capacity,
 								category
 						FROM kk_blocks
-						WHERE id='".$block_id."' AND deleted='0'
-						LIMIT 1"; 
-			$result = mysql_query($query);
-			$rows = mysql_affected_rows();
+						WHERE id = ? AND deleted = ?
+						LIMIT 1',
+						$block_id, '0')->fetch();
 		} else {
-			$query = "SELECT 	blocks.id AS id,
+			$data = $this->database->query('SELECT 	blocks.id AS id,
 							blocks.name AS name,
 							cat.name AS cat_name,
 							day,
-							DATE_FORMAT(`from`, '%H:%i') AS `from`,
-							DATE_FORMAT(`to`, '%H:%i') AS `to`,
+							DATE_FORMAT(`from`, "%H:%i") AS `from`,
+							DATE_FORMAT(`to`, "%H:%i") AS `to`,
 							description,
 							tutor,
 							email,
 							style
 					FROM kk_blocks AS blocks
 					LEFT JOIN kk_categories AS cat ON cat.id = blocks.category
-					WHERE blocks.meeting = '".$this->meetingId."' AND blocks.deleted = '0'
-					ORDER BY day, `from` ASC";
-			$result = mysql_query($query);
-			$rows = mysql_affected_rows();
+					WHERE blocks.meeting = ? AND blocks.deleted = ?
+					ORDER BY day, `from` ASC',
+					$this->meetingId, '0')->fetchAll();
 		}
 
-		if($rows == 0) {
+		if(!$data) {
 			return 0;
 		} else {
-			return $result;
+			return $data;
 		}
 	}
 
