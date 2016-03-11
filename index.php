@@ -30,6 +30,8 @@ $cacheStorage = new FileStorage(__DIR__ . '/temp/cache');
 $structure   = new Structure($connection, $cacheStorage);
 $database = new Context($connection, $structure);
 
+Nette\Database\Helpers::createDebugPanel($connection);
+
 $actualMeetingId = $database->query('SELECT id FROM kk_meetings ORDER BY id DESC LIMIT 1')->fetchField();
 
 if(!isset($_SESSION['meetingID'])) {
