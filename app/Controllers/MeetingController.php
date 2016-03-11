@@ -118,7 +118,7 @@ class MeetingController extends BaseController
 				break;
 			default:
 				$this->render = $this->Meeting->renderProgramOverview();
-				$this->data = mysql_fetch_assoc($this->Meeting->getData($this->meetingId));
+				$this->data = $this->Meeting->getData($this->meetingId);
 				break;
 		}
 

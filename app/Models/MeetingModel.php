@@ -80,19 +80,15 @@ class MeetingModel extends Component
 	public function getData($meeting_id = NULL)
 	{
 		if(isset($meeting_id)) {
-			$query = "SELECT * FROM kk_meetings WHERE deleted = '0' AND id = ".$meeting_id;
-			$result = mysql_query($query);
-			$rows = mysql_affected_rows();
+			$data = $this->database->table($this->dbTable)->where('deleted ? AND id ?',  '0', $meeting_id)->fetch();
 		} else {
-			$query = "SELECT * FROM kk_meetings WHERE deleted = '0'";
-			$result = mysql_query($query);
-			$rows = mysql_affected_rows();
+			$data = $this->database->table($this->dbTable)->where('deleted',  '0')->fetchAll();
 		}
 
-		if($rows == 0) {
+		if(!$data) {
 			return 0;
 		} else {
-			return $result;
+			return $data;
 		}
 	}
 
@@ -125,10 +121,11 @@ class MeetingModel extends Component
 	{
 		$html_select = "<select style='width: 195px; font-size: 10px' name='province'>\n";
 
-		$query = "SELECT * FROM kk_provinces";
-		$result = mysql_query($query);
+		$result = $this->database
+			->table('kk_provincies')
+			->fetchAll();
 
-		while($data = mysql_fetch_assoc($result)){
+		foreach($result as $data){
 			if($data['id'] == $selected_province){
 				$sel = "selected";
 			}
@@ -148,21 +145,21 @@ class MeetingModel extends Component
 	 */
 	public function getPrograms($blockId)
 	{
-		$sql = "SELECT 	progs.id AS id,
+		$result = $this->database->query('SELECT 	progs.id AS id,
 						progs.name AS name,
 						style
 				FROM kk_programs AS progs
 				LEFT JOIN kk_categories AS cat ON cat.id = progs.category
-				WHERE block='".$blockId."' AND progs.deleted='0'
-				LIMIT 10";
-		$result = mysql_query($sql);
-		$rows = mysql_affected_rows();
+				WHERE block = ? AND progs.deleted = ?
+				LIMIT 10',
+				$blockId, '0')->fetchAll();
 
-		if($rows == 0) $html = "";
-		else{
+		if(!$result) {
+			$html = "";
+		} else {
 			$html = "<table class='programs'>\n";
 			$html .= " <tr>\n";
-			while($data = mysql_fetch_assoc($result)){
+			foreach($result as $data){
 				$html .= "<td class='category cat-".$data['style']."' style='text-align:center;'>\n";
 				$html .= "<a class='program' href='".PROG_DIR."/?id=".$data['id']."&cms=edit&page=meeting' title='".$data['name']."'>".$data['name']."</a>\n";
 				$html .= "</td>\n";
@@ -215,26 +212,23 @@ class MeetingModel extends Component
 			$html .= "  <td class='day' colspan='2' >".$value."</td>\n";
 			$html .= " </tr>\n";
 
-			$sql = "SELECT 	blocks.id AS id,
+			$result = $this->database->query('SELECT 	blocks.id AS id,
 							day,
-							DATE_FORMAT(`from`, '%H:%i') AS `from`,
-							DATE_FORMAT(`to`, '%H:%i') AS `to`,
+							DATE_FORMAT(`from`, "%H:%i") AS `from`,
+							DATE_FORMAT(`to`, "%H:%i") AS `to`,
 							blocks.name AS name,
 							program,
 							style
 					FROM kk_blocks AS blocks
 					LEFT JOIN kk_categories AS cat ON cat.id = blocks.category
-					WHERE blocks.deleted = '0' AND day='".$value."' AND blocks.meeting='".$this->meetingId."'
-					ORDER BY `from` ASC";
+					WHERE blocks.deleted = ? AND day = ? AND blocks.meeting = ?
+					ORDER BY `from` ASC',
+					'0', $value, $this->meetingId)->fetchAll();
 
-			$result = mysql_query($sql);
-			$rows = mysql_affected_rows();
-
-			if($rows == 0){
+			if(!$result){
 				$html .= "<td class='emptyTable' style='width:400px;'>Nejsou žádná aktuální data.</td>\n";
-			}
-			else{
-				while($data = mysql_fetch_assoc($result)){
+			} else {
+				foreach($result as $data){
 					$html .= "<tr>\n";
 					$html .= "<td class='time'>".$data['from']." - ".$data['to']."</td>\n";
 					if($data['program'] == 1){
@@ -244,8 +238,7 @@ class MeetingModel extends Component
 						$html .= "</div>\n";
 						$html .= $this->getPrograms($data['id']);
 						$html .= "</td>\n";
-					}
-					else {
+					} else {
 						$html .= "<td class='category cat-".$data['style']."'>";
 						$html .= "<a class='block' href='".BLOCK_DIR."/?id=".$data['id']."&cms=edit&page=meeting' title='".$data['name']."'>".$data['name']."</a>\n";
 						$html .= "</td>\n";
