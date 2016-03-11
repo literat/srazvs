@@ -20,11 +20,6 @@ class SettingsModel extends Component
 	 */
 	public $dbColumns = array();
 
-	/**
-	 * Database connection
-	 */
-	private $database;
-
 	/** Constructor */
 	public function __construct($database)
 	{

@@ -61,8 +61,8 @@ $(document).ready(function() {
 		</tr>
 		<?php
 			} else {
-				while($row = mysql_fetch_assoc($data['render'])) {
-		?>				
+				foreach($data['render'] as $row) {
+		?>
 		<tr class='radek1'>
 			<td><a href='?id=<?php echo $row['id']; ?>&cms=edit&page=meetings' title='Upravit'><img class='edit' src='<?php echo IMG_DIR; ?>icons/edit.gif' /></a></td>
 			<td><a href="javascript:confirmation('?id=<?php echo $row['id']; ?>&amp;cms=delete', 'sraz: <?php echo $row['place']; ?> <?php echo $row['start_date']; ?> -> Opravdu SMAZAT tento sraz? Jste si jisti?')" title='Odstranit'><img class='edit' src='<?php echo IMG_DIR; ?>icons/delete.gif' /></a></td>

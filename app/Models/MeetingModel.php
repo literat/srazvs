@@ -34,7 +34,6 @@ class MeetingModel extends Component
 	public $regHeading = '';
 
 	private $configuration;
-	private $database;
 
 	/** Constructor */
 	public function __construct($meetingId = NULL, $configuration, $database)

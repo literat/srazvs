@@ -25,12 +25,6 @@ class BlockModel extends Component
 	public $formNames = array();
 
 	/**
-	 * Database connection
-	 * @var Connection
-	 */
-	private $database;
-
-	/**
 	 * Init variables
 	 *
 	 * @param int $meeting_ID ID of meeting

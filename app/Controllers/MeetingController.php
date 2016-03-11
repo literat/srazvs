@@ -114,7 +114,7 @@ class MeetingController extends BaseController
 			case "list-view":
 				$this->template = 'listing';
 				$this->render = $this->Meeting->getData();
-				$this->data = mysql_fetch_assoc($this->Meeting->getData($this->meetingId));
+				$this->data = $this->Meeting->getData($this->meetingId);
 				break;
 			default:
 				$this->render = $this->Meeting->renderProgramOverview();
@@ -179,7 +179,7 @@ class MeetingController extends BaseController
 
 		$this->todo = "modify";
 		// get meeting's data
-		$this->data = mysql_fetch_assoc($this->Meeting->getData($id));
+		$this->data = $this->Meeting->getData($id);
 
 		foreach($this->Meeting->dbColumns as $key) {
 			$$key = requested($key, $this->data[$key]);

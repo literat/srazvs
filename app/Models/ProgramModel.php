@@ -27,7 +27,6 @@ class ProgramModel extends Component
 	public $formNames = array();
 
 	private $configuration;
-	private $database;
 
 	/** Constructor */
 	public function __construct($meeting_id, $configuration, $database)
