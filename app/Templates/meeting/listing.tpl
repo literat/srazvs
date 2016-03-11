@@ -169,24 +169,24 @@ $(function() {
  <tr>
   <td class='label'><label>Záloha:</label></td>
   <td><input type='text' size='30' name='advance' value="<?php echo $data['advance']; ?>" /> ,- Kč</td>
- </tr> 
+ </tr>
  <tr>
  <tr>
   <td class='label'><label>Číslování dokladů:</label></td>
   <td><input type='text' size='30' name='numbering' value="<?php echo $data['numbering']; ?>" /></td>
- </tr> 
+ </tr>
  <tr>
   <td class='label'><label>Kontaktní osoba:</label></td>
   <td><input type='text' size='30' name='contact' value="<?php echo $data['contact']; ?>" /><?php printError($data['error_close_reg']); ?></td>
- </tr> 
+ </tr>
  <tr>
   <td class='label'><label>E-mail:</label></td>
   <td><input type='text' size='30' name='email' value="<?php echo $data['email']; ?>" /><?php printError($data['error_close_reg']); ?></td>
- </tr> 
+ </tr>
  <tr>
   <td class='label'><label>Telefon (mobil):</label></td>
   <td><input type='text' size='30' name='gsm' value="<?php echo $data['gsm']; ?>" /><?php printError($data['error_close_reg']); ?> (123456789)</td>
- </tr> 
+ </tr>
 </table>
 
  <input type='hidden' name='cms' value='modify'>
