@@ -754,21 +754,21 @@ class ExportModel extends NixModel
 	 */
 	public function getMaterial()
 	{
-		$sql = "SELECT 	progs.id AS id,
+		$data = $this->database->query('SELECT 	progs.id AS id,
 						progs.name AS name,
 						progs.material AS material
 				FROM `kk_programs` AS progs
 				LEFT JOIN `kk_blocks` AS bls ON progs.block = bls.id
-				WHERE progs.deleted = '0'
-					AND bls.meeting = '".$this->meetingId."'
-					AND bls.deleted = '0'";
-		$result = mysql_query($sql);
+				WHERE progs.deleted = ?
+					AND bls.meeting = ?
+					AND bls.deleted = ?',
+					'0', $this->meetingId, '0')->fetchAll();
 
 		$html = "";
-		while($data = mysql_fetch_assoc($result)){
-			if($data['material'] == "") $material = "(žádný)";
-			else $material = $data['material'];
-			$html .= "<div><a rel='programDetail' href='".PRJ_DIR."program/?id=".$data['id']."&cms=edit&page=export' title='".$data['name']."'>".$data['name']."</a>:\n</div>";
+		foreach($data as $item){
+			if($item['material'] == "") $material = "(žádný)";
+			else $material = $item['material'];
+			$html .= "<div><a rel='programDetail' href='".PRJ_DIR."program/?id=".$item['id']."&cms=edit&page=export' title='".$item['name']."'>".$item['name']."</a>:\n</div>";
 			$html .= "<div style='margin-left:10px;font-size:12px;font-weight:bold;'>".$material."</div>";
 		}
 
