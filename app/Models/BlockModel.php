@@ -6,18 +6,18 @@
  *
  * @created 2012-09-14
  * @author Tomas Litera <tomaslitera@hotmail.com>
- */ 
+ */
 class BlockModel extends Component
 {
 	/** @var integer meeting ID */
 	private $meetingId;
-	
+
 	/**
 	 * Array of database block table columns
 	 * @var array
 	 */
 	public $dbColumns = array();
-	
+
 	/**
 	 * Array of form names
 	 * @var array
@@ -32,7 +32,7 @@ class BlockModel extends Component
 
 	/**
 	 * Init variables
-	 * 
+	 *
 	 * @param int $meeting_ID ID of meeting
 	 */
 	public function __construct($meeting_ID, $database)
@@ -152,7 +152,7 @@ class BlockModel extends Component
 
 		return $html_select;
 	}
-	
+
 	/**
 	 * Return blocks that contents programs
 	 *
@@ -193,7 +193,7 @@ class BlockModel extends Component
 				/* 18 - pauzy */
 				WHERE blocks.deleted = '0' AND day='".$day_val."' AND meeting='".$meeting_id."' AND category != '18'
 				ORDER BY `from` ASC";
-	
+
 		$result = mysql_query($query);
 
 		return $result;
