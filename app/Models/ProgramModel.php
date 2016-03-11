@@ -209,14 +209,13 @@ class ProgramModel extends Component
 	public function getData($program_id = NULL)
 	{
 		if(isset($program_id)) {
-			$query = "SELECT	*
-					FROM kk_programs
-					WHERE id='".$program_id."' AND deleted='0'
-					LIMIT 1"; ;
-			$result = mysql_query($query);
-			$rows = mysql_affected_rows();
+			$data = $this->database
+				->table($this->dbTable)
+				->where('id ? AND deleted ?', $program_id, '0')
+				->limit(1)
+				->fetch();
 		} else {
-			$query = "SELECT 	programs.id AS id,
+			$data = $this->database->query('SELECT 	programs.id AS id,
 						programs.name AS name,
 						programs.description AS description,
 						programs.tutor AS tutor,
@@ -228,17 +227,15 @@ class ProgramModel extends Component
 				FROM kk_programs AS programs
 				LEFT JOIN kk_blocks AS blocks ON blocks.id = programs.block
 				LEFT JOIN kk_categories AS cat ON cat.id = programs.category
-				WHERE blocks.meeting = '".$this->meetingId."' AND programs.deleted = '0' AND blocks.deleted='0'
-				ORDER BY programs.id ASC";
-
-			$result = mysql_query($query);
-			$rows = mysql_affected_rows();
+				WHERE blocks.meeting = ? AND programs.deleted = ? AND blocks.deleted = ?
+				ORDER BY programs.id ASC',
+				$this->meetingId, '0', '0')->fetchAll();
 		}
 
-		if($rows == 0) {
+		if(!$data) {
 			return 0;
 		} else {
-			return $result;
+			return $data;
 		}
 	}
 

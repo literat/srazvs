@@ -63,7 +63,7 @@
 				</tr>
 				<?php
 				} else {
-					while($row = mysql_fetch_assoc($data['render'])) {
+					foreach($data['render'] as $row) {
 				?>
 				<tr class='radek1'>
 					<td>
