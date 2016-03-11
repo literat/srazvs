@@ -20,5 +20,5 @@
   <meta name='robots' content='all' />
   <meta name='author' content='<?php echo $data['config']['author'] ?>' />
   <meta name='copyright' content='(C) 2001 - <?php echo date('Y') ?>, <?php echo $data['config']['owner'] ?>' />
-  <style type="text/css"><?php echo $data['style']; ?></style>
+  <style type="text/css"><?php echo (isset($data['style'])) ? $data['style'] : ''; ?></style>
  </head>
