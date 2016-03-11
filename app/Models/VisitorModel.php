@@ -127,8 +127,8 @@ class VisitorModel /* extends Component */
 		$query_key_set = substr($query_key_set, 0, -1);
 		$query_value_set = substr($query_value_set, 0, -1);
 
-		$query = "INSERT INTO `kk_visitors` 
-					 (".$query_key_set.", `code`,`reg_daytime`) 
+		$query = "INSERT INTO `kk_visitors`
+					 (".$query_key_set.", `code`,`reg_daytime`)
 					 VALUES (".$query_value_set.", CONCAT(LEFT('".$DB_data['name']."',1),LEFT('".$DB_data['surname']."',1),SUBSTRING('".$DB_data['birthday']."',3,2)),'".date('Y-m-d H:i:s')."');";
 		$result = mysql_query($query);
 		$ID_visitor = mysql_insert_id();
@@ -188,7 +188,7 @@ class VisitorModel /* extends Component */
 		//$query_set = substr($query_set, 0, -1);
 
 		// updating visitor data
-		$query = "UPDATE `kk_visitors` 
+		$query = "UPDATE `kk_visitors`
 					SET ".$query_set."
 					WHERE `id`='".$ID_visitor."' LIMIT 1";
 		$result = mysql_query($query);
@@ -206,8 +206,8 @@ class VisitorModel /* extends Component */
 				$old_program = $this->getVisitorPrograms($ID_visitor);
 				// update old data to new existing
 				while($DB_block_data = mysql_fetch_assoc($program_blocks['result']) and $DB_old_program_data = mysql_fetch_assoc($old_program)){
-					$usr_program_query = "UPDATE `kk_visitor-program` 
-									SET `program` = ".$programs_data[$DB_block_data['id']]." 
+					$usr_program_query = "UPDATE `kk_visitor-program`
+									SET `program` = ".$programs_data[$DB_block_data['id']]."
 									WHERE visitor = ".$ID_visitor."
 									AND id = ".$DB_old_program_data['id'].";";
 					$usr_program_result = mysql_query($usr_program_query);
@@ -286,12 +286,12 @@ class VisitorModel /* extends Component */
 	public function getSearch($search)
 	{
 		if($search != ""){
-			$search_query = "AND (`code` REGEXP '".$search."' 
-							OR `group_num` REGEXP '".$search."' 
-							OR `name` REGEXP '".$search."' 
+			$search_query = "AND (`code` REGEXP '".$search."'
+							OR `group_num` REGEXP '".$search."'
+							OR `name` REGEXP '".$search."'
 							OR `surname` REGEXP '".$search."'
 							OR `nick` REGEXP '".$search."'
-							OR `city` REGEXP '".$search."' 
+							OR `city` REGEXP '".$search."'
 							OR `group_name` REGEXP '".$search."')";
 		} else $search_query = "";
 
