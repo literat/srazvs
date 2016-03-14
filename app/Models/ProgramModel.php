@@ -46,16 +46,15 @@ class ProgramModel extends Component
 	 * @param	int		$visitor_id	ID of visitor
 	 * @return	string				html
 	 */
-	public function getPrograms($block_id, $vid)
+	public function getPrograms($blockId, $vid)
 	{
-		$query = "SELECT 	*
-				FROM kk_programs
-				WHERE block='".$block_id."' AND deleted='0'
-				LIMIT 10";
-		$result = mysql_query($query);
-		$rows = mysql_affected_rows();
+		$blocks = $this->database
+			->table($this->dbTable)
+			->where('block ? AND deleted ?', $blockId, '0')
+			->limit(10)
+			->fetchAll();
 
-		if($rows == 0){
+		if(!$blocks){
 			$html = "";
 		} else {
 			/*$progSql = "SELECT progs.name AS prog_name
@@ -69,33 +68,34 @@ class ProgramModel extends Component
 
 			$checked_flag = false;
 			$html_input = "";
-			while($data = mysql_fetch_assoc($result)){
+			foreach($blocks as $data){
 				// full program capacity with visitors
-				$full_program_query = "SELECT COUNT(visitor) AS visitors FROM `kk_visitor-program` AS visprog
+				$fullProgramData = $this->database->query('SELECT COUNT(visitor) AS visitors FROM `kk_visitor-program` AS visprog
 									LEFT JOIN kk_visitors AS vis ON vis.id = visprog.visitor
-									WHERE program = '".$data['id']."' AND vis.deleted = '0'";
-				$full_program_result = mysql_query($full_program_query);
-				$DB_full_program = mysql_fetch_assoc($full_program_result);
+									WHERE program = ? AND vis.deleted = ?',
+									$data['id'], '0')->fetch();
 
 				// if the program is checked
-				$program_query = "SELECT * FROM `kk_visitor-program` WHERE program = '".$data['id']."' AND visitor = '".$vid."'";
-				$program_result = mysql_query($program_query);
-				$rows = mysql_affected_rows();
-				if($rows == 1){
+				$program = $this->database
+					->table('kk_visitor-program')
+					->where('program ? AND visitor ?', $data['id'], $vid)
+					->fetch();
+
+				if($program){
 					$checked = "checked='checked'";
 					$checked_flag = true;
 				} else {
 					$checked = "";
 				}
 				// if the capacity is full
-				if($DB_full_program['visitors'] >= $data['capacity']){
-					$html_input .= "<input id='".$data['id'].$block_id."' ".$checked." disabled type='radio' name='".$block_id."' value='".$data['id']."' />\n";
+				if($fullProgramData['visitors'] >= $data['capacity']){
+					$html_input .= "<input id='".$data['id'].$blockId."' ".$checked." disabled type='radio' name='".$blockId."' value='".$data['id']."' />\n";
 					$fullProgramInfo = " (NELZE ZAPSAT - kapacita programu je již naplněna!)";
 				} else {
-					$html_input .= "<input id='".$data['id'].$block_id."' ".$checked." type='radio' name='".$block_id."' value='".$data['id']."' /> \n";
+					$html_input .= "<input id='".$data['id'].$blockId."' ".$checked." type='radio' name='".$blockId."' value='".$data['id']."' /> \n";
 					$fullProgramInfo = "";
 				}
-				$html_input .= '<label for="'.$data['id'].$block_id.'">'.$data['name'].'</label>';
+				$html_input .= '<label for="'.$data['id'].$blockId.'">'.$data['name'].'</label>';
 				$html_input .= $fullProgramInfo;
 				$html_input .= "<br />\n";
 			}
@@ -104,7 +104,7 @@ class ProgramModel extends Component
 			if(!$checked_flag) $checked = "checked='checked'";
 			else $checked = "";
 
-			$html .= "<input ".$checked." type='radio' name='".$block_id."' value='0' /> Nebudu přítomen <br />\n";
+			$html .= "<input ".$checked." type='radio' name='".$blockId."' value='0' /> Nebudu přítomen <br />\n";
 			$html .= $html_input;
 
 			$html .= "</div>\n";
@@ -170,9 +170,6 @@ class ProgramModel extends Component
 					WHERE deleted = ? AND program = ? AND meeting = ?
 					ORDER BY `day`, `from` ASC',
 					'0', '1', $this->meetingId)->fetchAll();
-
-		//$progResult = mysql_query($progSql);
-		//$progRows = mysql_affected_rows();
 
 		if(!$progSql){
 			$programs .= "<div class='emptyTable' style='width:400px;'>Nejsou žádná aktuální data.</div>\n";

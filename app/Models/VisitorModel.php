@@ -350,22 +350,22 @@ class VisitorModel /* extends Component */
 	 * @param	int		ID of visitor
 	 * @return	string	html
 	 */
-	public function renderProgramSwitcher($ID_meeting, $ID_visitor)
+	public function renderProgramSwitcher($meetingId, $visitorId)
 	{
 		$html = "";
 
 		// gets data from database
-		$program_blocks = $this->Blocks->getProgramBlocks($ID_meeting);
+		$programBlocks = $this->Blocks->getProgramBlocks($meetingId);
 
 		// table is empty
-		if($program_blocks['rows'] == 0){
+		if(!$programBlocks){
 			$html .= "<div class='emptyTable' style='width:400px;'>Nejsou žádná aktuální data.</div>\n";
 		} else {
-			while($DB_data = mysql_fetch_assoc($program_blocks['result'])){
-				$html .= "<div class='".Tools::toCoolUrl($DB_data['day'])."'>".$DB_data['day'].", ".$DB_data['from']." - ".$DB_data['to']." : ".$DB_data['name']."</div>\n";
+			foreach($programBlocks as $block){
+				$html .= "<div class='".Tools::toCoolUrl($block['day'])."'>".$block['day'].", ".$block['from']." - ".$block['to']." : ".$block['name']."</div>\n";
 				// rendering programs in block
-				if($DB_data['program'] == 1){
-					$html .= "<div class='programs ".Tools::toCoolUrl($DB_data['day'])." ".Tools::toCoolUrl($DB_data['name'])."'>".$this->Programs->getPrograms($DB_data['id'], $ID_visitor)."</div>";
+				if($block['program'] == 1){
+					$html .= "<div class='programs ".Tools::toCoolUrl($block['day'])." ".Tools::toCoolUrl($block['name'])."'>".$this->Programs->getPrograms($block['id'], $visitorId)."</div>";
 				}
 				$html .= "<br />";
 			}

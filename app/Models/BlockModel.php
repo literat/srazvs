@@ -153,22 +153,24 @@ class BlockModel extends Component
 	 * @param	int		meeting ID
 	 * @return	array	result and number of affected rows
 	 */
-	public function getProgramBlocks($meeting_id)
+	public function getProgramBlocks($meetingId)
 	{
-		$query = "SELECT 	id,
+		$data = $this->database->query('SELECT 	id,
 					day,
-					DATE_FORMAT(`from`, '%H:%i') AS `from`,
-					DATE_FORMAT(`to`, '%H:%i') AS `to`,
+					DATE_FORMAT(`from`, "%H:%i") AS `from`,
+					DATE_FORMAT(`to`, "%H:%i") AS `to`,
 					name,
 					program
 				FROM kk_blocks
-				WHERE deleted = '0' AND program='1' AND meeting='".$meeting_id."'
-				ORDER BY `day` ASC";
+				WHERE deleted = ? AND program = ? AND meeting = ?
+				ORDER BY `day` ASC',
+				'0', '1', $meetingId);
 
-		$result = mysql_query($query);
-		$rows = mysql_affected_rows();
+		//$result = mysql_query($query);
+		//$rows = mysql_affected_rows();
 
-		return array('result' => $result, 'rows' => $rows);
+		//return array('result' => $result, 'rows' => $rows);
+		return $data;
 	}
 
 	public static function getExportBlocks($meeting_id, $day_val)

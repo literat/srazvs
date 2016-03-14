@@ -314,20 +314,19 @@ class VisitorController extends BaseController
 
 		$this->itemId = $id;
 
-		$dbData = mysql_fetch_assoc($this->Visitor->getData($id));
+		$dbData = $this->Visitor->getData($id);
 		foreach($this->Visitor->dbColumns as $key) {
 			$this->data[$key] = requested($key, $dbData[$key]);
 		}
 
-		$query = "SELECT	*
+		$data = $this->database->query('SELECT	*
 					FROM kk_meals
-					WHERE visitor='".$this->itemId."'
-					LIMIT 1";
-
-		$DB_data = mysql_fetch_assoc(mysql_query($query));
+					WHERE visitor = ?
+					LIMIT 1',
+					$this->itemId)->fetch();
 
 		foreach($this->Meal->dbColumns as $var_name) {
-			$$var_name = requested($var_name, $DB_data[$var_name]);
+			$$var_name = requested($var_name, $data[$var_name]);
 			$this->mealData[$var_name] = $$var_name;
 		}
 	}

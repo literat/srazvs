@@ -121,7 +121,7 @@ class MeetingModel extends Component
 		$html_select = "<select style='width: 195px; font-size: 10px' name='province'>\n";
 
 		$result = $this->database
-			->table('kk_provincies')
+			->table('kk_provinces')
 			->fetchAll();
 
 		foreach($result as $data){
