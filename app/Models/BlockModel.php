@@ -162,7 +162,7 @@ class BlockModel extends Component
 				FROM kk_blocks
 				WHERE deleted = ? AND program = ? AND meeting = ?
 				ORDER BY `day` ASC',
-				'0', '1', $meetingId);
+				'0', '1', $meetingId)->fetchAll();
 
 		return $data;
 	}
