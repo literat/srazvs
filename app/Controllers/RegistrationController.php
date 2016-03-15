@@ -497,6 +497,7 @@ class RegistrationController extends BaseController
 			$this->View->assign('question2',			$this->data['question2']);
 			$this->View->assign('bill',				$this->data['bill']);
 			$this->View->assign('cost',				$this->Meeting->getPrice('cost'));
+			$this->View->assign('checked',			(empty($this->data['checked']) ? '0' : $this->data['checked']));
 			$this->View->assign('programs',			$program_switcher);
 			$this->View->assign('hash',				$this->hash);
 			$this->View->assign('is-reg-open',		$this->Meeting->isRegOpen());
