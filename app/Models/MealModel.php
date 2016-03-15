@@ -16,7 +16,7 @@ class MealModel extends Component
 	public $day_meal = array();
 	
 	/** Constructor */
-	public function __construct($meeting = NULL)
+	public function __construct($meeting = NULL, $database)
 	{
 		$this->meeting = $meeting;
 		$this->dbColumns = array(
@@ -38,6 +38,7 @@ class MealModel extends Component
 			"nedělní oběd"		=>	"sun_lunch"
 		);
 		$this->dbTable = "kk_meals";
+		$this->database = $database;
 	}
 
 	/**
@@ -46,20 +47,14 @@ class MealModel extends Component
 	 * @param	int		$id			Id of record
 	 * @param	array	$db_data	Array of data
 	 * @return	bool
-	 */	
-	public function modify($id, array $db_data)
+	 */
+	public function modify($id, array $dbData)
 	{
-		$query_set = "";
-	 	foreach($db_data as $key => $value) {
-			$query_set .= "`".$key."` = '".$value."',";	
-		}
-	 	$query_set = substr($query_set, 0, -1);	
-		
-    	$query = "UPDATE `".$this->dbTable."` 
-					SET ".$query_set."
-					WHERE `visitor`='".$id."' LIMIT 1";
-    	$result = mysql_query($query);
-		
+		$result = $this->database
+			->table($this->dbTable)
+			->where('visitor', $id)
+			->update($dbData);
+
 		return $result;
 	}
 	
