@@ -11,10 +11,10 @@ class MealModel extends Component
 {
 	/** @var meeting ID */
 	private $meeting;
-	
+
 	/** @var array	meals */
 	public $day_meal = array();
-	
+
 	/** Constructor */
 	public function __construct($meeting = NULL, $database)
 	{
@@ -28,7 +28,7 @@ class MealModel extends Component
 			"sun_breakfast",
 			"sun_lunch"
 		);
-							
+
 		$this->dayMeal = array(
 			"páteční večeře"	=>	"fry_dinner",
 			"sobotní snídaně"	=>	"sat_breakfast",
@@ -57,36 +57,36 @@ class MealModel extends Component
 
 		return $result;
 	}
-	
+
 	function getMeals($visitorId)
 	{
 		$meals = "<tr>";
 		$meals .= " <td class='progPart'>";
-	
+
 		$mealSql = "SELECT 	*
 					FROM kk_meals
 					WHERE visitor='".$visitorId."'
 					";
-	
+
 		$mealResult = mysql_query($mealSql);
 		$mealRows = mysql_affected_rows();
-	
+
 		if($mealRows == 0){
 			$meals .= "<div class='emptyTable' style='width:400px;'>Nejsou žádná aktuální data.</div>\n";
 		}
-		else{	
+		else{
 			while($mealData = mysql_fetch_assoc($mealResult)){
 				$meals .= "<div class='block'>".$mealData['fry_dinner'].", ".$mealData['sat_breakfast']." - ".$mealData['sat_lunch']." : ".$mealData['sat_dinner']."</div>\n";
-	
+
 			}
 		}
-	
+
 		$meals .= "</td>";
 		$meals .= "</tr>";
-	
+
 		return $meals;
 	}
-	
+
 	/**
 	 * Render HTML Meals <select>
 	 *
@@ -100,17 +100,17 @@ class MealModel extends Component
 		// first value is displayed in form as default
 		$mealArray = array("ne" => "ne","ano" => "ano");
 		$yesNoArray = array("ne", "ano");
-		
+
 		$htmlSelect = "";
 		foreach($this->dayMeal as $title => $varName){
 			if(preg_match("/breakfast/", $varName))	$mealIcon = "breakfast";
 			if(preg_match("/lunch/", $varName))		$mealIcon = "lunch";
 			if(preg_match("/dinner/", $varName))	$mealIcon = "dinner";
-			
+
 			$htmlSelect .= "<span style='display:block;font-size:11px;'>".$title.":</span>\n";
 			$htmlSelect .= "<img style='width:18px;' src='".IMG_DIR."icons/".$mealIcon.".png' />\n";
 			$htmlSelect .= "<select ".$disabled." style='width:195px; font-size:11px;margin-left:5px;' name='".$varName."'>\n";
-			
+
 			foreach ($yesNoArray as $key){
 				if($key == $mealsValue[$varName]){
 					$selected = "selected";
@@ -120,7 +120,7 @@ class MealModel extends Component
 			}
 			$htmlSelect .= "</select><br />\n";
 		}
-				
+
 		return $htmlSelect;
 	}
 
@@ -135,9 +135,9 @@ class MealModel extends Component
 		$query = "SELECT	*
 					FROM kk_meals
 					WHERE visitor='".$visitor_id."'
-					LIMIT 1"; 
+					LIMIT 1";
 		$DB_data = mysql_fetch_assoc(mysql_query($query));
-		
+
 		foreach($this->dbColumns as $var_name) {
 			$$var_name = requested($var_name, $DB_data[$var_name]);
 			$meals_data[$var_name] = $$var_name;
