@@ -228,11 +228,7 @@ class ProgramModel extends Component
 				$this->meetingId, '0', '0')->fetchAll();
 		}
 
-		if(!$data) {
-			return 0;
-		} else {
-			return $data;
-		}
+		return $data;
 	}
 
 	/**
@@ -244,26 +240,24 @@ class ProgramModel extends Component
 	 */
 	public function getProgramsRegistration ($id, $disabled)
 	{
-		$query = "SELECT 	*
-			FROM kk_programs
-			WHERE block='".$id."' AND deleted='0'
-			LIMIT 10";
-		$result = mysql_query($query);
-		$rows = mysql_affected_rows();
+		$result = $this->database
+			->table($this->dbTable)
+			->where('block ? AND deleted ?', $id, '0')
+			->limit(10)
+			->fetchAll();
 
-		if($rows == 0){
+		if(!$result){
 			$html = "";
 		}
 		else{
 			$html = "<div>\n";
 			$html .= "<input ".$disabled." checked type='radio' name='".$id."' value='0' /> Nebudu přítomen <br />\n";
-			while($data = mysql_fetch_assoc($result)){
+			foreach($result as $data){
 				//// resim kapacitu programu a jeho naplneni navstevniky
-				$fullProgramSql = " SELECT COUNT(visitor) AS visitors FROM `kk_visitor-program` AS visprog
+				$fullProgramData = $this->database->query('SELECT COUNT(visitor) AS visitors FROM `kk_visitor-program` AS visprog
 									LEFT JOIN kk_visitors AS vis ON vis.id = visprog.visitor
-									WHERE program = '".$data['id']."' AND vis.deleted = '0'";
-				$fullProgramResult = mysql_query($fullProgramSql);
-				$fullProgramData = mysql_fetch_assoc($fullProgramResult);
+									WHERE program = ? AND vis.deleted = ?',
+									$data['id'], '0')->fetch();
 
 				// nezobrazeni programu v registraci, v adminu zaskrtavatko u programu
 				if($data['display_in_reg'] == 0) $notDisplayedProg = "style='display:none;'";
@@ -292,25 +286,25 @@ class ProgramModel extends Component
 	 * @param	int		$programId	ID of program
 	 * @return	string	html or null
 	 */
-	public function getProgramVisitors($program_id = NULL)
+	public function getProgramVisitors($programId = NULL)
 	{
-		if(!isset($program_id)) {
+		if(!isset($programId)) {
 			return NULL;
 		} else {
 			$html = "  <div style='border-bottom:1px solid black;text-align:right;'>účastníci</div>";
 
-			$html .= "<br /><a style='text-decoration:none; display:block; margin-bottom:4px;' href='?cms=export-visitors&id=".$program_id."'>
+			$html .= "<br /><a style='text-decoration:none; display:block; margin-bottom:4px;' href='?cms=export-visitors&id=".$programId."'>
 	      	<img style='border:none;' align='absbottom' src='".IMG_DIR."icons/pdf.png' />Účastníci programu</a>";
 
-			$query = "SELECT vis.name AS name,
+			$result = $this->database->query('SELECT vis.name AS name,
 								vis.surname AS surname,
 								vis.nick AS nick
 						FROM kk_visitors AS vis
 						LEFT JOIN `kk_visitor-program` AS visprog ON vis.id = visprog.visitor
-						WHERE visprog.program = '".$program_id."' AND vis.deleted = '0'";
-			$result = mysql_query($query);
+						WHERE visprog.program = ? AND vis.deleted = ?',
+						$programId, '0')->fetchAll();
 			$i = 1;
-			while($data = mysql_fetch_assoc($result)){
+			foreach($result as $data){
 				$html .= $i.". ".$data['name']." ".$data['surname']." - ".$data['nick']."<br />";
 				$i++;
 			}
@@ -319,21 +313,22 @@ class ProgramModel extends Component
 		}
 	}
 
-	public function getSelectedPrograms($visitor_id) {
+	public function getSelectedPrograms($visitorId) {
 		$programs = "  <div style='border-bottom:1px solid black;text-align:right;'>vybrané programy</div>";
 
-		$progSql = "SELECT  progs.name AS prog_name,
+		$result = $this->database->query('SELECT  progs.name AS prog_name,
 							day,
-							DATE_FORMAT(`from`, '%H:%i') AS `from`,
-							DATE_FORMAT(`to`, '%H:%i') AS `to`
+							DATE_FORMAT(`from`, "%H:%i") AS `from`,
+							DATE_FORMAT(`to`, "%H:%i") AS `to`
 					FROM kk_programs AS progs
 					LEFT JOIN `kk_visitor-program` AS visprog ON progs.id = visprog.program
 					LEFT JOIN kk_visitors AS vis ON vis.id = visprog.visitor
 					LEFT JOIN kk_blocks AS blocks ON progs.block = blocks.id
-					WHERE vis.id = '".$visitor_id."'
-					ORDER BY `day`, `from` ASC";
-		$progResult = mysql_query($progSql);
-		while($progData = mysql_fetch_assoc($progResult)){
+					WHERE vis.id = ?
+					ORDER BY `day`, `from` ASC',
+					$visitorId)->fetchAll();
+
+		foreach($result as $progData){
 			$programs .= $progData['day'].", ".$progData['from']." - ".$progData['to']."";
 			$programs .= "<div style='padding:5px 0px 5px 20px;'>- ".$progData['prog_name']."</div>";
 		}

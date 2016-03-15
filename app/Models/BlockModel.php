@@ -130,15 +130,15 @@ class BlockModel extends Component
 	{
 		$result = $database
 			->table('kk_blocks')
-			->where('meeting ? AND program ? AND delted ?', $_SESSION['meetingID'], '1', '0')
-			->fetch();
+			->where('meeting ? AND program ? AND deleted ?', $_SESSION['meetingID'], '1', '0')
+			->fetchAll();
 
 		$html_select = "<select style='width: 300px; font-size: 10px' name='block'>\n";
 
 		foreach($result as $data){
-			if($data['id'] == $block_id) $selected = "selected";
+			if($data['id'] == $blockId) $selected = "selected";
 			else $selected = "";
-			$html_select .= "<option ".$selected." value='".$data['id']."'>".$data['day'].", ".$data['from']." - ".$data['to']." : ".$data['name']."</option>\n";
+			$html_select .= "<option ".$selected." value='".$data['id']."'>".$data['day'].", ".$data->from->format('%H:%I:%S')." - ".$data->to->format('%H:%I:%S')." : ".$data['name']."</option>\n";
 		}
 		$html_select .= "</select>\n";
 

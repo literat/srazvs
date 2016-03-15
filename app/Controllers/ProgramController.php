@@ -281,7 +281,7 @@ class ProgramController extends BaseController
 
 		$this->programId = $id;
 
-		$dbData = mysql_fetch_assoc($this->Program->getData($id));
+		$dbData = $this->Program->getData($id);
 
 		foreach($this->Program->formNames as $key) {
 			$this->data[$key] = requested($key, $dbData[$key]);
@@ -368,9 +368,9 @@ class ProgramController extends BaseController
 			$error_material = "";
 
 			// category select box
-			$cat_roll = CategoryModel::renderHtmlSelect($this->data['category']);
+			$cat_roll = CategoryModel::renderHtmlSelect($this->data['category'], $this->database);
 			// blocks select box
-			$block_select = BlockModel::renderHtmlSelect($this->data['block']);
+			$block_select = BlockModel::renderHtmlSelect($this->data['block'], $this->database);
 			// display in registration check box
 			$display_in_reg_checkbox = Form::renderHtmlCheckBox('display_in_reg', 0, $this->data['display_in_reg']);
 			// time select boxes
