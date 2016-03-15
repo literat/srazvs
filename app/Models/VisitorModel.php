@@ -1,6 +1,7 @@
 <?php
 
 use Nix\Utils\Tools;
+use Nette\Utils\Strings;
 
 /**
  * Visitor
@@ -179,49 +180,39 @@ class VisitorModel /* extends Component */
 	{
 		// for returning specific error
 		$error = array('visitor' => TRUE, 'meal' => TRUE, 'program' => TRUE);
-		// preparation for query
-		$query_set = "";
-		foreach($DB_data as $key => $value) {
-			$query_set .= "`".$key."` = '".$value."',";
-		}
-		$query_set .= "`code` = CONCAT(LEFT('".$DB_data['name']."',1),LEFT('".$DB_data['surname']."',1),SUBSTRING('".$DB_data['birthday']."',3,2))";
-		//$query_set = substr($query_set, 0, -1);
 
-		// updating visitor data
-		$query = "UPDATE `kk_visitors`
-					SET ".$query_set."
-					WHERE `id`='".$ID_visitor."' LIMIT 1";
-		$result = mysql_query($query);
-		$error['visitor'] = $result;
+		$DB_data['code'] =
+			Strings::substring($DB_data['name'], 0, 1)
+			. Strings::substring($DB_data['surname'], 0, 1)
+			. Strings::substring($DB_data['birthday'], 2, 2);
 
-		if($result){
-			// change meals
-			$result = $this->Meals->modify($ID_visitor, $meals_data);
-			$error['meal'] = $result;
+		$result = $this->database
+			->table($this->dbTable)
+			->where('id', $ID_visitor)
+			->update($DB_data);
 
-			if($result){
-				// gets data from database
-				$program_blocks = $this->Blocks->getProgramBlocks($DB_data['meeting']);
-				// get program of visitor
-				$old_program = $this->getVisitorPrograms($ID_visitor);
-				// update old data to new existing
-				while($DB_block_data = mysql_fetch_assoc($program_blocks['result']) and $DB_old_program_data = mysql_fetch_assoc($old_program)){
-					$usr_program_query = "UPDATE `kk_visitor-program`
-									SET `program` = ".$programs_data[$DB_block_data['id']]."
-									WHERE visitor = ".$ID_visitor."
-									AND id = ".$DB_old_program_data['id'].";";
-					$usr_program_result = mysql_query($usr_program_query);
-					$error['program'] = $usr_program_result;
-				}
-			}
+		// change meals
+		$result = $this->Meals->modify($ID_visitor, $meals_data);
+		$error['meal'] = $result;
+
+		// gets data from database
+		$programBlocks = $this->Blocks->getProgramBlocks($DB_data['meeting']);
+
+		// get program of visitor
+		$oldPrograms = $this->getVisitorPrograms($ID_visitor);
+
+		// update old data to new existing
+		foreach($programBlocks as $key => $programBlock){
+			if(!array_key_exists($key, $oldPrograms)) continue;
+
+			$data = array('program' => $programs_data[$programBlock->id]);
+			$result = $this->database
+				->table('kk_visitor-program')
+				->where('visitor ? AND id ?', $ID_visitor, $oldPrograms[$key]->id)
+				->update($data);
 		}
 
-		// return array of errors if error exists
-		if(array_search(FALSE, $error)){
-			return $result;
-		} else {
-			return $ID_visitor;
-		}
+		return $ID_visitor;
 	}
 
 	/**
@@ -333,12 +324,13 @@ class VisitorModel /* extends Component */
 	 * @param	int		ID of visitor
 	 * @return	mixed	result
 	 */
-	public function getVisitorPrograms($ID_visitor)
+	public function getVisitorPrograms($visitorId)
 	{
-		$query = "SELECT id, program
-					FROM `kk_visitor-program`
-					WHERE `visitor` = ".$ID_visitor."";
-		$result = mysql_query($query);
+		$result = $this->database
+			->table('kk_visitor-program')
+			->select('id, program')
+			->where('visitor', $visitorId)
+			->fetchAll();
 
 		return $result;
 	}

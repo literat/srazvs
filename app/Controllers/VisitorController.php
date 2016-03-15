@@ -266,14 +266,15 @@ class VisitorController extends BaseController
 	{
 		// TODO
 		////ziskani zvolenych programu
-		$blockSql = "SELECT 	id
-					 FROM kk_blocks
-					 WHERE meeting='".$this->meetingId."' AND program='1' AND deleted='0'";
-		$blockResult = mysql_query($blockSql);
-		while($blockData = mysql_fetch_assoc($blockResult)){
+		$result = $this->database
+			->table('kk_blocks')
+			->select('id')
+			->where('meeting ? AND program ? AND deleted ?', $this->meetingId, '1', '0')
+			->fetchAll();
+
+		foreach($result as $blockData){
 			$$blockData['id'] = requested($blockData['id'],0);
 			$programs_data[$blockData['id']] = $$blockData['id'];
-			//echo $blockData['id'].":".$$blockData['id']."|";
 		}
 
 		foreach($this->Visitor->dbColumns as $key) {
