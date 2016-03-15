@@ -208,7 +208,7 @@ class BlockController extends BaseController
 
 		$this->blockId = $id;
 
-		$dbData = mysql_fetch_assoc($this->Block->getData($id));
+		$dbData = $this->Block->getData($id);
 
 		foreach($this->Block->formNames as $key) {
 			$this->data[$key] = requested($key, $dbData[$key]);
@@ -338,7 +338,7 @@ class BlockController extends BaseController
 			$minutes_array = array (00 => "00", 05 => "05", 10 => "10",15 => "15", 20 => "20",25 => "25", 30 => "30",35 => "35", 40 => "40", 45 => "45", 50 => "50", 55 => "55");
 
 			// category select box
-			$cat_roll = CategoryModel::renderHtmlSelect($this->data['category']);
+			$cat_roll = CategoryModel::renderHtmlSelect($this->data['category'], $this->database);
 			// time select boxes
 			$day_roll = Form::renderHtmlSelectBox('day', array('pátek'=>'pátek', 'sobota'=>'sobota', 'neděle'=>'neděle'), $this->data['day'], 'width:172px;');
 			$hour_roll = Form::renderHtmlSelectBox('start_hour', $hours_array, $this->data['start_hour']);

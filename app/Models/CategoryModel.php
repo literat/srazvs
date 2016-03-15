@@ -113,18 +113,18 @@ class CategoryModel extends Component
 	 * @param	int	ID of selected category
 	 * @return	string	html <select>
 	 */
-	public static function renderHtmlSelect($selected_category)
+	public static function renderHtmlSelect($selectedCategory, $database)
 	{
 		$html_select = "<select style='width: 225px; font-size: 10px' class='field' name='category'>\n";
 
-		$query = "SELECT * FROM kk_categories WHERE 1";
-		$result = mysql_query($query);
+		$result = $database->table('kk_categories')->where(1)->fetchAll();//"SELECT * FROM kk_categories WHERE 1";
+		//$result = mysql_query($query);
 
-		while($DB_data = mysql_fetch_assoc($result)){
-			if($DB_data['id'] == $selected_category) $selected = "selected";
+		foreach($result as $data){
+			if($data['id'] == $selectedCategory) $selected = "selected";
 			else $selected = "";
 
-			$html_select .= "<option ".$selected." class='category cat-".$DB_data['style']."' value='".$DB_data['id']."'>".$DB_data['name']."</option>\n";
+			$html_select .= "<option ".$selected." class='category cat-".$data['style']."' value='".$data['id']."'>".$data['name']."</option>\n";
 		}
 
 		$html_select .= "</select>\n";

@@ -117,11 +117,7 @@ class BlockModel extends Component
 					$this->meetingId, '0')->fetchAll();
 		}
 
-		if(!$data) {
-			return 0;
-		} else {
-			return $data;
-		}
+		return $data;
 	}
 
 	/**
@@ -130,14 +126,16 @@ class BlockModel extends Component
 	 * @param	int		selected option
 	 * @return	string	html select box
 	 */
-	public static function renderHtmlSelect($block_id)
+	public static function renderHtmlSelect($blockId, $database)
 	{
-		$query = "SELECT * FROM kk_blocks WHERE meeting='".$_SESSION['meetingID']."' AND program='1' AND deleted='0'";
-		$result = mysql_query($query);
+		$result = $database
+			->table('kk_blocks')
+			->where('meeting ? AND program ? AND delted ?', $_SESSION['meetingID'], '1', '0')
+			->fetch();
 
 		$html_select = "<select style='width: 300px; font-size: 10px' name='block'>\n";
 
-		while($data = mysql_fetch_assoc($result)){
+		foreach($result as $data){
 			if($data['id'] == $block_id) $selected = "selected";
 			else $selected = "";
 			$html_select .= "<option ".$selected." value='".$data['id']."'>".$data['day'].", ".$data['from']." - ".$data['to']." : ".$data['name']."</option>\n";
@@ -166,19 +164,15 @@ class BlockModel extends Component
 				ORDER BY `day` ASC',
 				'0', '1', $meetingId);
 
-		//$result = mysql_query($query);
-		//$rows = mysql_affected_rows();
-
-		//return array('result' => $result, 'rows' => $rows);
 		return $data;
 	}
 
-	public static function getExportBlocks($meeting_id, $day_val)
+	public static function getExportBlocks($meetingId, $dayVal, $database)
 	{
-		$query = "SELECT blocks.id AS id,
+		$result = $database->query('SELECT blocks.id AS id,
 						day,
-						DATE_FORMAT(`from`, '%H:%i') AS `from`,
-						DATE_FORMAT(`to`, '%H:%i') AS `to`,
+						DATE_FORMAT(`from`, "%H:%i") AS `from`,
+						DATE_FORMAT(`to`, "%H:%i") AS `to`,
 						blocks.name AS name,
 						program,
 						display_progs,
@@ -187,10 +181,9 @@ class BlockModel extends Component
 				FROM kk_blocks AS blocks
 				LEFT JOIN kk_categories AS cat ON cat.id = blocks.category
 				/* 18 - pauzy */
-				WHERE blocks.deleted = '0' AND day='".$day_val."' AND meeting='".$meeting_id."' AND category != '18'
-				ORDER BY `from` ASC";
-
-		$result = mysql_query($query);
+				WHERE blocks.deleted = ? AND day = ? AND meeting = ? AND category != ?
+				ORDER BY `from` ASC',
+				'0', $dayVal, $meetingId, '18')->fetch();
 
 		return $result;
 	}
