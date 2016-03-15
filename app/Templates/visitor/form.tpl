@@ -125,6 +125,7 @@
 		<input type='hidden' name='id' value='<?php echo $data['id']; ?>'>
 		<input type='hidden' name='cms' value='<?php echo $data['todo']; ?>'>
 		<input type='hidden' name='page' value='<?php echo $data['page']; ?>'>
+		<input type='hidden' name='checked' value='<?php echo $data['checked']; ?>'>
 	 
 		<div class='button-line'>
 		<button type='submit' onclick=\"this.form.submit()\">
