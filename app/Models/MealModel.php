@@ -63,19 +63,15 @@ class MealModel extends Component
 		$meals = "<tr>";
 		$meals .= " <td class='progPart'>";
 
-		$mealSql = "SELECT 	*
-					FROM kk_meals
-					WHERE visitor='".$visitorId."'
-					";
+		$result = $this->database
+			->table($this->dbTable)
+			->where('vsitor', $visitorId)
+			->fetchAll();
 
-		$mealResult = mysql_query($mealSql);
-		$mealRows = mysql_affected_rows();
-
-		if($mealRows == 0){
+		if(!$result){
 			$meals .= "<div class='emptyTable' style='width:400px;'>Nejsou žádná aktuální data.</div>\n";
-		}
-		else{
-			while($mealData = mysql_fetch_assoc($mealResult)){
+		} else {
+			foreach($result as $mealData){
 				$meals .= "<div class='block'>".$mealData['fry_dinner'].", ".$mealData['sat_breakfast']." - ".$mealData['sat_lunch']." : ".$mealData['sat_dinner']."</div>\n";
 
 			}
@@ -130,19 +126,19 @@ class MealModel extends Component
 	 * @param	integer	visitor id
 	 * @return	array	meal => ano|ne
 	 */
-	public function getMealsArray($visitor_id)
+	public function getMealsArray($visitorId)
 	{
-		$query = "SELECT	*
-					FROM kk_meals
-					WHERE visitor='".$visitor_id."'
-					LIMIT 1";
-		$DB_data = mysql_fetch_assoc(mysql_query($query));
+		$data = $this->database
+			->table($this->dbTable)
+			->where('visitor', $visitorId)
+			->limit(1)
+			->fetch();
 
-		foreach($this->dbColumns as $var_name) {
-			$$var_name = requested($var_name, $DB_data[$var_name]);
-			$meals_data[$var_name] = $$var_name;
+		foreach($this->dbColumns as $column) {
+			$$column = requested($column, $data[$column]);
+			$meals[$column] = $$column;
 		}
 
-		return $meals_data;
+		return $meals;
 	}
 }
