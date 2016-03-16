@@ -143,9 +143,12 @@ class RegistrationController extends BaseController
 
 		if(isset($getVars['hash'])) {
 			$this->hash = $getVars['hash'];
-			$query = "SELECT id, meeting FROM kk_visitors WHERE hash = '".$this->hash."';";
-			$result = mysql_query($query);
-			$data = mysql_fetch_array($result);
+
+			$data = $this->database
+				->table('kk_visitors')
+				->select('id, meeting')
+				->where('hash', $this->hash)
+				->fetch();
 
 			//$this->meetingId = (($getVars['hash'] - 49873) / 147)%10;
 			//$id = floor((($getVars['hash'] - 49873) / 147)/10);
@@ -208,6 +211,15 @@ class RegistrationController extends BaseController
 		}
 	}
 
+	private function getblocks()
+	{
+		return $this->database
+			->table('kk_blocks')
+			->select('id')
+			->where('meeting ? AND program ? AND deleted ?', $this->meetingId, '1', '0')
+			->fetchAll();
+	}
+
 	/**
 	 * Process data from form
 	 *
@@ -217,11 +229,9 @@ class RegistrationController extends BaseController
 	{
 		// TODO
 		////ziskani zvolenych programu
-		$blockSql = "SELECT 	id
-					 FROM kk_blocks
-					 WHERE meeting='".$this->meetingId."' AND program='1' AND deleted='0'";
-		$blockResult = mysql_query($blockSql);
-		while($blockData = mysql_fetch_assoc($blockResult)){
+		$blocks = $this->getblocks();
+
+		foreach($blocks as $blockData){
 			$$blockData['id'] = requested($blockData['id'],0);
 			$programs_data[$blockData['id']] = $$blockData['id'];
 			//echo $blockData['id'].":".$$blockData['id']."|";
@@ -293,11 +303,9 @@ class RegistrationController extends BaseController
 	{
 		// TODO
 		////ziskani zvolenych programu
-		$blockSql = "SELECT 	id
-					 FROM kk_blocks
-					 WHERE meeting='".$this->meetingId."' AND program='1' AND deleted='0'";
-		$blockResult = mysql_query($blockSql);
-		while($blockData = mysql_fetch_assoc($blockResult)){
+		$blocks = $this->getblocks();
+
+		foreach($blocks as $blockData){
 			$$blockData['id'] = requested($blockData['id'],0);
 			$programs_data[$blockData['id']] = $$blockData['id'];
 			//echo $blockData['id'].":".$$blockData['id']."|";
@@ -375,12 +383,11 @@ class RegistrationController extends BaseController
 			$this->data[$key] = requested($key, $dbData[$key]);
 		}
 
-		$query = "SELECT	*
-					FROM kk_meals
-					WHERE visitor='".$this->itemId."'
-					LIMIT 1";
-
-		$DB_data = mysql_fetch_assoc(mysql_query($query));
+		$DB_data = $this->database
+			->table('kk_meals')
+			->where('visitor', $this->itemId)
+			->limit(1)
+			->fetch();
 
 		foreach($this->Meal->dbColumns as $var_name) {
 			$$var_name = requested($var_name, $DB_data[$var_name]);
@@ -408,12 +415,11 @@ class RegistrationController extends BaseController
 			$this->data[$key] = requested($key, $dbData[$key]);
 		}
 
-		$query = "SELECT	*
-					FROM kk_meals
-					WHERE visitor='".$this->itemId."'
-					LIMIT 1";
-
-		$DB_data = mysql_fetch_assoc(mysql_query($query));
+		$DB_data = $this->database
+			->table('kk_meals')
+			->where('visitor', $this->itemId)
+			->limit(1)
+			->fetch();
 
 		foreach($this->Meal->dbColumns as $var_name) {
 			$$var_name = requested($var_name, $DB_data[$var_name]);

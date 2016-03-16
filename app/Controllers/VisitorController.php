@@ -324,11 +324,11 @@ class VisitorController extends BaseController
 			$this->data[$key] = requested($key, $dbData[$key]);
 		}
 
-		$data = $this->database->query('SELECT	*
-					FROM kk_meals
-					WHERE visitor = ?
-					LIMIT 1',
-					$this->itemId)->fetch();
+		$data = $this->database
+			->table('kk_meals')
+			->where('visitor', $this->itemId)
+			->limit(1)
+			->fetch();
 
 		foreach($this->Meal->dbColumns as $var_name) {
 			$$var_name = requested($var_name, $data[$var_name]);
