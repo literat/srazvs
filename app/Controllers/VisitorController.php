@@ -197,6 +197,15 @@ class VisitorController extends BaseController
 		}
 	}
 
+	private function getblocks()
+	{
+		return $this->database
+			->table('kk_blocks')
+			->select('id')
+			->where('meeting ? AND program ? AND deleted ?', $this->meetingId, '1', '0')
+			->fetchAll();
+	}
+
 	/**
 	 * Process data from form
 	 *
@@ -206,11 +215,9 @@ class VisitorController extends BaseController
 	{
 		// TODO
 		////ziskani zvolenych programu
-		$blockSql = "SELECT 	id
-					 FROM kk_blocks
-					 WHERE meeting='".$this->meetingId."' AND program='1' AND deleted='0'";
-		$blockResult = mysql_query($blockSql);
-		while($blockData = mysql_fetch_assoc($blockResult)){
+		$blocks = $this->getblocks();
+
+		foreach($blocks as $blockData){
 			$$blockData['id'] = requested($blockData['id'],0);
 			$programs_data[$blockData['id']] = $$blockData['id'];
 			//echo $blockData['id'].":".$$blockData['id']."|";
@@ -226,6 +233,7 @@ class VisitorController extends BaseController
 
 		// i must add visitor's ID because it is empty
 		$DB_data['meeting'] = $this->meetingId;
+		$DB_data['hash'] = hash('sha1', microtime());
 
 		// requested for meals
 		foreach($this->Meal->dbColumns as $var_name) {
@@ -266,13 +274,9 @@ class VisitorController extends BaseController
 	{
 		// TODO
 		////ziskani zvolenych programu
-		$result = $this->database
-			->table('kk_blocks')
-			->select('id')
-			->where('meeting ? AND program ? AND deleted ?', $this->meetingId, '1', '0')
-			->fetchAll();
+		$blocks = $this->getblocks();
 
-		foreach($result as $blockData){
+		foreach($blocks as $blockData){
 			$$blockData['id'] = requested($blockData['id'],0);
 			$programs_data[$blockData['id']] = $$blockData['id'];
 		}
@@ -484,7 +488,7 @@ class VisitorController extends BaseController
 			$this->View->assign('surname',			$this->data['surname']);
 			$this->View->assign('nick',				$this->data['nick']);
 			$this->View->assign('email',			$this->data['email']);
-			$this->View->assign('birthday',			$this->data['birthday']);
+			$this->View->assign('birthday',			(empty($this->data['birthday'])) ? '' : $this->data['birthday']->format('Y-m-d'));
 			$this->View->assign('street',			$this->data['street']);
 			$this->View->assign('city',				$this->data['city']);
 			$this->View->assign('postal_code',		$this->data['postal_code']);

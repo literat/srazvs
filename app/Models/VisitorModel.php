@@ -118,34 +118,32 @@ class VisitorModel /* extends Component */
 	{
 		$return = true;
 
-		$query_key_set = "";
-		$query_value_set = "";
+		$DB_data['code'] =
+			Strings::substring($DB_data['name'], 0, 1)
+			. Strings::substring($DB_data['surname'], 0, 1)
+			. Strings::substring($DB_data['birthday'], 2, 2);
 
-		foreach($DB_data as $key => $value) {
-			$query_key_set .= "`".$key."`,";
-			$query_value_set .= "'".$value."',";
-		}
-		$query_key_set = substr($query_key_set, 0, -1);
-		$query_value_set = substr($query_value_set, 0, -1);
+		$DB_data['birthday'] = new DateTime($DB_data['birthday']);
 
-		$query = "INSERT INTO `kk_visitors`
-					 (".$query_key_set.", `code`,`reg_daytime`)
-					 VALUES (".$query_value_set.", CONCAT(LEFT('".$DB_data['name']."',1),LEFT('".$DB_data['surname']."',1),SUBSTRING('".$DB_data['birthday']."',3,2)),'".date('Y-m-d H:i:s')."');";
-		$result = mysql_query($query);
-		$ID_visitor = mysql_insert_id();
+		$ID_visitor = $this->database
+			->table($this->dbTable)
+			->insert($DB_data);
+
 		// visitor's id is empty and i must add one
 		$meals_data['visitor'] = $ID_visitor;
 
-		if($result){
+		if($ID_visitor){
 			// gets data from database
 			$program_blocks = $this->Blocks->getProgramBlocks($DB_data['meeting']);
 
-			while($DB_blocks_data = mysql_fetch_assoc($program_blocks['result'])){
+			foreach($program_blocks as $DB_blocks_data){
+				$bindingsData = array(
+					'visitor' => $ID_visitor,
+					'program' => $programs_data[$DB_blocks_data['id']],
+				);
 				// insert into binding table
 				// var programs_data contains requested values in format block-id => program-id
-				$query_binding = "INSERT INTO `kk_visitor-program` (`visitor`, `program`)
-							   VALUES ('".$ID_visitor."', '".$programs_data[$DB_blocks_data['id']]."')";
-				$result_binding = mysql_query($query_binding);
+				$result_binding = $this->database->query('INSERT INTO `kk_visitor-program`', $bindingsData);
 
 				if(!$result_binding){
 					$return = "ERROR_BINDING_VISITOR_PROGRAM";
@@ -186,6 +184,8 @@ class VisitorModel /* extends Component */
 			. Strings::substring($DB_data['surname'], 0, 1)
 			. Strings::substring($DB_data['birthday'], 2, 2);
 
+		$DB_data['birthday'] = new DateTime($DB_data['birthday']);
+
 		$result = $this->database
 			->table($this->dbTable)
 			->where('id', $ID_visitor)
@@ -202,13 +202,14 @@ class VisitorModel /* extends Component */
 		$oldPrograms = $this->getVisitorPrograms($ID_visitor);
 
 		// update old data to new existing
-		foreach($programBlocks as $key => $programBlock){
-			if(!array_key_exists($key, $oldPrograms)) continue;
-
+		foreach($programBlocks as $programBlock){
 			$data = array('program' => $programs_data[$programBlock->id]);
+			// read first value from array and shift it to the end
+			$oldProgram = array_shift($oldPrograms);
+
 			$result = $this->database
 				->table('kk_visitor-program')
-				->where('visitor ? AND id ?', $ID_visitor, $oldPrograms[$key]->id)
+				->where('visitor ? AND id ?', $ID_visitor, $oldProgram->id)
 				->update($data);
 		}
 
@@ -223,10 +224,12 @@ class VisitorModel /* extends Component */
 	 */
 	public function delete($id)
 	{
-		$query = "UPDATE ".$this->dbTable." SET deleted = '1' WHERE id IN (".$id.")";
-		$result = mysql_query($query);
+		$deleted = array('deleted' => '1');
 
-		return $result;
+		return $this->database
+			->table($this->dbTable)
+			->where('id', $id)
+			->update($deleted);
 	}
 
 	/**
@@ -237,10 +240,12 @@ class VisitorModel /* extends Component */
 	 */
 	public function checked($id)
 	{
-		$query = "UPDATE ".$this->dbTable." SET checked = '1' WHERE id IN (".$id.")";
-		$result = mysql_query($query);
+		$checked = array('checked' => '1');
 
-		return $result;
+		return $this->database
+			->table($this->dbTable)
+			->where('id', $id)
+			->update($checked);
 	}
 
 	/**
