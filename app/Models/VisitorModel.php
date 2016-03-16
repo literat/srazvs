@@ -303,15 +303,18 @@ class VisitorModel /* extends Component */
 	 */
 	public function payCharge($query_id, $type)
 	{
-		$billSql = "SELECT bill FROM kk_visitors WHERE id IN (".$query_id.")";
-		$billResult = mysql_query($billSql);
-		$billData = mysql_fetch_assoc($billResult);
+		$billData = $this->database
+			->table($this->dbTable)
+			->select('bill')
+			->where('id', $query_id)
+			->fetch();
 
 		if($billData['bill'] < $this->Meeting->getPrice('cost')){
-			$paySql = "UPDATE kk_visitors
-					SET bill = '".$this->Meeting->getPrice($type)."'
-					WHERE id IN (".$query_id.")";
-			$payResult = mysql_query($paySql);
+			$bill = array('bill' => $this->Meeting->getPrice($type));
+			$payResult = $this->database
+				->table($this->dbTable)
+				->where('id', $query_id)
+				->update($bill);
 
 			if($return = $this->Emailer->sendPaymentInfo($query_id, $type)) {
 				return true;
@@ -379,10 +382,6 @@ class VisitorModel /* extends Component */
 	public function getData($visitor_id = NULL)
 	{
 		if(isset($visitor_id)) {
-			$query = "SELECT	*
-						FROM kk_visitors
-						WHERE id='".$visitor_id."' AND deleted = '0'
-						LIMIT 1";
 			$data = $this->database
 				->table($this->dbTable)
 				->where('id ? AND deleted ?', $visitor_id, '0')
@@ -427,9 +426,14 @@ class VisitorModel /* extends Component */
 	public function getMail($query_id) {
 		$recipient_mails = '';
 
-		$query = "SELECT email FROM kk_visitors WHERE id IN (".$query_id.") GROUP BY email";
-		$query_result = mysql_query($query);
-		while($data = mysql_fetch_assoc($query_result)){
+		$result = $this->database
+			->table($this->dbTable)
+			->select('email')
+			->where('id', $query_id)
+			->group('email')
+			->fetchAll();
+
+		foreach($result as $data){
 			$recipient_mails .= $data['email'].",\n";
 		}
 

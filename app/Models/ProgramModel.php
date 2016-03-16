@@ -70,10 +70,11 @@ class ProgramModel extends Component
 			$html_input = "";
 			foreach($blocks as $data){
 				// full program capacity with visitors
-				$fullProgramData = $this->database->query('SELECT COUNT(visitor) AS visitors FROM `kk_visitor-program` AS visprog
-									LEFT JOIN kk_visitors AS vis ON vis.id = visprog.visitor
-									WHERE program = ? AND vis.deleted = ?',
-									$data['id'], '0')->fetch();
+				$fullProgramData = $this->database
+					->query('SELECT COUNT(visitor) AS visitors FROM `kk_visitor-program` AS visprog
+							LEFT JOIN kk_visitors AS vis ON vis.id = visprog.visitor
+							WHERE program = ? AND vis.deleted = ?',
+							$data['id'], '0')->fetch();
 
 				// if the program is checked
 				$program = $this->database
@@ -128,12 +129,13 @@ class ProgramModel extends Component
 			foreach($exportPrograms as $data){
 				$html .= "<tr>";
 				//// resim kapacitu programu a jeho naplneni navstevniky
-				$fullProgramData = $this->database->query('SELECT COUNT(visitor) AS visitors
-								   FROM `kk_visitor-program` AS visprog
-								   LEFT JOIN `kk_visitors` AS vis ON vis.id = visprog.visitor
-								   WHERE program = ?
-										AND vis.deleted = ?',
-									$data['id'], '0')->fetch();
+				$fullProgramData = $this->database
+					->query('SELECT COUNT(visitor) AS visitors
+							FROM `kk_visitor-program` AS visprog
+							LEFT JOIN `kk_visitors` AS vis ON vis.id = visprog.visitor
+							WHERE program = ?
+							AND vis.deleted = ?',
+							$data['id'], '0')->fetch();
 
 				if($fullProgramData['visitors'] >= $data['capacity']){
 					//$html .= "<input disabled type='radio' name='".$id."' value='".$data['id']."' />\n";
@@ -160,16 +162,19 @@ class ProgramModel extends Component
 	{
 		$programs = "";
 
-		$progSql = $this->database->query('SELECT 	id,
-							day,
-							DATE_FORMAT(`from`, "%H:%i") AS `from`,
-							DATE_FORMAT(`to`, "%H:%i") AS `to`,
-							name,
-							program
-					FROM kk_blocks
-					WHERE deleted = ? AND program = ? AND meeting = ?
-					ORDER BY `day`, `from` ASC',
-					'0', '1', $this->meetingId)->fetchAll();
+		$progSql = $this->database
+			->table('kk_blocks')
+			->select('
+				id,
+				day,
+				DATE_FORMAT(`from`, "%H:%i") AS `from`,
+				DATE_FORMAT(`to`, "%H:%i") AS `to`,
+				name,
+				program'
+			)
+			->where('deleted = ? AND program = ? AND meeting = ?', '0', '1', $this->meetingId)
+			->order('day ASC, from ASC')
+			->fetchAll();
 
 		if(!$progSql){
 			$programs .= "<div class='emptyTable' style='width:400px;'>Nejsou žádná aktuální data.</div>\n";
@@ -211,7 +216,8 @@ class ProgramModel extends Component
 				->limit(1)
 				->fetch();
 		} else {
-			$data = $this->database->query('SELECT 	programs.id AS id,
+			$data = $this->database
+				->query('SELECT programs.id AS id,
 						programs.name AS name,
 						programs.description AS description,
 						programs.tutor AS tutor,
@@ -254,10 +260,11 @@ class ProgramModel extends Component
 			$html .= "<input ".$disabled." checked type='radio' name='".$id."' value='0' /> Nebudu přítomen <br />\n";
 			foreach($result as $data){
 				//// resim kapacitu programu a jeho naplneni navstevniky
-				$fullProgramData = $this->database->query('SELECT COUNT(visitor) AS visitors FROM `kk_visitor-program` AS visprog
-									LEFT JOIN kk_visitors AS vis ON vis.id = visprog.visitor
-									WHERE program = ? AND vis.deleted = ?',
-									$data['id'], '0')->fetch();
+				$fullProgramData = $this->database
+					->query('SELECT COUNT(visitor) AS visitors FROM `kk_visitor-program` AS visprog
+							LEFT JOIN kk_visitors AS vis ON vis.id = visprog.visitor
+							WHERE program = ? AND vis.deleted = ?',
+							$data['id'], '0')->fetch();
 
 				// nezobrazeni programu v registraci, v adminu zaskrtavatko u programu
 				if($data['display_in_reg'] == 0) $notDisplayedProg = "style='display:none;'";
@@ -296,7 +303,8 @@ class ProgramModel extends Component
 			$html .= "<br /><a style='text-decoration:none; display:block; margin-bottom:4px;' href='?cms=export-visitors&id=".$programId."'>
 	      	<img style='border:none;' align='absbottom' src='".IMG_DIR."icons/pdf.png' />Účastníci programu</a>";
 
-			$result = $this->database->query('SELECT vis.name AS name,
+			$result = $this->database
+				->query('SELECT vis.name AS name,
 								vis.surname AS surname,
 								vis.nick AS nick
 						FROM kk_visitors AS vis
@@ -316,7 +324,8 @@ class ProgramModel extends Component
 	public function getSelectedPrograms($visitorId) {
 		$programs = "  <div style='border-bottom:1px solid black;text-align:right;'>vybrané programy</div>";
 
-		$result = $this->database->query('SELECT  progs.name AS prog_name,
+		$result = $this->database
+			->query('SELECT progs.name AS prog_name,
 							day,
 							DATE_FORMAT(`from`, "%H:%i") AS `from`,
 							DATE_FORMAT(`to`, "%H:%i") AS `to`
@@ -336,25 +345,24 @@ class ProgramModel extends Component
 		return $programs;
 	}
 
-	public static function getPdfPrograms($id, $vid){
-		$sql = "SELECT 	*
-				FROM kk_programs
-				WHERE block='".$id."' AND deleted='0'
-				LIMIT 10";
-		$result = mysql_query($sql);
-		$rows = mysql_affected_rows();
+	public static function getPdfPrograms($id, $vid, $database){
+		$result = $database
+			->table('kk_programs')
+			->where('block ? AND deleted ?', $id, '0')
+			->limit(10)
+			->fetchAll();
 
-		if($rows == 0){
+		if(!$result){
 			$html = "";
-		}
-		else{
+		} else {
 
 			$html = "<div class='program'>\n";
 
-			while($data = mysql_fetch_assoc($result)){
-				$programSql = "SELECT * FROM `kk_visitor-program` WHERE program = '".$data['id']."' AND visitor = '".$vid."'";
-				$programResult = mysql_query($programSql);
-				$rows = mysql_affected_rows();
+			foreach($result as $data){
+				$rows = $database
+					->table('kk_visitor-program')
+					->where('program ? AND visitor ?', $data->id, $vid)
+					->fetchAll();
 				if($rows == 1) $html .= $data['name'];
 			}
 			$html .= "</div>\n";
@@ -363,20 +371,20 @@ class ProgramModel extends Component
 	}
 
 	public static function getProgramsLarge($id){
-		$sql = "SELECT 	progs.name AS name,
+		$result = $this->database
+			->query('SELECT progs.name AS name,
 						cat.style AS style
 				FROM kk_programs AS progs
 				LEFT JOIN kk_categories AS cat ON cat.id = progs.category
-				WHERE block='".$id."' AND progs.deleted='0'
-				LIMIT 10";
-		$result = mysql_query($sql);
-		$rows = mysql_affected_rows();
+				WHERE block = ? AND progs.deleted = ?
+				LIMIT 10',
+				$id, '0')->fetchAll();
 
-		if($rows == 0) $html = "";
-		else{
+		if(!$result) $html = "";
+		else {
 			$html = "<table>";
 			$html .= " <tr>";
-			while($data = mysql_fetch_assoc($result)){
+			foreach($result as $data){
 				$html .= "<td class='category cat-".$data['style']."' >".$data['name']."</td>\n";
 			}
 			$html .= " </tr>\n";
@@ -385,34 +393,33 @@ class ProgramModel extends Component
 		return $html;
 	}
 
-	public static function getProgramNames($block_id)
+	public static function getProgramNames($block_id, $database)
 	{
-		$sql = "SELECT 	name
-				FROM kk_programs
-				WHERE block='".$block_id."' AND deleted='0'
-				LIMIT 10";
-		$result = mysql_query($sql);
-		$rows = mysql_affected_rows();
+		$result = $database
+			->table('kk_programs')
+			->select('name')
+			->where('block ? AND deleted ?', $block_id, '0')
+			->limit(10)
+			->fetchAll();
 
 		$html = '';
 
-		if($rows == 0) $html = "";
-		else{
-			while($data = mysql_fetch_assoc($result)){
+		if(!$result) $html = "";
+		else {
+			foreach($result as $data){
 				$html .= $data['name'].",\n";
 			}
 		}
 		return $html;
 	}
 
-	public static function getDetail($id, $type, $cfg)
+	public static function getDetail($id, $type, $cfg, $database)
 	{
-		$sql = "SELECT	*
-				FROM kk_".$type."s
-				WHERE id='".$id."' AND deleted='0'
-				LIMIT 1";
-		$result = mysql_query($sql);
-		$data = mysql_fetch_assoc($result);
+		$data = $database
+			->table('kk_' . $type)
+			->where('id ? AND deleted ?', $id, '0')
+			->limit(1)
+			->fetch();
 
 		$name = requested("name",$data['name']);
 		$description = requested("description",$data['description']);
@@ -422,12 +429,12 @@ class ProgramModel extends Component
 		if($type == "program"){
 			$capacity = requested("capacity",$data['capacity']);
 
-			$countSql = "SELECT COUNT(visitor) AS visitors
+			$countData = $database
+				->query('SELECT COUNT(visitor) AS visitors
 						 FROM `kk_visitor-program` AS visprog
 						 LEFT JOIN kk_visitors AS vis ON vis.id = visprog.visitor
-						 WHERE program = '".$data['id']."' AND vis.deleted = '0'";
-			$countResult = mysql_query($countSql);
-			$countData = mysql_fetch_assoc($countResult);
+						 WHERE program = ? AND vis.deleted = ?',
+						 $data->id, '0')->fetch();
 
 			$inner_html = "<tr>\n";
 			$inner_html .= " <td class=\"label\">Obsazenost programu:</td>\n";

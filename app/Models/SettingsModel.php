@@ -34,7 +34,11 @@ class SettingsModel extends Component
 	 */
 	public function getData()
 	{
-		$data = $this->database->table($this->dbTable)->where('deleted', 0)->order('name')->fetchAll();
+		$data = $this->database
+			->table($this->dbTable)
+			->where('deleted', 0)
+			->order('name')
+			->fetchAll();
 
 		if(!$data) {
 			Debugger::log('Settings: no data found!', Debugger::ERROR);
@@ -57,7 +61,10 @@ class SettingsModel extends Component
 
 		$value = array('value' => Json::encode($mailData));
 
-		$result = $this->database->table($this->dbTable)->where('name', 'mail_' . $type)->update($value);
+		$result = $this->database
+			->table($this->dbTable)
+			->where('name', 'mail_' . $type)
+			->update($value);
 
 		if($result) {
 			Debugger::log('Settings: mail type ' . $type . ' successfully modified!', Debugger::INFO);
@@ -73,7 +80,10 @@ class SettingsModel extends Component
 
 	public function getMailJSON($type)
 	{
-		$mailJson = $this->database->table($this->dbTable)->where('name', 'mail_' . $type)->fetch();
+		$mailJson = $this->database
+			->table($this->dbTable)
+			->where('name', 'mail_' . $type)
+			->fetch();
 
 		return Json::decode($mailJson->value);
 	}

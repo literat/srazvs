@@ -58,7 +58,9 @@ class CategoryModel extends Component
 	{
 		$style = removeDiacritic($dbData['name']);
 		$dbData['style'] = $style;
-		$result = $this->database->table($this->dbTable)->insert($dbData);
+		$result = $this->database
+			->table($this->dbTable)
+			->insert($dbData);
 
 		return $result;
 	}
@@ -75,7 +77,10 @@ class CategoryModel extends Component
 		$style = removeDiacritic($dbData['name']);
 		$style = str_replace(" ", "_", $style);
 		$dbData['style'] = $style;
-		$result = $this->database->table($this->dbTable)->where('id', $id)->update($dbData);
+		$result = $this->database
+			->table($this->dbTable)
+			->where('id', $id)
+			->update($dbData);
 
 		return $result;
 	}
@@ -117,7 +122,10 @@ class CategoryModel extends Component
 	{
 		$html_select = "<select style='width: 225px; font-size: 10px' class='field' name='category'>\n";
 
-		$result = $database->table('kk_categories')->where(1)->fetchAll();
+		$result = $database
+			->table('kk_categories')
+			->where(1)
+			->fetchAll();
 
 		foreach($result as $data){
 			if($data['id'] == $selectedCategory) $selected = "selected";

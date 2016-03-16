@@ -79,7 +79,8 @@ class BlockModel extends Component
 	public function getData($block_id = NULL)
 	{
 		if(isset($block_id)) {
-			$data = $this->database->query('SELECT 	name,
+			$data = $this->database
+				->query('SELECT name,
 								DATE_FORMAT(`from`,"%H") AS start_hour,
 								DATE_FORMAT(`to`,"%H") AS end_hour,
 								DATE_FORMAT(`from`,"%i") AS start_minute,
@@ -100,7 +101,8 @@ class BlockModel extends Component
 						LIMIT 1',
 						$block_id, '0')->fetch();
 		} else {
-			$data = $this->database->query('SELECT 	blocks.id AS id,
+			$data = $this->database
+				->query('SELECT 	blocks.id AS id,
 							blocks.name AS name,
 							cat.name AS cat_name,
 							day,
@@ -153,7 +155,8 @@ class BlockModel extends Component
 	 */
 	public function getProgramBlocks($meetingId)
 	{
-		$data = $this->database->query('SELECT 	id,
+		$data = $this->database
+			->query('SELECT id,
 					day,
 					DATE_FORMAT(`from`, "%H:%i") AS `from`,
 					DATE_FORMAT(`to`, "%H:%i") AS `to`,
@@ -169,7 +172,8 @@ class BlockModel extends Component
 
 	public static function getExportBlocks($meetingId, $dayVal, $database)
 	{
-		$result = $database->query('SELECT blocks.id AS id,
+		$result = $database
+			->query('SELECT blocks.id AS id,
 						day,
 						DATE_FORMAT(`from`, "%H:%i") AS `from`,
 						DATE_FORMAT(`to`, "%H:%i") AS `to`,

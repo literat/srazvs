@@ -79,9 +79,15 @@ class MeetingModel extends Component
 	public function getData($meeting_id = NULL)
 	{
 		if(isset($meeting_id)) {
-			$data = $this->database->table($this->dbTable)->where('deleted ? AND id ?',  '0', $meeting_id)->fetch();
+			$data = $this->database
+				->table($this->dbTable)
+				->where('deleted ? AND id ?',  '0', $meeting_id)
+				->fetch();
 		} else {
-			$data = $this->database->table($this->dbTable)->where('deleted',  '0')->fetchAll();
+			$data = $this->database
+				->table($this->dbTable)
+				->where('deleted',  '0')
+				->fetchAll();
 		}
 
 		if(!$data) {
@@ -144,7 +150,8 @@ class MeetingModel extends Component
 	 */
 	public function getPrograms($blockId)
 	{
-		$result = $this->database->query('SELECT 	progs.id AS id,
+		$result = $this->database
+			->query('SELECT	progs.id AS id,
 						progs.name AS name,
 						style
 				FROM kk_programs AS progs
@@ -171,21 +178,22 @@ class MeetingModel extends Component
 
 	/** Public program same as getPrograms*/
 	public function getPublicPrograms($block_id){
-		$sql = "SELECT 	progs.id AS id,
+		$result = $this->database
+			->query('SELECT progs.id AS id,
 						progs.name AS name,
 						style
 				FROM kk_programs AS progs
 				LEFT JOIN kk_categories AS cat ON cat.id = progs.category
-				WHERE block='".$block_id."' AND progs.deleted='0'
-				LIMIT 10";
-		$result = mysql_query($sql);
-		$rows = mysql_affected_rows();
+				WHERE block = ? AND progs.deleted = ?
+				LIMIT 10',
+				$block_id, '0')
+			->fetchAll();
 
-		if($rows == 0) $html = "";
-		else{
+		if(!$result) $html = "";
+		else {
 			$html = "<table>\n";
 			$html .= " <tr>\n";
-			while($data = mysql_fetch_assoc($result)){
+			foreach($result as $data){
 				$html .= "<td class='category cat-".$data['style']."' style='text-align:center;'>\n";
 				$html .= "<a class='programLink' rel='programDetail' href='#' rel='programDetail' title='".ProgramModel::getDetail($data['id'], 'program', $this->configuration)."'>".$data['name']."</a>\n";
 				$html .= "</td>\n";
@@ -211,7 +219,8 @@ class MeetingModel extends Component
 			$html .= "  <td class='day' colspan='2' >".$value."</td>\n";
 			$html .= " </tr>\n";
 
-			$result = $this->database->query('SELECT 	blocks.id AS id,
+			$result = $this->database
+				->query('SELECT	blocks.id AS id,
 							day,
 							DATE_FORMAT(`from`, "%H:%i") AS `from`,
 							DATE_FORMAT(`to`, "%H:%i") AS `to`,
@@ -222,7 +231,8 @@ class MeetingModel extends Component
 					LEFT JOIN kk_categories AS cat ON cat.id = blocks.category
 					WHERE blocks.deleted = ? AND day = ? AND blocks.meeting = ?
 					ORDER BY `from` ASC',
-					'0', $value, $this->meetingId)->fetchAll();
+					'0', $value, $this->meetingId)
+				->fetchAll();
 
 			if(!$result){
 				$html .= "<td class='emptyTable' style='width:400px;'>Nejsou žádná aktuální data.</td>\n";
@@ -262,27 +272,27 @@ class MeetingModel extends Component
 			$html .= "  <td class='day' colspan='2' >".$dayVal."</td>\n";
 			$html .= " </tr>\n";
 
-			$sql = "SELECT 	blocks.id AS id,
+			$result = $this->database
+				->query('SELECT	blocks.id AS id,
 							day,
-							DATE_FORMAT(`from`, '%H:%i') AS `from`,
-							DATE_FORMAT(`to`, '%H:%i') AS `to`,
+							DATE_FORMAT(`from`, "%H:%i") AS `from`,
+							DATE_FORMAT(`to`, "%H:%i") AS `to`,
 							blocks.name AS name,
 							program,
 							display_progs,
 							style
 					FROM kk_blocks AS blocks
 					LEFT JOIN kk_categories AS cat ON cat.id = blocks.category
-					WHERE blocks.deleted = '0' AND day='".$dayVal."' AND meeting='".$this->meetingId."'
-					ORDER BY `from` ASC";
+					WHERE blocks.deleted = ? AND day = ? AND meeting = ?
+					ORDER BY `from` ASC',
+					'0', $dayVal, $this->meetingId)
+				->fetchAll();
 
-			$result = mysql_query($sql);
-			$rows = mysql_affected_rows();
-
-			if($rows == 0){
+			if(!$result){
 				$html .= "<td class='emptyTable' style='width:400px;'>Nejsou žádná aktuální data.</td>\n";
 			}
 			else{
-				while($data = mysql_fetch_assoc($result)){
+				foreach($result as $data){
 					$html .= "<tr>\n";
 					$html .= "<td class='time'>".$data['from']." - ".$data['to']."</td>\n";
 					if(($data['program'] == 1) && ($data['display_progs'] == 1)){
@@ -316,32 +326,31 @@ class MeetingModel extends Component
 	 */
 	public function renderData()
 	{
-		$sql = "SELECT 	id,
-						place,
-						DATE_FORMAT(start_date, '%d. %m. %Y') AS start_date,
-						DATE_FORMAT(end_date, '%d. %m. %Y') AS end_date,
-						DATE_FORMAT(open_reg, '%d. %m. %Y %H:%i:%s') AS open_reg,
-						DATE_FORMAT(close_reg, '%d. %m. %Y %H:%i:%s') AS close_reg,
-						contact,
-						email,
-						gsm
-				FROM kk_meetings
-				WHERE deleted = '0'
-				LIMIT 30";
-		$result = mysql_query($sql);
-		$rows = mysql_affected_rows();
+		$result = $this->database
+			->table($this->dbTable)
+			->select('id,
+					place,
+					DATE_FORMAT(start_date, "%d. %m. %Y") AS start_date,
+					DATE_FORMAT(end_date, "%d. %m. %Y") AS end_date,
+					DATE_FORMAT(open_reg, "%d. %m. %Y %H:%i:%s") AS open_reg,
+					DATE_FORMAT(close_reg, "%d. %m. %Y %H:%i:%s") AS close_reg,
+					contact,
+					email,
+					gsm')
+			->where('deleted', '0')
+			->limit(30)
+			->fetchAll();
 
 		$html_row = "";
 
-		if($rows == 0){
+		if(!$result){
 			$html_row .= "<tr class='radek1'>";
 			$html_row .= "<td><img class='edit' src='".IMG_DIR."icons/edit2.gif' /></td>\n";
 			$html_row .= "<td><img class='edit' src='".IMG_DIR."icons/delete2.gif' /></td>\n";
 			$html_row .= "<td colspan='11' class='emptyTable'>Nejsou k dispozici žádné položky.</td>";
 			$html_row .= "</tr>";
-		}
-		else{
-			while($data = mysql_fetch_assoc($result)){
+		} else {
+			foreach($result as $data){
 				$html_row .= "<tr class='radek1'>";
 				$html_row .= "\t\t\t<td><a href='process.php?id=".$data['id']."&cms=edit&page=meetings' title='Upravit'><img class='edit' src='".IMG_DIR."icons/edit.gif' /></a></td>\n";
 				$html_row .= "\t\t\t<td><a href=\"javascript:confirmation('?id=".$data['id']."&amp;cms=del', 'sraz: ".$data['place']." ".$data['start_date']." -> Opravdu SMAZAT tento sraz? Jste si jisti?')\" title='Odstranit'><img class='edit' src='".IMG_DIR."icons/delete.gif' /></a></td>\n";
@@ -393,15 +402,18 @@ class MeetingModel extends Component
 	}
 
 	public function setRegistrationHandlers($meeting_id = NULL) {
-		$data = $this->database->query("SELECT	id,
+		$data = $this->database
+			->table($this->dbTable)
+			->select('id,
 				place,
-				DATE_FORMAT(start_date, '%Y') AS year,
+				DATE_FORMAT(start_date, "%Y") AS year,
 				UNIX_TIMESTAMP(open_reg) AS open_reg,
-				UNIX_TIMESTAMP(close_reg) as close_reg
-		FROM kk_meetings
-		".($meeting_id ? "WHERE id = '".$meeting_id."'" : '')."
-		ORDER BY id DESC
-		LIMIT 1")->fetch();
+				UNIX_TIMESTAMP(close_reg) as close_reg')
+			/* ($meeting_id ? "WHERE id = '".$meeting_id."'" : '') */
+			->where('id', $meeting_id)
+			->order('id DESC')
+			->limit(1)
+			->fetch();
 
 		$mid = $data['id'];
 		$meetingHeader =
@@ -443,14 +455,11 @@ class MeetingModel extends Component
 	}
 
 	public function getProvinceNameById($id) {
-		$sql = "SELECT province_name
-			FROM kk_provinces
-			WHERE id='".$id."'
-			LIMIT 1";
-
-		$result = mysql_query($sql);
-		$data = mysql_fetch_assoc($result);
-
-		return $data['province_name'];
+		return $this->database
+			->table('kk_provincies')
+			->select('province_name')
+			->where('id', $id)
+			->limit(1)
+			->fetchField('province_name');
 	}
 }

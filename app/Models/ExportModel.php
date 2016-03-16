@@ -701,7 +701,8 @@ class ExportModel extends NixModel
 	{
 		$graph_width = 94;
 
-		$graph = $this->database->query('SELECT DATE_FORMAT(reg_daytime, "%d. %m. %Y") AS day,
+		$graph = $this->database
+			->query('SELECT DATE_FORMAT(reg_daytime, "%d. %m. %Y") AS day,
 							   COUNT(reg_daytime) AS reg_count
 						FROM `kk_visitors` AS vis
 						LEFT JOIN kk_meetings AS meet ON meet.id = vis.meeting
@@ -710,7 +711,8 @@ class ExportModel extends NixModel
 						ORDER BY reg_daytime ASC',
 						$this->meetingId, '0')->fetchAll();
 
-		$graphMax = $this->database->query('SELECT MAX( reg_count ) AS max
+		$graphMax = $this->database
+			->query('SELECT MAX( reg_count ) AS max
 					  FROM (
 						SELECT DATE_FORMAT( reg_daytime, "%d. %m. %Y" ) AS
 							DAY , COUNT( reg_daytime ) AS reg_count
@@ -754,7 +756,8 @@ class ExportModel extends NixModel
 	 */
 	public function getMaterial()
 	{
-		$data = $this->database->query('SELECT 	progs.id AS id,
+		$data = $this->database
+			->query('SELECT	progs.id AS id,
 						progs.name AS name,
 						progs.material AS material
 				FROM `kk_programs` AS progs
@@ -783,7 +786,8 @@ class ExportModel extends NixModel
 	 */
 	public function getMoney($type)
 	{
-		$data = $this->database->query('SELECT SUM(bill) AS account,
+		$data = $this->database
+			->query('SELECT SUM(bill) AS account,
 							COUNT(bill) * vis.cost AS suma,
 							COUNT(bill) * vis.cost - SUM(bill) AS balance
 					FROM kk_visitors AS vis
@@ -815,7 +819,8 @@ class ExportModel extends NixModel
 	 */
 	public function getMealCount($meal)
 	{
-		$data = $this->database->query('SELECT count(?) AS ?
+		$data = $this->database
+			->query('SELECT count(?) AS ?
 				FROM `kk_meals` AS mls
 				LEFT JOIN `kk_visitors` AS vis ON vis.id = mls.visitor
 				WHERE vis.deleted = ?
