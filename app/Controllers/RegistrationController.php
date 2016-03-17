@@ -481,14 +481,7 @@ class RegistrationController extends BaseController
 		$this->View->assign('meeting_heading',	$this->Meeting->getRegHeading());
 
 		////otevirani a uzavirani prihlasovani
-		if(($this->Meeting->getRegOpening() < time()) && (time() < $this->Meeting->getRegClosing()) || DEBUG === TRUE){
-			$this->View->assign('disabled',				"");
-			$this->View->assign('display_registration',	TRUE);
-		} else {
-			$this->View->assign('disabled',				"disabled");
-			$this->View->assign('display_registration',	FALSE);
-		}
-
+		$this->View->assign('disabled',	$this->Meeting->isRegOpen() ? "" : "disabled");
 
 		if(!empty($this->data)) {
 			$this->View->assign('id',				(isset($this->itemId)) ? $this->itemId : '');

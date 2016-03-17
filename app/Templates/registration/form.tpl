@@ -8,7 +8,7 @@
 <br />
 <?php echo $data['error']; ?>
 
-<?php if($data['display_registration']) { ?>
+<?php if($data['is-reg-open']) { ?>
 
 <script type="text/javascript" src="<?php echo JS_DIR ?>jquery/jquery.tinytips.js"></script>
 <script type="text/javascript">

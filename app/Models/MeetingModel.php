@@ -409,8 +409,7 @@ class MeetingModel extends Component
 				DATE_FORMAT(start_date, "%Y") AS year,
 				UNIX_TIMESTAMP(open_reg) AS open_reg,
 				UNIX_TIMESTAMP(close_reg) AS close_reg')
-			/* ($meeting_id ? "WHERE id = '".$meeting_id."'" : '') */
-			->where('id', $meeting_id)
+			->where($meeting_id ? 'id = "' . $meeting_id . '"' : '1')
 			->order('id DESC')
 			->limit(1)
 			->fetch();
@@ -447,16 +446,12 @@ class MeetingModel extends Component
 	 */
 	public function isRegOpen()
 	{
-		if($this->getRegOpening() < time() && time() < $this->getRegClosing()) {
-			return TRUE;
-		} else {
-			return FALSE;
-		}
+		return ($this->getRegOpening() < time()) && (time() < $this->getRegClosing()) || DEBUG === TRUE;
 	}
 
 	public function getProvinceNameById($id) {
 		return $this->database
-			->table('kk_provincies')
+			->table('kk_provinces')
 			->select('province_name')
 			->where('id', $id)
 			->limit(1)
