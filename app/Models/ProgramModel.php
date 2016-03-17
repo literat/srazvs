@@ -416,7 +416,7 @@ class ProgramModel extends Component
 	public static function getDetail($id, $type, $cfg, $database)
 	{
 		$data = $database
-			->table('kk_' . $type)
+			->table('kk_' . $type . 's')
 			->where('id ? AND deleted ?', $id, '0')
 			->limit(1)
 			->fetch();
