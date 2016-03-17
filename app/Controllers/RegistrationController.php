@@ -378,7 +378,7 @@ class RegistrationController extends BaseController
 
 		$this->itemId = $id;
 
-		$dbData = mysql_fetch_assoc($this->Visitor->getData($id));
+		$dbData = $this->Visitor->getData($id);
 		foreach($this->Visitor->dbColumns as $key) {
 			$this->data[$key] = requested($key, $dbData[$key]);
 		}
@@ -410,7 +410,7 @@ class RegistrationController extends BaseController
 
 		$this->itemId = $id;
 
-		$dbData = mysql_fetch_assoc($this->Visitor->getData($id));
+		$dbData = $this->Visitor->getData($id);
 		foreach($this->Visitor->dbColumns as $key) {
 			$this->data[$key] = requested($key, $dbData[$key]);
 		}

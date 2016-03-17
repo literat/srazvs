@@ -343,7 +343,7 @@ class ProgramController extends BaseController
 		$this->Meeting->setRegistrationHandlers();
 		$this->programId = $id;
 
-		$dbData = mysql_fetch_assoc($this->Program->getData($id));
+		$dbData = $this->Program->getData($id);
 
 		foreach($this->Program->formNames as $key) {
 			$this->data[$key] = requested($key, $dbData[$key]);

@@ -309,7 +309,7 @@ class BlockController extends BaseController
 
 		$this->blockId = $id;
 
-		$dbData = mysql_fetch_assoc($this->Block->getData($id));
+		$dbData = $this->Block->getData($id);
 
 		foreach($this->Block->formNames as $key) {
 			$this->data[$key] = requested($key, $dbData[$key]);
