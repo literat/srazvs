@@ -67,8 +67,8 @@
             background: url('<?php echo HTTP_DIR; ?>plugins/templates/hkvs2/images/outer-bottom-program.png') no-repeat scroll left top transparent;
         }
 
-        <?php echo $data['css']; ?>
-        <?php echo $data['style']; ?>
+        <?php echo isset($data['css']) ? $data['css'] : ''; ?>
+        <?php echo isset($data['style']) ? $data['style'] : ''; ?>
     </style>
 
     <!-- PlexIS -->
