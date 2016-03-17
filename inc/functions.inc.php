@@ -284,32 +284,6 @@ $day_name = array(1 => "", "pondělí", "úterý", "středa", "čtvrtek", "páte
 $month_name = array(1 => "leden", "únor", "březen", "duben", "květen", "červen", "červenec", "srpen", "září", "říjen", "listopad", "prosinec");
 
 /**
- * getCategoryStyle()
- * - funkce vytvori styly pro vlozeni kategorii
- *
- * @return string <style>...</style>
- */
-function getCategoryStyle()
-{
-	$style = "<style type='text/css'>\n";
-
-	$cat_sql = "SELECT * FROM kk_categories WHERE 1";
-	$cat_result = mysql_query($cat_sql);
-	while($cat_data = mysql_fetch_assoc($cat_result)){
-		$style .= ".cat-".$cat_data['style']." {
-		border:2px solid #".$cat_data['bocolor'].";
-		background-color:#".$cat_data['bgcolor'].";
-		color:#".$cat_data['focolor'].";
-		padding:0px;
-		min-width:125px;
-		}\n";
-	}
-	$style .= "</style>\n";
-
-	return $style;
-}
-
-/**
  * redirect()
  * - presmeruje stranku na zadane misto
  *
