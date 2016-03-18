@@ -389,8 +389,8 @@ class BlockController extends BaseController
 			$this->View->assign('cat_roll',				$cat_roll);
 			$this->View->assign('day_roll',				$day_roll);
 			$this->View->assign('day',					$this->data['day']);
-			$this->View->assign('from',					$this->data['from']);
-			$this->View->assign('to',					$this->data['to']);
+			$this->View->assign('from',					$this->data['from']->format('%H:%I:%S'));
+			$this->View->assign('to',					$this->data['to']->format('%H:%I:%S'));
 			$this->View->assign('program',				$this->data['program']);
 			$this->View->assign('hour_roll',			$hour_roll);
 			$this->View->assign('minute_roll',			$minute_roll);
