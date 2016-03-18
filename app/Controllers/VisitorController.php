@@ -113,13 +113,11 @@ class VisitorController extends BaseController
 
 		if(isset($_POST['checker'])){
 			$id = $_POST['checker'];
-			$query_id = NULL;
+			$query_id = array();
 			foreach($id as $key => $value) {
-				$query_id .= $value.',';
+				$query_id[] = $value;
 			}
-			$query_id = rtrim($query_id, ',');
-		}
-		else {
+		} else {
 			$query_id = $id;
 		}
 
