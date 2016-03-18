@@ -71,14 +71,14 @@
 			<input type='hidden' name='to' value='<?= $data['to']; ?>'>
 			<input type='hidden' name='day' value='<?= $data['day']; ?>'>
 			<input type='hidden' name='page' value='annotation'>
- 
+
 			<div class='button-line'>
 				<button type='submit' onclick=\"this.form.submit()\">
 					<img src='<?php echo IMG_DIR; ?>icons/save.png' /> Uložit</button>
 				<button type='button' onclick="window.location.replace('<?php echo HTTP_DIR ?>sraz-kk-setkani-cinovniku.p77.html')">
 					<img src='<?php echo IMG_DIR; ?>icons/storno.png'  /> Storno</button>
 			</div>
- 
+
 		</form>
 
 		<p></p>
