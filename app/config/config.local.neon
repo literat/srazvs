@@ -1,0 +1,16 @@
+parameters:
+    database:
+        driver: mysql
+        host: localhost
+        dbname: vodni
+        user: root
+        password: root
+
+services:
+    connection:
+        class: Nette\Database\Connection
+        arguments: [
+            '%database.driver%:host=%database.host%;dbname=%database.dbname%',
+            %database.user%,
+            %database.password%
+        ]
