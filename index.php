@@ -2,7 +2,7 @@
 
 use Codeplex\Routers;
 use Tracy\Debugger;
-use Nette\Database\Connection;
+use Nette\DI\ContainerLoader;
 use Nette\Database\Context;
 use Nette\Caching\Storages\FileStorage;
 use Nette\Database\Structure;
@@ -23,19 +23,31 @@ Debugger::enable(Debugger::DETECT, __DIR__ . '/temp/log');
 Debugger::$email = $cfg['mail-admin'];
 
 /**
+ * DI Container
+ */
+$loader = new ContainerLoader(__DIR__ . '/temp');
+$class = $loader->load('', function($compiler) {
+    $compiler->loadConfig(__DIR__ . '/app/config/config.local.neon');
+});
+$container = new $class;
+
+/**
  * Connecting to Database
  */
-$connection = new Connection('mysql:host=' . $cfg['db_host'] . ';dbname=' . $cfg['db_database'], $cfg['db_user'], $cfg['db_passwd']);
+$connection = $container->createServiceConnection();
 $cacheStorage = new FileStorage(__DIR__ . '/temp/cache');
 $structure   = new Structure($connection, $cacheStorage);
 $database = new Context($connection, $structure);
-
+// Tracy database panel
 Nette\Database\Helpers::createDebugPanel($connection);
 
-$actualMeetingId = $database->query('SELECT id FROM kk_meetings ORDER BY id DESC LIMIT 1')->fetchField();
-
 if(!isset($_SESSION['meetingID'])) {
-	$_SESSION['meetingID'] = $actualMeetingId;
+	$_SESSION['meetingID'] = $database
+		->table('kk_meetings')
+		->select('id')
+		->order('id DESC')
+		->limit(1)
+		->fetchField();
 }
 
 require_once(FRAMEWORK.'Routers/Router.php');
@@ -44,7 +56,7 @@ $router = new Nix\Routers\Router();
 
 $router->setDefaults(array(
     'controller' => 'meeting',
-    'id' => $actualMeetingId
+    'id' => $_SESSION['meetingID'],
 ));
 
 /**
