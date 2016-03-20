@@ -1,8 +1,6 @@
 !.*
 !*/.*
 *dwsync.xml
-libs
-vendor
 *deprecated*
 *.sublime-*
 *.sln
@@ -10,6 +8,17 @@ vendor
 *.json
 _compareTemp
 *.svn
-composer.phar
-inc/config.inc.php
 .phpintel
+composer.phar
+deployment.*
+
+# Configuration
+inc/config.inc.php
+app/config/config.neon
+
+# Libraries
+libs
+vendor
+
+# Temporary files
+temp
