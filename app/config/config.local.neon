@@ -14,3 +14,31 @@ services:
             %database.user%,
             %database.password%
         ]
+    cacheStorage:
+        class: Nette\Caching\Storages\FileStorage
+        arguments: [
+            %cacheDir%
+        ]
+    structure:
+        class: Nette\Database\Structure
+        arguments: [
+            @connection,
+            @cacheStorage
+        ]
+    database:
+        class: Nette\Database\Context
+        arguments: [
+            @connection,
+            @structure
+        ]
+    smtpmailer:
+        class: Nette\Mail\SmtpMailer
+        arguments: [
+            %mail%
+        ]
+    emailer:
+        class: App\Emailer
+        arguments: [
+            @database,
+            @smtpmailer
+        ]
