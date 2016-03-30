@@ -11,6 +11,7 @@ require_once('inc/define.inc.php');
 
 require_once(FRAMEWORK.'loader.php');
 
+require_once __DIR__ . '/app/models/EmailerModel.php';
 /**
  * Composer Autoloading
  */
@@ -35,9 +36,8 @@ $container = new $class;
  * Connecting to Database
  */
 $connection = $container->createServiceConnection();
-$cacheStorage = new FileStorage(__DIR__ . '/temp/cache');
-$structure   = new Structure($connection, $cacheStorage);
-$database = new Context($connection, $structure);
+$database = $container->createServiceDatabase();
+
 // Tracy database panel
 Nette\Database\Helpers::createDebugPanel($connection);
 
@@ -92,7 +92,7 @@ if(file_exists($target))
 	//instantiate the appropriate class
 	if(class_exists($class))
 	{
-		$controller = new $class($database);
+		$controller = new $class($database, $container);
 		$controller->setRouting($routing);
 	}
 	else

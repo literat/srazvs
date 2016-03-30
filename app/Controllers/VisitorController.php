@@ -16,6 +16,7 @@ class VisitorController extends BaseController
 	 * @var Container
 	 */
 	private $Container;
+	private $container;
 
 	/**
 	 * Visitor model
@@ -68,7 +69,7 @@ class VisitorController extends BaseController
 	/**
 	 * Prepare model classes and get meeting id
 	 */
-	public function __construct($database)
+	public function __construct($database, $container)
 	{
 		if($this->meetingId = requested("mid","")) {
 			$_SESSION['meetingID'] = $this->meetingId;
@@ -81,10 +82,11 @@ class VisitorController extends BaseController
 		$this->page = 'visitor';
 
 		$this->database = $database;
+		$this->container = $container;
 		$this->Container = new Container($GLOBALS['cfg'], $this->meetingId, $this->database);
 		$this->Visitor = $this->Container->createVisitor();
 		$this->View = $this->Container->createView();
-		$this->Emailer = $this->Container->createEmailer();
+		$this->Emailer = $this->container->createServiceEmailer();//$this->Container->createEmailer();
 		$this->Export = $this->Container->createExport();
 		$this->Meeting = $this->Container->createMeeting();
 		$this->Meal = $this->Container->createMeal();
