@@ -33,28 +33,28 @@ class Emailer
 	/**
 	 * Send an e-mail to recipient
 	 *
-	 * @param	string	recipient e-mail
-	 * @param	string	recipient name
+	 * @param	array	recipient e-mail and name
 	 * @param	string	subject
 	 * @param	string	message
+	 * @param	array	bcc
 	 * @return	mixed	true or error information
 	 */
-	public function sendMail($recipient, $subject, $body, $bccMail = NULL)
+	public function sendMail(array $recipient, $subject, $body, array $bccMail = NULL)
 	{
 		//$this->Emailer->clearAddresses();
 		//$this->Emailer->clearAllRecipients();
 		$message = new Message;
 		$message->setFrom('srazyvs@hkvs.cz', 'Srazy VS');
 
-		$recipient = explode(',', $recipient);
-
-		foreach($recipient as $mail) {
+		foreach($recipient as $mail => $name) {
 			// add recipient address and name
-			$message->addTo($mail);
+			$message->addTo($mail, $name);
 		}
 		// add bcc
-		if(isset($bccMail) && $bccMail != '') {
-			$message->addBcc($bccMail);
+		if(!empty($bccMail)) {
+			foreach ($bccMail as $bccMail => $bccName) {
+				$message->addBcc($bccMail, $bccName);
+			}
 		}
 		// create subject
 		$message->subject = $subject;
