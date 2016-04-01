@@ -303,6 +303,12 @@ class VisitorModel /* extends Component */
 	 */
 	public function payCharge($query_id, $type)
 	{
+		$recipients = $this->database
+			->table($this->dbTable)
+			->select('email', 'name', 'surname')
+			->where('id ? AND deleted ?', $query_id, 0)
+			->fetchAll();
+
 		$billData = $this->database
 			->table($this->dbTable)
 			->select('bill')
@@ -316,7 +322,7 @@ class VisitorModel /* extends Component */
 				->where('id', $query_id)
 				->update($bill);
 
-			if($return = $this->Emailer->sendPaymentInfo($query_id, $type)) {
+			if($return = $this->Emailer->sendPaymentInfo($recipients, $type)) {
 				return true;
 			} else {
 				return $return;
