@@ -70,10 +70,12 @@ class SettingsController extends BaseController
 	 */
 	private $Emailer;
 
+	private $container;
+
 	/**
 	 * Prepare initial values
 	 */
-	public function __construct($database)
+	public function __construct($database, $container)
 	{
 		if($this->meetingId = requested("mid","")){
 			$_SESSION['meetingID'] = $this->meetingId;
@@ -81,10 +83,11 @@ class SettingsController extends BaseController
 			$this->meetingId = $_SESSION['meetingID'];
 		}
 		$this->database = $database;
+		$this->container = $container;
 		$this->Container = new Container($GLOBALS['cfg'], $this->meetingId, $this->database);
 		$this->Settings = $this->Container->createSettings();
 		$this->View = $this->Container->createView();
-		$this->Emailer = $this->Container->createEmailer();
+		$this->Emailer = $this->container->createServiceEmailer();
 	}
 
 	/**
