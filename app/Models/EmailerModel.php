@@ -44,33 +44,34 @@ class Emailer
 	 * @param	string	message
 	 * @return	mixed	true or error information
 	 */
-	public function send($recipient_mail, $recipient_name, $subject, $message, $bcc_mail = NULL)
+	public function sendMail($recipientMail, $recipientName, $subject, $body, $bccMail = NULL)
 	{
 		//$this->Emailer->clearAddresses();
 		//$this->Emailer->clearAllRecipients();
-		$mail = new Message;
+		$message = new Message;
+		$message->setFrom('Srazy VS <srazyvs@hkvs.cz>');
 
-		$recipient_mail = explode(',', $recipient_mail);
+		$recipientMail = explode(',', $recipientMail);
 
-		foreach($recipient_mail as $mail) {
+		foreach($recipientMail as $mail) {
 			// add recipient address and name
-			$mail->addTo($mail);
+			$message->addTo($mail);
 		}
 		// add bcc
-		if(isset($bcc_mail) && $bcc_mail != '') {
-			$mial->addBcc($bcc_mail);
+		if(isset($bccMail) && $bccMail != '') {
+			$message->addBcc($bccMail);
 		}
 		// create subject
-		$mail->setSubject = $subject;
+		$message->subject = $subject;
 		// create HTML body
-		$mail->setHtmlBody = $message;
+		$message->htmlBody = $body;
 		// create alternative message without HTML tags
-		$mail->setBody = strip_tags($message);
+		$message->body = strip_tags($body);
 		// e-mail word wrapping
 		//$this->Emailer->WordWrap = 50;
 		// sending e-mail or error status
 		try {
-			$this->mailer->send($mail);
+			$this->mailer->send($message);
 			return true;
 		} catch(Exception $e) {
 			return $e;
