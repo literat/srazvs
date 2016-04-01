@@ -206,14 +206,14 @@ class Emailer
 	 * @param	string	type of template
 	 * @return	array	subject and message
 	 */
-	public function sendPaymentInfo($query_id, $type)
+	public function sendPaymentInfo($recipients, $type)
 	{
 		// e-mail templates
-		$templates = $this->getTemplates($type);
-		$subject = $templates['subject'];
-		$message = $templates['message'];
+		$template = $this->getTemplate($type);
+		$subject = $template['subject'];
+		$message = $template['message'];
 
-		$return = $this->noticeVisitor($query_id, $subject, $message);
+		$return = $this->noticeVisitor($recipients, $subject, $message);
 
 		return $return;
 	}
