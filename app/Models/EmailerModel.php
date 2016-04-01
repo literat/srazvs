@@ -60,7 +60,6 @@ class Emailer
 		$message->htmlBody = $body;
 		// create alternative message without HTML tags
 		$message->body = strip_tags($body);
-		// e-mail word wrapping
 		// sending e-mail or error status
 		try {
 			$this->mailer->send($message);

@@ -155,8 +155,7 @@ class SettingsController extends BaseController
 	 */
 	private function mail($type, $test_mail)
 	{
-		if($this->Emailer->sendMail($test_mail,
-									$test_mail,
+		if($this->Emailer->sendMail(array($test_mail => ''),
 									$this->Settings->getMailJSON($type)->subject,
 									html_entity_decode($this->Settings->getMailJSON($type)->message))
 		) {
