@@ -79,24 +79,27 @@ class Emailer
 	}
 
 	/**
-	 * Get e-mail templates from settings
+	 * Get e-mail template from settings
 	 *
 	 * @param	string	type of template
 	 * @return	array	subject and message
 	 */
-	public function getTemplates($type)
+	public function getTemplate($type)
 	{
 		$data = $this->database
 			->table('kk_settings')
 			->where('name', 'mail_' . $type)
-			->fetchAll();
+			->fetch();
 
-		$json = Json::decode($data['value']);
+		$json = Json::decode($data->value);
 
 		$subject = html_entity_decode($json->subject);
 		$message = html_entity_decode($json->message);
 
-		return array('subject' => $subject, 'message' => $message);
+		return array(
+			'subject' => $subject,
+			'message' => $message,
+		);
 	}
 
 	/**
