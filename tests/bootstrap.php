@@ -1,7 +1,5 @@
 <?php
 
-use Nette\DI\ContainerLoader;
-
 require_once __DIR__ . '/../vendor/autoload.php';
 
 Tester\Environment::setup();
