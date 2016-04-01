@@ -158,19 +158,19 @@ class Emailer
 	 * @param	string	code for recognition of bank transaction
 	 * @return	mixed	true | error information
 	 */
-	public function sendRegistrationSummary($recipient_mail, $recipient_name, $hash, $code4bank)
+	public function sendRegistrationSummary($recipientMail, $recipientName, $hash, $code4bank)
 	{
 		// e-mail templates
-		$templates = $this->getTemplates('post_reg');
-		$subject = $templates['subject'];
-		$message = $templates['message'];
+		$template = $this->getTemplate('post_reg');
+		$subject = $template['subject'];
+		$message = $template['message'];
 
 		// replacing text variables
 		$message = preg_replace('/%%\[kontrolni-hash\]%%/', $hash, $message);
 		$message = preg_replace('/%%\[variabilni-symbol\]%%/', $code4bank, $message);
 
 		// send it
-		return $this->sendMail($recipient_mail, $recipient_name, $subject, $message);
+		return $this->sendMail($recipientMail, $recipientName, $subject, $message);
 	}
 
 	/**
