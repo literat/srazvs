@@ -181,30 +181,15 @@ class Emailer
 	 * @param	string	message
 	 * @return	mixed	true | error information
 	 */
-	public function noticeVisitor($id, $subject, $message)
+	public function noticeVisitor($recipients, $subject, $message)
 	{
-		// multiple IDs, multiple visitors
-		if(is_array($id)){
-			$query_id = NULL;
-			foreach($id as $key => $value) {
-				$query_id .= $value.',';
-			}
-			$query_id = rtrim($query_id, ',');
-		} else {
-			$query_id = $id;
-		}
-
-		$sql = "SELECT	* FROM kk_visitors AS vis
-				WHERE id IN (".$query_id.") AND deleted='0'";
-		$result = mysql_query($sql);
-		$recipient = NULL;
-		while($data = mysql_fetch_assoc($result)) {
+		foreach($recipients as $recipient) {
 			// multiple recipients
-			$recipient_mail = $data['email']; // note the comma
-			$recipient_name = $data['name']." ".$data['surname'];
+			$recipientMail = $recipient->email; // note the comma
+			$recipientName = $recipient->name." ".$recipient->surname;
 
 			// send it
-			if(!$this->sendMail($recipient_mail, $recipient_name, $subject, $message)) {
+			if(!$this->sendMail($recipientMail, $recipientName, $subject, $message)) {
 				$return = $EmailHandler->ErrorInfo;
 			} else {
 				$return = true;
