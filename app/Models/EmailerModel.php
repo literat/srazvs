@@ -17,9 +17,6 @@ use Nette\Utils\Json;
  */
 class Emailer
 {
-	/* jsem na vyvoji nebo na produkci? */
-	protected $isDev;
-
 	/** @var SmtpMailer */
 	private $mailer;
 
@@ -29,8 +26,6 @@ class Emailer
 	/* Constructor */
 	public function __construct(Context $database, IMailer $mailer)
 	{
-		// jestli jsem na vyvojove masine - true/false
-		$this->isDev = $GLOBALS['ISDEV'];
 		$this->mailer = $mailer;
 		$this->database = $database;
 	}
