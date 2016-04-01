@@ -2,7 +2,7 @@
 
 namespace App;
 
-use Nette\Mail\SmtpMailer;
+use Nette\Mail\IMailer;
 use Nette\Mail\Message;
 use Nette\Database\Context;
 use Nette\Utils\Json;
@@ -27,7 +27,7 @@ class Emailer
 	private $database;
 
 	/* Constructor */
-	public function __construct(Context $database, SmtpMailer $mailer)
+	public function __construct(Context $database, IMailer $mailer)
 	{
 		// jestli jsem na vyvojove masine - true/false
 		$this->isDev = $GLOBALS['ISDEV'];
