@@ -44,16 +44,16 @@ class Emailer
 	 * @param	string	message
 	 * @return	mixed	true or error information
 	 */
-	public function sendMail($recipientMail, $recipientName, $subject, $body, $bccMail = NULL)
+	public function sendMail($recipient, $subject, $body, $bccMail = NULL)
 	{
 		//$this->Emailer->clearAddresses();
 		//$this->Emailer->clearAllRecipients();
 		$message = new Message;
-		$message->setFrom('Srazy VS <srazyvs@hkvs.cz>');
+		$message->setFrom('srazyvs@hkvs.cz', 'Srazy VS');
 
-		$recipientMail = explode(',', $recipientMail);
+		$recipient = explode(',', $recipient);
 
-		foreach($recipientMail as $mail) {
+		foreach($recipient as $mail) {
 			// add recipient address and name
 			$message->addTo($mail);
 		}
@@ -132,7 +132,6 @@ class Emailer
 
 		// multiple recipients
 		$recipientMail = $data->email;
-		$recipientName = $data->tutor;
 		$tutorFormUrl = PRJ_DIR . $type . "/?cms=annotation&type=" . $type . "&formkey=" . $hash;
 
 		// e-mail templates
@@ -146,7 +145,7 @@ class Emailer
 		$message = preg_replace('/%%\[url-formulare\]%%/', $tutorFormUrl, $message);
 
 		// send it
-		return $this->sendMail($recipientMail, $recipientName, $subject, $message);
+		return $this->sendMail($recipientMail, $subject, $message);
 	}
 
 	/**
@@ -158,7 +157,7 @@ class Emailer
 	 * @param	string	code for recognition of bank transaction
 	 * @return	mixed	true | error information
 	 */
-	public function sendRegistrationSummary($recipientMail, $recipientName, $hash, $code4bank)
+	public function sendRegistrationSummary($recipientMail, $hash, $code4bank)
 	{
 		// e-mail templates
 		$template = $this->getTemplate('post_reg');
@@ -170,7 +169,7 @@ class Emailer
 		$message = preg_replace('/%%\[variabilni-symbol\]%%/', $code4bank, $message);
 
 		// send it
-		return $this->sendMail($recipientMail, $recipientName, $subject, $message);
+		return $this->sendMail($recipientMail, $subject, $message);
 	}
 
 	/**
@@ -183,17 +182,11 @@ class Emailer
 	 */
 	public function noticeVisitor($recipients, $subject, $message)
 	{
-		foreach($recipients as $recipient) {
-			// multiple recipients
-			$recipientMail = $recipient->email; // note the comma
-			$recipientName = $recipient->name." ".$recipient->surname;
-
-			// send it
-			if(!$this->sendMail($recipientMail, $recipientName, $subject, $message)) {
-				$return = $EmailHandler->ErrorInfo;
-			} else {
-				$return = true;
-			}
+		// send it
+		if(!$this->sendMail($recipients, $subject, $message)) {
+			$return = $EmailHandler->ErrorInfo;
+		} else {
+			$return = true;
 		}
 
 		return $return;
