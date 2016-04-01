@@ -115,38 +115,38 @@ class Emailer
 		$lang['block']['cs'] = "bloku";
 		$lang['program']['cs'] = "programu";
 
-		$query = "SELECT	* FROM kk_".$type."s AS content
-				WHERE id='".$contentId."' AND deleted='0'
-				LIMIT 1";
-		$result = mysql_query($query);
-		$data = mysql_fetch_assoc($result);
+		$data = $this->database
+			->table('kk_' . $type . 's AS content')
+			->where('id ? AND deleted ?', $contentId, 0)
+			->limit(1)
+			->fetch();
 
 		// kontroluju, jestli je zadan e-mail
-		if($data['email'] == ""){
+		if(empty($data['email'])){
 			redirect("process.php?id=".$contentId."&error=email&cms=edit");
 			die();
 		}
 
 		// zaheshovane udaje, aby se nedali jen tak ziskat data z databaze
-		$hash = ((int)$contentId.$meetingId) * 116 + 39147;
+		$hash = ((int)$contentId . $meetingId) * 116 + 39147;
 
 		// multiple recipients
-		$recipient_mail = $data['email'];
-		$recipient_name = $data['tutor'];
-		$tutor_form_url = PRJ_DIR.$type."/?cms=annotation&type=".$type."&formkey=".$hash;
+		$recipientMail = $data->email;
+		$recipientName = $data->tutor;
+		$tutorFormUrl = PRJ_DIR . $type . "/?cms=annotation&type=" . $type . "&formkey=" . $hash;
 
 		// e-mail templates
-		$templates = $this->getTemplates('tutor');
-		$subject = $templates['subject'];
-		$message = $templates['message'];
+		$template = $this->getTemplate('tutor');
+		$subject = $template['subject'];
+		$message = $template['message'];
 
 		// replacing text variables
 		$subject = preg_replace('/%%\[typ-anotace\]%%/', $lang[$type]['cs'], $subject);
 		$message = preg_replace('/%%\[typ-anotace\]%%/', $lang[$type]['cs'], $message);
-		$message = preg_replace('/%%\[url-formulare\]%%/', $tutor_form_url, $message);
+		$message = preg_replace('/%%\[url-formulare\]%%/', $tutorFormUrl, $message);
 
 		// send it
-		return $this->sendMail($recipient_mail, $recipient_name, $subject, $message);
+		return $this->sendMail($recipientMail, $recipientName, $subject, $message);
 	}
 
 	/**
