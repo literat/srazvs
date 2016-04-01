@@ -41,8 +41,6 @@ class Emailer
 	 */
 	public function sendMail(array $recipient, $subject, $body, array $bccMail = NULL)
 	{
-		//$this->Emailer->clearAddresses();
-		//$this->Emailer->clearAllRecipients();
 		$message = new Message;
 		$message->setFrom('srazyvs@hkvs.cz', 'Srazy VS');
 
@@ -63,7 +61,6 @@ class Emailer
 		// create alternative message without HTML tags
 		$message->body = strip_tags($body);
 		// e-mail word wrapping
-		//$this->Emailer->WordWrap = 50;
 		// sending e-mail or error status
 		try {
 			$this->mailer->send($message);
