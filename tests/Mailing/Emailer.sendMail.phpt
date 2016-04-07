@@ -23,6 +23,34 @@ class EmailerModelTest extends Tester\TestCase
 		$this->mailer = $mailer;
 	}
 
+	public function testSendedSuccessfully()
+	{
+		$recipient = array(
+			'prilis.zlutoucky@kun.cz' => 'Příliš žluťoučký kůň',
+		);
+		$subject = 'Úpěl ďábelské ódy';
+		$body = 'Testování';
+
+		$return =  $this->mailer->sendMail($recipient, $subject, $body);
+
+		Assert::true($return);
+	}
+
+/*
+	public function testSendingFailed()
+	{
+		$recipient = array(
+			'' => 'Příliš žluťoučký kůň',
+		);
+		$subject = 'Úpěl ďábelské ódy';
+		$body = 'Testování';
+
+		$return =  $this->mailer->sendMail($recipient, $subject, $body);
+
+		Assert::false($return);
+	}
+*/
+
 	public function testSendingMail()
 	{
 		$recipient = array(
