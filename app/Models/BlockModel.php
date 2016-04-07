@@ -191,4 +191,20 @@ class BlockModel extends Component
 
 		return $result;
 	}
+
+	/**
+	 * Get tutor e-mail address
+	 *
+	 * @param int $blockId id of block item
+	 * @return Nette\Database\Table\ActiveRow object with e-mail address
+	 */
+	public function getTutor($blockId)
+	{
+		return $this->database
+			->table($this->dbTable)
+			->select('email, tutor')
+			->where('id ? AND deleted ?', $blockId, '0')
+			->limit(1)
+			->fetch();
+	}
 }
