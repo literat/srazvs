@@ -50,6 +50,7 @@ class BlockController extends BaseController
 	 */
 	private $data = array();
 
+	private $container;
 	private $Container;
 	private $Block;
 	private $View;
@@ -60,7 +61,7 @@ class BlockController extends BaseController
 	/**
 	 * Prepare model classes and get meeting id
 	 */
-	public function __construct($database)
+	public function __construct($database, $container)
 	{
 		if($this->meetingId = requested("mid","")){
 			$_SESSION['meetingID'] = $this->meetingId;
@@ -69,10 +70,11 @@ class BlockController extends BaseController
 		}
 
 		$this->database = $database;
+		$this->container = $container;
 		$this->Container = new Container($GLOBALS['cfg'], $this->meetingId, $this->database);
 		$this->Block = $this->Container->createBlock();
 		$this->View = $this->Container->createView();
-		$this->Emailer = $this->Container->createEmailer();
+		$this->Emailer = $this->container->createServiceEmailer();
 		$this->Meeting = $this->Container->createMeeting();
 		$this->Category = $this->Container->createCategory();
 
@@ -284,8 +286,14 @@ class BlockController extends BaseController
 	private function mail()
 	{
 		$pid = requested("pid","");
-		if($this->Emailer->tutor($pid, $this->meetingId, "block")) {
+		$hash = form_key_hash($pid, $this->meetingId);
+		$tutors = $this->Block->getTutor($pid);
+		$recipients = parse_tutor_email($tutors);
+
+		if($this->Emailer->tutor($recipients, $this->meetingId, 'block')) {
 			redirect("?block&error=mail_send");
+		} else {
+			redirect("block?id=".$pid."&error=email&cms=edit");
 		}
 	}
 

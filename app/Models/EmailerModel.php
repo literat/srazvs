@@ -6,6 +6,7 @@ use Nette\Mail\IMailer;
 use Nette\Mail\Message;
 use Nette\Database\Context;
 use Nette\Utils\Json;
+use Tracy\Debugger;
 
 /**
  * Emailer
@@ -37,7 +38,7 @@ class Emailer
 	 * @param	string	subject
 	 * @param	string	message
 	 * @param	array	bcc
-	 * @return	mixed	true or error information
+	 * @return	bool	true | false (log the exception)
 	 */
 	public function sendMail(array $recipient, $subject, $body, array $bccMail = NULL)
 	{
@@ -65,7 +66,8 @@ class Emailer
 			$this->mailer->send($message);
 			return true;
 		} catch(Exception $e) {
-			return $e;
+			Debugger::log($e, 'error');
+			return false;
 		}
 	}
 
@@ -101,28 +103,11 @@ class Emailer
 	 * @param	string	program | block
 	 * @return	mixed	true | error information
 	 */
-	public function tutor($contentId, $meetingId, $type)
+	public function tutor(array $recipients, $hash, $type)
 	{
 		$lang['block']['cs'] = "bloku";
 		$lang['program']['cs'] = "programu";
 
-		$data = $this->database
-			->table('kk_' . $type . 's AS content')
-			->where('id ? AND deleted ?', $contentId, 0)
-			->limit(1)
-			->fetch();
-
-		// kontroluju, jestli je zadan e-mail
-		if(empty($data['email'])){
-			redirect("process.php?id=".$contentId."&error=email&cms=edit");
-			die();
-		}
-
-		// zaheshovane udaje, aby se nedali jen tak ziskat data z databaze
-		$hash = ((int)$contentId . $meetingId) * 116 + 39147;
-
-		// multiple recipients
-		$recipientMail = $data->email;
 		$tutorFormUrl = PRJ_DIR . $type . "/?cms=annotation&type=" . $type . "&formkey=" . $hash;
 
 		// e-mail templates
@@ -136,7 +121,7 @@ class Emailer
 		$message = preg_replace('/%%\[url-formulare\]%%/', $tutorFormUrl, $message);
 
 		// send it
-		return $this->sendMail($recipientMail, $subject, $message);
+		return $this->sendMail($recipients, $subject, $message);
 	}
 
 	/**

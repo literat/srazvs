@@ -62,6 +62,7 @@ class ProgramController extends BaseController
 	 * @var Container
 	 */
 	private $Container;
+	private $container;
 
 	/**
 	 * Program model
@@ -102,7 +103,7 @@ class ProgramController extends BaseController
 	/**
 	 * Prepare model classes and get meeting id
 	 */
-	public function __construct($database)
+	public function __construct($database, $container)
 	{
 		if($this->meetingId = requested("mid","")){
 			$_SESSION['meetingID'] = $this->meetingId;
@@ -111,10 +112,11 @@ class ProgramController extends BaseController
 		}
 
 		$this->database = $database;
+		$this->container = $container;
 		$this->Container = new Container($GLOBALS['cfg'], $this->meetingId, $this->database);
 		$this->Program = $this->Container->createProgram();
 		$this->View = $this->Container->createView();
-		$this->Emailer = $this->Container->createEmailer();
+		$this->Emailer = $this->container->createServiceEmailer();
 		$this->Export = $this->Container->createExport();
 		$this->Meeting = $this->Container->createMeeting();
 		$this->Category = $this->Container->createCategory();
@@ -309,8 +311,14 @@ class ProgramController extends BaseController
 	private function mail()
 	{
 		$pid = requested("pid","");
-		if($this->Emailer->tutor($pid, $this->meetingId, "program")) {
+		$hash = form_key_hash($pid, $this->meetingId);
+		$tutors = $this->Program->getTutor($pid);
+		$recipients = parse_tutor_email($tutors);
+
+		if($this->Emailer->tutor($recipients, $this->meetingId, 'program')) {
 			redirect("?program&error=mail_send");
+		} else {
+			redirect("process.php?id=".$pid."&error=email&cms=edit");
 		}
 	}
 
