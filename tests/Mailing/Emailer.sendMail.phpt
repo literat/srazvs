@@ -26,10 +26,10 @@ class EmailerModelTest extends Tester\TestCase
 	public function testSendingMail()
 	{
 		$recipient = array(
-			'prilis.zlutoucky@kun.cz' => 'Prilis zlutoucky kun',
+			'prilis.zlutoucky@kun.cz' => 'Příliš žluťoučký kůň',
 		);
-		$subject = 'Upel dabelske ody';
-		$body = 'Test';
+		$subject = 'Úpěl ďábelské ódy';
+		$body = 'Testování';
 
 		$this->mailer->sendMail($recipient, $subject, $body);
 
@@ -38,22 +38,23 @@ MIME-Version: 1.0
 X-Mailer: Nette Framework
 Date: %a%
 From: Srazy VS <srazyvs@hkvs.cz>
-To: Prilis zlutoucky kun <prilis.zlutoucky@kun.cz>
-Subject: Upel dabelske ody
+To: =?UTF-8?B?UMWZw61sacWhIMW+bHXFpW91xI1rw70ga8WvxYg=?=
+	 <prilis.zlutoucky@kun.cz>
+Subject: =?UTF-8?B?w5pwxJtsIMSPw6FiZWxza8OpIMOzZHk=?=
 Message-ID: <%a%@%a%>
 Content-Type: multipart/alternative;
 	boundary="--------%S%"
 
 ----------%S%
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-Test
+Testování
 ----------%S%
 Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-Test
+Testování
 ----------%S%--
 EOD
 		, TestMailer::$output);
@@ -62,10 +63,10 @@ EOD
 	public function testSendingMailWithBcc()
 	{
 		$recipient = array(
-			'prilis.zlutoucky@kun.cz' => 'Prilis zlutoucky kun',
+			'prilis.zlutoucky@kun.cz' => 'Příliš žluťoučký kůň',
 		);
-		$subject = 'Upel dabelske ody';
-		$body = 'Test';
+		$subject = 'Úpěl ďábelské ódy';
+		$body = 'Testování';
 		$bcc = array(
 			'info@example.com' => 'Info at Example',
 		);
@@ -77,23 +78,24 @@ MIME-Version: 1.0
 X-Mailer: Nette Framework
 Date: %a%
 From: Srazy VS <srazyvs@hkvs.cz>
-To: Prilis zlutoucky kun <prilis.zlutoucky@kun.cz>
+To: =?UTF-8?B?UMWZw61sacWhIMW+bHXFpW91xI1rw70ga8WvxYg=?=
+	 <prilis.zlutoucky@kun.cz>
 Bcc: Info at Example <info@example.com>
-Subject: Upel dabelske ody
+Subject: =?UTF-8?B?w5pwxJtsIMSPw6FiZWxza8OpIMOzZHk=?=
 Message-ID: <%a%@%a%>
 Content-Type: multipart/alternative;
 	boundary="--------%S%"
 
 ----------%S%
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-Test
+Testování
 ----------%S%
 Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-Test
+Testování
 ----------%S%--
 EOD
 		, TestMailer::$output);
@@ -102,12 +104,12 @@ EOD
 	public function testSendingMultipleMailAddresses()
 	{
 		$recipient = array(
-			'prilis.zlutoucky@kun.cz' => 'Prilis zlutoucky kun',
+			'prilis.zlutoucky@kun.cz' => 'Příliš žluťoučký kůň',
 			'john@doe.com' => 'John Doe',
 			'info@example.com' => 'Info at Example',
 		);
-		$subject = 'Upel dabelske ody';
-		$body = 'Test';
+		$subject = 'Úpěl ďábelské ódy';
+		$body = 'Testování';
 		$bcc = array(
 			'info@example.com' => 'Info at Example',
 		);
@@ -119,23 +121,24 @@ MIME-Version: 1.0
 X-Mailer: Nette Framework
 Date: %a%
 From: Srazy VS <srazyvs@hkvs.cz>
-To: Prilis zlutoucky kun <prilis.zlutoucky@kun.cz>,John Doe <john@doe.com>,
-	Info at Example <info@example.com>
-Subject: Upel dabelske ody
+To: =?UTF-8?B?UMWZw61sacWhIMW+bHXFpW91xI1rw70ga8WvxYg=?=
+	 <prilis.zlutoucky@kun.cz>,John Doe <john@doe.com>,Info at Example
+	 <info@example.com>
+Subject: =?UTF-8?B?w5pwxJtsIMSPw6FiZWxza8OpIMOzZHk=?=
 Message-ID: <%a%@%a%>
 Content-Type: multipart/alternative;
 	boundary="--------%S%"
 
 ----------%S%
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-Test
+Testování
 ----------%S%
 Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-Test
+Testování
 ----------%S%--
 EOD
 		, TestMailer::$output);
@@ -144,10 +147,10 @@ EOD
 	public function testSendingMultipleBcc()
 	{
 		$recipient = array(
-			'prilis.zlutoucky@kun.cz' => 'Prilis zlutoucky kun',
+			'prilis.zlutoucky@kun.cz' => 'Příliš žluťoučký kůň',
 		);
-		$subject = 'Upel dabelske ody';
-		$body = 'Test';
+		$subject = 'Úpěl ďábelské ódy';
+		$body = 'Testování';
 		$bcc = array(
 			'info@example.com' => 'Info at Example',
 			'john@doe.com' => 'John Doe',
@@ -161,24 +164,25 @@ MIME-Version: 1.0
 X-Mailer: Nette Framework
 Date: %a%
 From: Srazy VS <srazyvs@hkvs.cz>
-To: Prilis zlutoucky kun <prilis.zlutoucky@kun.cz>
+To: =?UTF-8?B?UMWZw61sacWhIMW+bHXFpW91xI1rw70ga8WvxYg=?=
+	 <prilis.zlutoucky@kun.cz>
 Bcc: Info at Example <info@example.com>,John Doe <john@doe.com>,
 	Test at Example <Test@example.com>
-Subject: Upel dabelske ody
+Subject: =?UTF-8?B?w5pwxJtsIMSPw6FiZWxza8OpIMOzZHk=?=
 Message-ID: <%a%@%a%>
 Content-Type: multipart/alternative;
 	boundary="--------%S%"
 
 ----------%S%
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-Test
+Testování
 ----------%S%
 Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 
-Test
+Testování
 ----------%S%--
 EOD
 		, TestMailer::$output);
