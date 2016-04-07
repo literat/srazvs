@@ -557,3 +557,23 @@ function backtrace_debug() {
 	echo "<br>= = = = = = = = = = = = = = = = = = = = =<br>\n</div>";
 	//* * * * end of backtrace debug code * * *
 }
+
+// zaheshovane udaje, aby se nedali jen tak ziskat data z databaze
+function form_key_hash($id, $meetingId) {
+	return ((int)$id . $meetingId) * 116 + 39147;
+}
+
+function parse_tutor_email($item) {
+	$mails = explode(',', $item->email);
+	$names = explode(',', $item->tutor);
+
+	$i = 0;
+	foreach ($mails as $mail) {
+		$mail = trim($mail);
+		$name = trim($names[$i]);
+
+		$recipient[$mail] = ($name) ? $name : '';
+	}
+
+	return $recipient;
+}
