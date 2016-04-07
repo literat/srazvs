@@ -164,26 +164,6 @@ class Emailer
 	}
 
 	/**
-	 * Send an information mail to multiple visitors
-	 *
-	 * @param	integer	ID of visitor
-	 * @param	string	subject
-	 * @param	string	message
-	 * @return	mixed	true | error information
-	 */
-	public function noticeVisitor($recipients, $subject, $message)
-	{
-		// send it
-		if(!$this->sendMail($recipients, $subject, $message)) {
-			$return = $EmailHandler->ErrorInfo;
-		} else {
-			$return = true;
-		}
-
-		return $return;
-	}
-
-	/**
 	 * Get e-mail templates from settings
 	 *
 	 * @param	mixed	id numbers in row
@@ -197,8 +177,6 @@ class Emailer
 		$subject = $template['subject'];
 		$message = $template['message'];
 
-		$return = $this->noticeVisitor($recipients, $subject, $message);
-
-		return $return;
+		return $this->sendMail($recipients, $subject, $message);
 	}
 }
