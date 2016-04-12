@@ -31,6 +31,11 @@ services:
             @connection,
             @structure
         ]
+    settings:
+        class: App\SettingsModel
+        arguments: [
+            @database
+        ]
     smtpmailer:
         class: Nette\Mail\SmtpMailer
         arguments: [
@@ -39,6 +44,6 @@ services:
     emailer:
         class: App\Emailer
         arguments: [
-            @database,
+            @settings,
             @smtpmailer
         ]
