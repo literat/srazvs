@@ -9,11 +9,15 @@ use Nette\Mail\Message;
 use Tester\Assert;
 use App\Emailer;
 
+//require_once __DIR__ . '/../../inc/define.inc.php';
 require_once __DIR__ . '/../bootstrap.php';
 require_once __DIR__ . '/TestMailer.php';
 require_once __DIR__ . '/../../app/models/EmailerModel.php';
 
-class EmailerModelTest extends Tester\TestCase
+define('PRJ_DIR', 'http://vodni.skauting.cz/srazvs/');
+
+
+class EmailerTutorTest extends Tester\TestCase
 {
 
 	private $mailer = null;
@@ -28,10 +32,13 @@ class EmailerModelTest extends Tester\TestCase
 		$recipient = array(
 			'prilis.zlutoucky@kun.cz' => 'Příliš žluťoučký kůň',
 		);
-		$subject = 'Úpěl ďábelské ódy';
-		$body = 'Testování';
+		$hash = 12345;
+		$type = 'block';
 
-		$this->mailer->tutor($recipient, $subject, $body);
+		//$mockedEmailer = Mockery::mock('Emailer[getTemplate]');
+		//$mockedEmailer->shouldReceive('getTemplate')->with('block')->andReturn('rimmer');
+
+		$this->mailer->tutor($recipient, $hash, $type);
 
 		Assert::match(<<<'EOD'
 MIME-Version: 1.0
@@ -70,3 +77,20 @@ EOD
 		# code...
 	}
 }
+
+$mockedSettings = Mockery::mock(App\SettingsModel::class);
+
+$testMailer = new TestMailer();
+//$emailer = new Emailer($mockedSettings, $testMailer);
+
+$mockedEmailer = Mockery::mock(App\Emailer::class);
+$mockedEmailer->shouldReceive('getTemplate')->with('tutor')->andReturn('rimmer');
+
+//$mockedEmailer->tutor($recipient, $hash, $type);
+
+
+//var_dump($emailer);
+//die;
+
+$EmailerTutorTest = new EmailerTutorTest($mockedEmailer);
+$EmailerTutorTest->run();

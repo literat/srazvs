@@ -1,5 +1,7 @@
 <?php
 
+namespace App;
+
 use Nette\Utils\Json;
 use Tracy\Debugger;
 
@@ -11,7 +13,7 @@ use Tracy\Debugger;
  * @created 2012-03-06
  * @author Tomas Litera <tomaslitera@hotmail.com>
  */
-class SettingsModel extends Component
+class SettingsModel extends \Component
 {
 	/**
 	 * Array of database block table columns
@@ -80,11 +82,11 @@ class SettingsModel extends Component
 
 	public function getMailJSON($type)
 	{
-		$mailJson = $this->database
+		$data = $this->database
 			->table($this->dbTable)
 			->where('name', 'mail_' . $type)
 			->fetch();
 
-		return Json::decode($mailJson->value);
+		return Json::decode($data->value);
 	}
 }

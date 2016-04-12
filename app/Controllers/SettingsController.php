@@ -85,7 +85,7 @@ class SettingsController extends BaseController
 		$this->database = $database;
 		$this->container = $container;
 		$this->Container = new Container($GLOBALS['cfg'], $this->meetingId, $this->database);
-		$this->Settings = $this->Container->createSettings();
+		$this->Settings = $this->container->createServiceSettings();
 		$this->View = $this->Container->createView();
 		$this->Emailer = $this->container->createServiceEmailer();
 	}

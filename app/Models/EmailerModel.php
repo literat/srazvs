@@ -5,7 +5,6 @@ namespace App;
 use Nette\Mail\IMailer;
 use Nette\Mail\Message;
 use Nette\Database\Context;
-use Nette\Utils\Json;
 use Tracy\Debugger;
 
 /**
@@ -24,11 +23,13 @@ class Emailer
 	/** @var Context */
 	private $database;
 
+	private $settings;
+
 	/* Constructor */
-	public function __construct(Context $database, IMailer $mailer)
+	public function __construct(SettingsModel $settings, IMailer $mailer)
 	{
 		$this->mailer = $mailer;
-		$this->database = $database;
+		$this->settings = $settings;
 	}
 
 	/**
@@ -79,12 +80,7 @@ class Emailer
 	 */
 	public function getTemplate($type)
 	{
-		$data = $this->database
-			->table('kk_settings')
-			->where('name', 'mail_' . $type)
-			->fetch();
-
-		$json = Json::decode($data->value);
+		$json = $this->settings->getMailJSON($type);
 
 		$subject = html_entity_decode($json->subject);
 		$message = html_entity_decode($json->message);

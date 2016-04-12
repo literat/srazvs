@@ -218,9 +218,9 @@ EOD
 
 }
 
-$database = Mockery::mock(Nette\Database\Context::class);
+$mockedSettings = Mockery::mock(App\SettingsModel::class);
 $testMailer = new TestMailer();
-$emailer = new Emailer($database, $testMailer);
+$emailer = new Emailer($mockedSettings, $testMailer);
 
 $EmailerModelTest = new EmailerModelTest($emailer);
 $EmailerModelTest->run();
