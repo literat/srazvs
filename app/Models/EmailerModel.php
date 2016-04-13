@@ -4,7 +4,6 @@ namespace App;
 
 use Nette\Mail\IMailer;
 use Nette\Mail\Message;
-use Nette\Database\Context;
 use Tracy\Debugger;
 
 /**
@@ -20,9 +19,7 @@ class Emailer
 	/** @var SmtpMailer */
 	private $mailer;
 
-	/** @var Context */
-	private $database;
-
+	/** @var SettingsModel */
 	private $settings;
 
 	/* Constructor */
@@ -94,8 +91,8 @@ class Emailer
 	/**
 	 * Sends an e-mail to lecture master
 	 *
-	 * @param	int		ID of program/block
-	 * @param	int		ID of meeting
+	 * @param	array	recipient mail and name
+	 * @param	string	hash
 	 * @param	string	program | block
 	 * @return	mixed	true | error information
 	 */
@@ -123,13 +120,12 @@ class Emailer
 	/**
 	 * Sends an after registration summary e-mail to visitor
 	 *
-	 * @param	string	recipient mail
-	 * @param	string	recipient name
+	 * @param	array	recipient mail
 	 * @param	int		check hash code
 	 * @param	string	code for recognition of bank transaction
 	 * @return	mixed	true | error information
 	 */
-	public function sendRegistrationSummary($recipientMail, $hash, $code4bank)
+	public function sendRegistrationSummary(array $recipientMail, $hash, $code4bank)
 	{
 		// e-mail templates
 		$template = $this->getTemplate('post_reg');
