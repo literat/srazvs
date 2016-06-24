@@ -19,9 +19,6 @@ class VisitorModel /* extends Component */
 	/** @var string	search pattern */
 	public $search;
 
-	/** @var Emailer Emailer class */
-	private $Emailer;
-
 	/** @var Meeting Meeting class */
 	public $Meeting;
 
@@ -63,7 +60,6 @@ class VisitorModel /* extends Component */
 	/** konstruktor */
 	public function __construct(
 		$meeting_ID,
-		Emailer $Emailer,
 		MeetingModel $Meeting,
 		MealModel $Meals,
 		ProgramModel $Program,
@@ -71,7 +67,6 @@ class VisitorModel /* extends Component */
 		$configuration,
 		$database
 	) {
-		$this->Emailer = $Emailer;
 		$this->Meeting = $Meeting;
 		$this->meeting_price = $this->Meeting->getPrice('cost');
 		$this->meeting_advance = $this->Meeting->getPrice('advance');
@@ -303,12 +298,6 @@ class VisitorModel /* extends Component */
 	 */
 	public function payCharge($query_id, $type)
 	{
-		$recipients = $this->database
-			->table($this->dbTable)
-			->select('email', 'name', 'surname')
-			->where('id ? AND deleted ?', $query_id, 0)
-			->fetchAll();
-
 		$billData = $this->database
 			->table($this->dbTable)
 			->select('bill')
@@ -322,14 +311,25 @@ class VisitorModel /* extends Component */
 				->where('id', $query_id)
 				->update($bill);
 
-			if($return = $this->Emailer->sendPaymentInfo($recipients, $type)) {
-				return true;
-			} else {
-				return $return;
-			}
+			return $payResult;
 		} else {
-			return $error = "already_paid";
+			return 'already_paid';
 		}
+	}
+
+	/**
+	 * Get recipients by ids
+	 *
+	 * @param	mixed	ID of visitor
+	 * @return	mixed	result
+	 */
+	public function getRecipients($ids)
+	{
+		return $this->database
+			->table($this->dbTable)
+			->select('email', 'name', 'surname')
+			->where('id ? AND deleted ?', $ids, 0)
+			->fetchAll();
 	}
 
 	/**

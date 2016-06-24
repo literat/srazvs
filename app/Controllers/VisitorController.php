@@ -404,15 +404,15 @@ class VisitorController extends BaseController
 	 */
 	private function pay($query_id, $payment_type)
 	{
-		if($return = $this->Visitor->payCharge($query_id, $payment_type)) {
+		$return = $this->Visitor->payCharge($query_id, $payment_type);
+
+		if($return != 'already_paid') {
+			$recipients = $this->Visitor->getRecipients($query_id);
+			$this->Emailer->sendPaymentInfo($recipients, $payment_type);
 			redirect("?".$this->page."&error=mail_send");
 		} else {
-			if($return == 'already_paid') {
-				$error = $return;
-			} else {
-				echo 'Došlo k chybě při odeslání e-mailu.';
-				echo 'Chybová hláška: ' . $return;
-			}
+			echo 'Došlo k chybě při odeslání e-mailu.';
+			echo 'Chybová hláška: ' . $return;
 		}
 	}
 

@@ -36,7 +36,7 @@ else {
 //echo $_SERVER['HTTP_REFERER'];
 
 /**
- * This is Codeplex definitions
+ * This is Nix definitions
  *
  * * do not forget to add slash at the end
  */
@@ -93,13 +93,10 @@ require_once(FRAMEWORK.'ComponentModel/IComponent.php');
 require_once(FRAMEWORK.'ComponentModel/Component.php');
 require_once(FRAMEWORK.'ComponentModel/NixModel.php');
 
-require_once(LIBS_DIR.'PHPMailer/class.phpmailer.php');
-require_once(LIBS_DIR.'PHPMailer/class.smtp.php');
 require_once(LIBS_DIR.'Mpdf/mpdf.php');
 require_once(LIBS_DIR.'PHPExcel/Classes/PHPExcel.php');
 
 require_once(FRAMEWORK.'DI/Container.class.php');
-require_once(FRAMEWORK.'Mail/PHPMailerFactory.php');
 require_once(FRAMEWORK.'Exporting/PdfFactory.php');
 require_once(FRAMEWORK.'Exporting/ExcelFactory.php');
 
