@@ -1,6 +1,5 @@
 <?php
 
-use Codeplex\Routers;
 use Tracy\Debugger;
 use Nette\DI\ContainerLoader;
 use Nette\Database\Context;
