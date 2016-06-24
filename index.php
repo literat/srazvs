@@ -28,6 +28,7 @@ Debugger::$email = $cfg['mail-admin'];
 $loader = new ContainerLoader(__DIR__ . '/temp');
 $class = $loader->load('', function($compiler) {
     $compiler->loadConfig(__DIR__ . '/app/config/config.local.neon');
+    $compiler->loadConfig(__DIR__ . '/app/config/config.neon');
 });
 $container = new $class;
 

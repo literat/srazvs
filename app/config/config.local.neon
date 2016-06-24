@@ -5,6 +5,7 @@ parameters:
         dbname: vodni
         user: root
         password: root
+    cacheDir: D:\home\literat\web\wwwroot\skauting\vodni\srazvs/temp/cache
 
 services:
     connection:
