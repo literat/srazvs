@@ -86,7 +86,7 @@ class VisitorController extends BaseController
 		$this->Container = new Container($GLOBALS['cfg'], $this->meetingId, $this->database);
 		$this->Visitor = $this->Container->createVisitor();
 		$this->View = $this->Container->createView();
-		$this->Emailer = $this->container->createServiceEmailer();//$this->Container->createEmailer();
+		$this->Emailer = $this->container->createServiceEmailer();
 		$this->Export = $this->Container->createExport();
 		$this->Meeting = $this->Container->createMeeting();
 		$this->Meal = $this->Container->createMeal();
