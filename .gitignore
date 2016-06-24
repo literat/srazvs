@@ -19,6 +19,7 @@ app/config/config.neon
 # Libraries
 libs
 vendor
+node_modules
 
 # Temporary files
 temp
