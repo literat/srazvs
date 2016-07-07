@@ -37,7 +37,7 @@
 </head>
 <body>
 <?php
-while($row = mysql_fetch_assoc($data['result'])){
+foreach($data['result'] as $row) {
 	if($row['fry_dinner'] == "ano") $imgUrl1 = IMG_DIR."meals/dinner.png";
 	else $imgUrl1 = IMG_DIR."meals/nomeal.png";
 	if($row['sat_breakfast'] == "ano") $imgUrl2 = IMG_DIR."meals/breakfast.png";

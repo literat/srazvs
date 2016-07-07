@@ -84,11 +84,11 @@ class ExportModel extends NixModel
 		// output file name
 		$outputFilename= "vlastni_stravenky.".$fileType;
 
-		$query = "SELECT	vis.id AS id,
+		$data = $this->database->query('SELECT	vis.id AS id,
 				name,
 				surname,
 				nick,
-				DATE_FORMAT(birthday, '%Y-%m-%d') AS birthday,
+				DATE_FORMAT(birthday, "%Y-%m-%d") AS birthday,
 				street,
 				city,
 				postal_code,
@@ -110,25 +110,24 @@ class ExportModel extends NixModel
 				sun_lunch,
 				bill,
 				place,
-				DATE_FORMAT(start_date, '%d. -') AS start_date,
-				DATE_FORMAT(end_date, '%d. %m. %Y') AS end_date
+				DATE_FORMAT(start_date, "%d. -") AS start_date,
+				DATE_FORMAT(end_date, "%d. %m. %Y") AS end_date
 		FROM kk_visitors AS vis
 		LEFT JOIN kk_meals AS meals ON meals.visitor = vis.id
 		LEFT JOIN kk_provinces AS provs ON vis.province = provs.id
 		LEFT JOIN kk_meetings AS meets ON meets.id = vis.meeting
-		WHERE meeting='".$this->meetingId."' AND vis.deleted='0'
-		";
-		$result = mysql_query($query);
+		WHERE meeting = ? AND vis.deleted = ?
+		', $this->meetingId, '0')->fetchAll();
 
 		// load and prepare template
 		$this->View->loadTemplate('exports/meal_ticket');
-		$this->View->assign('result', $result);
+		$this->View->assign('result', $data);
 		$template = $this->View->render(false);
 
-		$this->Pdf = $this->createPdf();
+		$pdf = $this->createPdf();
 
 		// write html
-		$this->Pdf->WriteHTML($template, 0);
+		$pdf->WriteHTML($template, 0);
 
 		/* debugging */
 		if(defined('DEBUG') && DEBUG === true){
@@ -136,7 +135,7 @@ class ExportModel extends NixModel
 			exit('DEBUG_MODE');
 		} else {
 			// download
-			$this->Pdf->Output($outputFilename, "D");
+			$pdf->Output($outputFilename, "D");
 		}
 	}
 
