@@ -638,14 +638,12 @@ class ExportModel extends NixModel
 		$_data = array();
 
 		if(empty($names)) {
-			$sql = "SELECT	vis.id AS id,
+			$data = $this->database->query('SELECT	vis.id AS id,
 							nick
 					FROM kk_visitors AS vis
-					WHERE meeting='".$this->meetingId."' AND vis.deleted='0'
-					";
-			$result = mysql_query($sql);
+					WHERE meeting = ? AND vis.deleted = ?', $this->meetingId, '0')->fetchAll();
 
-			while($row = mysql_fetch_assoc($result)) {
+			foreach($data as $row) {
 				array_push($_data, $row);
 			}
 		} else {
@@ -663,15 +661,15 @@ class ExportModel extends NixModel
 		$this->View->assign('result', $_data);
 		$template = $this->View->render(FALSE);
 
-		$this->PdfFactory->setMargins(15, 15, 10, 5);
-		$this->Pdf = $this->PdfFactory->create();
+		$this->pdf->setMargins(15, 15, 10, 5);
+		$pdf = $this->pdf->create();
 
 		// set watermark
-		$this->Pdf->SetWatermarkImage(IMG_DIR.'logos/watermark-waves.jpg', 0.1, '');
-		$this->Pdf->showWatermarkImage = TRUE;
+		$pdf->SetWatermarkImage(IMG_DIR.'logos/watermark-waves.jpg', 0.1, '');
+		$pdf->showWatermarkImage = TRUE;
 
 		// write html
-		$this->Pdf->WriteHTML($template, 0);
+		$pdf->WriteHTML($template, 0);
 
 		/* debugging */
 		if(defined('DEBUG') && DEBUG === TRUE){
@@ -679,7 +677,7 @@ class ExportModel extends NixModel
 			exit('DEBUG_MODE');
 		} else {
 			// download
-			$this->Pdf->Output($output_filename, "D");
+			$pdf->Output($output_filename, "D");
 		}
 	}
 
