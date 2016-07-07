@@ -859,32 +859,30 @@ class ExportModel extends NixModel
 	{
 		$output_filename = "ucastnici-programu.pdf";
 
-		$query = "SELECT vis.name AS name,
+		$data = $this->database
+			->query('SELECT vis.name AS name,
 							vis.surname AS surname,
 							vis.nick AS nick,
 							prog.name AS program
 					FROM kk_visitors AS vis
 					LEFT JOIN `kk_visitor-program` AS visprog ON vis.id = visprog.visitor
 					LEFT JOIN `kk_programs` AS prog ON prog.id = visprog.program
-					WHERE visprog.program = '".$programId."' AND vis.deleted = '0'";
-		$result = mysql_query($query);
+					WHERE visprog.program = ? AND vis.deleted = ?', $programId, '0')->fetchAll();
 
 		// load and prepare template
 		$this->View->loadTemplate('exports/program_visitors');
-		$this->View->assign('result', $result);
+		$this->View->assign('result', $data);
 		$template = $this->View->render(false);
 
 		// prepare header
-		$result = mysql_query($query);
-		$header_data = mysql_fetch_assoc($result);
-		$program_header = $header_data['program'];
+		$program_header = $header_data[0]['program'];
 
-		$this->Pdf = $this->createPdf();
+		$pdf = $this->createPdf();
 
 		// set header
-		$this->Pdf->SetHeader($program_header.'|sraz VS|Účastnící programu');
+		$pdf->SetHeader($program_header.'|sraz VS|Účastnící programu');
 		// write html
-		$this->Pdf->WriteHTML($template, 0);
+		$pdf->WriteHTML($template, 0);
 
 		/* debugging */
 		if(defined('DEBUG') && DEBUG === true){
@@ -892,7 +890,7 @@ class ExportModel extends NixModel
 			exit('DEBUG_MODE');
 		} else {
 			// download
-			$this->Pdf->Output($output_filename, "D");
+			$pdf->Output($output_filename, "D");
 		}
 	}
 
