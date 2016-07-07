@@ -5,7 +5,8 @@
         "tracy/tracy": "^2.3",
         "nette/database": "^2.3",
         "nette/mail": "^2.3",
-        "nette/di": "^2.3"
+        "nette/di": "^2.3",
+        "mpdf/mpdf": "^6.1"
     },
     "require-dev": {
         "nette/tester": "^1.7",
