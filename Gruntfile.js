@@ -31,6 +31,10 @@ module.exports = function (grunt) {
 			}
 		},
 
+		clean: {
+			container: ['temp/Container_*'],
+		},
+
 		conventionalChangelog: {
 			options: {
 				changelogOpts: {
