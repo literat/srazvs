@@ -2,8 +2,6 @@
 
 namespace App;
 
-use Mpdf\Mpdf;
-
 /**
  * PdfFactory
  *
@@ -47,7 +45,7 @@ class PdfFactory
 	 */
 	public function create()
 	{
-		$this->pdf = new \Mpdf(
+		$this->pdf = new \mPDF(
 			$this->encoding,
 			$this->paperFormat,
 			$this->fontSize,
@@ -64,7 +62,7 @@ class PdfFactory
 		}
 		$this->pdf->useOnlyCoreFonts = true;
 		$this->pdf->SetDisplayMode('fullpage');
-		$this->pdf->SetAutoFont(0);
+		$this->pdf->autoScriptToLang = false;
 		$this->pdf->defaultfooterfontsize = 16;
 		$this->pdf->defaultfooterfontstyle = 'B';
 
