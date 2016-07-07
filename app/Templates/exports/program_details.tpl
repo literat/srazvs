@@ -21,7 +21,7 @@
 	</style>
 </head>
 <body>
-	<?php while($row = mysql_fetch_assoc($data['result'])){ ?>
+	<?php foreach($data['result'] as $row){ ?>
     <table class="form">
         <tr>
             <td class="label">Program:</td>

@@ -904,28 +904,28 @@ class ExportModel extends NixModel
 	{
 		$output_filename = "vypis-programu.pdf";
 
-		$query = "SELECT prog.name AS name,
+		$data = $this->database
+			->query('SELECT prog.name AS name,
 						 prog.description AS description,
 						 prog.tutor AS tutor,
 						 prog.email AS email
 					FROM kk_programs AS prog
 					LEFT JOIN `kk_blocks` AS block ON block.id = prog.block
-					WHERE block.meeting = '".$this->meetingId."'
-						AND prog.deleted = '0'
-						AND block.deleted = '0'";
-		$result = mysql_query($query);
+					WHERE block.meeting = ?
+						AND prog.deleted = ?
+						AND block.deleted = ?', $this->meetingId, '0', '0')->fetchAll();
 
 		// load and prepare template
 		$this->View->loadTemplate('exports/program_details');
-		$this->View->assign('result', $result);
+		$this->View->assign('result', $data);
 		$template = $this->View->render(false);
 
-		$this->Pdf = $this->createPdf();
+		$pdf = $this->createPdf();
 
 		// set header
-		$this->Pdf->SetHeader('Výpis programů|sraz VS');
+		$pdf->SetHeader('Výpis programů|sraz VS');
 		// write html
-		$this->Pdf->WriteHTML($template, 0);
+		$pdf->WriteHTML($template, 0);
 
 		/* debugging */
 		if(defined('DEBUG') && DEBUG === true){
@@ -933,7 +933,7 @@ class ExportModel extends NixModel
 			exit('DEBUG_MODE');
 		} else {
 			// download
-			$this->Pdf->Output($output_filename, "D");
+			$pdf->Output($output_filename, "D");
 		}
 	}
 
