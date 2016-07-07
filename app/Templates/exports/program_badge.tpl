@@ -59,7 +59,7 @@ while($unused = mysql_fetch_assoc($data['result'])) {
 					</tr>
 				<?php
 		$result = BlockModel::getExportBlocks($data['meeting_id'], $day_val);
-	
+
 		if(!$result) {
 			?>
 			<td class='emptyTable' style='width:400px;'>Nejsou žádná aktuální data.</td>
@@ -80,7 +80,7 @@ while($unused = mysql_fetch_assoc($data['result'])) {
 						<span class='time'><?php echo $row['from']." - ".$row['to']; ?>
 						</span>
 				<?php }
-				
+
 				// kdyz je programovy blok, tak zobrazim jenom jeho obsah
 				if($row['program']) {
 					echo ProgramModel::getProgramNames($row['id']); ?>
@@ -114,7 +114,7 @@ while($unused = mysql_fetch_assoc($data['result'])) {
 	}
 				?>
 				</table>
-    
+
 			</td>
 		</tr>
 	</table>
@@ -124,7 +124,7 @@ while($unused = mysql_fetch_assoc($data['result'])) {
 	<?php } else { ?>
 			</td>
 		</tr>
-	</table>	
+	</table>
 	<?php }
 
 	$i++;
