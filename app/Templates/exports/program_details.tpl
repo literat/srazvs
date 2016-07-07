@@ -1,22 +1,22 @@
-﻿<head>
+<head>
 	<style>
 		body {
 			font-family:Arial,Geneva,Sans-Serif;
 			text-align:left;
 		}
-		
+
 		table {
 			border-collapse:collapse;
 			width:100%;
 			margin-bottom:10px;
 		}
-		
+
 		td {
 			padding:5px;
 			border:1px solid black;
 			font-size:9px;
 		}
-		
+
 		.label{font-weight:bold;width:50px;}
 	</style>
 </head>
