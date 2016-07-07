@@ -5,21 +5,21 @@
 			font-size:10px;
 			text-align:left;
 		}
-		
+
 		table {
 			border-collapse:collapse;
 			width:100%;
 		}
-		
+
 		td {
 			text-align:left;
 			width:375px;
 			width:500px;
 			_border:1px solid black;
 		}
-		
+
 		h1 {font-size:70px;color:#555;}
-		
+
 		.cutLine {border: 2px dotted black; vertical-align:top;}
 		.nick {height:205px;vertical-align:middle;text-align:center;}
 	</style>
@@ -29,7 +29,7 @@
 $i = 0;
 foreach($data['result'] as $row) {
 	if($i%2 == 0) {
-?>	
+?>
 	<table>
 		<tr>
 		  <td class='cutLine'>
@@ -48,7 +48,7 @@ foreach($data['result'] as $row) {
 <?php }	else { ?>
 			</td>
 		</tr>
-	</table>	
+	</table>
 <?php }
 	$i++;
 } ?>
