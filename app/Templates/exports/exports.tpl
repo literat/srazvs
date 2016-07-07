@@ -12,7 +12,7 @@
 				příjmový pokladní doklad
 			</a>
 
-			<a style='text-decoration:none; display:block; margin-bottom:4px;' href='program.pdf.php'>
+			<a style='text-decoration:none; display:block; margin-bottom:4px;' href='?program-public&amp;cms=public'>
 				<img style='border:none;' align='absbottom' src='<?php echo IMG_DIR; ?>icons/pdf.png' />
 				veřejný program
 			</a>

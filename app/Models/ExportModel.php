@@ -538,17 +538,15 @@ class ExportModel extends NixModel
 	public function printPublicProgram($file_type = "pdf")
 	{
 		// prepare header
-		$sql = "SELECT	id,
+		$data = $this->database->query('SELECT	id,
 						place,
-						DATE_FORMAT(start_date, '%Y') AS year,
+						DATE_FORMAT(start_date, "%Y") AS year,
 						UNIX_TIMESTAMP(open_reg) AS open_reg,
 						UNIX_TIMESTAMP(close_reg) as close_reg
 				FROM kk_meetings
-				WHERE id = '".$this->meetingId."'
+				WHERE id = ?
 				ORDER BY id DESC
-				LIMIT 1";
-		$result = mysql_query($sql);
-		$data = mysql_fetch_assoc($result);
+				LIMIT 1', $this->meetingId)->fetch();
 
 		$meeting_header = $data['place']." ".$data['year'];
 		$filename = removeDiacritic($data['place'].$data['year']."-program");
@@ -557,17 +555,19 @@ class ExportModel extends NixModel
 		$this->View->loadTemplate('exports/program_public');
 		$this->View->assign('header', $meeting_header);
 		$this->View->assign('meeting_id', $this->meetingId);
+		$this->View->assign('database', $this->database);
+		$this->View->assign('styles', $this->category->getStyles());
 
 		$template = $this->View->render(false);
 
-		$this->Pdf = $this->PdfFactory->create();
+		$pdf = $this->pdf->create();
 
-		$this->Pdf->useOnlyCoreFonts = true;
-		$this->Pdf->SetDisplayMode('fullpage');
-		$this->Pdf->SetAutoFont(0);
+		$pdf->useOnlyCoreFonts = true;
+		$pdf->SetDisplayMode('fullpage');
+		$pdf->autoScriptToLang = false;
 
 		// write html
-		$this->Pdf->WriteHTML($template, 0);
+		$pdf->WriteHTML($template, 0);
 
 		/* debugging */
 		if(defined('DEBUG') && DEBUG === true){
@@ -576,7 +576,7 @@ class ExportModel extends NixModel
 		} else {
 			// download
 			$output_filename = $filename.'.'.$file_type;
-			$this->Pdf->Output($output_filename, "D");
+			$pdf->Output($output_filename, "D");
 		}
 
 	}
