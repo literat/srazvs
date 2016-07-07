@@ -58,6 +58,11 @@ class ExportModel extends NixModel
 		return $this->graphHeight;
 	}
 
+	public function setMeetingId($id)
+	{
+		$this->meetingId = $id;
+	}
+
 	/**
 	 * Create PDF
 	 *

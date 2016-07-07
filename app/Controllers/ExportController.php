@@ -44,6 +44,7 @@ class ExportController extends BaseController
 			$mid = $_SESSION['meetingID'];
 		}
 
+		$this->export->setMeetingId($mid);
 		$Container = new Container($GLOBALS['cfg'], $mid, $this->database);
 		$this->program = $Container->createProgram();
 
