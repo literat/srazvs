@@ -370,8 +370,8 @@ class ProgramModel extends Component
 		return $html;
 	}
 
-	public static function getProgramsLarge($id){
-		$result = $this->database
+	public static function getProgramsLarge($id, $database){
+		$result = $database
 			->query('SELECT progs.name AS name,
 						cat.style AS style
 				FROM kk_programs AS progs

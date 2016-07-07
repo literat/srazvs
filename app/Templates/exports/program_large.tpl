@@ -56,15 +56,15 @@
 					<tr>
 						<td class='day' colspan='2' ><?php echo $day; ?></td>
 					</tr>
-					<?php 
-					$result = ExportModel::getLargeProgramData($data['meeting_id'], $day);
-					while($row = mysql_fetch_assoc($result)) {
+					<?php
+					$result = \App\ExportModel::getLargeProgramData($data['meeting_id'], $day, $data['database']);
+					foreach($result as $row) {
 					?>
 					<tr>
 						<td class='time'><?php echo $row['from']." - ".$row['to']; ?></td>
 						<td style='border:1px solid black;'>
 							<div><?php echo $row['name']; ?></div>
-							<?php echo ProgramModel::getProgramsLarge($row['id']); ?>
+							<?php echo ProgramModel::getProgramsLarge($row['id'], $data['database']); ?>
 						</td>
 					</tr>
 					<?php } ?>
