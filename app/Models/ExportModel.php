@@ -204,40 +204,38 @@ class ExportModel extends NixModel
 		// output file name
 		$output_filename = "name_list.".$file_type;
 
-		$query = "SELECT	vis.id AS id,
+		$data = $this->database->query('SELECT	vis.id AS id,
 						name,
 						surname,
 						nick,
-						DATE_FORMAT(birthday, '%d. %m. %Y') AS birthday,
+						DATE_FORMAT(birthday, "%d. %m. %Y") AS birthday,
 						street,
 						city,
 						postal_code,
 						group_num,
 						group_name,
 						place,
-						DATE_FORMAT(start_date, '%Y') AS year
+						DATE_FORMAT(start_date, "%Y") AS year
 				FROM kk_visitors AS vis
 				LEFT JOIN kk_meetings AS meets ON meets.id = vis.meeting
-				WHERE meeting='".$this->meetingId."' AND vis.deleted='0'
+				WHERE meeting = ? AND vis.deleted = ?
 				ORDER BY nick ASC
-				";
-		$result = mysql_query($query);
+				', $this->meetingId, '0')->fetchAll();
 
 		// load and prepare template
 		$this->View->loadTemplate('exports/name_list');
-		$this->View->assign('result', $result);
+		$this->View->assign('result', $data);
 		$template = $this->View->render(false);
 
 		// prepare header
-		$header_data = mysql_fetch_assoc($result);
-		$namelist_header = $header_data['place']." ".$header_data['year'];
+		$namelist_header = $data[0]['place']." ".$data[0]['year'];
 
-		$this->Pdf = $this->createPdf();
+		$pdf = $this->createPdf();
 
 		// set header
-		$this->Pdf->SetHeader($namelist_header.'|sraz VS|Jméno, Příjmení, Přezdívka');
+		$pdf->SetHeader($namelist_header.'|sraz VS|Jméno, Příjmení, Přezdívka');
 		// write html
-		$this->Pdf->WriteHTML($template, 0);
+		$pdf->WriteHTML($template, 0);
 
 		/* debugging */
 		if(defined('DEBUG') && DEBUG === true){
@@ -245,7 +243,7 @@ class ExportModel extends NixModel
 			exit('DEBUG_MODE');
 		} else {
 			// download
-			$this->Pdf->Output($output_filename, "D");
+			$pdf->Output($output_filename, "D");
 		}
 	}
 
