@@ -62,7 +62,7 @@ class SettingsController extends BaseController
 	 * View model
 	 * @var View
 	 */
-	private $View;
+	private $view;
 
 	/**
 	 * Emailer model
@@ -86,7 +86,7 @@ class SettingsController extends BaseController
 		$this->container = $container;
 		$this->Container = new Container($GLOBALS['cfg'], $this->meetingId, $this->database);
 		$this->Settings = $this->container->createServiceSettings();
-		$this->View = $this->Container->createView();
+		$this->view = $this->container->createServiceView();
 		$this->Emailer = $this->container->createServiceEmailer();
 	}
 
@@ -172,45 +172,45 @@ class SettingsController extends BaseController
 		$error = "";
 
 		/* HTTP Header */
-		$this->View->loadTemplate('http_header');
-		$this->View->assign('config',		$GLOBALS['cfg']);
-		$this->View->render(TRUE);
+		$this->view->loadTemplate('http_header');
+		$this->view->assign('config',		$GLOBALS['cfg']);
+		$this->view->render(TRUE);
 
 		/* Application Header */
-		$this->View->loadTemplate('header');
-		$this->View->assign('config',		$GLOBALS['cfg']);
-		$this->View->assign('database',		$this->database);
-		$this->View->render(TRUE);
+		$this->view->loadTemplate('header');
+		$this->view->assign('config',		$GLOBALS['cfg']);
+		$this->view->assign('database',		$this->database);
+		$this->view->render(TRUE);
 
 		// load and prepare template
-		$this->View->loadTemplate($this->templateDir.'/'.$this->template);
-		$this->View->assign('heading',	$this->heading);
-		$this->View->assign('todo',		$this->todo);
-		$this->View->assign('error',	printError($this->error));
-		$this->View->assign('cms',		$this->cms);
-		$this->View->assign('mid',		$this->meetingId);
-		$this->View->assign('page',		$this->page);
+		$this->view->loadTemplate($this->templateDir.'/'.$this->template);
+		$this->view->assign('heading',	$this->heading);
+		$this->view->assign('todo',		$this->todo);
+		$this->view->assign('error',	printError($this->error));
+		$this->view->assign('cms',		$this->cms);
+		$this->view->assign('mid',		$this->meetingId);
+		$this->view->assign('page',		$this->page);
 
-		$this->View->assign('payment_subject',		$this->Settings->getMailJSON('cost')->subject);
-		$this->View->assign('payment_message',		$this->Settings->getMailJSON('cost')->message);
-		$this->View->assign('payment_html_message',	html_entity_decode($this->Settings->getMailJSON('cost')->message));
+		$this->view->assign('payment_subject',		$this->Settings->getMailJSON('cost')->subject);
+		$this->view->assign('payment_message',		$this->Settings->getMailJSON('cost')->message);
+		$this->view->assign('payment_html_message',	html_entity_decode($this->Settings->getMailJSON('cost')->message));
 
-		$this->View->assign('advance_subject',		$this->Settings->getMailJSON('advance')->subject);
-		$this->View->assign('advance_message',		$this->Settings->getMailJSON('advance')->message);
-		$this->View->assign('advance_html_message',	html_entity_decode($this->Settings->getMailJSON('advance')->message));
+		$this->view->assign('advance_subject',		$this->Settings->getMailJSON('advance')->subject);
+		$this->view->assign('advance_message',		$this->Settings->getMailJSON('advance')->message);
+		$this->view->assign('advance_html_message',	html_entity_decode($this->Settings->getMailJSON('advance')->message));
 
-		$this->View->assign('tutor_subject',		$this->Settings->getMailJSON('tutor')->subject);
-		$this->View->assign('tutor_message',		$this->Settings->getMailJSON('tutor')->message);
-		$this->View->assign('tutor_html_message',	html_entity_decode($this->Settings->getMailJSON('tutor')->message));
+		$this->view->assign('tutor_subject',		$this->Settings->getMailJSON('tutor')->subject);
+		$this->view->assign('tutor_message',		$this->Settings->getMailJSON('tutor')->message);
+		$this->view->assign('tutor_html_message',	html_entity_decode($this->Settings->getMailJSON('tutor')->message));
 
-		$this->View->assign('reg_subject',			$this->Settings->getMailJSON('post_reg')->subject);
-		$this->View->assign('reg_message',			$this->Settings->getMailJSON('post_reg')->message);
-		$this->View->assign('reg_html_message',		html_entity_decode($this->Settings->getMailJSON('post_reg')->message));
+		$this->view->assign('reg_subject',			$this->Settings->getMailJSON('post_reg')->subject);
+		$this->view->assign('reg_message',			$this->Settings->getMailJSON('post_reg')->message);
+		$this->view->assign('reg_html_message',		html_entity_decode($this->Settings->getMailJSON('post_reg')->message));
 
-		$this->View->render(TRUE);
+		$this->view->render(TRUE);
 
 		/* Footer */
-		$this->View->loadTemplate('footer');
-		$this->View->render(TRUE);
+		$this->view->loadTemplate('footer');
+		$this->view->render(TRUE);
 	}
 }

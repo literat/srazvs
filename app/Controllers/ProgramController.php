@@ -115,9 +115,9 @@ class ProgramController extends BaseController
 		$this->container = $container;
 		$this->Container = new Container($GLOBALS['cfg'], $this->meetingId, $this->database);
 		$this->Program = $this->Container->createProgram();
-		$this->View = $this->Container->createView();
+		$this->View = $this->container->createServiceView();
 		$this->Emailer = $this->container->createServiceEmailer();
-		$this->Export = $this->Container->createExport();
+		$this->Export = $this->container->createServiceExports();
 		$this->Meeting = $this->Container->createMeeting();
 		$this->Category = $this->Container->createCategory();
 
