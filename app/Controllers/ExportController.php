@@ -12,6 +12,20 @@ class ExportController extends BaseController
 	 */
 	public $template = 'export';
 
+	private $container;
+	private $export;
+	private $view;
+	private $program;
+
+	public function __construct($database, $container)
+	{
+		$this->database = $database;
+		$this->container = $container;
+		$this->export = $this->container->createServiceExports();
+		$this->view = $this->container->createServiceView();
+		//$this->program = $this->container->createServicePrograms();
+	}
+
 	/**
 	 * This is the default function that will be called by router.php
 	 *
@@ -30,78 +44,75 @@ class ExportController extends BaseController
 			$mid = $_SESSION['meetingID'];
 		}
 
-		global $database;
-		$this->database = $database;
 		$Container = new Container($GLOBALS['cfg'], $mid, $this->database);
-		$ExportHandler = $Container->createExport();
-		$ViewHandler = $Container->createView();
+		$this->program = $Container->createProgram();
 
 		switch(key($_GET)){
 			case 'attendance':
-				$ExportHandler->printAttendance();
+				$this->export->printAttendance();
 				break;
 			case 'evidence':
 				if(isset($_GET['vid']) && $_GET['vid'] != ''){
-					$ExportHandler->printEvidence($_GET['evidence'], intval($_GET['vid']));
+					$this->export->printEvidence($_GET['evidence'], intval($_GET['vid']));
 				} else {
-					$ExportHandler->printEvidence($_GET['evidence']);
+					$this->export->printEvidence($_GET['evidence']);
 				}
 				break;
 			case 'visitor-excel':
-				$ExportHandler->printVisitorsExcel();
+				$this->export->printVisitorsExcel();
 				break;
 			case 'meal-ticket':
-				$ExportHandler->printMealTicket();
+				$this->export->printMealTicket();
 				break;
 			case 'name-badges':
 				$names = requested('names', '');
-				$ExportHandler->printNameBadges($names);
+				$this->export->printNameBadges($names);
 				break;
 			case 'program-details':
-				$ExportHandler->printProgramDetails();
+				$this->export->printProgramDetails();
 				break;
 			case 'program-cards':
-				$ExportHandler->printProgramCards();
+				$this->export->printProgramCards();
 				break;
 			case 'program-large':
-				$ExportHandler->printLargeProgram();
+				$this->export->printLargeProgram();
 				break;
 			case 'program-badge':
-				$ExportHandler->printProgramBadges();
+				$this->export->printProgramBadges();
 				break;
 			case 'program-public':
-				$ExportHandler->printPublicProgram();
+				$this->export->printPublicProgram();
 				break;
 			case 'name-list':
-				$ExportHandler->printNameList();
+				$this->export->printNameList();
 				break;
 		}
 
 		/* HTTP Header */
-		$ViewHandler->loadTemplate('http_header');
-		$ViewHandler->assign('config',		$GLOBALS['cfg']);
-		$ViewHandler->render(TRUE);
+		$this->view->loadTemplate('http_header');
+		$this->view->assign('config',		$GLOBALS['cfg']);
+		$this->view->render(TRUE);
 
 		/* Application Header */
-		$ViewHandler->loadTemplate('header');
-		$ViewHandler->assign('config',		$GLOBALS['cfg']);
-		$ViewHandler->assign('database',		$this->database);
-		$ViewHandler->render(TRUE);
+		$this->view->loadTemplate('header');
+		$this->view->assign('config',		$GLOBALS['cfg']);
+		$this->view->assign('database',		$this->database);
+		$this->view->render(TRUE);
 
 		// load and prepare template
-		$ViewHandler->loadTemplate('exports/exports');
-		$ViewHandler->assign('graph',		$ExportHandler->renderGraph());
-		$ViewHandler->assign('graphHeight',	$ExportHandler->getGraphHeight());
-		$ViewHandler->assign('account',		$ExportHandler->getMoney('account'));
-		$ViewHandler->assign('balance',		$ExportHandler->getMoney('balance'));
-		$ViewHandler->assign('suma',		$ExportHandler->getMoney('suma'));
-		$ViewHandler->assign('programs',	$ExportHandler->Program->renderExportPrograms());
-		$ViewHandler->assign('materials',	$ExportHandler->getMaterial());
-		$ViewHandler->assign('meals',		$ExportHandler->renderMealCount());
-		$ViewHandler->render(TRUE);
+		$this->view->loadTemplate('exports/exports');
+		$this->view->assign('graph',		$this->export->renderGraph());
+		$this->view->assign('graphHeight',	$this->export->getGraphHeight());
+		$this->view->assign('account',		$this->export->getMoney('account'));
+		$this->view->assign('balance',		$this->export->getMoney('balance'));
+		$this->view->assign('suma',			$this->export->getMoney('suma'));
+		$this->view->assign('programs',		$this->program->renderExportPrograms());
+		$this->view->assign('materials',	$this->export->getMaterial());
+		$this->view->assign('meals',		$this->export->renderMealCount());
+		$this->view->render(TRUE);
 
 		/* Footer */
-		$ViewHandler->loadTemplate('footer');
-		$ViewHandler->render(TRUE);
+		$this->view->loadTemplate('footer');
+		$this->view->render(TRUE);
 	}
 }
