@@ -270,7 +270,7 @@ class ExportModel extends NixModel
 		// output file name
 		$output_filename = "faktura.".$file_type;
 
-		$query = "SELECT	vis.id AS id,
+		$data = $this->database->query('SELECT	vis.id AS id,
 					name,
 					surname,
 					street,
@@ -279,25 +279,24 @@ class ExportModel extends NixModel
 					bill,
 					place,
 					UPPER(LEFT(place, 2)) AS abbr_place,
-					DATE_FORMAT(start_date, '%d. %m. %Y') AS date,
-					DATE_FORMAT(start_date, '%Y') AS year,
+					DATE_FORMAT(start_date, "%d. %m. %Y") AS date,
+					DATE_FORMAT(start_date, "%Y") AS year,
 					vis.cost - bill AS balance,
-					DATE_FORMAT(birthday, '%d. %m. %Y') AS birthday,
+					DATE_FORMAT(birthday, "%d. %m. %Y") AS birthday,
 					group_num,
 					numbering
 			FROM kk_visitors AS vis
 			LEFT JOIN kk_meetings AS meets ON meets.id = vis.meeting
-			WHERE ".$specific_visitor." meeting='".$this->meetingId."' AND vis.deleted='0'
+			WHERE ' . $specific_visitor . ' meeting = ? AND vis.deleted = ?
 			ORDER BY surname, name
-			".$evidence_limit."";
-		$result = mysql_query($query);
+			' . $evidence_limit, $this->meetingId, '0')->fetchAll();
 
 		// summary header
 		$hkvs_header = "Junák - český skaut, Kapitanát vodních skautů, z. s. | ";
 		$hkvs_header .= "Senovážné náměstí 977/24, Praha 1, 110 00 | ";
 		$hkvs_header .= "IČ: 65991753, ČÚ: 2300183549/2010";
 
-		$this->Pdf = $this->createPdf();
+		$pdf = $this->createPdf();
 
 		// load and prepare template
 		$this->View->loadTemplate('exports/evidence_header');
@@ -307,9 +306,9 @@ class ExportModel extends NixModel
 			case "summary":
 				$this->View->loadTemplate('exports/evidence_summary');
 				// specific mPDF settings
-				$this->Pdf->defaultfooterfontsize = 16;
-				$this->Pdf->defaultfooterfontstyle = 'B';
-				$this->Pdf->SetHeader($hkvs_header);
+				$pdf->defaultfooterfontsize = 16;
+				$pdf->defaultfooterfontstyle = 'B';
+				$pdf->SetHeader($hkvs_header);
 				break;
 			case "confirm":
 				$this->View->loadTemplate('exports/evidence_confirm');
@@ -319,11 +318,11 @@ class ExportModel extends NixModel
 				break;
 		}
 		$this->View->assign('LOGODIR', IMG_DIR.'logos/');
-		$this->View->assign('result', $result);
+		$this->View->assign('result', $data);
 		$template = $this->View->render(false);
 
 		// write html
-		$this->Pdf->WriteHTML($template, 0);
+		$pdf->WriteHTML($template, 0);
 
 		/* debugging */
 		if(defined('DEBUG') && DEBUG === true){
@@ -331,7 +330,7 @@ class ExportModel extends NixModel
 			exit('DEBUG_MODE');
 		} else {
 			// download
-			$this->Pdf->Output($output_filename, "D");
+			$pdf->Output($output_filename, "D");
 		}
 	}
 
