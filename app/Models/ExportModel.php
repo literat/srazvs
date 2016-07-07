@@ -150,7 +150,7 @@ class ExportModel extends NixModel
 		// output file name
 		$output_filename = "attendance_list.".$file_type;
 
-		$header_data = $this->database->query('SELECT	vis.id AS id,
+		$data = $this->database->query('SELECT	vis.id AS id,
 						name,
 						surname,
 						nick,
@@ -166,22 +166,22 @@ class ExportModel extends NixModel
 				LEFT JOIN kk_meetings AS meets ON meets.id = vis.meeting
 				WHERE meeting = ? AND vis.deleted = ?
 				ORDER BY surname ASC',
-				$this->meetingId, '0')->fetch();
+				$this->meetingId, '0')->fetchAll();
 
 		// load and prepare template
 		$this->View->loadTemplate('exports/attendance');
-		$this->View->assign('result', $result);
+		$this->View->assign('result', $data);
 		$template = $this->View->render(false);
 
 		// prepare header
-		$attendance_header = $header_data['place']." ".$header_data['year'];
+		$attendance_header = $data[0]['place']." ".$data[0]['year'];
 
-		$this->Pdf = $this->createPdf();
+		$pdf = $this->createPdf();
 
 		// set header
-		$this->Pdf->SetHeader($attendance_header.'|sraz VS|Prezenční listina');
+		$pdf->SetHeader($attendance_header.'|sraz VS|Prezenční listina');
 		// write html
-		$this->Pdf->WriteHTML($template, 0);
+		$pdf->WriteHTML($template, 0);
 
 		/* debugging */
 		if(defined('DEBUG') && DEBUG === true){
@@ -189,7 +189,7 @@ class ExportModel extends NixModel
 			exit('DEBUG_MODE');
 		} else {
 			// download
-			$this->Pdf->Output($output_filename, "D");
+			$pdf->Output($output_filename, "D");
 		}
 	}
 
