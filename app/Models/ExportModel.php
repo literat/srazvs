@@ -875,7 +875,7 @@ class ExportModel extends NixModel
 		$template = $this->View->render(false);
 
 		// prepare header
-		$program_header = $header_data[0]['program'];
+		$program_header = $data[0]['program'];
 
 		$pdf = $this->createPdf();
 

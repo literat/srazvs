@@ -24,7 +24,7 @@
     <table>
 		<?php
 			$i = 0;
-			while($row = mysql_fetch_assoc($data['result'])){
+			foreach($data['result'] as $row) {
 				if($i % 44 == 0){
         ?>
 		<tr>
