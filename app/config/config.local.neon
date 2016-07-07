@@ -6,6 +6,15 @@ parameters:
         user: root
         password: root
     cacheDir: D:\home\literat\web\wwwroot\skauting\vodni\srazvs/temp/cache
+    pdf:
+        encoding: utf-8
+        paperFormat: A4
+        fontSize: 0
+        font: null
+        marginLeft: 15
+        marginRight: 15
+        marginTop: 16
+        marginBottom: 16
 
 services:
     connection:
@@ -48,3 +57,16 @@ services:
             @settings,
             @smtpmailer
         ]
+    pdffactory:
+        class: App\PdfFactory
+        arguments: [
+            %pdf%
+        ]
+    exports:
+        class: App\ExportModel
+        arguments: [
+            @database,
+            @pdffactory
+        ]
+    view:
+        class: App\View
