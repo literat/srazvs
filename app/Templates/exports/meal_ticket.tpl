@@ -5,32 +5,32 @@
 			font-size:10px;
 			text-align:left;
 		}
-		
+
 		table {
 			border-collapse:collapse;
 			width:100%;
 		}
-		
+
 		td {
 			text-align:center;
 			border-right:1px dotted black;
 			vertical-align:middle;
 		}
-		
+
 		img {height:32px;}
-		
+
 		.cutLine {border: 2px dotted black; vertical-align:top;}
-		
+
 		.nick {font-size:17px;color:navy;}
-		
+
 		.meal {font-weight:bold;}
-		
+
 		td.name {
 			font-size:14px;
 			width:220px;
 			padding-right:5px;
 		}
-		
+
 		.name, .group_name, .meeting {text-align:right;}
 		.program, .nick {font-weight:bold;}
 	</style>
