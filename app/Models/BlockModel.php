@@ -187,7 +187,7 @@ class BlockModel extends Component
 				/* 18 - pauzy */
 				WHERE blocks.deleted = ? AND day = ? AND meeting = ? AND category != ?
 				ORDER BY `from` ASC',
-				'0', $dayVal, $meetingId, '18')->fetch();
+				'0', $dayVal, $meetingId, '18')->fetchAll();
 
 		return $result;
 	}

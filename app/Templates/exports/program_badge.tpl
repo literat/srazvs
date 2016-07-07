@@ -37,7 +37,7 @@
 $days = array("PÁTEK", "SOBOTA", "NEDĚLE");
 
 $i = 0;
-while($unused = mysql_fetch_assoc($data['result'])) {
+foreach($data['result'] as $unused) {
 
 	if($i % 2 == 0) {
 ?>
@@ -58,15 +58,14 @@ while($unused = mysql_fetch_assoc($data['result'])) {
 						<td class='day'><?php echo $day_val; ?></td>
 					</tr>
 				<?php
-		$result = BlockModel::getExportBlocks($data['meeting_id'], $day_val);
+		$result = BlockModel::getExportBlocks($data['meeting_id'], $day_val, $data['database']);
 
 		if(!$result) {
 			?>
 			<td class='emptyTable' style='width:400px;'>Nejsou žádná aktuální data.</td>
 			<?php
-		}
-		else{
-			while($row = mysql_fetch_assoc($result)) {
+		} else {
+			foreach($result as $row) {
 				?>
 				<tr>
 				<?php
@@ -83,7 +82,7 @@ while($unused = mysql_fetch_assoc($data['result'])) {
 
 				// kdyz je programovy blok, tak zobrazim jenom jeho obsah
 				if($row['program']) {
-					echo ProgramModel::getProgramNames($row['id']); ?>
+					echo ProgramModel::getProgramNames($row['id'], $data['database']); ?>
 					</td>
 					<?php
 				}

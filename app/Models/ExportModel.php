@@ -592,17 +592,17 @@ class ExportModel extends NixModel
 	public function printProgramBadges($file_type = "pdf")
 	{
 		// prepare header
-		$sql = "SELECT	*
+		$data = $this->database->query('SELECT	*
 			FROM kk_visitors AS vis
-			WHERE meeting='".$this->meetingId."' AND vis.deleted='0'";
-		$result = mysql_query($sql);
+			WHERE meeting = ? AND vis.deleted = ?', $this->meetingId, '0')->fetchAll();
 
 		$filename = 'program-badge';
 
 		// load and prepare template
 		$this->View->loadTemplate('exports/program_badge');
 		$this->View->assign('meeting_id', $this->meetingId);
-		$this->View->assign('result', $result);
+		$this->View->assign('result', $data);
+		$this->View->assign('database', $this->database);
 
 		/* debugging */
 		if(defined('DEBUG') && DEBUG === true) {
@@ -612,21 +612,21 @@ class ExportModel extends NixModel
 			$template = $this->View->render(false);
 		}
 
-		$this->PdfFactory->setMargins(5, 5, 9, 5);
-		$this->Pdf = $this->PdfFactory->create();
+		$this->pdf->setMargins(5, 5, 9, 5);
+		$pdf = $this->pdf->create();
 
-		$this->Pdf->useOnlyCoreFonts = true;
-		$this->Pdf->SetDisplayMode('fullpage');
-		$this->Pdf->SetAutoFont(0);
+		$pdf->useOnlyCoreFonts = true;
+		$pdf->SetDisplayMode('fullpage');
+		$pdf->autoScriptToLang = false;
 
 		// write html
-		$this->Pdf->WriteHTML($template, 0);
+		$pdf->WriteHTML($template, 0);
 
 		/* debugging */
 		if(!defined('DEBUG') || DEBUG === FALSE){
 			// download
 			$output_filename = $filename.'.'.$file_type;
-			$this->Pdf->Output($output_filename, "D");
+			$pdf->Output($output_filename, "D");
 		}
 
 	}
