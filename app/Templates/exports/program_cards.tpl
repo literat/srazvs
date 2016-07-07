@@ -34,7 +34,7 @@
 <body>
 <?php
 $i = 0;
-while($row = mysql_fetch_assoc($data['result'])){
+foreach($data['result'] as $row) {
 	if($i%2 == 0){ ?>
 		<table>
 			<tr>
@@ -51,7 +51,7 @@ while($row = mysql_fetch_assoc($data['result'])){
 		<tr>
 
 		</tr>
-			<?php echo ExportModel::getPdfBlocks($row['id']); ?>
+			<?php echo \App\ExportModel::getPdfBlocks($row['id'], $data['database']); ?>
 		<tr>
 			<td class='meeting'>
 				SRAZ VS - <?php echo $row['place']." ".$row['start_date']." ".$row['end_date']; ?>

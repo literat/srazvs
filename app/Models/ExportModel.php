@@ -332,35 +332,31 @@ class ExportModel extends NixModel
 		}
 	}
 
-	public static function getPdfBlocks($vid)
+	public static function getPdfBlocks($vid, $database)
 	{
 		$programs = "<tr>";
 		$programs .= " <td class='progPart'>";
 
-		$progSql = "SELECT 	id,
+		$data = $database->query('SELECT 	id,
 							day,
-							DATE_FORMAT(`from`, '%H:%i') AS `from`,
-							DATE_FORMAT(`to`, '%H:%i') AS `to`,
+							DATE_FORMAT(`from`, "%H:%i") AS `from`,
+							DATE_FORMAT(`to`, "%H:%i") AS `to`,
 							name,
 							program
 					FROM kk_blocks
-					WHERE deleted = '0' AND program='1' AND meeting='".$_SESSION['meetingID']."'
-					ORDER BY `day` ASC";
+					WHERE deleted = ? AND program = ? AND meeting = ?
+					ORDER BY `day` ASC', '0', '1', $_SESSION['meetingID'])->fetchAll();
 
-		$progResult = mysql_query($progSql);
-		$progRows = mysql_affected_rows();
-
-		if($progRows == 0){
+		if(!$data){
 			$programs .= "<div class='emptyTable' style='width:400px;'>Nejsou žádná aktuální data.</div>\n";
-		}
-		else{
-			while($progData = mysql_fetch_assoc($progResult)){
+		} else {
+			foreach($data as $progData) {
 				// zbaveni se predsnemovni diskuse
 				if($progData['id'] == 63) $programs .= "";
 				else {
 					$programs .= "<div class='block'>".$progData['day'].", ".$progData['from']." - ".$progData['to']." : ".$progData['name']."</div>\n";
 
-					if($progData['program'] == 1) $programs .= "<div>".ProgramModel::getPdfPrograms($progData['id'], $vid)."</div>";
+					if($progData['program'] == 1) $programs .= "<div>".\ProgramModel::getPdfPrograms($progData['id'], $vid, $database)."</div>";
 				}
 			}
 		}
@@ -384,11 +380,11 @@ class ExportModel extends NixModel
 		$filename = "vlastni_programy";
 		$fileaddr = "../tmp/".$filename.".".$file_type;
 
-		$sql = "SELECT	vis.id AS id,
+		$data = $this->database->query('SELECT	vis.id AS id,
 						name,
 						surname,
 						nick,
-						DATE_FORMAT(birthday, '%Y-%m-%d') AS birthday,
+						DATE_FORMAT(birthday, "%Y-%m-%d") AS birthday,
 						street,
 						city,
 						postal_code,
@@ -410,45 +406,44 @@ class ExportModel extends NixModel
 						sun_lunch,
 						bill,
 						place,
-						DATE_FORMAT(start_date, '%d. -') AS start_date,
-						DATE_FORMAT(end_date, '%d. %m. %Y') AS end_date
+						DATE_FORMAT(start_date, "%d. -") AS start_date,
+						DATE_FORMAT(end_date, "%d. %m. %Y") AS end_date,
+						DATE_FORMAT(start_date, "%Y") AS year
 				FROM kk_visitors AS vis
 				LEFT JOIN kk_meals AS meals ON meals.visitor = vis.id
 				LEFT JOIN kk_provinces AS provs ON vis.province = provs.id
 				LEFT JOIN kk_meetings AS meets ON meets.id = vis.meeting
-				WHERE meeting='".$this->meetingId."' AND vis.deleted='0'
+				WHERE meeting = ? AND vis.deleted = ?
 				ORDER BY nick ASC
-				";
-		$result = mysql_query($sql);
-		//$data = mysql_fetch_assoc($result);
+				', $this->meetingId, '0')->fetchAll();
 
 		////ziskani zvolenych programu
-		$blockSql = "SELECT 	id
+		$blocks = $this->database->query('SELECT 	id
 					 FROM kk_blocks
-					 WHERE meeting='".$this->meetingId."' AND program='1' AND deleted='0'";
-		$blockResult = mysql_query($blockSql);
-		while($blockData = mysql_fetch_assoc($blockResult)){
-			$$blockData['id'] = requested($blockData['id'],0);
+					 WHERE meeting = ? AND program = ? AND deleted = ?', $this->meetingId, '1', '0')->fetchAll();
+
+		foreach($blocks as $block){
+			$$block['id'] = requested($block['id'],0);
 			//echo $blockData['id'].":".$$blockData['id']."|";
 		}
 
 		// load and prepare template
 		$this->View->loadTemplate('exports/program_cards');
-		$this->View->assign('result', $result);
+		$this->View->assign('result', $data);
+		$this->View->assign('database', $this->database);
 		//$this->View->assign('blocks' getBlocks($data['id']));
 		$template = $this->View->render(false);
 
 		// prepare header
-		$header_data = mysql_fetch_assoc($result);
-		$attendance_header = $header_data['place']." ".$header_data['year'];
+		$attendance_header = $data[0]['place']." ".$data[0]['year'];
 
-		$this->Pdf = $this->createPdf();
+		$pdf = $this->createPdf();
 
-		$this->Pdf->SetWatermarkImage(IMG_DIR.'logos/watermark.jpg', 0.1, '');
-		$this->Pdf->showWatermarkImage = true;
+		$pdf->SetWatermarkImage(IMG_DIR.'logos/watermark.jpg', 0.1, '');
+		$pdf->showWatermarkImage = true;
 
 		// write html
-		$this->Pdf->WriteHTML($template, 0);
+		$pdf->WriteHTML($template, 0);
 
 		/* debugging */
 		if(defined('DEBUG') && DEBUG === true){
@@ -457,7 +452,7 @@ class ExportModel extends NixModel
 		} else {
 			// download
 			$output_filename = $filename.'.'.$file_type;
-			$this->Pdf->Output($output_filename, "D");
+			$pdf->Output($output_filename, "D");
 		}
 
 	}
