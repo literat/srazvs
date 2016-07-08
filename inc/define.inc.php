@@ -83,7 +83,6 @@ session_name(SESSION_PREFIX.'session');
 session_start();
 
 require_once(INC_DIR.'functions.inc.php');
-require_once(INC_DIR.'db_connect.inc.php');
 //include_once($INCDIR.'access.inc.php');
 require_once(INC_DIR.'errors.inc.php');
 
