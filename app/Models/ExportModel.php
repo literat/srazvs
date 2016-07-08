@@ -1,4 +1,7 @@
 <?php
+
+namespace App;
+
 /**
  * Export Model
  *
@@ -7,25 +10,19 @@
  * @created 2012-09-21
  * @author Tomas Litera <tomaslitera@hotmail.com>
  */
-class ExportModel extends NixModel
+class ExportModel
 {
 	/** @var int meeting ID */
 	private $meetingId;
 
-	/** @var MpdfFactory */
-	private $PdfFactory;
-
-	/** @var Pdf */
-	public $Pdf;
+	/** @var Mpdf factory */
+	public $pdf;
 
 	/** @var View */
 	private $View;
 
-	/** @var Program Programs class */
-	public $Program;
-
-	/** @var PHPExcel PHPExcel class */
-	private $Excel;
+	/** @var PHPExcel factory */
+	private $excel;
 
 	/** @var int graph height */
 	private $graphHeight;
@@ -33,19 +30,17 @@ class ExportModel extends NixModel
 	/** @var Connection database */
 	private $database;
 
+	/** @var CategoryModel categories */
+	private $category;
+
 	/** Constructor */
-	public function __construct($meetingId, PdfFactory $PdfFactory, View $View, ProgramModel $Program, ExcelFactory $ExcelFactory, $database)
+	public function __construct($database, PdfFactory $pdf, ExcelFactory $excel, View $View, $category)
 	{
-		$this->meetingId = $meetingId;
-		// use PdfFactory
-		$this->PdfFactory = $PdfFactory;
-		// create mPdf with default settings
-		//$this->Pdf = $PdfFactory->create();
-		// templating system
-		$this->View = $View;
-		$this->Program = $Program;
-		$this->Excel = $ExcelFactory->create();
 		$this->database = $database;
+		$this->pdf = $pdf;
+		$this->excel = $excel;
+		$this->View = $View;
+		$this->category = $category;
 	}
 
 	public function setGraphHeight($height)
@@ -66,7 +61,7 @@ class ExportModel extends NixModel
 	/**
 	 * Create PDF
 	 *
-	 * @return	mPDF
+	 * @return	Mpdf
 	 */
 	public function createPdf()
 	{
@@ -515,12 +510,8 @@ class ExportModel extends NixModel
 
 		$template = $this->View->render(false);
 
-		$this->pdf->setPaperFormat('B1');
-		$pdf = $this->pdf->create();
-
-		$pdf->useOnlyCoreFonts = true;
-		$pdf->SetDisplayMode('fullpage');
-		$pdf->autoScriptToLang = false;
+		$pdf = $this->createPdf();
+		$pdf->setPaperFormat('B1');
 
 		// write html
 		$pdf->WriteHTML($template, 0);
@@ -570,11 +561,7 @@ class ExportModel extends NixModel
 
 		$template = $this->View->render(false);
 
-		$pdf = $this->pdf->create();
-
-		$pdf->useOnlyCoreFonts = true;
-		$pdf->SetDisplayMode('fullpage');
-		$pdf->autoScriptToLang = false;
+		$pdf = $this->createPdf();
 
 		// write html
 		$pdf->WriteHTML($template, 0);
@@ -622,12 +609,8 @@ class ExportModel extends NixModel
 			$template = $this->View->render(false);
 		}
 
-		$this->pdf->setMargins(5, 5, 9, 5);
-		$pdf = $this->pdf->create();
-
-		$pdf->useOnlyCoreFonts = true;
-		$pdf->SetDisplayMode('fullpage');
-		$pdf->autoScriptToLang = false;
+		$pdf = $this->createPdf();
+		$pdf->setMargins(5, 5, 9, 5);
 
 		// write html
 		$pdf->WriteHTML($template, 0);
@@ -671,8 +654,8 @@ class ExportModel extends NixModel
 		$this->View->assign('result', $_data);
 		$template = $this->View->render(FALSE);
 
-		$this->pdf->setMargins(15, 15, 10, 5);
-		$pdf = $this->pdf->create();
+		$pdf = $this->createPdf();
+		$pdf->setMargins(15, 15, 10, 5);
 
 		// set watermark
 		$pdf->SetWatermarkImage(IMG_DIR.'logos/watermark-waves.jpg', 0.1, '');

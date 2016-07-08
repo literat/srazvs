@@ -79,7 +79,15 @@ services:
         class: App\ExportModel
         arguments: [
             @database,
-            @pdffactory
+            @pdffactory,
+            @excelfactory,
+            @view,
+            @category
         ]
     view:
         class: App\View
+    category:
+        class: CategoryModel
+        arguments: [
+            @database
+        ]
