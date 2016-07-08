@@ -2,7 +2,7 @@
 
 //pokud jsem na vyvojovem stroji
 $ISDEV = ($_SERVER["SERVER_NAME"] == 'localhost'
-		 )?true:false; 
+		 )?true:false;
 
 if($ISDEV)
 	{
@@ -18,7 +18,7 @@ if($ISDEV)
 		 define('ROOT_DIR',$_SERVER['DOCUMENT_ROOT'].'/vodni/srazvs/');
 		 define('HTTP_DIR','http://'.$_SERVER['HTTP_HOST'].'/vodni/');
 		 }
-	} 
+	}
 //ostra masina
 else {
 	// na ostrem stroji musi byt vzdy za ROOT_DIR slash "/"
@@ -31,8 +31,6 @@ echo $_SERVER['DOCUMENT_ROOT']."<BR />";
 echo $_SERVER['HTTP_HOST']."<br />";
 echo ROOT_DIR."<br />";
 echo HTTP_DIR."<br />";
-
-echo $_SERVER['HTTP_REFERER'];
 
 phpinfo();
 ?>
