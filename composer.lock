@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "41e508325d87952165ab957eefd0a4fe",
-    "content-hash": "8b6455fe0aac4cf4963c42a53de7bd70",
+    "hash": "3fa38573a6b96380a65e12adbcec5805",
+    "content-hash": "8cd941bb560517dd00401c4f855561e9",
     "packages": [
         {
             "name": "dg/ftp-deployment",
@@ -114,36 +114,35 @@
         },
         {
             "name": "nette/caching",
-            "version": "v2.5.0",
+            "version": "v2.4.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/caching.git",
-                "reference": "e07955ba3e8b70c9db600dd088d4669b0dab1230"
+                "reference": "0eb07f3bb9c8dc331baae2060fd1dba3f89836e7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/caching/zipball/e07955ba3e8b70c9db600dd088d4669b0dab1230",
-                "reference": "e07955ba3e8b70c9db600dd088d4669b0dab1230",
+                "url": "https://api.github.com/repos/nette/caching/zipball/0eb07f3bb9c8dc331baae2060fd1dba3f89836e7",
+                "reference": "0eb07f3bb9c8dc331baae2060fd1dba3f89836e7",
                 "shasum": ""
             },
             "require": {
                 "nette/finder": "~2.2",
-                "nette/utils": "~2.4",
-                "php": ">=5.6.0"
+                "nette/utils": "~2.2",
+                "php": ">=5.4.4"
             },
             "conflict": {
                 "nette/nette": "<2.2"
             },
             "require-dev": {
-                "latte/latte": "~2.4",
+                "latte/latte": "~2.3.0",
                 "nette/di": "~2.3",
-                "nette/tester": "~2.0",
-                "tracy/tracy": "^2.3"
+                "nette/tester": "~1.6"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.5-dev"
+                    "dev-master": "2.4-dev"
                 }
             },
             "autoload": {
@@ -169,7 +168,7 @@
             ],
             "description": "Nette Caching Component",
             "homepage": "https://nette.org",
-            "time": "2016-06-14 14:24:06"
+            "time": "2016-05-17 15:33:12"
         },
         {
             "name": "nette/database",
@@ -279,35 +278,29 @@
         },
         {
             "name": "nette/finder",
-            "version": "v2.4.0",
+            "version": "v2.3.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/finder.git",
-                "reference": "5cabd5fe89f9903715359a403b820c7f94f9bb5e"
+                "reference": "ea8e796b42d542bd90e76f5b2a41c2c86a008256"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/finder/zipball/5cabd5fe89f9903715359a403b820c7f94f9bb5e",
-                "reference": "5cabd5fe89f9903715359a403b820c7f94f9bb5e",
+                "url": "https://api.github.com/repos/nette/finder/zipball/ea8e796b42d542bd90e76f5b2a41c2c86a008256",
+                "reference": "ea8e796b42d542bd90e76f5b2a41c2c86a008256",
                 "shasum": ""
             },
             "require": {
-                "nette/utils": "~2.4",
-                "php": ">=5.6.0"
+                "nette/utils": "~2.2",
+                "php": ">=5.3.1"
             },
             "conflict": {
                 "nette/nette": "<2.2"
             },
             "require-dev": {
-                "nette/tester": "~2.0",
-                "tracy/tracy": "^2.3"
+                "nette/tester": "~1.4"
             },
             "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.4-dev"
-                }
-            },
             "autoload": {
                 "classmap": [
                     "src/"
@@ -331,7 +324,7 @@
             ],
             "description": "Nette Finder: Files Searching",
             "homepage": "https://nette.org",
-            "time": "2016-05-17 15:49:06"
+            "time": "2015-10-20 17:15:41"
         },
         {
             "name": "nette/mail",
@@ -437,35 +430,29 @@
         },
         {
             "name": "nette/php-generator",
-            "version": "v2.4.0",
+            "version": "v2.3.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/php-generator.git",
-                "reference": "2cd0d0e922e4fad2fc58ccac6af8c9753d2b88c8"
+                "reference": "bbc8189aa54af093c908d98212e1c309b9170345"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/php-generator/zipball/2cd0d0e922e4fad2fc58ccac6af8c9753d2b88c8",
-                "reference": "2cd0d0e922e4fad2fc58ccac6af8c9753d2b88c8",
+                "url": "https://api.github.com/repos/nette/php-generator/zipball/bbc8189aa54af093c908d98212e1c309b9170345",
+                "reference": "bbc8189aa54af093c908d98212e1c309b9170345",
                 "shasum": ""
             },
             "require": {
-                "nette/utils": "~2.4",
-                "php": ">=5.6.0"
+                "nette/utils": "~2.2",
+                "php": ">=5.3.1"
             },
             "conflict": {
                 "nette/nette": "<2.2"
             },
             "require-dev": {
-                "nette/tester": "~2.0",
-                "tracy/tracy": "^2.3"
+                "nette/tester": "~1.4"
             },
             "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.4-dev"
-                }
-            },
             "autoload": {
                 "classmap": [
                     "src/"
@@ -489,31 +476,30 @@
             ],
             "description": "Nette PHP Generator",
             "homepage": "https://nette.org",
-            "time": "2016-06-17 15:18:56"
+            "time": "2016-06-17 16:33:17"
         },
         {
             "name": "nette/utils",
-            "version": "v2.4.0",
+            "version": "v2.3.10",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/utils.git",
-                "reference": "c455ade9f24a1f99aa81772516764045296b8ca0"
+                "reference": "66ceba196e4535ca3bf8f835db50d7e02339fdb0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/utils/zipball/c455ade9f24a1f99aa81772516764045296b8ca0",
-                "reference": "c455ade9f24a1f99aa81772516764045296b8ca0",
+                "url": "https://api.github.com/repos/nette/utils/zipball/66ceba196e4535ca3bf8f835db50d7e02339fdb0",
+                "reference": "66ceba196e4535ca3bf8f835db50d7e02339fdb0",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.6.0"
+                "php": ">=5.3.1"
             },
             "conflict": {
                 "nette/nette": "<2.2"
             },
             "require-dev": {
-                "nette/tester": "~2.0",
-                "tracy/tracy": "^2.3"
+                "nette/tester": "~1.0"
             },
             "suggest": {
                 "ext-gd": "to use Image",
@@ -522,11 +508,6 @@
                 "ext-mbstring": "to use Strings::lower() etc..."
             },
             "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.4-dev"
-                }
-            },
             "autoload": {
                 "classmap": [
                     "src/"
@@ -550,7 +531,7 @@
             ],
             "description": "Nette Utility Classes",
             "homepage": "https://nette.org",
-            "time": "2016-06-17 13:15:10"
+            "time": "2016-06-17 13:28:41"
         },
         {
             "name": "phpoffice/phpexcel",
@@ -718,16 +699,16 @@
         },
         {
             "name": "tracy/tracy",
-            "version": "v2.4.0",
+            "version": "v2.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/nette/tracy.git",
-                "reference": "4c8b64f135d0b38ed0b9c47a1d2e8d7ef1941fb1"
+                "reference": "89cd0c8cfd7e246a39a504f860cf2fbb5a5095f1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/nette/tracy/zipball/4c8b64f135d0b38ed0b9c47a1d2e8d7ef1941fb1",
-                "reference": "4c8b64f135d0b38ed0b9c47a1d2e8d7ef1941fb1",
+                "url": "https://api.github.com/repos/nette/tracy/zipball/89cd0c8cfd7e246a39a504f860cf2fbb5a5095f1",
+                "reference": "89cd0c8cfd7e246a39a504f860cf2fbb5a5095f1",
                 "shasum": ""
             },
             "require": {
@@ -774,7 +755,7 @@
                 "debugger",
                 "nette"
             ],
-            "time": "2016-06-17 14:56:13"
+            "time": "2016-06-30 19:57:01"
         }
     ],
     "packages-dev": [
