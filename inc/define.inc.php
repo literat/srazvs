@@ -94,8 +94,6 @@ require_once(FRAMEWORK.'ComponentModel/Component.php');
 require_once(FRAMEWORK.'ComponentModel/NixModel.php');
 
 require_once(FRAMEWORK.'DI/Container.class.php');
-require_once(FRAMEWORK.'Exporting/PdfFactory.php');
-require_once(FRAMEWORK.'Exporting/ExcelFactory.php');
 
 require_once(FRAMEWORK.'Http/Http.php');
 require_once(FRAMEWORK.'Http/Request.php');

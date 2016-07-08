@@ -15,6 +15,14 @@ parameters:
         marginRight: 15
         marginTop: 16
         marginBottom: 16
+    excel:
+        creator: 'Junák - český skaut, Kapitanát vodních skautů, z. s.'
+        lastModifiedBy: 'Srazy VS'
+        title: 'Srazy VS: Export'
+        subject: Export
+        description: 'Srazy VS CMS: export dat'
+        keywords: 'sraz vs export xlsx'
+        category: 'Export dat'
 
 services:
     connection:
@@ -61,6 +69,11 @@ services:
         class: App\PdfFactory
         arguments: [
             %pdf%
+        ]
+    excelfactory:
+        class: App\ExcelFactory
+        arguments: [
+            %excel%
         ]
     exports:
         class: App\ExportModel

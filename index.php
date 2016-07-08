@@ -6,15 +6,18 @@ use Nette\Database\Context;
 use Nette\Caching\Storages\FileStorage;
 use Nette\Database\Structure;
 
+/**
+ * Composer Autoloading
+ */
+require_once(__DIR__ . '/vendor/autoload.php');
+
 require_once('inc/define.inc.php');
 
 require_once(FRAMEWORK.'loader.php');
 
 require_once __DIR__ . '/app/models/EmailerModel.php';
-/**
- * Composer Autoloading
- */
-require_once(__DIR__ . '/vendor/autoload.php');
+require_once __DIR__ . '/app/factories/PdfFactory.php';
+require_once __DIR__ . '/app/factories/ExcelFactory.php';
 
 /**
  * Enabling Debugger

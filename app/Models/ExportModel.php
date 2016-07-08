@@ -70,7 +70,17 @@ class ExportModel extends NixModel
 	 */
 	public function createPdf()
 	{
-		return $this->PdfFactory->create();
+		return $this->pdf->create();
+	}
+
+	/**
+	 * Create Excel
+	 *
+	 * @return	PHPExcel
+	 */
+	public function createExcel()
+	{
+		return $this->excel->create();
 	}
 
 	/**
@@ -944,11 +954,12 @@ class ExportModel extends NixModel
 	 */
 	public function printVisitorsExcel()
 	{
-		$this->Excel->getProperties()->setCreator("HKVS Srazy K + K")->setTitle("Návštěvníci");
+		$excel = $this->createExcel();
+
+		$excel->getProperties()->setCreator("HKVS Srazy K + K")->setTitle("Návštěvníci");
 
 		// Zde si vyvoláme aktivní list (nastavený nahoře) a vyplníme buňky A1 a A2
-
-		$list = $this->Excel->setActiveSheetIndex(0);
+		$list = $excel->setActiveSheetIndex(0);
 
 		$list->setCellValue('A1', 'ID');
 		$list->setCellValue('B1', 'symbol');
@@ -970,29 +981,30 @@ class ExportModel extends NixModel
 		$list->setCellValue('R1', 'Odjezd');
 		$list->setCellValue('S1', 'Otázka');
 
-		$this->Excel->getActiveSheet()->getStyle('A1:Z1')->getFont()->setBold(true);
+		$excel->getActiveSheet()->getStyle('A1:Z1')->getFont()->setBold(true);
 
-		$this->Excel->getActiveSheet()->getColumnDimension('C')->setWidth(15);
-		$this->Excel->getActiveSheet()->getColumnDimension('D')->setWidth(15);
-		$this->Excel->getActiveSheet()->getColumnDimension('F')->setWidth(15);
-		$this->Excel->getActiveSheet()->getColumnDimension('G')->setWidth(30);
-		$this->Excel->getActiveSheet()->getColumnDimension('H')->setWidth(20);
-		$this->Excel->getActiveSheet()->getColumnDimension('I')->setWidth(15);
-		$this->Excel->getActiveSheet()->getColumnDimension('K')->setWidth(20);
-		$this->Excel->getActiveSheet()->getColumnDimension('M')->setWidth(30);
-		$this->Excel->getActiveSheet()->getColumnDimension('N')->setWidth(20);
-		$this->Excel->getActiveSheet()->getColumnDimension('P')->setWidth(20);
-		$this->Excel->getActiveSheet()->getColumnDimension('Q')->setWidth(20);
-		$this->Excel->getActiveSheet()->getColumnDimension('R')->setWidth(20);
-		$this->Excel->getActiveSheet()->getColumnDimension('S')->setWidth(20);
+		$excel->getActiveSheet()->getColumnDimension('C')->setWidth(15);
+		$excel->getActiveSheet()->getColumnDimension('D')->setWidth(15);
+		$excel->getActiveSheet()->getColumnDimension('F')->setWidth(15);
+		$excel->getActiveSheet()->getColumnDimension('G')->setWidth(30);
+		$excel->getActiveSheet()->getColumnDimension('H')->setWidth(20);
+		$excel->getActiveSheet()->getColumnDimension('I')->setWidth(15);
+		$excel->getActiveSheet()->getColumnDimension('K')->setWidth(20);
+		$excel->getActiveSheet()->getColumnDimension('M')->setWidth(30);
+		$excel->getActiveSheet()->getColumnDimension('N')->setWidth(20);
+		$excel->getActiveSheet()->getColumnDimension('P')->setWidth(20);
+		$excel->getActiveSheet()->getColumnDimension('Q')->setWidth(20);
+		$excel->getActiveSheet()->getColumnDimension('R')->setWidth(20);
+		$excel->getActiveSheet()->getColumnDimension('S')->setWidth(20);
 
-		$sql = "
+		$visitors = $this->database
+			->query('
 		SELECT vis.id AS id,
 			code,
 			vis.name,
 			surname,
 			nick,
-			DATE_FORMAT(birthday, '%d. %m. %Y') AS birthday,
+			DATE_FORMAT(birthday, "%d. %m. %Y") AS birthday,
 			vis.email,
 			street,
 			city,
@@ -1020,13 +1032,10 @@ class ExportModel extends NixModel
 		/*LEFT JOIN `kk_visitor-program` AS visprog ON visprog.visitor = vis.id
 		LEFT JOIN `kk_programs` AS progs ON visprog.program = progs.id*/
 		LEFT JOIN `kk_meals` AS mls ON mls.visitor = vis.id
-		WHERE vis.deleted = '0' AND meeting = '".$this->meetingId."'
-		";
-
-		$query = mysql_query($sql);
+		WHERE vis.deleted = ? AND meeting = ?', '0', $this->meetingId)->fetchAll();
 
 		$i = 2;
-		while($data = mysql_fetch_assoc($query)){
+		foreach($visitors as $data) {
 			$list->setCellValue('A'.$i, $data['id']);
 			$list->setCellValue('B'.$i, $data['code']);
 			$list->setCellValue('C'.$i, $data['name']);
@@ -1061,18 +1070,21 @@ class ExportModel extends NixModel
 		// stahnuti souboru
 		$filename = 'export-MS-'.date('Y-m-d',time()).'.xlsx';
 
-		$this->Excel->setActiveSheetIndex(0);
-
-		// clean output
-		ob_clean();
-		flush();
+		$excel->setActiveSheetIndex(0);
 
 		header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
 		header('Content-Disposition: attachment;filename="'.$filename.'"');
 		header('Cache-Control: max-age=0');
 
-		$ExcelWriter = PHPExcel_IOFactory::createWriter($this->Excel, 'Excel2007');
+		// If you're serving to IE over SSL, then the following may be needed
+		header ('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+		header ('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT'); // always modified
+		header ('Cache-Control: cache, must-revalidate'); // HTTP/1.1
+		header ('Pragma: public'); // HTTP/1.0
+
+		$ExcelWriter = \PHPExcel_IOFactory::createWriter($excel, 'Excel2007');
 		$ExcelWriter->save('php://output');
 		exit;
 	}
+
 }
