@@ -2,7 +2,7 @@
 <body>
 	<?php
 		$i = 1;
-		while($row = mysql_fetch_assoc($data['result'])){
+        foreach($data['result'] as $row) {
 	?>
 	<h2>PŘÍJMOVÝ POKLADNÍ DOKLAD</h2>
 	<table>
