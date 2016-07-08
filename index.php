@@ -5,19 +5,22 @@ use Nette\DI\ContainerLoader;
 use Nette\Database\Context;
 use Nette\Caching\Storages\FileStorage;
 use Nette\Database\Structure;
+use Nette\Loaders\RobotLoader;
 
 /**
- * Composer Autoloading
+ * Autoloading
  */
 require_once(__DIR__ . '/vendor/autoload.php');
+require_once(__DIR__ . '/inc/define.inc.php');
 
-require_once('inc/define.inc.php');
-
-require_once(FRAMEWORK.'loader.php');
-
-require_once __DIR__ . '/app/models/EmailerModel.php';
-require_once __DIR__ . '/app/factories/PdfFactory.php';
-require_once __DIR__ . '/app/factories/ExcelFactory.php';
+$loader = new RobotLoader;
+// Add directories for RobotLoader to index
+$loader->addDirectory('app');
+$loader->addDirectory('libs');
+// And set caching to the 'temp' directory on the disc
+$loader->setCacheStorage(new FileStorage('temp'));
+// Run the RobotLoader
+$loader->register();
 
 /**
  * Enabling Debugger
@@ -28,8 +31,8 @@ Debugger::$email = $cfg['mail-admin'];
 /**
  * DI Container
  */
-$loader = new ContainerLoader(__DIR__ . '/temp');
-$class = $loader->load('', function($compiler) {
+$containerLoader = new ContainerLoader(__DIR__ . '/temp');
+$class = $containerLoader->load('', function($compiler) {
     $compiler->loadConfig(__DIR__ . '/app/config/config.local.neon');
     $compiler->loadConfig(__DIR__ . '/app/config/config.neon');
 });
@@ -52,8 +55,6 @@ if(!isset($_SESSION['meetingID'])) {
 		->limit(1)
 		->fetchField();
 }
-
-require_once(FRAMEWORK.'Routers/Router.php');
 
 $router = new Nix\Routers\Router();
 
