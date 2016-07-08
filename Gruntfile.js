@@ -28,11 +28,18 @@ module.exports = function (grunt) {
 		shell: {
 			nette_tester: {
 				command: 'php -f vendor/nette/tester/Tester/tester.php -- -c tests/php.ini -j 10 tests',
+			},
+			ftpDeployment: {
+				command: 'php -f vendor/bin/deployment deployment.ini',
+			},
+			ftpDeploymentTest: {
+				command: 'php -f vendor/bin/deployment deployment.ini --test',
 			}
 		},
 
 		clean: {
 			container: ['temp/Container_*'],
+			cache: ['temp/cache/_*'],
 		},
 
 		conventionalChangelog: {
@@ -104,6 +111,7 @@ module.exports = function (grunt) {
 			return grunt.task.run(['ftp-deploy:' + account]);
 		} else {
 			return grunt.task.run([
+				'shell:ftpDeployment',
 			]);
 		}
 	});
