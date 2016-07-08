@@ -57,12 +57,13 @@ class ProgramModel extends Component
 		if(!$blocks){
 			$html = "";
 		} else {
-			/*$progSql = "SELECT progs.name AS prog_name
+			/*
+			$progSql = "SELECT progs.name AS prog_name
 						FROM kk_programs AS progs
 						LEFT JOIN `kk_visitor-program` AS visprog ON progs.id = visprog.program
 						LEFT JOIN kk_visitors AS vis ON vis.id = visprog.visitor
 						WHERE vis.id = '".$id."'";
-				$progResult = mysql_query($progSql);*/
+			*/
 
 			$html = "<div>\n";
 
@@ -181,17 +182,17 @@ class ProgramModel extends Component
 		} else {
 			//// prasarnicka kvuli programu raftu - resim obsazenost dohromady u dvou polozek
 			//$raftCountSql = "SELECT COUNT(visitor) AS raft FROM `kk_visitor-program` WHERE program='56|57'";
-			//$raftCountResult = mysql_query($raftCountSql);
-			//$raftCountData = mysql_fetch_assoc($raftCountResult);
 
 			foreach($progSql as $progData){
 				//nemoznost volit predsnemovni dikusi
 				if($progData['id'] == 63) $notDisplayed = "style='display:none;'";
 				//obsazenost raftu
-				/*elseif($raftCountData['raft'] >= 18){
+				/*
+				elseif($raftCountData['raft'] >= 18){
 					if($progData['id'] == 86) $notDisplayed = "style='display:none;'";
 					else $notDisplayed = "";
-				}*/
+				}
+				*/
 				else $notDisplayed = "";
 				$programs .= "<div ".$notDisplayed.">".$progData['day'].", ".$progData['from']." - ".$progData['to']." : ".$progData['name']."</div>\n";
 				if($progData['program'] == 1) $programs .= "<div ".$notDisplayed.">".$this->getExportPrograms($progData['id'])."</div>";
