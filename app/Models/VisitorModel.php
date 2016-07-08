@@ -1,6 +1,5 @@
 <?php
 
-use Nix\Utils\Tools;
 use Nette\Utils\Strings;
 
 /**
@@ -368,10 +367,10 @@ class VisitorModel /* extends Component */
 			$html .= "<div class='emptyTable' style='width:400px;'>Nejsou žádná aktuální data.</div>\n";
 		} else {
 			foreach($programBlocks as $block){
-				$html .= "<div class='".Tools::toCoolUrl($block['day'])."'>".$block['day'].", ".$block['from']." - ".$block['to']." : ".$block['name']."</div>\n";
+				$html .= "<div class='".toCoolUrl($block['day'])."'>".$block['day'].", ".$block['from']." - ".$block['to']." : ".$block['name']."</div>\n";
 				// rendering programs in block
 				if($block['program'] == 1){
-					$html .= "<div class='programs ".Tools::toCoolUrl($block['day'])." ".Tools::toCoolUrl($block['name'])."'>".$this->Programs->getPrograms($block['id'], $visitorId)."</div>";
+					$html .= "<div class='programs ".toCoolUrl($block['day'])." ".toCoolUrl($block['name'])."'>".$this->Programs->getPrograms($block['id'], $visitorId)."</div>";
 				}
 				$html .= "<br />";
 			}
