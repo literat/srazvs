@@ -111,6 +111,7 @@ module.exports = function (grunt) {
 			return grunt.task.run(['ftp-deploy:' + account]);
 		} else {
 			return grunt.task.run([
+				'shell:nette_tester',
 				'shell:ftpDeployment',
 			]);
 		}
