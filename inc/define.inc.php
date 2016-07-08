@@ -24,7 +24,8 @@ if($ISDEV) {
 //ostra masina
 else {
 	// na ostrem stroji musi byt vzdy za ROOT_DIR slash "/"
-	define('ROOT_DIR', '/var/www/virtual/vodni/web/www/srazvs/');
+	//define('ROOT_DIR', '/var/www/virtual/vodni/web/www/srazvs/');
+	define('ROOT_DIR', __DIR__ . '/../');
 	define('HTTP_DIR', 'http://'.$_SERVER['HTTP_HOST'].'/');
 }
 
@@ -126,3 +127,4 @@ if(defined('DEBUG') && DEBUG === TRUE){
 }
 
 $style = "";
+
