@@ -87,38 +87,7 @@ require_once(INC_DIR.'functions.inc.php');
 //include_once($INCDIR.'access.inc.php');
 require_once(INC_DIR.'errors.inc.php');
 
-/* Libraries */
-require_once(FRAMEWORK.'ComponentModel/IModel.php');
-require_once(FRAMEWORK.'ComponentModel/IComponent.php');
-require_once(FRAMEWORK.'ComponentModel/Component.php');
-require_once(FRAMEWORK.'ComponentModel/NixModel.php');
-
-require_once(FRAMEWORK.'DI/Container.class.php');
-
-require_once(FRAMEWORK.'Http/Http.php');
-require_once(FRAMEWORK.'Http/Request.php');
-require_once(FRAMEWORK.'Http/Response.php');
-
-require_once(FRAMEWORK.'Utils/Tools.php');
-
-/* Application */
-require_once(FRAMEWORK.'Mail/Emailer.php');
-require_once(MODEL_DIR.'CategoryModel.php');
-require_once(MODEL_DIR.'BlockModel.php');
-require_once(MODEL_DIR.'ProgramModel.php');
-require_once(FRAMEWORK.'Forms/Form.php');
-require_once(MODEL_DIR.'VisitorModel.php');
-require_once(MODEL_DIR.'MeetingModel.php');
-require_once(MODEL_DIR.'MealModel.php');
-require_once(MODEL_DIR.'ExportModel.php');
-require_once(MODEL_DIR.'SettingsModel.php');
-
-require_once(VIEW_DIR.'View.php');
-
-require_once(CONTROLLER_DIR.'BaseController.php');
-
 define('DEBUG', FALSE);
-
 
 //debuggovani
 if(defined('DEBUG') && DEBUG === TRUE){
@@ -127,4 +96,3 @@ if(defined('DEBUG') && DEBUG === TRUE){
 }
 
 $style = "";
-
