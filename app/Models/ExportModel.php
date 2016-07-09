@@ -58,6 +58,11 @@ class ExportModel
 		$this->meetingId = $id;
 	}
 
+	public function getMeetingId()
+	{
+		return $this->meetingId;
+	}
+
 	/**
 	 * Create PDF
 	 *
