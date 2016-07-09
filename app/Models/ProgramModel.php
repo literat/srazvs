@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Program model
  *
@@ -26,17 +27,18 @@ class ProgramModel extends Component
 	 */
 	public $formNames = array();
 
-	private $configuration;
-
 	/** Constructor */
-	public function __construct($meeting_id, $configuration, $database)
+	public function __construct($database)
 	{
-		$this->meetingId = $meeting_id;
 		$this->dbColumns = array("name", "block", "display_in_reg", "description", "tutor", "email", "category", "material", "capacity");
 		$this->formNames = array("name", "description", "material", "tutor", "email", "capacity", "display_in_reg", "block", "category");
 		$this->dbTable = "kk_programs";
-		$this->configuration = $configuration;
 		$this->database = $database;
+	}
+
+	public function setMeetingId($id)
+	{
+		$this->meetingId = $id;
 	}
 
 	/**

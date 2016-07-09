@@ -103,7 +103,9 @@ class RegistrationController extends BaseController
 		$this->Export = $this->container->createServiceExports();
 		$this->Meeting = $this->Container->createMeeting();
 		$this->Meal = $this->Container->createMeal();
-		$this->Program = $this->Container->createProgram();
+		$this->Program = $this->container->createServiceProgram();
+
+		$this->Program->setMeetingId($this->meetingId);
 
 		if(defined('DEBUG') && DEBUG === TRUE){
 			$this->Meeting->setRegistrationHandlers(1);

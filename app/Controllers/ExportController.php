@@ -23,7 +23,7 @@ class ExportController extends BaseController
 		$this->container = $container;
 		$this->export = $this->container->createServiceExports();
 		$this->view = $this->container->createServiceView();
-		//$this->program = $this->container->createServicePrograms();
+		$this->program = $this->container->createServiceProgram();
 	}
 
 	/**
@@ -45,8 +45,7 @@ class ExportController extends BaseController
 		}
 
 		$this->export->setMeetingId($mid);
-		$Container = new Container($GLOBALS['cfg'], $mid, $this->database);
-		$this->program = $Container->createProgram();
+		$this->program->setMeetingId($mid);
 
 		switch(key($_GET)){
 			case 'attendance':

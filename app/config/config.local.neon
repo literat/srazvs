@@ -96,3 +96,8 @@ services:
         arguments: [
             @database
         ]
+    program:
+        class: ProgramModel
+        arguments: [
+            @database
+        ]
