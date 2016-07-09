@@ -29,9 +29,8 @@ class BlockModel extends Component
 	 *
 	 * @param int $meeting_ID ID of meeting
 	 */
-	public function __construct($meeting_ID, $database)
+	public function __construct($database)
 	{
-		$this->meetingId = $meeting_ID;
 		$this->dbColumns = array(
 			"name",
 			"day",
@@ -69,6 +68,11 @@ class BlockModel extends Component
 		$this->dbTable = "kk_blocks";
 
 		$this->database = $database;
+	}
+
+	public function setMeetingId($id)
+	{
+		$this->meetingId = $id;
 	}
 
 	/**

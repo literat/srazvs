@@ -72,11 +72,13 @@ class BlockController extends BaseController
 		$this->database = $database;
 		$this->container = $container;
 		$this->Container = new Container($GLOBALS['cfg'], $this->meetingId, $this->database);
-		$this->Block = $this->Container->createBlock();
+		$this->Block = $this->container->createServiceBlock();
 		$this->View = $this->container->createServiceView();
 		$this->Emailer = $this->container->createServiceEmailer();
 		$this->Meeting = $this->Container->createMeeting();
 		$this->Category = $this->container->createServiceCategory();
+
+		$this->Block->setMeetingId($this->meetingId);
 
 		if(defined('DEBUG') && DEBUG === TRUE){
 			$this->Meeting->setRegistrationHandlers(1);

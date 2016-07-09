@@ -91,3 +91,8 @@ services:
         arguments: [
             @database
         ]
+    block:
+        class: BlockModel
+        arguments: [
+            @database
+        ]
