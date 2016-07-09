@@ -76,7 +76,7 @@ class BlockController extends BaseController
 		$this->View = $this->container->createServiceView();
 		$this->Emailer = $this->container->createServiceEmailer();
 		$this->Meeting = $this->Container->createMeeting();
-		$this->Category = $this->Container->createCategory();
+		$this->Category = $this->container->createServiceCategory();
 
 		if(defined('DEBUG') && DEBUG === TRUE){
 			$this->Meeting->setRegistrationHandlers(1);

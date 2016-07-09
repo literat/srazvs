@@ -90,7 +90,7 @@ class VisitorController extends BaseController
 		$this->Export = $this->container->createServiceExports();
 		$this->Meeting = $this->Container->createMeeting();
 		$this->Meal = $this->Container->createMeal();
-		$this->Category = $this->Container->createCategory();
+		$this->Category = $this->container->createServiceCategory();
 	}
 
 	/**

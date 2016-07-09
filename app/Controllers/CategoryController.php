@@ -53,10 +53,9 @@ class CategoryController extends BaseController
 	private $error = '';
 
 	/**
-	 * Container class
-	 * @var [type]
+	 * DI container
+	 * @var Nette\DI\Container
 	 */
-	private $Container;
 	private $container;
 
 	/**
@@ -84,8 +83,7 @@ class CategoryController extends BaseController
 
 		$this->database = $database;
 		$this->container = $container;
-		$this->Container = new Container($GLOBALS['cfg'], $this->meetingId, $this->database);
-		$this->Category = $this->Container->createCategory();
+		$this->Category = $this->container->createServiceCategory();
 		$this->View = $this->container->createServiceView();
 	}
 

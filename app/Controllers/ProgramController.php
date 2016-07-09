@@ -119,7 +119,7 @@ class ProgramController extends BaseController
 		$this->Emailer = $this->container->createServiceEmailer();
 		$this->Export = $this->container->createServiceExports();
 		$this->Meeting = $this->Container->createMeeting();
-		$this->Category = $this->Container->createCategory();
+		$this->Category = $this->container->createServiceCategory();
 
 		if(defined('DEBUG') && DEBUG === TRUE){
 			$this->Meeting->setRegistrationHandlers(1);
