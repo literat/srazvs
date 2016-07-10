@@ -9,16 +9,13 @@
  */
 class MealModel extends Component
 {
-	/** @var meeting ID */
-	private $meeting;
 
 	/** @var array	meals */
 	public $day_meal = array();
 
 	/** Constructor */
-	public function __construct($meeting = NULL, $database)
+	public function __construct($database)
 	{
-		$this->meeting = $meeting;
 		$this->dbColumns = array(
 			"visitor",
 			"fry_dinner",

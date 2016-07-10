@@ -101,3 +101,8 @@ services:
         arguments: [
             @database
         ]
+    meal:
+        class: MealModel
+        arguments: [
+            @database
+        ]
