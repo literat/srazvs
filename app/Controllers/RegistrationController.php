@@ -101,11 +101,13 @@ class RegistrationController extends BaseController
 		$this->View = $this->container->createServiceView();
 		$this->Emailer = $this->container->createServiceEmailer();
 		$this->Export = $this->container->createServiceExports();
-		$this->Meeting = $this->Container->createMeeting();
+		$this->Meeting = $this->container->createServiceMeeting();
 		$this->Meal = $this->container->createServiceMeal();
 		$this->Program = $this->container->createServiceProgram();
 
 		$this->Program->setMeetingId($this->meetingId);
+		$this->Meeting->setMeetingId($this->meetingId);
+		$this->Meeting->setHttpEncoding($this->container->parameters['encoding']);
 
 		if(defined('DEBUG') && DEBUG === TRUE){
 			$this->Meeting->setRegistrationHandlers(1);

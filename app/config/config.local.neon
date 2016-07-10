@@ -23,6 +23,7 @@ parameters:
         description: 'Srazy VS CMS: export dat'
         keywords: 'sraz vs export xlsx'
         category: 'Export dat'
+    encoding: utf-8
 
 services:
     connection:
@@ -105,4 +106,10 @@ services:
         class: MealModel
         arguments: [
             @database
+        ]
+    meeting:
+        class: MeetingModel
+        arguments: [
+            @database,
+            @program
         ]

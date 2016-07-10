@@ -416,9 +416,9 @@ class ProgramModel extends Component
 		return $html;
 	}
 
-	public static function getDetail($id, $type, $cfg, $database)
+	public function getDetail($id, $type, $httpEncoding)
 	{
-		$data = $database
+		$data = $this->database
 			->table('kk_' . $type . 's')
 			->where('id ? AND deleted ?', $id, '0')
 			->limit(1)
@@ -446,7 +446,7 @@ class ProgramModel extends Component
 		}
 		else $inner_html = "";
 
-		$html = '<html><head><meta http-equiv="Content-Type" content="text/html; charset='.$cfg['http-encoding'].'" /></head><body><style>td.text {text-align:left;}</style><table class="form"><tr><td class="label">Program:</td><td class="text">'.$name.'</td></tr><tr><td class="label">Popis:</td><td class="text">'.$description.'</td></tr><tr><td class="label">Lektor:</td><td class="text">'.$tutor.'</td></tr><tr><td class="label">E-mail:</td><td class="text"><a href="mailto:'.$email.'" title="e-mail">'.$email.'</a></td></tr>'.$inner_html.'</table></body></html>';
+		$html = '<html><head><meta http-equiv="Content-Type" content="text/html; charset='.$httpEncoding.'" /></head><body><style>td.text {text-align:left;}</style><table class="form"><tr><td class="label">Program:</td><td class="text">'.$name.'</td></tr><tr><td class="label">Popis:</td><td class="text">'.$description.'</td></tr><tr><td class="label">Lektor:</td><td class="text">'.$tutor.'</td></tr><tr><td class="label">E-mail:</td><td class="text"><a href="mailto:'.$email.'" title="e-mail">'.$email.'</a></td></tr>'.$inner_html.'</table></body></html>';
 
 		return $html;
 	}

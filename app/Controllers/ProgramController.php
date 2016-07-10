@@ -113,15 +113,16 @@ class ProgramController extends BaseController
 
 		$this->database = $database;
 		$this->container = $container;
-		$this->Container = new Container($GLOBALS['cfg'], $this->meetingId, $this->database);
 		$this->Program = $this->container->createServiceProgram();
 		$this->View = $this->container->createServiceView();
 		$this->Emailer = $this->container->createServiceEmailer();
 		$this->Export = $this->container->createServiceExports();
-		$this->Meeting = $this->Container->createMeeting();
+		$this->Meeting = $this->container->createServiceMeeting();
 		$this->Category = $this->container->createServiceCategory();
 
 		$this->Program->setMeetingId($this->meetingId);
+		$this->Meeting->setMeetingId($this->meetingId);
+		$this->Meeting->setHttpEncoding($this->container->parameters['encoding']);
 
 		if(defined('DEBUG') && DEBUG === TRUE){
 			$this->Meeting->setRegistrationHandlers(1);

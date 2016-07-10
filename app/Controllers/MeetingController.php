@@ -75,10 +75,12 @@ class MeetingController extends BaseController
 
 		$this->database = $database;
 		$this->container = $container;
-		$this->Container = new Container($GLOBALS['cfg'], $this->meetingId, $this->database);
-		$this->Meeting = $this->Container->createMeeting();
+		$this->Meeting = $this->container->createServiceMeeting();
 		$this->View = $this->container->createServiceView();
 		$this->Category = $this->container->createServiceCategory();
+
+		$this->Meeting->setMeetingId($this->meetingId);
+		$this->Meeting->setHttpEncoding($this->container->parameters['encoding']);
 	}
 
 	/**

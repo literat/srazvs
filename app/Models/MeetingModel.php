@@ -7,7 +7,7 @@
  * @created 2012-11-09
  * @author Tomas Litera <tomaslitera@hotmail.com>
  */
-class MeetingModel extends Component
+class MeetingModel
 {
 	/**
 	 * Meeting ID
@@ -34,11 +34,14 @@ class MeetingModel extends Component
 	public $regHeading = '';
 
 	private $configuration;
+	private $program;
+	private $httpEncoding;
+	private $database;
+	private $dbTable;
 
 	/** Constructor */
-	public function __construct($meetingId = NULL, $configuration, $database)
+	public function __construct($database, $program)
 	{
-		$this->meetingId = $meetingId;
 		$this->weekendDays = array("pátek", "sobota", "neděle");
 		$this->form_names = array(
 			"place",
@@ -67,8 +70,72 @@ class MeetingModel extends Component
 			"numbering"
 		);
 		$this->dbTable = "kk_meetings";
-		$this->configuration = $configuration;
 		$this->database = $database;
+		$this->program = $program;
+	}
+
+	public function setMeetingId($id)
+	{
+		$this->meetingId = $id;
+	}
+
+	public function setHttpEncoding($encoding)
+	{
+		$this->httpEncoding = $encoding;
+	}
+
+	/**
+	 * Create new or return existing instance of class
+	 *
+	 * @return	mixed	instance of class
+	 */
+	public static function getInstance()
+	{
+		if(self::$instance === false) {
+			self::$instance = new self();
+		}
+		return self::$instance;
+	}
+
+	/**
+	 * Create a new record
+	 *
+	 * @param	mixed	array of data
+	 * @return	boolean
+	 */
+	public function create(array $data)
+	{
+		$result = $this->database->query('INSERT INTO ' . $this->dbTable, $data);
+
+		return $result;
+	}
+
+	/**
+	 * Modify record
+	 *
+	 * @param	int		$id			ID of record
+	 * @param	array	$db_data	array of data
+	 * @return	bool
+	 */
+	public function update($id, array $data)
+	{
+		$result = $this->database->table($this->dbTable)->where('id', $id)->update($data);
+
+		return $result;
+	}
+
+	/**
+	 * Delete one or multiple record/s
+	 *
+	 * @param	int		ID/s of record
+	 * @return	boolean
+	 */
+	public function delete($ids)
+	{
+		$data = array('deleted' => '1');
+		$result = $this->database->table($this->dbTable)->where('id', $ids)->update($data);
+
+		return $result;
 	}
 
 	/**
@@ -195,7 +262,7 @@ class MeetingModel extends Component
 			$html .= " <tr>\n";
 			foreach($result as $data){
 				$html .= "<td class='category cat-".$data['style']."' style='text-align:center;'>\n";
-				$html .= "<a class='programLink' rel='programDetail' href='#' rel='programDetail' title='".ProgramModel::getDetail($data['id'], 'program', $this->configuration, $this->database)."'>".$data['name']."</a>\n";
+				$html .= "<a class='programLink' rel='programDetail' href='#' rel='programDetail' title='".$this->program->getDetail($data['id'], 'program', $this->httpEncoding)."'>".$data['name']."</a>\n";
 				$html .= "</td>\n";
 			}
 			$html .= " </tr>\n";
@@ -298,14 +365,14 @@ class MeetingModel extends Component
 					if(($data['program'] == 1) && ($data['display_progs'] == 1)){
 						$html .= "<td class='category cat-".$data['style']."' class='daytime'>\n";
 						$html .= "<div>\n";
-						$html .= "<a class='programLink rel='programDetail' href='#' rel='programDetail' title='".ProgramModel::getDetail($data['id'], 'block', $this->configuration, $this->database)."'>".$data['name']."</a>\n";
+						$html .= "<a class='programLink rel='programDetail' href='#' rel='programDetail' title='".$this->program->getDetail($data['id'], 'block', $this->httpEncoding)."'>".$data['name']."</a>\n";
 						$html .= "</div>\n";
 						$html .= $this->getPublicPrograms($data['id']);
 						$html .= "</td>\n";
 					}
 					else {
 						$html .= "<td class='category cat-".$data['style']."'>";
-						$html .= "<a class='programLink rel='programDetail' href='#' rel='programDetail' title='".ProgramModel::getDetail($data['id'], 'block', $this->configuration, $this->database)."'>".$data['name']."</a>\n";
+						$html .= "<a class='programLink rel='programDetail' href='#' rel='programDetail' title='".$this->program->getDetail($data['id'], 'block', $this->httpEncoding)."'>".$data['name']."</a>\n";
 						$html .= "</td>\n";
 					}
 					$html .= "</tr>\n";
