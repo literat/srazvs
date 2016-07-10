@@ -50,7 +50,7 @@ class SettingsController extends BaseController
 	 * Container class
 	 * @var [type]
 	 */
-	private $Container;
+	private $container;
 
 	/**
 	 * Category model
@@ -70,8 +70,6 @@ class SettingsController extends BaseController
 	 */
 	private $Emailer;
 
-	private $container;
-
 	/**
 	 * Prepare initial values
 	 */
@@ -84,7 +82,6 @@ class SettingsController extends BaseController
 		}
 		$this->database = $database;
 		$this->container = $container;
-		$this->Container = new Container($GLOBALS['cfg'], $this->meetingId, $this->database);
 		$this->Settings = $this->container->createServiceSettings();
 		$this->view = $this->container->createServiceView();
 		$this->Emailer = $this->container->createServiceEmailer();

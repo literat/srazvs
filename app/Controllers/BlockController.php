@@ -51,7 +51,6 @@ class BlockController extends BaseController
 	private $data = array();
 
 	private $container;
-	private $Container;
 	private $Block;
 	private $View;
 	private $Emailer;

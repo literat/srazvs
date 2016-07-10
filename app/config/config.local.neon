@@ -113,3 +113,12 @@ services:
             @database,
             @program
         ]
+    visitor:
+        class: VisitorModel
+        arguments: [
+            @meeting,
+            @meal,
+            @program,
+            @block,
+            @database
+        ]

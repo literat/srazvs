@@ -15,7 +15,6 @@ class VisitorController extends BaseController
 	 * Object farm container
 	 * @var Container
 	 */
-	private $Container;
 	private $container;
 
 	/**
@@ -83,8 +82,7 @@ class VisitorController extends BaseController
 
 		$this->database = $database;
 		$this->container = $container;
-		$this->Container = new Container($GLOBALS['cfg'], $this->meetingId, $this->database);
-		$this->Visitor = $this->Container->createVisitor();
+		$this->Visitor = $this->container->createServiceVisitor();
 		$this->View = $this->container->createServiceView();
 		$this->Emailer = $this->container->createServiceEmailer();
 		$this->Export = $this->container->createServiceExports();
@@ -92,6 +90,7 @@ class VisitorController extends BaseController
 		$this->Meal = $this->container->createServiceMeal();
 		$this->Category = $this->container->createServiceCategory();
 
+		$this->Visitor->setMeetingId($this->meetingId);
 		$this->Meeting->setMeetingId($this->meetingId);
 		$this->Meeting->setHttpEncoding($this->container->parameters['encoding']);
 	}

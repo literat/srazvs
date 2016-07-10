@@ -61,7 +61,6 @@ class ProgramController extends BaseController
 	 * Object farm container
 	 * @var Container
 	 */
-	private $Container;
 	private $container;
 
 	/**

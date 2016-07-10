@@ -10,10 +10,10 @@ use Nette\Utils\Strings;
  * @created 2012-11-07
  * @author Tomas Litera <tomaslitera@hotmail.com>
  */
-class VisitorModel /* extends Component */
+class VisitorModel
 {
 	/** @var int meeting ID */
-	private $meeting_ID;
+	private $meetingId;
 
 	/** @var string	search pattern */
 	public $search;
@@ -36,10 +36,7 @@ class VisitorModel /* extends Component */
 	/** @var int meeting advance */
 	private $meeting_advance;
 
-	/** @var array configuration */
-	public $configuration;
-
-	/** @var array configuration */
+	/** @var Connection database */
 	private $database;
 
 	/**
@@ -58,18 +55,15 @@ class VisitorModel /* extends Component */
 
 	/** konstruktor */
 	public function __construct(
-		$meeting_ID,
 		MeetingModel $Meeting,
 		MealModel $Meals,
 		ProgramModel $Program,
 		BlockModel $Blocks,
-		$configuration,
 		$database
 	) {
 		$this->Meeting = $Meeting;
 		$this->meeting_price = $this->Meeting->getPrice('cost');
 		$this->meeting_advance = $this->Meeting->getPrice('advance');
-		$this->meeting_ID = $meeting_ID;
 		$this->Meals = $Meals;
 		$this->Programs = $Program;
 		$this->Blocks = $Blocks;
@@ -99,8 +93,12 @@ class VisitorModel /* extends Component */
 							);
 		$this->formNames = array("name", "description", "material", "tutor", "email", "capacity", "display_in_reg", "block", "category");
 		$this->dbTable = "kk_visitors";
-		$this->configuration = $configuration;
 		$this->database = $database;
+	}
+
+	public function setMeetingId($id)
+	{
+		$this->meetingId = $id;
 	}
 
 	/**
@@ -251,7 +249,7 @@ class VisitorModel /* extends Component */
 	{
 		$visitorsCount = $this->database
 			->table($this->dbTable)
-			->where('meeting ? AND deleted ?', $this->meeting_ID, '0')
+			->where('meeting ? AND deleted ?', $this->meetingId, '0')
 			->count('id');
 
 		return $visitorsCount;
@@ -412,7 +410,7 @@ class VisitorModel /* extends Component */
 						LEFT JOIN kk_provinces AS provs ON vis.province = provs.id
 						WHERE meeting = ? AND deleted = ? ' . $this->getSearch($this->search) . '
 						ORDER BY vis.id ASC',
-						$this->meeting_ID, '0')->fetchAll();
+						$this->meetingId, '0')->fetchAll();
 		}
 
 		if(!$data) {

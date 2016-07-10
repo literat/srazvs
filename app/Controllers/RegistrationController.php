@@ -23,7 +23,6 @@ class RegistrationController extends BaseController
 	 * Object farm container
 	 * @var Container
 	 */
-	private $Container;
 	private $container;
 
 	/**
@@ -96,8 +95,7 @@ class RegistrationController extends BaseController
 
 		$this->database = $database;
 		$this->container = $container;
-		$this->Container = new Container($GLOBALS['cfg'], $this->meetingId, $this->database);
-		$this->Visitor = $this->Container->createVisitor();
+		$this->Visitor = $this->container->createServiceVisitor();
 		$this->View = $this->container->createServiceView();
 		$this->Emailer = $this->container->createServiceEmailer();
 		$this->Export = $this->container->createServiceExports();
