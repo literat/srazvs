@@ -11,7 +11,7 @@ use App\Emailer;
 
 require_once __DIR__ . '/../bootstrap.php';
 require_once __DIR__ . '/TestMailer.php';
-require_once __DIR__ . '/../../app/models/EmailerModel.php';
+require_once __DIR__ . '/../../../app/models/EmailerModel.php';
 
 class EmailerModelTest extends Tester\TestCase
 {

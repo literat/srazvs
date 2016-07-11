@@ -4,8 +4,8 @@ use Tester\Assert;
 use Mockery\MockInterface;
 use App\ExportModel;
 
-require_once __DIR__ . '../../bootstrap.php';
-require_once __DIR__ . '../../../app/models/ExportModel.php';
+require_once __DIR__ . '/../bootstrap.php';
+require_once __DIR__ . '/../../../app/models/ExportModel.php';
 
 class ExportSettersGettersTest extends Tester\TestCase
 {

@@ -12,7 +12,7 @@ use App\Emailer;
 //require_once __DIR__ . '/../../inc/define.inc.php';
 require_once __DIR__ . '/../bootstrap.php';
 require_once __DIR__ . '/TestMailer.php';
-require_once __DIR__ . '/../../app/models/EmailerModel.php';
+require_once __DIR__ . '/../../../app/models/EmailerModel.php';
 
 define('PRJ_DIR', 'http://vodni.skauting.cz/srazvs/');
 
