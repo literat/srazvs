@@ -27,7 +27,10 @@ module.exports = function (grunt) {
 
 		shell: {
 			nette_tester: {
-				command: 'php -f vendor/nette/tester/Tester/tester.php -- -c tests/php.ini -j 10 tests',
+				command: 'php -f vendor/nette/tester/Tester/tester.php -- -c tests/php.ini -j 10 tests/unit',
+			},
+			codeception: {
+				command: 'php -f vendor/codeception/codeception/codecept run',
 			},
 			ftpDeployment: {
 				command: 'php -f vendor/bin/deployment deployment.ini',
@@ -112,6 +115,7 @@ module.exports = function (grunt) {
 		} else {
 			return grunt.task.run([
 				'shell:nette_tester',
+				'shell:codeception',
 				'shell:ftpDeployment',
 			]);
 		}
@@ -119,6 +123,7 @@ module.exports = function (grunt) {
 
 	grunt.registerTask('test', [
 		'shell:nette_tester',
+		'shell:codeception',
 	]);
 
 	grunt.registerTask('dev', [

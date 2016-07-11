@@ -24,4 +24,6 @@ node_modules
 
 # Temporary files
 temp
-tests/*/output
+tests/**/output
+
+tests/_output/*
