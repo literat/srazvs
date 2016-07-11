@@ -382,7 +382,7 @@ class ProgramController extends BaseController
 			// blocks select box
 			$block_select = BlockModel::renderHtmlSelect($this->data['block'], $this->database);
 			// display in registration check box
-			$display_in_reg_checkbox = Form::renderHtmlCheckBox('display_in_reg', 0, $this->data['display_in_reg']);
+			$display_in_reg_checkbox = renderHtmlCheckBox('display_in_reg', 0, $this->data['display_in_reg']);
 			// time select boxes
 		}
 

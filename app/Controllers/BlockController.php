@@ -350,15 +350,15 @@ class BlockController extends BaseController
 			// category select box
 			$cat_roll = CategoryModel::renderHtmlSelect($this->data['category'], $this->database);
 			// time select boxes
-			$day_roll = Form::renderHtmlSelectBox('day', array('pátek'=>'pátek', 'sobota'=>'sobota', 'neděle'=>'neděle'), $this->data['day'], 'width:172px;');
-			$hour_roll = Form::renderHtmlSelectBox('start_hour', $hours_array, $this->data['start_hour']);
-			$minute_roll = Form::renderHtmlSelectBox('start_minute', $minutes_array, $this->data['start_minute']);
-			$end_hour_roll = Form::renderHtmlSelectBox('end_hour', $hours_array, $this->data['end_hour']);
-			$end_minute_roll = Form::renderHtmlSelectBox('end_minute', $minutes_array, $this->data['end_minute']);
+			$day_roll = renderHtmlSelectBox('day', array('pátek'=>'pátek', 'sobota'=>'sobota', 'neděle'=>'neděle'), $this->data['day'], 'width:172px;');
+			$hour_roll = renderHtmlSelectBox('start_hour', $hours_array, $this->data['start_hour']);
+			$minute_roll = renderHtmlSelectBox('start_minute', $minutes_array, $this->data['start_minute']);
+			$end_hour_roll = renderHtmlSelectBox('end_hour', $hours_array, $this->data['end_hour']);
+			$end_minute_roll = renderHtmlSelectBox('end_minute', $minutes_array, $this->data['end_minute']);
 			// is program block check box
-			$program_checkbox = Form::renderHtmlCheckBox('program', 1, $this->data['program']);
+			$program_checkbox = renderHtmlCheckBox('program', 1, $this->data['program']);
 			// display programs in block check box
-			$display_progs_checkbox = Form::renderHtmlCheckBox('display_progs', 0, $this->data['display_progs']);
+			$display_progs_checkbox = renderHtmlCheckBox('display_progs', 0, $this->data['display_progs']);
 		}
 
 		if($this->cms != 'annotation') {
