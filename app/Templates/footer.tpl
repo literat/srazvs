@@ -11,7 +11,7 @@
         <div id="footerContent">
 	 &copy; 2011 Hlavní kapitanát vodních skautů |
      WORLD ORGANIZATION OF SCOUT MOVEMENT | WORLD ASSOCIATION OF GIRL GUIDES AND GIRL SCOUTS | INTERNATIONAL SCOUT AND GUIDE FELLOWSHIP |
-     version 2.1
+     version 2.2
         </div>
       </div>
       <!-- end of footer -->
