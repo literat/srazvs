@@ -1,0 +1,40 @@
+{
+  "name": "srazvs",
+  "version": "2.1.0",
+  "description": "Srazy VS application",
+  "main": "index.php",
+  "directories": {
+    "doc": "doc"
+  },
+  "dependencies": {
+    "grunt": "*",
+    "grunt-bump": "^0.7.0",
+    "grunt-contrib-clean": "^1.0.0",
+    "grunt-conventional-changelog": "^6.1.0",
+    "matchdep": "^1.0.1"
+  },
+  "devDependencies": {
+    "grunt-bump": "*",
+    "grunt-contrib-watch": "*",
+    "grunt-conventional-changelog": "*",
+    "grunt-nette-tester": "^1.0.0",
+    "grunt-shell": "^1.3.0"
+  },
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/literat/srazvs.git"
+  },
+  "keywords": [
+    "srazvs",
+    "scout"
+  ],
+  "author": "literat <tomas@litera.me>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/literat/srazvs/issues"
+  },
+  "homepage": "https://github.com/literat/srazvs"
+}
