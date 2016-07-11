@@ -1,5 +1,7 @@
 <?php
 
+namespace App;
+
 use Tracy\Debugger;
 
 /**
@@ -10,7 +12,7 @@ use Tracy\Debugger;
  * @created 2012-03-06
  * @author Tomas Litera <tomaslitera@hotmail.com>
  */
-class CategoryModel extends Component
+class CategoryModel extends BaseModel
 {
 	/**
 	 * Array of database block table columns

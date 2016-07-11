@@ -1,4 +1,7 @@
 <?php
+
+namespace App;
+
 /**
  * Blocks
  *
@@ -7,7 +10,7 @@
  * @created 2012-09-14
  * @author Tomas Litera <tomaslitera@hotmail.com>
  */
-class BlockModel extends Component
+class BlockModel extends BaseModel
 {
 	/** @var integer meeting ID */
 	private $meetingId;

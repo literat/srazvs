@@ -1,5 +1,7 @@
 <?php
 
+namespace App;
+
 use Nette\Utils\Strings;
 
 /**

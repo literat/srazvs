@@ -1,5 +1,7 @@
 <?php
 
+namespace App;
+
 /**
  * Program model
  *
@@ -8,7 +10,7 @@
  * @created 2012-10-01
  * @author Tomas Litera <tomaslitera@hotmail.com>
  */
-class ProgramModel extends Component
+class ProgramModel extends BaseModel
 {
 	/** @var int meeting ID */
 	private $meetingId;

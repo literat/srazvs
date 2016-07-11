@@ -88,33 +88,33 @@ services:
     view:
         class: App\View
     category:
-        class: CategoryModel
+        class: App\CategoryModel
         arguments: [
             @database
         ]
     block:
-        class: BlockModel
+        class: App\BlockModel
         arguments: [
             @database
         ]
     program:
-        class: ProgramModel
+        class: App\ProgramModel
         arguments: [
             @database
         ]
     meal:
-        class: MealModel
+        class: App\MealModel
         arguments: [
             @database
         ]
     meeting:
-        class: MeetingModel
+        class: App\MeetingModel
         arguments: [
             @database,
             @program
         ]
     visitor:
-        class: VisitorModel
+        class: App\VisitorModel
         arguments: [
             @meeting,
             @meal,

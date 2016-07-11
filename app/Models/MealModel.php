@@ -1,4 +1,7 @@
 <?php
+
+namespace App;
+
 /**
  * Meal
  *
@@ -7,7 +10,7 @@
  * @created 2012-11-11
  * @author Tomas Litera <tomaslitera@hotmail.com>
  */
-class MealModel extends Component
+class MealModel extends BaseModel
 {
 
 	/** @var array	meals */

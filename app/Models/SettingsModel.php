@@ -13,7 +13,7 @@ use Tracy\Debugger;
  * @created 2012-03-06
  * @author Tomas Litera <tomaslitera@hotmail.com>
  */
-class SettingsModel extends \Component
+class SettingsModel extends BaseModel
 {
 	/**
 	 * Array of database block table columns
