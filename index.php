@@ -16,7 +16,7 @@ require_once(__DIR__ . '/inc/define.inc.php');
 $loader = new RobotLoader;
 // Add directories for RobotLoader to index
 $loader->addDirectory('app');
-$loader->addDirectory('libs');
+$loader->addDirectory('inc');
 // And set caching to the 'temp' directory on the disc
 $loader->setCacheStorage(new FileStorage('temp'));
 // Run the RobotLoader
@@ -56,7 +56,7 @@ if(!isset($_SESSION['meetingID'])) {
 		->fetchField();
 }
 
-$router = new Nix\Routers\Router();
+$router = new Router();
 
 $router->setDefaults(array(
     'controller' => 'meeting',
