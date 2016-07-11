@@ -135,9 +135,9 @@ class BlockModel extends BaseModel
 	 * @param	int		selected option
 	 * @return	string	html select box
 	 */
-	public static function renderHtmlSelect($blockId, $database)
+	public function renderHtmlSelect($blockId)
 	{
-		$result = $database
+		$result = $this->database
 			->table('kk_blocks')
 			->where('meeting ? AND program ? AND deleted ?', $_SESSION['meetingID'], '1', '0')
 			->fetchAll();

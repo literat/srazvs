@@ -99,6 +99,8 @@ class ProgramController extends BaseController
 	 */
 	private $Meeting;
 
+	private $block;
+
 	/**
 	 * Prepare model classes and get meeting id
 	 */
@@ -113,6 +115,7 @@ class ProgramController extends BaseController
 		$this->database = $database;
 		$this->container = $container;
 		$this->Program = $this->container->createServiceProgram();
+		$this->block = $this->container->createServiceBlock();
 		$this->View = $this->container->createServiceView();
 		$this->Emailer = $this->container->createServiceEmailer();
 		$this->Export = $this->container->createServiceExports();
@@ -378,9 +381,9 @@ class ProgramController extends BaseController
 			$error_material = "";
 
 			// category select box
-			$cat_roll = CategoryModel::renderHtmlSelect($this->data['category'], $this->database);
+			$cat_roll = $this->Category->renderHtmlSelect($this->data['category']);
 			// blocks select box
-			$block_select = BlockModel::renderHtmlSelect($this->data['block'], $this->database);
+			$block_select = $this->block->renderHtmlSelect($this->data['block']);
 			// display in registration check box
 			$display_in_reg_checkbox = renderHtmlCheckBox('display_in_reg', 0, $this->data['display_in_reg']);
 			// time select boxes

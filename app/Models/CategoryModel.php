@@ -120,11 +120,11 @@ class CategoryModel extends BaseModel
 	 * @param	int	ID of selected category
 	 * @return	string	html <select>
 	 */
-	public static function renderHtmlSelect($selectedCategory, $database)
+	public function renderHtmlSelect($selectedCategory)
 	{
 		$html_select = "<select style='width: 225px; font-size: 10px' class='field' name='category'>\n";
 
-		$result = $database
+		$result = $this->database
 			->table('kk_categories')
 			->where(1)
 			->fetchAll();
