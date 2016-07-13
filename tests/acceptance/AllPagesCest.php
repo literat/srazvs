@@ -31,4 +31,60 @@ class AllPagesCest
 		$I->see('Srazy VS');
 	}
 
+	public function ensure_that_meeting_works(\AcceptanceTester $I)
+	{
+		$I = $this->logIn($I);
+		$I->wantTo('ensure that meeting works');
+		$I->amOnPage('/srazvs/meeting/');
+		$I->see('Správa srazů');
+	}
+
+	public function ensure_that_blocks_works(\AcceptanceTester $I)
+	{
+		$I = $this->logIn($I);
+		$I->wantTo('ensure that blocks works');
+		$I->amOnPage('/srazvs/block/');
+		$I->see('Správa bloků');
+	}
+
+	public function ensure_that_programs_works(\AcceptanceTester $I)
+	{
+		$I = $this->logIn($I);
+		$I->wantTo('ensure that programs works');
+		$I->amOnPage('/srazvs/program/');
+		$I->see('Správa programů');
+	}
+
+	public function ensure_that_visitors_works(\AcceptanceTester $I)
+	{
+		$I = $this->logIn($I);
+		$I->wantTo('ensure that visitors works');
+		$I->amOnPage('/srazvs/visitor/');
+		$I->see('Správa účastníků');
+	}
+
+	public function ensure_that_exports_works(\AcceptanceTester $I)
+	{
+		$I = $this->logIn($I);
+		$I->wantTo('ensure that exports works');
+		$I->amOnPage('/srazvs/export/');
+		$I->see('Exporty');
+	}
+
+	public function ensure_that_categories_works(\AcceptanceTester $I)
+	{
+		$I = $this->logIn($I);
+		$I->wantTo('ensure that categories works');
+		$I->amOnPage('/srazvs/category/');
+		$I->see('Správa kategorií');
+	}
+
+	public function ensure_that_settings_works(\AcceptanceTester $I)
+	{
+		$I = $this->logIn($I);
+		$I->wantTo('ensure that settings works');
+		$I->amOnPage('/srazvs/settings/');
+		$I->see('Nastavení systému');
+	}
+
 }
