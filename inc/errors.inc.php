@@ -28,6 +28,7 @@ function printError($error)
 		"already_paid"		=> "Poplatek byl již zaplacen!",
 		"del"				=> "Položka byla smazána!",
 		"checked"			=> "Položka byla zkontrolována!",
+		"unchecked"			=> "Položce byl odebrán příznak!",
 	);
 
 	//pokud nic neprslo, neni co vypisovat

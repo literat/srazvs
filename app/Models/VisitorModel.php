@@ -230,11 +230,12 @@ class VisitorModel
 	 * Set as checked one or multiple record/s
 	 *
 	 * @param	int		ID/s of record
+	 * @param 	int 	0 | 1
 	 * @return	boolean
 	 */
-	public function checked($id)
+	public function checked($id, $value)
 	{
-		$checked = array('checked' => '1');
+		$checked = ['checked' => $value];
 
 		return $this->database
 			->table($this->dbTable)

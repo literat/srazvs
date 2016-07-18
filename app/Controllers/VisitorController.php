@@ -165,7 +165,10 @@ class VisitorController extends BaseController
 				$this->Export->printVisitorsExcel();
 				break;
 			case "checked":
-				$this->Visitor->checked($id);
+				$this->checked($id);
+				break;
+			case "unchecked":
+				$this->unchecked($id);
 				break;
 		}
 
@@ -426,8 +429,21 @@ class VisitorController extends BaseController
 	 */
 	private function checked($id)
 	{
-		if($this->Visitor->checked($id)) {
+		if($this->Visitor->checked($id, '1')) {
 			  redirect("?error=checked");
+		}
+	}
+
+	/**
+	 * Set item as unchecked by id
+	 *
+	 * @param  int $id of item
+	 * @return void
+	 */
+	private function unchecked($id)
+	{
+		if($this->Visitor->checked($id, 0)) {
+			  redirect("?error=unchecked");
 		}
 	}
 
