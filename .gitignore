@@ -14,7 +14,7 @@ deployment.*
 
 # Configuration
 inc/config.inc.php
-app/config/config.neon
+app/config/config.production.neon
 app/config/config.yml
 
 # Libraries
