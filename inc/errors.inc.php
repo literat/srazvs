@@ -31,6 +31,8 @@ function printError($error)
 		"unchecked"			=> "Položce byl odebrán příznak!",
 	);
 
+	if(!empty($error) && !array_key_exists($error, $errors)) $error = 'ok';
+
 	//pokud nic neprslo, neni co vypisovat
 	if(($error == "ok") || ($error == "mail_send")) $html = "<span class='ok'>".$errors[$error]."</span>";
 	elseif($error != "") $html = "<span class='error'>".$errors[$error]."</span>";

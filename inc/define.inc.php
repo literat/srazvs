@@ -80,8 +80,6 @@ define('SESSION_PREFIX', md5($cfg['db_host'].$cfg['db_database'].$cfg['db_user']
 
 //nastartovani session
 session_name(SESSION_PREFIX.'session');
-//session_save_path(SESSION_DIR);
-session_start();
 
 require_once(INC_DIR.'functions.inc.php');
 //include_once($INCDIR.'access.inc.php');
