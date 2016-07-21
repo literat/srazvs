@@ -30,7 +30,7 @@ module.exports = function (grunt) {
 				command: 'php -f vendor/nette/tester/Tester/tester.php -- -c tests/php.ini -j 10 tests/unit',
 			},
 			codeception: {
-				command: 'php -f vendor/codeception/codeception/codecept run',
+				command: 'php -f vendor/codeception/codeception/codecept run acceptance',
 			},
 			ftpDeployment: {
 				command: 'php -f vendor/bin/deployment deployment.ini',
