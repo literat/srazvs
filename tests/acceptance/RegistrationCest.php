@@ -3,6 +3,65 @@
 class RegistrationCest
 {
 
+	private $successVisitor = [
+		'fields' => [
+			'name'			=> '',
+			'surname'		=> '',
+			'nick'			=> '',
+			'email'			=> '',
+			'birthday'		=> '',
+			'street'		=> '',
+			'city'			=> '',
+			'postal_code'	=> '',
+			'group_num'		=> '',
+			'group_name'	=> '',
+			'troop_name'	=> '',
+			'arrival'		=> '',
+			'departure'		=> '',
+			'comment'		=> '',
+			'question'		=> '',
+			'question2'		=> '',
+		],
+		'options' => [
+			'province'		=> '',
+			'fry_dinner'	=> '',
+			'sat_breakfast'	=> '',
+			'sat_lunch'		=> '',
+			'sat_dinner'	=> '',
+			'sun_breakfast'	=> '',
+			'sun_lunch'		=> '',
+		],
+	];
+	private $failedVisitor = [
+		'fields' => [
+			'name'			=> '',
+			'surname'		=> '',
+			'nick'			=> '',
+			'email'			=> '',
+			'birthday'		=> '',
+			'street'		=> '',
+			'city'			=> '',
+			'postal_code'	=> '',
+			'group_num'		=> '',
+			'group_name'	=> '',
+			'troop_name'	=> '',
+			'arrival'		=> '',
+			'departure'		=> '',
+			'comment'		=> '',
+			'question'		=> '',
+			'question2'		=> '',
+		],
+		'options' => [
+			'province'		=> '',
+			'fry_dinner'	=> '',
+			'sat_breakfast'	=> '',
+			'sat_lunch'		=> '',
+			'sat_dinner'	=> '',
+			'sun_breakfast'	=> '',
+			'sun_lunch'		=> '',
+		],
+	];
+
 	public function _before(AcceptanceTester $I)
 	{
 	}
@@ -12,6 +71,11 @@ class RegistrationCest
 	}
 
 	// tests
+	public function it_should_fail_registrate_new_visitor(AcceptanceTester $I)
+	{
+		$I->wantTo('Fail registration of new visitor');
+	}
+
 	public function it_should_registrate_new_visitor(AcceptanceTester $I)
 	{
 		$I->amOnPage('/srazvs/registration/');
@@ -42,6 +106,7 @@ class RegistrationCest
 		$I->fillField('question2','teď!');
 		$I->click('Uložit', '#registration');
 		$I->seeCurrentUrlMatches('~/srazvs/registration/\?hash=[a-z0-9]*&error=\d+&cms=check~');
+		$I->see('Údaje byly úspěšně nahrány!');
 		$I->see('Registrace na srazy K + K');
 		$I->see('Robo');
 		$I->see('Tester');
@@ -60,11 +125,6 @@ class RegistrationCest
 		$I->see('než');
 		$I->see('právě');
 		$I->see('teď!');
-	}
-
-	public function it_should_fail_registrate_new_visitor(AcceptanceTester $I)
-	{
-		$I->wantTo('Fail registration of new visitor');
 	}
 
 	public function visitor_should_edit_its_registration(AcceptanceTester $I)
