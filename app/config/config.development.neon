@@ -1,0 +1,6 @@
+parameters:
+    cacheDir: D:\home\literat\web\wwwroot\skauting\vodni\srazvs/temp/cache
+
+services:
+    imailer:
+        class: Nette\Mail\SendmailMailer

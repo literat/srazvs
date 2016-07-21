@@ -5,7 +5,6 @@ parameters:
         dbname: vodni
         user: root
         password: root
-    cacheDir: D:\home\literat\web\wwwroot\skauting\vodni\srazvs/temp/cache
     pdf:
         encoding: utf-8
         paperFormat: A4
@@ -55,16 +54,11 @@ services:
         arguments: [
             @database
         ]
-    smtpmailer:
-        class: Nette\Mail\SmtpMailer
-        arguments: [
-            %mail%
-        ]
     emailer:
         class: App\Emailer
         arguments: [
             @settings,
-            @smtpmailer
+            @imailer
         ]
     pdffactory:
         class: App\PdfFactory
