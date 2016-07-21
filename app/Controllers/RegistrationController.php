@@ -272,8 +272,9 @@ class RegistrationController extends BaseController
 
 				$recipient_mail = $db_data['email'];
 				$recipient_name = $db_data['name']." ".$db_data['surname'];
+				$recipient = [$recipient_mail => $recipient_name];
 
-				$return = $this->Emailer->sendRegistrationSummary($recipient_mail, $hash, $code4bank);
+				$return = $this->Emailer->sendRegistrationSummary($recipient, $hash, $code4bank);
 
 				if($return === TRUE) {
 					Debugger::log('Mail send to ' . $recipient_mail, 'info');
@@ -345,8 +346,9 @@ class RegistrationController extends BaseController
 
 			$recipient_mail = $db_data['email'];
 			$recipient_name = $db_data['name']." ".$db_data['surname'];
+			$recipient = [$recipient_mail => $recipient_name];
 
-			$return = $this->Emailer->sendRegistrationSummary($recipient_mail, $hash, $code4bank);
+			$return = $this->Emailer->sendRegistrationSummary($recipient, $hash, $code4bank);
 
 			if($return === TRUE) {
 				Debugger::log('Mail send to ' . $recipient_mail, 'info');

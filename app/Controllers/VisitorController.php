@@ -255,8 +255,9 @@ class VisitorController extends BaseController
 
 			$recipient_mail = $DB_data['email'];
 			$recipient_name = $DB_data['name']." ".$DB_data['surname'];
+			$recipient = [$recipient_mail => $recipient_name];
 
-			if($return = $this->Emailer->sendRegistrationSummary($recipient_mail, $hash, $code4bank)) {
+			if($return = $this->Emailer->sendRegistrationSummary($recipient, $hash, $code4bank)) {
 				if(is_int($vid)) {
 					$vid = "ok";
 				}
