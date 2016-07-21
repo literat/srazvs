@@ -10,6 +10,7 @@
         "nette/neon": "<2.4",
         "nette/robot-loader": "<2.4",
         "nette/application": "<2.4",
+        "nette/bootstrap": "<2.4",
         "mpdf/mpdf": "^6.1",
         "phpoffice/phpexcel": "^1.8"
     },
