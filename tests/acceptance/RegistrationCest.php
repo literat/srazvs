@@ -5,31 +5,31 @@ class RegistrationCest
 
 	private $successVisitor = [
 		'fields' => [
-			'name'			=> '',
-			'surname'		=> '',
-			'nick'			=> '',
-			'email'			=> '',
-			'birthday'		=> '',
-			'street'		=> '',
-			'city'			=> '',
-			'postal_code'	=> '',
-			'group_num'		=> '',
-			'group_name'	=> '',
-			'troop_name'	=> '',
-			'arrival'		=> '',
-			'departure'		=> '',
-			'comment'		=> '',
-			'question'		=> '',
-			'question2'		=> '',
+			'name'			=> 'robo',
+			'surname'		=> 'Tester',
+			'nick'			=> 'roboTester',
+			'email'			=> 'robo@tester.local',
+			'birthday'		=> '27.04.1976',
+			'street'		=> 'Testovací 32',
+			'city'			=> 'Testákov 4',
+			'postal_code'	=> '98765',
+			'group_num'		=> '1A2.34',
+			'group_name'	=> 'Testeři',
+			'troop_name'	=> 'klikači',
+			'arrival'		=> 'Někdy',
+			'departure'		=> 'jindy',
+			'comment'		=> 'než',
+			'question'		=> 'právě',
+			'question2'		=> 'teď!',
 		],
 		'options' => [
-			'province'		=> '',
-			'fry_dinner'	=> '',
-			'sat_breakfast'	=> '',
-			'sat_lunch'		=> '',
-			'sat_dinner'	=> '',
-			'sun_breakfast'	=> '',
-			'sun_lunch'		=> '',
+			'province'		=> 'Hlavní město Praha',
+			'fry_dinner'	=> 'ano',
+			'sat_breakfast'	=> 'ne',
+			'sat_lunch'		=> 'ano',
+			'sat_dinner'	=> 'ne',
+			'sun_breakfast'	=> 'ano',
+			'sun_lunch'		=> 'ne',
 		],
 	];
 	private $failedVisitor = [
@@ -62,6 +62,8 @@ class RegistrationCest
 		],
 	];
 
+	private $successRegistrationUri;
+
 	public function _before(AcceptanceTester $I)
 	{
 	}
@@ -71,9 +73,21 @@ class RegistrationCest
 	}
 
 	// tests
+	public function ensure_that_registration_works(\AcceptanceTester $I)
+	{
+		$I->wantTo('ensure that registration works');
+		$I->amOnPage('srazvs/registration/');
+		$I->see('Registrace na srazy VS');
+	}
+
 	public function it_should_fail_registrate_new_visitor(AcceptanceTester $I)
 	{
+		$I->amOnPage('/srazvs/registration/');
+		$I->see('Registrace na srazy VS');
 		$I->wantTo('Fail registration of new visitor');
+		$I->click('Uložit', '#registration');
+		$I->seeInCurrentUrl('/srazvs/registration/');
+//		$I->see('Jméno musí být vyplněno (max 20 znaků)!');
 	}
 
 	public function it_should_registrate_new_visitor(AcceptanceTester $I)
@@ -81,55 +95,35 @@ class RegistrationCest
 		$I->amOnPage('/srazvs/registration/');
 		$I->see('Registrace na srazy VS');
 		$I->wantTo('Registrate new visitor');
-		$I->fillField('name','Robo');
-		$I->fillField('surname','Tester');
-		$I->fillField('nick','robo-tester');
-		$I->fillField('email','robo@tester.local');
-		$I->fillField('birthday', date('d.m.Y'));
-		$I->fillField('street','Testovací 987');
-		$I->fillField('city','Testákov 6');
-		$I->fillField('postal_code','12345');
-		$I->fillField('group_num','1A2.34');
-		$I->fillField('group_name','Testeři');
-		$I->fillField('troop_name','Klikači');
-		$I->selectOption('province', 'Hlavní město Praha');
-		$I->selectOption('fry_dinner', 'ano');
-		$I->selectOption('sat_breakfast', 'ano');
-		$I->selectOption('sat_lunch', 'ano');
-		$I->selectOption('sat_dinner', 'ano');
-		$I->selectOption('sun_breakfast', 'ano');
-		$I->selectOption('sun_lunch', 'ano');
-		$I->fillField('arrival','Někdy');
-		$I->fillField('departure','jindy');
-		$I->fillField('comment','než');
-		$I->fillField('question','právě');
-		$I->fillField('question2','teď!');
+		foreach($this->successVisitor['fields'] as $field => $value) {
+			$I->fillField($field, $value);
+		}
+		foreach($this->successVisitor['options'] as $option => $value) {
+			$I->selectOption($option, $value);
+		}
 		$I->click('Uložit', '#registration');
+		$this->successRegistrationUri = $I->grabFromCurrentUrl();
 		$I->seeCurrentUrlMatches('~/srazvs/registration/\?hash=[a-z0-9]*&error=\d+&cms=check~');
 		$I->see('Údaje byly úspěšně nahrány!');
 		$I->see('Registrace na srazy K + K');
-		$I->see('Robo');
-		$I->see('Tester');
-		$I->see('robo-tester');
-		$I->see('robo@tester.local');
-		$I->see(date('d.m.Y'));
-		$I->see('Testovací 987');
-		$I->see('Testákov 6');
-		$I->see('12345');
-		$I->see('1A2.34');
-		$I->see('Testeři');
-		$I->see('Klikači');
-		$I->see('Hlavní město Praha');
-		$I->see('Někdy');
-		$I->see('jindy');
-		$I->see('než');
-		$I->see('právě');
-		$I->see('teď!');
+		foreach ($this->successVisitor['fields'] as $field => $value) {
+			$I->see($value);
+		}
+		$I->see($this->successVisitor['options']['province']);
 	}
 
 	public function visitor_should_edit_its_registration(AcceptanceTester $I)
 	{
+		$I->amOnPage($this->successRegistrationUri);
 		$I->wantTo('Edit registration by visitor');
+		$I->click('Upravit');
+		foreach ($this->successVisitor['fields'] as $field => $value) {
+			$I->see($value);
+		}
+		foreach ($this->successVisitor['options'] as $option => $value) {
+			$I->see($value);
+		}
+		//$I->see($this->successVisitor['options']['province']);
 	}
 
 	public function visitor_should_change_its_programs(AcceptanceTester $I)
