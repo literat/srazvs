@@ -107,7 +107,8 @@ class RegistrationController extends BaseController
 		$this->Meeting->setMeetingId($this->meetingId);
 		$this->Meeting->setHttpEncoding($this->container->parameters['encoding']);
 
-		if(defined('DEBUG') && DEBUG === TRUE){
+		$this->debugMode = $container->parameters['debugMode'];
+		if($this->debugMode) {
 			$this->Meeting->setRegistrationHandlers(1);
 			$this->meetingId = 1;
 		} else {
@@ -487,7 +488,10 @@ class RegistrationController extends BaseController
 		$this->View->assign('meeting_heading',	$this->Meeting->getRegHeading());
 
 		////otevirani a uzavirani prihlasovani
-		$this->View->assign('disabled',	$this->Meeting->isRegOpen() ? "" : "disabled");
+		$this->View->assign(
+			'disabled',
+			$this->Meeting->isRegOpen($this->debugMode) ? "" : "disabled"
+		);
 
 		if(!empty($this->data)) {
 			$this->View->assign('id',				(isset($this->itemId)) ? $this->itemId : '');
@@ -514,7 +518,7 @@ class RegistrationController extends BaseController
 			$this->View->assign('checked',			(empty($this->data['checked']) ? '0' : $this->data['checked']));
 			$this->View->assign('programs',			$program_switcher);
 			$this->View->assign('hash',				$this->hash);
-			$this->View->assign('is-reg-open',		$this->Meeting->isRegOpen());
+			$this->View->assign('is-reg-open',		$this->Meeting->isRegOpen($this->debugMode));
 		}
 
 		$this->View->render(TRUE);

@@ -84,6 +84,12 @@ abstract class BaseController
 	private $database = NULL;
 
 	/**
+	 * debug mode
+	 * @var boolean
+	 */
+	protected $debugMode = false;
+
+	/**
 	 * This is the default function that will be called by Router.php
 	 *
 	 * @param array $getVars the GET variables posted to index.php

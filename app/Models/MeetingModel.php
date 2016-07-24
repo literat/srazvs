@@ -514,9 +514,9 @@ class MeetingModel
 	 *
 	 * @return 	boolean
 	 */
-	public function isRegOpen()
+	public function isRegOpen($debug = false)
 	{
-		return ($this->getRegOpening() < time()) && (time() < $this->getRegClosing()) || DEBUG === TRUE;
+		return (($this->getRegOpening() < time()) && (time() < $this->getRegClosing()) || $debug);
 	}
 
 	public function getProvinceNameById($id) {
