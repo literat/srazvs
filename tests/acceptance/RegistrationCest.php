@@ -1,6 +1,6 @@
 <?php
 
-class RegistrationCest
+class RegistrationCest extends CestCase
 {
 
 	private $successVisitor = [
@@ -32,37 +32,9 @@ class RegistrationCest
 			'sun_lunch'		=> 'ne',
 		],
 	];
-	private $failedVisitor = [
-		'fields' => [
-			'name'			=> '',
-			'surname'		=> '',
-			'nick'			=> '',
-			'email'			=> '',
-			'birthday'		=> '',
-			'street'		=> '',
-			'city'			=> '',
-			'postal_code'	=> '',
-			'group_num'		=> '',
-			'group_name'	=> '',
-			'troop_name'	=> '',
-			'arrival'		=> '',
-			'departure'		=> '',
-			'comment'		=> '',
-			'question'		=> '',
-			'question2'		=> '',
-		],
-		'options' => [
-			'province'		=> '',
-			'fry_dinner'	=> '',
-			'sat_breakfast'	=> '',
-			'sat_lunch'		=> '',
-			'sat_dinner'	=> '',
-			'sun_breakfast'	=> '',
-			'sun_lunch'		=> '',
-		],
-	];
 
 	private $successRegistrationUri;
+	private $succeededRegistrationUrl = '~/srazvs/registration/\?hash=[a-z0-9]*&error=\d+|ok&cms=check~';
 
 	public function _before(AcceptanceTester $I)
 	{
@@ -87,7 +59,7 @@ class RegistrationCest
 		$I->wantTo('Fail registration of new visitor');
 		$I->click('Uložit', '#registration');
 		$I->seeInCurrentUrl('/srazvs/registration/');
-//		$I->see('Jméno musí být vyplněno (max 20 znaků)!');
+		//$I->see('Jméno musí být vyplněno (max 20 znaků)!');
 		/* TODO:
 			- test fail messages
 			- controlling data without javascript needed
@@ -99,15 +71,10 @@ class RegistrationCest
 		$I->amOnPage('/srazvs/registration/');
 		$I->see('Registrace na srazy VS');
 		$I->wantTo('Registrate new visitor');
-		foreach($this->successVisitor['fields'] as $field => $value) {
-			$I->fillField($field, $value);
-		}
-		foreach($this->successVisitor['options'] as $option => $value) {
-			$I->selectOption($option, $value);
-		}
+		$this->fillForm($I, $this->successVisitor);
 		$I->click('Uložit', '#registration');
 		$this->successRegistrationUri = $I->grabFromCurrentUrl();
-		$I->seeCurrentUrlMatches('~/srazvs/registration/\?hash=[a-z0-9]*&error=\d+&cms=check~');
+		$I->seeCurrentUrlMatches($this->succeededRegistrationUrl);
 		$I->see('Údaje byly úspěšně nahrány!');
 		$I->see('Registrace na srazy K + K');
 		foreach ($this->successVisitor['fields'] as $field => $value) {
@@ -121,15 +88,11 @@ class RegistrationCest
 		$I->amOnPage($this->successRegistrationUri);
 		$I->wantTo('Edit registration by visitor');
 		$I->click('Upravit', '#button-line');
-		foreach ($this->successVisitor['fields'] as $field => $value) {
-			$I->seeInField($field, $value);
-		}
-		foreach ($this->successVisitor['options'] as $option => $value) {
-			$I->seeOptionIsSelected($option, $value);
-		}
+		$this->seeInForm($I, $this->successVisitor);
 		$I->fillField('name', 'Metro');
 		$I->click('Uložit', '#registration');
-		$I->seeCurrentUrlMatches('~/srazvs/registration/\?hash=[a-z0-9]*&error=ok&cms=check~');
+		$this->successRegistrationUri = $I->grabFromCurrentUrl();
+		$I->seeCurrentUrlMatches($this->succeededRegistrationUrl);
 		$I->see('Údaje byly úspěšně nahrány!');
 		$I->see('Registrace na srazy K + K');
 		$I->see('Metro');
@@ -138,7 +101,17 @@ class RegistrationCest
 
 	public function visitor_should_change_its_programs(AcceptanceTester $I)
 	{
+		$I->amOnPage($this->successRegistrationUri);
 		$I->wantTo('Change programs by visitor');
+		$I->click('Upravit', '#button-line');
+		$I->seeOptionIsSelected('blck_316', '0');
+		$I->dontSeeOptionIsSelected('blck_316', '277');
+		$I->selectOption('blck_316', '277');
+		$I->click('Uložit', '#registration');
+		$I->seeCurrentUrlMatches($this->succeededRegistrationUrl);
+		$I->see('Údaje byly úspěšně nahrány!');
+		$I->see('Registrace na srazy K + K');
+		$I->see('- Noční hra po městě');
 	}
 
 }
