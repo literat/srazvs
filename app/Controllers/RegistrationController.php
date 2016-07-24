@@ -236,7 +236,7 @@ class RegistrationController extends BaseController
 		$blocks = $this->getblocks();
 
 		foreach($blocks as $blockData){
-			$$blockData['id'] = requested($blockData['id'],0);
+			$$blockData['id'] = requested('blck_' . $blockData['id'],0);
 			$programs_data[$blockData['id']] = $$blockData['id'];
 			//echo $blockData['id'].":".$$blockData['id']."|";
 		}
@@ -311,7 +311,7 @@ class RegistrationController extends BaseController
 		$blocks = $this->getblocks();
 
 		foreach($blocks as $blockData){
-			$$blockData['id'] = requested($blockData['id'],0);
+			$$blockData['id'] = requested('blck_' . $blockData['id'],0);
 			$programs_data[$blockData['id']] = $$blockData['id'];
 			//echo $blockData['id'].":".$$blockData['id']."|";
 		}

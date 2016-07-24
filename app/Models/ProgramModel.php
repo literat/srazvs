@@ -95,10 +95,10 @@ class ProgramModel extends BaseModel
 				}
 				// if the capacity is full
 				if($fullProgramData['visitors'] >= $data['capacity']){
-					$html_input .= "<input id='".$data['id'].$blockId."' ".$checked." disabled type='radio' name='".$blockId."' value='".$data['id']."' />\n";
+					$html_input .= "<input id='".$data['id'].$blockId."' ".$checked." disabled type='radio' name='blck_".$blockId."' value='".$data['id']."' />\n";
 					$fullProgramInfo = " (NELZE ZAPSAT - kapacita programu je již naplněna!)";
 				} else {
-					$html_input .= "<input id='".$data['id'].$blockId."' ".$checked." type='radio' name='".$blockId."' value='".$data['id']."' /> \n";
+					$html_input .= "<input id='".$data['id'].$blockId."' ".$checked." type='radio' name='blck_".$blockId."' value='".$data['id']."' /> \n";
 					$fullProgramInfo = "";
 				}
 				$html_input .= '<label for="'.$data['id'].$blockId.'">'.$data['name'].'</label>';
@@ -110,7 +110,7 @@ class ProgramModel extends BaseModel
 			if(!$checked_flag) $checked = "checked='checked'";
 			else $checked = "";
 
-			$html .= "<input ".$checked." type='radio' name='".$blockId."' value='0' /> Nebudu přítomen <br />\n";
+			$html .= "<input ".$checked." type='radio' name='blck_".$blockId."' value='0' /> Nebudu přítomen <br />\n";
 			$html .= $html_input;
 
 			$html .= "</div>\n";
