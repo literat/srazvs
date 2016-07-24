@@ -42,7 +42,10 @@ module.exports = function (grunt) {
 
 		clean: {
 			container: ['temp/Container_*'],
-			cache: ['temp/cache/_*'],
+			cache: [
+				'temp/cache/_*',
+				'temp/cache/Nette.*',
+			],
 		},
 
 		conventionalChangelog: {
