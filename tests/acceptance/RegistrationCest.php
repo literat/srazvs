@@ -50,6 +50,7 @@ class RegistrationCest extends CestCase
 		$I->wantTo('ensure that registration works');
 		$I->amOnPage('srazvs/registration/');
 		$I->see('Registrace na srazy VS');
+		$I->see('Třebíč - podzim 2015');
 	}
 
 	public function it_should_fail_registrate_new_visitor(AcceptanceTester $I)
@@ -104,14 +105,14 @@ class RegistrationCest extends CestCase
 		$I->amOnPage($this->successRegistrationUri);
 		$I->wantTo('Change programs by visitor');
 		$I->click('Upravit', '#button-line');
-		$I->seeOptionIsSelected('blck_316', '0');
-		$I->dontSeeOptionIsSelected('blck_316', '277');
-		$I->selectOption('blck_316', '277');
+		$I->seeOptionIsSelected('blck_6', '0');
+		$I->dontSeeOptionIsSelected('blck_6', '1');
+		$I->selectOption('blck_6', '1');
 		$I->click('Uložit', '#registration');
 		$I->seeCurrentUrlMatches($this->succeededRegistrationUrl);
 		$I->see('Údaje byly úspěšně nahrány!');
 		$I->see('Registrace na srazy K + K');
-		$I->see('- Noční hra po městě');
+		$I->see('- Hry a hříčky');
 	}
 
 }
