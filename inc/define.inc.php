@@ -1,8 +1,5 @@
 <?php
 
-//require a include
-require_once('config.inc.php');
-
 /* nastaveni cest */
 //pokud jsem na vyvojovem stroji
 $ISDEV = ($_SERVER["SERVER_NAME"] == 'localhost' || $_SERVER["SERVER_NAME"] == 'vodni.skauting.local') ? true : false;
@@ -48,10 +45,6 @@ define('INC_DIR',		ROOT_DIR.'inc/');
 define('IMG_DIR',		PRJ_DIR.'images/');
 define('CSS_DIR',		PRJ_DIR.'css/');
 define('JS_DIR',		PRJ_DIR.'js/');
-define('LIBS_DIR',		ROOT_DIR.'libs/');
-
-/* Libraries */
-define('FRAMEWORK',		LIBS_DIR.'Nix/');
 
 /* Temporary Files */
 define('TEMP_DIR',		ROOT_DIR.'temp/');
@@ -76,13 +69,7 @@ define('CAT_DIR',		PRJ_DIR.'category');
 define('EXP_DIR',		PRJ_DIR.'export');
 define('SET_DIR',		PRJ_DIR.'settings');
 
-define('SESSION_PREFIX', md5($cfg['db_host'].$cfg['db_database'].$cfg['db_user'].$cfg['prefix'])."-");
-
-//nastartovani session
-session_name(SESSION_PREFIX.'session');
-
 require_once(INC_DIR.'functions.inc.php');
-//include_once($INCDIR.'access.inc.php');
 require_once(INC_DIR.'errors.inc.php');
 
 define('DEBUG', FALSE);
