@@ -170,12 +170,10 @@ class SettingsController extends BaseController
 
 		/* HTTP Header */
 		$this->view->loadTemplate('http_header');
-		$this->view->assign('config',		$GLOBALS['cfg']);
 		$this->view->render(TRUE);
 
 		/* Application Header */
 		$this->view->loadTemplate('header');
-		$this->view->assign('config',		$GLOBALS['cfg']);
 		$this->view->assign('database',		$this->database);
 		$this->view->render(TRUE);
 

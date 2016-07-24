@@ -218,13 +218,11 @@ class CategoryController extends BaseController
 
 		/* HTTP Header */
 		$this->View->loadTemplate('http_header');
-		$this->View->assign('config',		$GLOBALS['cfg']);
 		$this->View->assign('style',		$this->Category->getStyles());
 		$this->View->render(TRUE);
 
 		/* Application Header */
 		$this->View->loadTemplate('header');
-		$this->View->assign('config',		$GLOBALS['cfg']);
 		$this->View->assign('database',		$this->database);
 		$this->View->render(TRUE);
 

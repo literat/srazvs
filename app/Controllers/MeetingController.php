@@ -225,13 +225,11 @@ class MeetingController extends BaseController
 
 		/* HTTP Header */
 		$this->View->loadTemplate('http_header');
-		$this->View->assign('config',		$GLOBALS['cfg']);
 		$this->View->assign('style',		$style);
 		$this->View->render(TRUE);
 
 		/* Application Header */
 		$this->View->loadTemplate('header');
-		$this->View->assign('config',		$GLOBALS['cfg']);
 		$this->View->assign('database',		$this->database);
 		$this->View->render(TRUE);
 

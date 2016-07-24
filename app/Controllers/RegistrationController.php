@@ -470,7 +470,6 @@ class RegistrationController extends BaseController
 
 		/* Application Header */
 		$this->View->loadTemplate('vodni_header');
-		$this->View->assign('config',		$GLOBALS['cfg']);
 		$this->View->assign('page_title',	"Registrace srazu VS");
 		$this->View->render(TRUE);
 
