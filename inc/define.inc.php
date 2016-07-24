@@ -29,9 +29,9 @@ else {
 /* System Directories */
 define('PRJ_DIR',		HTTP_DIR.'srazvs/');
 define('INC_DIR',		ROOT_DIR.'inc/');
-define('IMG_DIR',		PRJ_DIR.'images/');
-define('CSS_DIR',		PRJ_DIR.'css/');
-define('JS_DIR',		PRJ_DIR.'js/');
+define('IMG_DIR',		PRJ_DIR.'www/images/');
+define('CSS_DIR',		PRJ_DIR.'www/css/');
+define('JS_DIR',		PRJ_DIR.'www/js/');
 
 /* Temporary Files */
 define('TEMP_DIR',		ROOT_DIR.'temp/');
