@@ -23,6 +23,11 @@ parameters:
         keywords: 'sraz vs export xlsx'
         category: 'Export dat'
     encoding: utf-8
+    prefix: sunlight
+
+session:
+    autoStart: false
+    expiration: 1 day
 
 services:
     connection:
