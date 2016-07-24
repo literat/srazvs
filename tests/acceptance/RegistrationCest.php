@@ -88,6 +88,10 @@ class RegistrationCest
 		$I->click('Uložit', '#registration');
 		$I->seeInCurrentUrl('/srazvs/registration/');
 //		$I->see('Jméno musí být vyplněno (max 20 znaků)!');
+		/* TODO:
+			- test fail messages
+			- controlling data without javascript needed
+		*/
 	}
 
 	public function it_should_registrate_new_visitor(AcceptanceTester $I)
@@ -116,14 +120,20 @@ class RegistrationCest
 	{
 		$I->amOnPage($this->successRegistrationUri);
 		$I->wantTo('Edit registration by visitor');
-		$I->click('Upravit');
+		$I->click('Upravit', '#button-line');
 		foreach ($this->successVisitor['fields'] as $field => $value) {
-			$I->see($value);
+			$I->seeInField($field, $value);
 		}
 		foreach ($this->successVisitor['options'] as $option => $value) {
-			$I->see($value);
+			$I->seeOptionIsSelected($option, $value);
 		}
-		//$I->see($this->successVisitor['options']['province']);
+		$I->fillField('name', 'Metro');
+		$I->click('Uložit', '#registration');
+		$I->seeCurrentUrlMatches('~/srazvs/registration/\?hash=[a-z0-9]*&error=ok&cms=check~');
+		$I->see('Údaje byly úspěšně nahrány!');
+		$I->see('Registrace na srazy K + K');
+		$I->see('Metro');
+		$I->dontSee('robo', '#name');
 	}
 
 	public function visitor_should_change_its_programs(AcceptanceTester $I)
