@@ -36,7 +36,7 @@ else $_SESSION['user']["logged"] = true;
 
 if(isset($_SESSION['user']['logged']) && ($_SESSION['user']['logged'] == true)) {
 	// neverim session z jineho systemu, takze overuju, jestli jsou udaje pravdive
-	$user = $database->table($cfg['prefix'] . '-users')->where('id', $_SESSION[SESSION_PREFIX.'user'])->fetch();
+	$user = $database->table('sunlight-users')->where('id', $_SESSION[SESSION_PREFIX.'user'])->fetch();
 
 	if($user) {
 		if($_SESSION[SESSION_PREFIX.'password'] != $user['password']) {

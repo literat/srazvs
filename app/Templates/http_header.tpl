@@ -3,7 +3,7 @@
  <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta charset="UTF-8" />
-  <title><?php echo $data['config']['title'] ?></title>
+  <title>Srazy VS | CodePlex::admin</title>
   <link href='<?php echo CSS_DIR ?>default.css' rel='stylesheet' type='text/css' />
   <link href='<?php echo CSS_DIR ?>help.css' rel='stylesheet' type='text/css' />
   <link rel="stylesheet" href="<?php echo CSS_DIR ?>tablesorter.css" type="text/css" media="screen" />
@@ -15,10 +15,10 @@
   <meta http-equiv='Content-Language' content='cs' />
   <meta http-equiv='Cache-Control' content='cache' />
   <meta name='robots' content='index' />
-  <meta name='description' content='<?php echo $data['config']['description'] ?>' />
-  <meta name='keywords' lang='cs' content='<?php echo $data['config']['keywords'] ?>' />
+  <meta name='description' content='administrační systém pro Srazy VS' />
+  <meta name='keywords' lang='cs' content='plexis, administrace, cms' />
   <meta name='robots' content='all' />
-  <meta name='author' content='<?php echo $data['config']['author'] ?>' />
-  <meta name='copyright' content='(C) 2001 - <?php echo date('Y') ?>, <?php echo $data['config']['owner'] ?>' />
+  <meta name='author' content='LITERA Tomáš(slunda); tomaslitera(zavinac)outlook(tecka)com' />
+  <meta name='copyright' content='(C) 2001 - <?php echo date('Y') ?>, Litera Tomáš, Praha' />
   <style type="text/css"><?php echo (isset($data['style'])) ? $data['style'] : ''; ?></style>
  </head>

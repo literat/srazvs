@@ -11,13 +11,18 @@ use Nette\Loaders\RobotLoader;
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../inc/define.inc.php';
 
+define('SESSION_PREFIX', md5('localhost'.'vodni'.'vodni'.'sunlight')."-");
+
+//nastartovani session
+session_name(SESSION_PREFIX.'session');
+
 $configurator = new Configurator;
 
 /**
  * Enabling Debugger
  */
 //$configurator->setDebugMode(TRUE);
-$configurator->enableDebugger(__DIR__ . '/../temp/log', $cfg['mail-admin']);
+$configurator->enableDebugger(__DIR__ . '/../temp/log', 'tomaslitera@outlook.com');
 $configurator->setTempDirectory(__DIR__ . '/../temp');
 
 /**
@@ -36,9 +41,24 @@ if ($configurator->isDebugMode()) {
 $configurator->addConfig(__DIR__ . '/config/config.local.neon');
 
 /**
- * DI Container
+ * DI Container and Session
  */
 $container = $configurator->createContainer();
+
+/*
+$parameters = $container->getParameters();
+
+define('SESSION_PREFIX', md5(
+	$parameters['database']['host']
+	. $parameters['database']['dbname']
+	. $parameters['database']['user']
+	. $parameters['prefix']
+) . "-");
+
+//  session starting
+session_name(SESSION_PREFIX . 'session');
+session_start();
+*/
 
 /**
  * Connecting to Database
