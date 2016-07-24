@@ -178,7 +178,7 @@ class VisitorModel
 			. Strings::substring($DB_data['surname'], 0, 1)
 			. Strings::substring($DB_data['birthday'], 2, 2);
 
-		$DB_data['birthday'] = new DateTime($DB_data['birthday']);
+		$DB_data['birthday'] = new \DateTime($DB_data['birthday']);
 
 		$result = $this->database
 			->table($this->dbTable)
