@@ -10,11 +10,13 @@
 <p style="font-weight:bold;">Zkontrolujte si, prosím, Vámi zadané údaje. V případě nesouhlasících údajů a provedení změny kontaktujte, prosím, <a href="mailto:tomaslitera&#64;hotmail.com" title="správce registrace">správce</a>. Pokud problémy přetrvávají, můžete se pokusit ho na nějakém srazu VS chytit a ukamenovat...</p>
 
 <?php if($data['is-reg-open']) { ?>
-<div class='button-line'>
-	<button type="button" onClick="window.location.replace('<?php echo HTTP_DIR ?>srazvs/registration/')">
-		<img src='<?php echo IMG_DIR; ?>icons/new.png' /> Nová přihláška</button>
-	<button type='button' onClick="window.location.replace('<?php echo HTTP_DIR ?>srazvs/registration/?hash=<?php echo $data['hash']; ?>')">
-		<img src='<?php echo IMG_DIR; ?>icons/edit.gif'  /> Upravit</button>
+<div id="button-line" class='button-line'>
+	<a class="link" href="<?php echo HTTP_DIR ?>srazvs/registration/">
+		<img src='<?php echo IMG_DIR; ?>icons/new.png' /> Nová přihláška
+	</a>
+	<a class="link" href="<?php echo HTTP_DIR ?>srazvs/registration/?hash=<?php echo $data['hash']; ?>">
+		<img src='<?php echo IMG_DIR; ?>icons/edit.gif'  /> Upravit
+	</a>
 </div>
 <?php } else { ?>
 <span class="error">Registrace je uzavřena! Nahlížené údaje již není možné upravovat!</span>
@@ -29,7 +31,7 @@
 <table class='form'>
 	<tr>
 		<td class='label'>Jméno:</td>
-		<td><?php echo $data['name']; ?></td>
+		<td id="name"><?php echo $data['name']; ?></td>
 	</tr>
 	<tr>
 		<td class='label'>Příjmení:</td>
