@@ -1,5 +1,7 @@
 <?php
 
+use Nette\Utils\Strings;
+
 /**
  * Base Controller
  *
@@ -140,4 +142,52 @@ abstract class BaseController
 	{
 		$this->routing = $routing;
 	}
+
+	protected function code4Bank($data)
+	{
+		return Strings::toAscii(
+			mb_substr($data['name'], 0, 1, 'utf-8')
+			. mb_substr($data['surname'], 0, 1, 'utf-8')
+			. mb_substr($data['birthday'], 2, 2)
+		);
+	}
+
+	/**
+	 * requested()
+	 * - ziska promenne z GET a POST
+	 *
+	 * @author tomasliterahotmail.com
+	 *
+	 * @param string $var - nazev pole GET nebo POST
+	 * @param $default - defaultni hodnota v pripade neexistence GET nebo POST
+	 */
+	protected function requested($var, $default = NULL)
+	{
+		if(isset($_GET[$var])) $out = $this->clearString($_GET[$var]);
+		elseif(isset($_POST[$var])) $out = $this->clearString($_POST[$var]);
+		else $out = $default;
+
+		return $out;
+	}
+
+	/**
+	 * clearString()
+	 * - ocisti retezec od html, backslashu a specialnich znaku
+	 *
+	 * @author tomas.litera@gmail.com
+	 *
+	 * @param string $string - retezec znaku
+	 * @return string $string - ocisteny retezec
+	 */
+	protected function clearString($string)
+	{
+		//specialni znaky
+		$string = htmlspecialchars($string);
+		//html tagy
+		$string = strip_tags($string);
+		//slashes
+		$string = stripslashes($string);
+		return $string;
+	}
+
 }

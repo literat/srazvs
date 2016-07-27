@@ -250,7 +250,7 @@ class VisitorController extends BaseController
 			######################## ODESILAM EMAIL ##########################
 
 			// zaheshovane udaje, aby se nedali jen tak ziskat data z databaze
-			$code4bank = substr($DB_data['name'], 0, 1).substr($DB_data['surname'], 0, 1).substr($DB_data['birthday'], 2, 2);
+			$code4bank = $this->code4Bank($DB_data);
 			$hash = ((int)$vid.$this->meetingId) * 147 + 49873;
 
 			$recipient_mail = $DB_data['email'];

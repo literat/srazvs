@@ -80,7 +80,7 @@ class RegistrationController extends BaseController
 	 */
 	public function __construct($database, $container)
 	{
-		if($this->meetingId = requested("mid","")){
+		if($this->meetingId = $this->requested("mid","")){
 			$_SESSION['meetingID'] = $this->meetingId;
 		} elseif(defined('DEBUG') && DEBUG === TRUE) {
 			$this->meetingId = 1;
@@ -267,7 +267,7 @@ class RegistrationController extends BaseController
 				######################## ODESILAM EMAIL ##########################
 				Debugger::log('Creating Visitor ' . $vid, 'info');
 				// zaheshovane udaje, aby se nedali jen tak ziskat data z databaze
-				$code4bank = substr($db_data['name'], 0, 1).substr($db_data['surname'], 0, 1).substr($db_data['birthday'], 2, 2);
+				$code4bank = $this->code4Bank($db_data);
 				//$hash = ((int)$vid.$this->meetingId) * 147 + 49873;
 				$hash = $db_data['hash'];
 
