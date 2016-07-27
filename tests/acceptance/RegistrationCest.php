@@ -6,7 +6,7 @@ class RegistrationCest extends CestCase
 	private $successVisitor = [
 		'fields' => [
 			'name'			=> 'robo',
-			'surname'		=> 'Tester',
+			'surname'		=> 'Černík',
 			'nick'			=> 'roboTester',
 			'email'			=> 'robo@tester.local',
 			'birthday'		=> '27.04.1976',
