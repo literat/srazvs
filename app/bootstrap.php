@@ -16,6 +16,12 @@ define('SESSION_PREFIX', md5('localhost'.'vodni'.'vodni'.'sunlight')."-");
 //nastartovani session
 session_name(SESSION_PREFIX.'session');
 
+$requestFatory = new Nette\Http\RequestFactory;
+$request = $requestFatory->createHttpRequest();
+$response = new Nette\Http\Response;
+
+$session = new Nette\Http\Session($request, $response);
+
 $configurator = new Configurator;
 
 /**
@@ -43,6 +49,9 @@ $configurator->addConfig(__DIR__ . '/config/config.local.neon');
 /**
  * DI Container and Session
  */
+$configurator->addServices(array(
+    'session.session' => $session,
+));
 $container = $configurator->createContainer();
 
 /*

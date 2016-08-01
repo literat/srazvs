@@ -20,8 +20,9 @@ parameters:
     prefix: sunlight
 
 session:
-    autoStart: false
+    autoStart: smart
     expiration: 1 day
+    savePath: '%tempDir%/session'
 
 services:
     connection:
