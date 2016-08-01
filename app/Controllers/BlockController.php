@@ -62,6 +62,8 @@ class BlockController extends BaseController
 	 */
 	public function __construct($database, $container)
 	{
+		$this->debugMode = $container->parameters['debugMode'];
+
 		if($this->meetingId = requested("mid","")){
 			$_SESSION['meetingID'] = $this->meetingId;
 		} else {
@@ -80,7 +82,7 @@ class BlockController extends BaseController
 		$this->Meeting->setMeetingId($this->meetingId);
 		$this->Meeting->setHttpEncoding($this->container->parameters['encoding']);
 
-		if(defined('DEBUG') && DEBUG === TRUE){
+		if($this->debugMode){
 			$this->Meeting->setRegistrationHandlers(1);
 			$this->meetingId = 1;
 		} else {

@@ -80,9 +80,11 @@ class RegistrationController extends BaseController
 	 */
 	public function __construct($database, $container)
 	{
+		$this->debugMode = $container->parameters['debugMode'];
+
 		if($this->meetingId = $this->requested("mid","")){
 			$_SESSION['meetingID'] = $this->meetingId;
-		} elseif(defined('DEBUG') && DEBUG === TRUE) {
+		} elseif($this->debugMode) {
 			$this->meetingId = 1;
 		} else {
 			$this->meetingId = $_SESSION['meetingID'];
@@ -107,7 +109,6 @@ class RegistrationController extends BaseController
 		$this->Meeting->setMeetingId($this->meetingId);
 		$this->Meeting->setHttpEncoding($this->container->parameters['encoding']);
 
-		$this->debugMode = $container->parameters['debugMode'];
 		if($this->debugMode) {
 			$this->Meeting->setRegistrationHandlers(1);
 			$this->meetingId = 1;

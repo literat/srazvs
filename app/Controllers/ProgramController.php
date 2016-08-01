@@ -106,6 +106,8 @@ class ProgramController extends BaseController
 	 */
 	public function __construct($database, $container)
 	{
+		$this->debugMode = $container->parameters['debugMode'];
+
 		if($this->meetingId = requested("mid","")){
 			$_SESSION['meetingID'] = $this->meetingId;
 		} else {
@@ -126,7 +128,7 @@ class ProgramController extends BaseController
 		$this->Meeting->setMeetingId($this->meetingId);
 		$this->Meeting->setHttpEncoding($this->container->parameters['encoding']);
 
-		if(defined('DEBUG') && DEBUG === TRUE){
+		if($this->debugMode){
 			$this->Meeting->setRegistrationHandlers(1);
 			$this->meetingId = 1;
 		} else {
@@ -440,7 +442,7 @@ class ProgramController extends BaseController
 		} elseif($this->cms == 'public') {
 			$this->View->assign('meeting_heading',			$this->Meeting->getRegHeading());
 			////otevirani a uzavirani prihlasovani
-			if(($this->Meeting->getRegOpening() < time()) || DEBUG === TRUE){
+			if(($this->Meeting->getRegOpening() < time()) || $this->debugMode){
 				$this->View->assign('display_program',	TRUE);
 			} else {
 				$this->View->assign('display_program',	FALSE);
@@ -455,7 +457,7 @@ class ProgramController extends BaseController
 		} elseif($this->cms == 'annotation') {
 			$this->View->assign('meeting_heading',			$this->Meeting->getRegHeading());
 			////otevirani a uzavirani prihlasovani
-			if(($this->Meeting->getRegOpening() < time()) || DEBUG === TRUE){
+			if(($this->Meeting->getRegOpening() < time()) || $this->debugMode){
 				$this->View->assign('display_program',	TRUE);
 			} else {
 				$this->View->assign('display_program',	FALSE);
