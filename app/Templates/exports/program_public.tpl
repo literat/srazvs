@@ -51,7 +51,7 @@
 						<td class='time'><?php echo $row['from']." - ".$row['to']; ?></td>
 						<td class='category cat-<?php echo $row['style']; ?>' style='border:1px solid black;'>
 							<div><?php echo $row['name']; ?></div>
-							<?php echo ProgramModel::getProgramsLarge($row['id'], $data['database']); ?>
+							<?php echo \App\ProgramModel::getProgramsLarge($row['id'], $data['database']); ?>
 						</td>
 					</tr>
 					<?php } ?>
