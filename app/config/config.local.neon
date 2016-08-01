@@ -8,6 +8,7 @@ parameters:
         marginRight: 15
         marginTop: 16
         marginBottom: 16
+        debugMode: %debugMode%
     excel:
         creator: 'Junák - český skaut, Kapitanát vodních skautů, z. s.'
         lastModifiedBy: 'Srazy VS'
@@ -77,7 +78,8 @@ services:
             @pdffactory,
             @excelfactory,
             @view,
-            @category
+            @category,
+            %debugMode%
         ]
     view:
         class: App\View

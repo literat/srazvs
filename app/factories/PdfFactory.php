@@ -24,6 +24,7 @@ class PdfFactory
 	private $marginRight = 15;
 	private $marginTop = 16;
 	private $marginBottom = 16;
+	private $debugMode = false;
 
 	/** Constructor */
 	public function __construct(array $configuration)
@@ -36,6 +37,7 @@ class PdfFactory
 		$this->marginRight 	= $configuration['marginRight'];
 		$this->marginTop 	= $configuration['marginTop'];
 		$this->marginBottom = $configuration['marginBottom'];
+		$this->debugMode	= $configuration['debugMode'];
 	}
 
 	/**
@@ -57,7 +59,7 @@ class PdfFactory
 		);
 
 		// debugging on demand
-		if(defined('DEBUG') && DEBUG === TRUE){
+		if($this->debugMode){
 			$this->pdf->debug = true;
 		}
 		$this->pdf->useOnlyCoreFonts = true;

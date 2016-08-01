@@ -33,14 +33,17 @@ class ExportModel
 	/** @var CategoryModel categories */
 	private $category;
 
+	private $debugMode;
+
 	/** Constructor */
-	public function __construct($database, PdfFactory $pdf, ExcelFactory $excel, View $View, $category)
+	public function __construct($database, PdfFactory $pdf, ExcelFactory $excel, View $View, $category, $debug)
 	{
 		$this->database = $database;
 		$this->pdf = $pdf;
 		$this->excel = $excel;
 		$this->View = $View;
 		$this->category = $category;
+		$this->debugMode = $debug;
 	}
 
 	public function setGraphHeight($height)
@@ -140,7 +143,7 @@ class ExportModel
 		$pdf->WriteHTML($template, 0);
 
 		/* debugging */
-		if(defined('DEBUG') && DEBUG === true){
+		if($this->debugMode){
 			echo $template;
 			exit('DEBUG_MODE');
 		} else {
@@ -194,7 +197,7 @@ class ExportModel
 		$pdf->WriteHTML($template, 0);
 
 		/* debugging */
-		if(defined('DEBUG') && DEBUG === true){
+		if($this->debugMode){
 			echo $template;
 			exit('DEBUG_MODE');
 		} else {
@@ -248,7 +251,7 @@ class ExportModel
 		$pdf->WriteHTML($template, 0);
 
 		/* debugging */
-		if(defined('DEBUG') && DEBUG === true){
+		if($this->debugMode){
 			echo $template;
 			exit('DEBUG_MODE');
 		} else {
@@ -333,7 +336,7 @@ class ExportModel
 		$pdf->WriteHTML($template, 0);
 
 		/* debugging */
-		if(defined('DEBUG') && DEBUG === true){
+		if($this->debugMode){
 			echo $template;
 			exit('DEBUG_MODE');
 		} else {
@@ -456,7 +459,7 @@ class ExportModel
 		$pdf->WriteHTML($template, 0);
 
 		/* debugging */
-		if(defined('DEBUG') && DEBUG === true){
+		if($this->debugMode){
 			echo $template;
 			exit('DEBUG_MODE');
 		} else {
@@ -522,7 +525,7 @@ class ExportModel
 		$pdf->WriteHTML($template, 0);
 
 		/* debugging */
-		if(defined('DEBUG') && DEBUG === true){
+		if($this->debugMode){
 			echo $template;
 			exit('DEBUG_MODE');
 		} else {
@@ -572,7 +575,7 @@ class ExportModel
 		$pdf->WriteHTML($template, 0);
 
 		/* debugging */
-		if(defined('DEBUG') && DEBUG === true){
+		if($this->debugMode){
 			echo $template;
 			exit('DEBUG_MODE');
 		} else {
@@ -607,7 +610,7 @@ class ExportModel
 		$this->View->assign('database', $this->database);
 
 		/* debugging */
-		if(defined('DEBUG') && DEBUG === true) {
+		if($this->debugMode){
 			$template = $this->View->render(true);
 			exit('DEBUG_MODE');
 		} else {
@@ -621,7 +624,7 @@ class ExportModel
 		$pdf->WriteHTML($template, 0);
 
 		/* debugging */
-		if(!defined('DEBUG') || DEBUG === FALSE){
+		if(!$this->debugMode){
 			// download
 			$output_filename = $filename.'.'.$file_type;
 			$pdf->Output($output_filename, "D");
@@ -670,7 +673,7 @@ class ExportModel
 		$pdf->WriteHTML($template, 0);
 
 		/* debugging */
-		if(defined('DEBUG') && DEBUG === TRUE){
+		if($this->debugMode){
 			echo $template;
 			exit('DEBUG_MODE');
 		} else {
@@ -883,7 +886,7 @@ class ExportModel
 		$pdf->WriteHTML($template, 0);
 
 		/* debugging */
-		if(defined('DEBUG') && DEBUG === true){
+		if($this->debugMode){
 			echo $template;
 			exit('DEBUG_MODE');
 		} else {
@@ -926,7 +929,7 @@ class ExportModel
 		$pdf->WriteHTML($template, 0);
 
 		/* debugging */
-		if(defined('DEBUG') && DEBUG === true){
+		if($this->debugMode){
 			echo $template;
 			exit('DEBUG_MODE');
 		} else {

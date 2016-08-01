@@ -9,7 +9,6 @@ use Nette\Database\Structure;
 use Nette\Loaders\RobotLoader;
 
 require_once __DIR__ . '/../vendor/autoload.php';
-require_once __DIR__ . '/../inc/define.inc.php';
 require_once __DIR__ . '/../inc/functions.inc.php';
 require_once __DIR__ . '/../inc/errors.inc.php';
 
