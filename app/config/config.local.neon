@@ -1,10 +1,4 @@
 parameters:
-    database:
-        driver: mysql
-        host: localhost
-        dbname: vodni
-        user: root
-        password: root
     pdf:
         encoding: utf-8
         paperFormat: A4

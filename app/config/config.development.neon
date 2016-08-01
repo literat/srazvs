@@ -1,4 +1,10 @@
 parameters:
+    database:
+        driver: mysql
+        host: localhost
+        dbname: vodni
+        user: root
+        password: root
     cacheDir: D:\home\literat\web\wwwroot\skauting\vodni\srazvs/temp/cache
 
 services:
