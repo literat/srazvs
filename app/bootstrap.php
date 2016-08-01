@@ -10,11 +10,13 @@ use Nette\Loaders\RobotLoader;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../inc/define.inc.php';
+require_once __DIR__ . '/../inc/functions.inc.php';
+require_once __DIR__ . '/../inc/errors.inc.php';
 
 define('SESSION_PREFIX', md5('localhost'.'vodni'.'vodni'.'sunlight')."-");
 
 //nastartovani session
-session_name(SESSION_PREFIX.'session');
+session_name(SESSION_PREFIX . 'session');
 
 $requestFatory = new Nette\Http\RequestFactory;
 $request = $requestFatory->createHttpRequest();
@@ -53,21 +55,36 @@ $configurator->addServices(array(
     'session.session' => $session,
 ));
 $container = $configurator->createContainer();
-
-/*
 $parameters = $container->getParameters();
 
-define('SESSION_PREFIX', md5(
-	$parameters['database']['host']
-	. $parameters['database']['dbname']
-	. $parameters['database']['user']
-	. $parameters['prefix']
-) . "-");
+define('ROOT_DIR', $parameters['wwwDir']);
+define('HTTP_DIR', 'http://'.$_SERVER['HTTP_HOST'] . '/');
 
-//  session starting
-session_name(SESSION_PREFIX . 'session');
-session_start();
-*/
+/**
+ * Application's definitions
+ *
+ * * do not forget to add slash at the end
+ */
+
+/* System Directories */
+define('PRJ_DIR',		HTTP_DIR . 'srazvs/');
+define('INC_DIR',		ROOT_DIR . '/inc/');
+define('IMG_DIR',		PRJ_DIR . 'www/images/');
+define('CSS_DIR',		PRJ_DIR . 'www/css/');
+define('JS_DIR',		PRJ_DIR . 'www/js/');
+
+/* Application */
+define('TEMPLATE_DIR',	$parameters['appDir'] . '/templates/');
+define('TPL_DIR',		TEMPLATE_DIR);
+
+/* URLs */
+define('BLOCK_DIR',		PRJ_DIR.'block');
+define('PROG_DIR',		PRJ_DIR.'program');
+define('MEET_DIR',		PRJ_DIR.'meeting');
+define('VISIT_DIR',		PRJ_DIR.'visitor');
+define('CAT_DIR',		PRJ_DIR.'category');
+define('EXP_DIR',		PRJ_DIR.'export');
+define('SET_DIR',		PRJ_DIR.'settings');
 
 /**
  * Connecting to Database
@@ -105,11 +122,10 @@ $router->connect('/<:controller>', array(), true, true);
 $router->connect('/<:controller>/<:action>', array(), true, true);
 $routing = $router->getRouting();
 
-$target = CONTROLLER_DIR.$routing['controller'].'Controller.php';
+$target = $parameters['appDir'] . '/controllers/'. $routing['controller'].'Controller.php';
 
 //get target
-if(file_exists($target))
-{
+if(file_exists($target)) {
 	//print_r(get_declared_classes());
 	if(
 		(
@@ -127,19 +143,14 @@ if(file_exists($target))
 	$class = $routing['controller'].'Controller';
 
 	//instantiate the appropriate class
-	if(class_exists($class))
-	{
+	if(class_exists($class)) {
 		$controller = new $class($database, $container);
 		$controller->setRouting($routing);
-	}
-	else
-	{
+	} else {
 		//did we name our class correctly?
 		die('class does not exist!');
 	}
-}
-else
-{
+} else {
 	//can't find the file in 'controllers'!
 	die('page does not exist!');
 }
