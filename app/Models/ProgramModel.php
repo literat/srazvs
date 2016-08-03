@@ -434,7 +434,7 @@ class ProgramModel extends BaseModel
 		if($type == "program"){
 			$capacity = requested("capacity",$data['capacity']);
 
-			$countData = $database
+			$countData = $this->database
 				->query('SELECT COUNT(visitor) AS visitors
 						 FROM `kk_visitor-program` AS visprog
 						 LEFT JOIN kk_visitors AS vis ON vis.id = visprog.visitor
