@@ -369,7 +369,7 @@ class ExportModel
 				else {
 					$programs .= "<div class='block'>".$progData['day'].", ".$progData['from']." - ".$progData['to']." : ".$progData['name']."</div>\n";
 
-					if($progData['program'] == 1) $programs .= "<div>".\ProgramModel::getPdfPrograms($progData['id'], $vid, $database)."</div>";
+					if($progData['program'] == 1) $programs .= "<div>".ProgramModel::getPdfPrograms($progData['id'], $vid, $database)."</div>";
 				}
 			}
 		}
@@ -519,7 +519,7 @@ class ExportModel
 		$template = $this->View->render(false);
 
 		$pdf = $this->createPdf();
-		$pdf->setPaperFormat('B1');
+		$pdf->paperFormat = 'B1';
 
 		// write html
 		$pdf->WriteHTML($template, 0);
