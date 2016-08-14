@@ -39,14 +39,6 @@ class AllPagesCest
 		$I->see('Správa srazů');
 	}
 
-	public function ensure_that_blocks_works(\AcceptanceTester $I)
-	{
-		$I = $this->logIn($I);
-		$I->wantTo('ensure that blocks works');
-		$I->amOnPage('/srazvs/block/');
-		$I->see('Správa bloků');
-	}
-
 	public function ensure_that_programs_works(\AcceptanceTester $I)
 	{
 		$I = $this->logIn($I);
