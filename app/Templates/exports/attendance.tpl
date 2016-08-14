@@ -21,7 +21,6 @@
 	</style>
 </head>
 <body>
-	<?php echo $data['attendance']; ?>
     <table>
 		<?php
 			$i = 0;
