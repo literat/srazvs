@@ -25,7 +25,7 @@ if($cms == "logout") {
 $nologin = true;
 
 //kontrola casove existence session a delky jeji necinnosti
-if(!isset($_SESSION[SESSION_PREFIX.'user']) || !isset($_SESSION[SESSION_PREFIX.'password'])) {
+if(isset($_SESSION) && (!isset($_SESSION[SESSION_PREFIX.'user']) || !isset($_SESSION[SESSION_PREFIX.'password']))) {
 	$_SESSION['user']["logged"] = false;
 	session_unset();
 	session_destroy();
