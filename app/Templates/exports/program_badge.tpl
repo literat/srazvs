@@ -58,7 +58,7 @@ foreach($data['result'] as $unused) {
 						<td class='day'><?php echo $day_val; ?></td>
 					</tr>
 				<?php
-		$result = BlockModel::getExportBlocks($data['meeting_id'], $day_val, $data['database']);
+		$result = App\BlockModel::getExportBlocks($data['meeting_id'], $day_val, $data['database']);
 
 		if(!$result) {
 			?>
@@ -82,7 +82,7 @@ foreach($data['result'] as $unused) {
 
 				// kdyz je programovy blok, tak zobrazim jenom jeho obsah
 				if($row['program']) {
-					echo ProgramModel::getProgramNames($row['id'], $data['database']); ?>
+					echo App\ProgramModel::getProgramNames($row['id'], $data['database']); ?>
 					</td>
 					<?php
 				}
