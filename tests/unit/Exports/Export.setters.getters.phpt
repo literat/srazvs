@@ -35,13 +35,15 @@ $mockedPdf = Mockery::mock(App\PdfFactory::class);
 $mockedExcel = Mockery::mock(App\ExcelFactory::class);
 $mockedView = Mockery::mock(App\View::class);
 $mockedCategory = Mockery::mock(App\CategoryModel::class);
+$mockedDebug = true;
 
 $ExportModel = new ExportModel(
 	$mockedDatabase,
 	$mockedPdf,
 	$mockedExcel,
 	$mockedView,
-	$mockedCategory
+	$mockedCategory,
+	$mockedDebug
 );
 
 $ExportSettersGettersTest = new ExportSettersGettersTest($ExportModel);
