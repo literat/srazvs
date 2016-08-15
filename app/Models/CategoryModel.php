@@ -3,6 +3,7 @@
 namespace App;
 
 use Tracy\Debugger;
+use Nette\Utils\Strings;
 
 /**
  * Category
@@ -58,7 +59,7 @@ class CategoryModel extends BaseModel
 	 */
 	public function create(array $dbData)
 	{
-		$style = removeDiacritic($dbData['name']);
+		$style = Strings::toAscii($dbData['name']);
 		$dbData['style'] = $style;
 		$result = $this->database
 			->table($this->dbTable)
@@ -76,7 +77,7 @@ class CategoryModel extends BaseModel
 	 */
 	public function modify($id, array $dbData)
 	{
-		$style = removeDiacritic($dbData['name']);
+		$style = Strings::toAscii($dbData['name']);
 		$style = str_replace(" ", "_", $style);
 		$dbData['style'] = $style;
 		$result = $this->database

@@ -2,6 +2,8 @@
 
 namespace App;
 
+use Nette\Utils\Strings;
+
 /**
  * Export Model
  *
@@ -508,7 +510,7 @@ class ExportModel
 				LIMIT 1', $this->meetingId)->fetch();
 
 		$meeting_header = $data['place']." ".$data['year'];
-		$filename = removeDiacritic($data['place'].$data['year']."-program");
+		$filename = Strings::toAscii($data['place'].$data['year']."-program");
 
 		// load and prepare template
 		$this->View->loadTemplate('exports/program_large');
@@ -558,7 +560,7 @@ class ExportModel
 				LIMIT 1', $this->meetingId)->fetch();
 
 		$meeting_header = $data['place']." ".$data['year'];
-		$filename = removeDiacritic($data['place'].$data['year']."-program");
+		$filename = Strings::toAscii($data['place'].$data['year']."-program");
 
 		// load and prepare template
 		$this->View->loadTemplate('exports/program_public');
