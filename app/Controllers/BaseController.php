@@ -190,4 +190,39 @@ abstract class BaseController
 		return $string;
 	}
 
+	/**
+	 * Render check box
+	 *
+	 * @param	string	name
+	 * @param	mixed	value
+	 * @param	var		variable that match with value
+	 * @return	string	html of chceck box
+	 */
+	protected function renderHtmlCheckBox($name, $value, $checked_variable)
+	{
+		if($checked_variable == $value) {
+			$checked = 'checked';
+		} else {
+			$checked = '';
+		}
+		$html_checkbox = "<input name='".$name."' type='checkbox' value='".$value."' ".$checked." />";
+
+		return $html_checkbox;
+	}
+
+	protected function parseTutorEmail($item) {
+		$mails = explode(',', $item->email);
+		$names = explode(',', $item->tutor);
+
+		$i = 0;
+		foreach ($mails as $mail) {
+			$mail = trim($mail);
+			$name = trim($names[$i]);
+
+			$recipient[$mail] = ($name) ? $name : '';
+		}
+
+		return $recipient;
+	}
+
 }

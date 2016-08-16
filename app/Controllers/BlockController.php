@@ -294,7 +294,7 @@ class BlockController extends BaseController
 		$pid = requested("pid","");
 		$hash = form_key_hash($pid, $this->meetingId);
 		$tutors = $this->Block->getTutor($pid);
-		$recipients = parse_tutor_email($tutors);
+		$recipients = $this->parseTutorEmail($tutors);
 
 		if($this->Emailer->tutor($recipients, $this->meetingId, 'block')) {
 			redirect("?block&error=mail_send");
@@ -354,15 +354,15 @@ class BlockController extends BaseController
 			// category select box
 			$cat_roll = $this->Category->renderHtmlSelect($this->data['category'], $this->database);
 			// time select boxes
-			$day_roll = renderHtmlSelectBox('day', array('pátek'=>'pátek', 'sobota'=>'sobota', 'neděle'=>'neděle'), $this->data['day'], 'width:172px;');
-			$hour_roll = renderHtmlSelectBox('start_hour', $hours_array, $this->data['start_hour']);
-			$minute_roll = renderHtmlSelectBox('start_minute', $minutes_array, $this->data['start_minute']);
-			$end_hour_roll = renderHtmlSelectBox('end_hour', $hours_array, $this->data['end_hour']);
-			$end_minute_roll = renderHtmlSelectBox('end_minute', $minutes_array, $this->data['end_minute']);
+			$day_roll = $this->renderHtmlSelectBox('day', array('pátek'=>'pátek', 'sobota'=>'sobota', 'neděle'=>'neděle'), $this->data['day'], 'width:172px;');
+			$hour_roll = $this->renderHtmlSelectBox('start_hour', $hours_array, $this->data['start_hour']);
+			$minute_roll = $this->renderHtmlSelectBox('start_minute', $minutes_array, $this->data['start_minute']);
+			$end_hour_roll = $this->renderHtmlSelectBox('end_hour', $hours_array, $this->data['end_hour']);
+			$end_minute_roll = $this->renderHtmlSelectBox('end_minute', $minutes_array, $this->data['end_minute']);
 			// is program block check box
-			$program_checkbox = renderHtmlCheckBox('program', 1, $this->data['program']);
+			$program_checkbox = $this->renderHtmlCheckBox('program', 1, $this->data['program']);
 			// display programs in block check box
-			$display_progs_checkbox = renderHtmlCheckBox('display_progs', 0, $this->data['display_progs']);
+			$display_progs_checkbox = $this->renderHtmlCheckBox('display_progs', 0, $this->data['display_progs']);
 		}
 
 		if($this->cms != 'annotation') {
@@ -427,5 +427,35 @@ class BlockController extends BaseController
 		/* Footer */
 		$this->View->loadTemplate('footer');
 		$this->View->render(TRUE);
+	}
+
+	/**
+	 * Render select box
+	 *
+	 * @param	string	name
+	 * @param	array	content of slect box
+	 * @param	var		variable that match selected option
+	 * @param	string	inline styling
+	 * @return	string	html of select box
+	 */
+	private function renderHtmlSelectBox($name, $select_content, $selected_option, $inline_style = NULL)
+	{
+		if(isset($inline_style) && $inline_style != NULL){
+			$style = " style='".$inline_style."'";
+		} else {
+			$style = "";
+		}
+		$html_select = "<select name='".$name."'".$style.">";
+		foreach ($select_content as $key => $value) {
+			if($key == $selected_option) {
+				$selected = 'selected';
+			} else {
+				$selected = '';
+			}
+			$html_select .= "<option value='".$key."' ".$selected.">".$value."</option>";
+		}
+		$html_select .= '</select>';
+
+		return $html_select;
 	}
 }

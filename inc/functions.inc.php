@@ -20,26 +20,6 @@ function cleardate2DB ($input_datum, $format_datum)
 }
 
 /**
- * clearString()
- * - ocisti retezec od html, backslashu a specialnich znaku
- *
- * @author tomas.litera@gmail.com
- *
- * @param string $string - retezec znaku
- * @return string $string - ocisteny retezec
- */
-function clearString($string)
-{
-	//specialni znaky
-	$string = htmlspecialchars($string);
-	//html tagy
-	$string = strip_tags($string);
-	//slashes
-	$string = stripslashes($string);
-	return $string;
-}
-
-/**
  * redirect()
  * - presmeruje stranku na zadane misto
  *
@@ -286,69 +266,4 @@ function number2word($number, $zero = false)
 // zaheshovane udaje, aby se nedali jen tak ziskat data z databaze
 function form_key_hash($id, $meetingId) {
 	return ((int)$id . $meetingId) * 116 + 39147;
-}
-
-function parse_tutor_email($item) {
-	$mails = explode(',', $item->email);
-	$names = explode(',', $item->tutor);
-
-	$i = 0;
-	foreach ($mails as $mail) {
-		$mail = trim($mail);
-		$name = trim($names[$i]);
-
-		$recipient[$mail] = ($name) ? $name : '';
-	}
-
-	return $recipient;
-}
-
-/**
- * Render check box
- *
- * @param	string	name
- * @param	mixed	value
- * @param	var		variable that match with value
- * @return	string	html of chceck box
- */
-function renderHtmlCheckBox($name, $value, $checked_variable)
-{
-	if($checked_variable == $value) {
-		$checked = 'checked';
-	} else {
-		$checked = '';
-	}
-	$html_checkbox = "<input name='".$name."' type='checkbox' value='".$value."' ".$checked." />";
-
-	return $html_checkbox;
-}
-
-/**
- * Render select box
- *
- * @param	string	name
- * @param	array	content of slect box
- * @param	var		variable that match selected option
- * @param	string	inline styling
- * @return	string	html of select box
- */
-function renderHtmlSelectBox($name, $select_content, $selected_option, $inline_style = NULL)
-{
-	if(isset($inline_style) && $inline_style != NULL){
-		$style = " style='".$inline_style."'";
-	} else {
-		$style = "";
-	}
-	$html_select = "<select name='".$name."'".$style.">";
-	foreach ($select_content as $key => $value) {
-		if($key == $selected_option) {
-			$selected = 'selected';
-		} else {
-			$selected = '';
-		}
-		$html_select .= "<option value='".$key."' ".$selected.">".$value."</option>";
-	}
-	$html_select .= '</select>';
-
-	return $html_select;
 }

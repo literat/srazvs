@@ -320,7 +320,7 @@ class ProgramController extends BaseController
 		$pid = requested("pid","");
 		$hash = form_key_hash($pid, $this->meetingId);
 		$tutors = $this->Program->getTutor($pid);
-		$recipients = parse_tutor_email($tutors);
+		$recipients = $this->parseTutorEmail($tutors);
 
 		if($this->Emailer->tutor($recipients, $this->meetingId, 'program')) {
 			redirect("?program&error=mail_send");
@@ -387,7 +387,7 @@ class ProgramController extends BaseController
 			// blocks select box
 			$block_select = $this->block->renderHtmlSelect($this->data['block']);
 			// display in registration check box
-			$display_in_reg_checkbox = renderHtmlCheckBox('display_in_reg', 0, $this->data['display_in_reg']);
+			$display_in_reg_checkbox = $this->renderHtmlCheckBox('display_in_reg', 0, $this->data['display_in_reg']);
 			// time select boxes
 		}
 
