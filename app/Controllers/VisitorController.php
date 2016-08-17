@@ -116,13 +116,13 @@ class VisitorController extends BaseController
 		$search = $this->requested('search', '');
 		$this->disabled = $this->requested('disabled', '');
 
-		if($id = $this->requested('checker')) {
+		if($ids = $this->requested('checker')) {
 			$query_id = array();
-			foreach($id as $key => $value) {
+			foreach($ids as $key => $value) {
 				$query_id[] = $value;
 			}
 		} else {
-			$query_id = $id;
+			$query_id = $ids;
 		}
 
 		switch($this->cms) {

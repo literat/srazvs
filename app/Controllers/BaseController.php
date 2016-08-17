@@ -154,17 +154,18 @@ abstract class BaseController
 
 	/**
 	 * requested()
-	 * - ziska promenne z GET a POST
+	 * - ziska promenne z GET
 	 *
 	 * @author tomasliterahotmail.com
 	 *
-	 * @param string $var - nazev pole GET nebo POST
-	 * @param $default - defaultni hodnota v pripade neexistence GET nebo POST
+	 * @param string $var - nazev pole GET
+	 * @param $default - defaultni hodnota v pripade neexistence GET
 	 */
 	protected function requested($var, $default = NULL)
 	{
 		if($this->router->getParam($var)) $out = $this->clearString($this->router->getParam($var));
 		elseif($this->router->getArg($var)) $out = $this->clearString($this->router->getArg($var));
+		elseif(array_key_exists($var, Http::$request->getForm())) $out = Http::$request->getForm()[$var];
 		else $out = $default;
 
 		return $out;

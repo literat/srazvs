@@ -98,7 +98,7 @@ class RegistrationController extends BaseController
 
 		$this->debugMode = $this->container->parameters['debugMode'];
 
-		if($this->meetingId = $this->requested("mid","")){
+		if($this->meetingId = $this->requested('mid', '')){
 			$_SESSION['meetingID'] = $this->meetingId;
 		} elseif($this->debugMode) {
 			$this->meetingId = 1;
@@ -136,20 +136,18 @@ class RegistrationController extends BaseController
 		$search = $this->requested('search', '');
 		$this->disabled = $this->requested('disabled', '');
 
-		if($id = $this->requested('checker')){
+		if($ids = $this->requested('checker')){
 			$query_id = NULL;
-			foreach($id as $key => $value) {
+			foreach($ids as $key => $value) {
 				$query_id .= $value.',';
 			}
 			$query_id = rtrim($query_id, ',');
 		}
 		else {
-			$query_id = $id;
+			$query_id = $ids;
 		}
 
-		if(isset($getVars['hash'])) {
-			$this->hash = $getVars['hash'];
-
+		if($this->hash = $this->requested('hash')) {
 			$data = $this->database
 				->table('kk_visitors')
 				->select('id, meeting')
