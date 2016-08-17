@@ -77,7 +77,7 @@ abstract class BaseController
 	 * error handler
 	 * @var string
 	 */
-	private $routing = '';
+	protected $router = '';
 
 	/**
 	 * database connection
@@ -96,7 +96,7 @@ abstract class BaseController
 	 *
 	 * @param array $getVars the GET variables posted to index.php
 	 */
-	public function init(array $getVars)
+	public function init()
 	{
 		######################### PRISTUPOVA PRAVA ################################
 
@@ -104,10 +104,10 @@ abstract class BaseController
 
 		###########################################################################
 
-		$id = requested("id",$this->itemId);
-		$this->cms = requested("cms","");
-		$this->error = requested("error","");
-		$this->page = requested("page","");
+		$id = $this->requested("id",$this->itemId);
+		$this->cms = $this->requested("cms","");
+		$this->error = $this->requested("error","");
+		$this->page = $this->requested("page","");
 
 
 		switch($this->cms) {
@@ -138,9 +138,9 @@ abstract class BaseController
 		$this->render();
 	}
 
-	public function setRouting($routing)
+	public function setRouter($router)
 	{
-		$this->routing = $routing;
+		$this->router = $router;
 	}
 
 	protected function code4Bank($data)
@@ -163,8 +163,8 @@ abstract class BaseController
 	 */
 	protected function requested($var, $default = NULL)
 	{
-		if(isset($_GET[$var])) $out = $this->clearString($_GET[$var]);
-		elseif(isset($_POST[$var])) $out = $this->clearString($_POST[$var]);
+		if($this->router->getParam($var)) $out = $this->clearString($this->router->getParam($var));
+		elseif($this->router->getArg($var)) $out = $this->clearString($this->router->getArg($var));
 		else $out = $default;
 
 		return $out;

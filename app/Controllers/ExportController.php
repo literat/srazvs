@@ -21,6 +21,7 @@ class ExportController extends BaseController
 	{
 		$this->database = $database;
 		$this->container = $container;
+		$this->router = $this->container->parameters['router'];
 		$this->export = $this->container->createServiceExports();
 		$this->view = $this->container->createServiceView();
 		$this->program = $this->container->createServiceProgram();
@@ -31,14 +32,14 @@ class ExportController extends BaseController
 	 *
 	 * @param 	array 	$getVars 	the GET variables posted to index.php
 	 */
-	public function init(array $getVars)
+	public function init()
 	{
 		// program detail and program public must be public
-		if((key($_GET) != 'program-public') && (key($_GET) != 'program-details')) {
+		if(!$this->router->getParam('program-public') && !$this->router->getParam('program-details')) {
 			include_once(INC_DIR.'access.inc.php');
 		}
 
-		if($mid = requested("mid","")){
+		if($mid = $this->requested('mid', '')){
 			$_SESSION['meetingID'] = $mid;
 		} else {
 			$mid = $_SESSION['meetingID'];
@@ -47,15 +48,16 @@ class ExportController extends BaseController
 		$this->export->setMeetingId($mid);
 		$this->program->setMeetingId($mid);
 
-		switch(key($_GET)){
+		switch(key($this->router->getParams())){
 			case 'attendance':
 				$this->export->printAttendance();
 				break;
 			case 'evidence':
-				if(isset($_GET['vid']) && $_GET['vid'] != ''){
-					$this->export->printEvidence($_GET['evidence'], intval($_GET['vid']));
+				//if(!empty($this->requested('vid'))) {
+				if($this->requested('vid')) {
+					$this->export->printEvidence($this->requested('evidence'), intval($this->requested('vid')));
 				} else {
-					$this->export->printEvidence($_GET['evidence']);
+					$this->export->printEvidence($this->requested('evidence'));
 				}
 				break;
 			case 'visitor-excel':
@@ -65,7 +67,7 @@ class ExportController extends BaseController
 				$this->export->printMealTicket();
 				break;
 			case 'name-badges':
-				$names = requested('names', '');
+				$names =$this->requested('names', '');
 				$this->export->printNameBadges($names);
 				break;
 			case 'program-details':

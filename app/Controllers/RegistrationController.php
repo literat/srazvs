@@ -80,7 +80,23 @@ class RegistrationController extends BaseController
 	 */
 	public function __construct($database, $container)
 	{
-		$this->debugMode = $container->parameters['debugMode'];
+		$this->item = '';
+
+		$this->templateDir = 'registration';
+		$this->page = 'registration';
+
+		$this->database = $database;
+		$this->container = $container;
+		$this->router = $this->container->parameters['router'];
+		$this->Visitor = $this->container->createServiceVisitor();
+		$this->View = $this->container->createServiceView();
+		$this->Emailer = $this->container->createServiceEmailer();
+		$this->Export = $this->container->createServiceExports();
+		$this->Meeting = $this->container->createServiceMeeting();
+		$this->Meal = $this->container->createServiceMeal();
+		$this->Program = $this->container->createServiceProgram();
+
+		$this->debugMode = $this->container->parameters['debugMode'];
 
 		if($this->meetingId = $this->requested("mid","")){
 			$_SESSION['meetingID'] = $this->meetingId;
@@ -89,21 +105,6 @@ class RegistrationController extends BaseController
 		} else {
 			$this->meetingId = $_SESSION['meetingID'];
 		}
-
-		$this->item = '';
-
-		$this->templateDir = 'registration';
-		$this->page = 'registration';
-
-		$this->database = $database;
-		$this->container = $container;
-		$this->Visitor = $this->container->createServiceVisitor();
-		$this->View = $this->container->createServiceView();
-		$this->Emailer = $this->container->createServiceEmailer();
-		$this->Export = $this->container->createServiceExports();
-		$this->Meeting = $this->container->createServiceMeeting();
-		$this->Meal = $this->container->createServiceMeal();
-		$this->Program = $this->container->createServiceProgram();
 
 		$this->Program->setMeetingId($this->meetingId);
 		$this->Meeting->setMeetingId($this->meetingId);
@@ -122,21 +123,20 @@ class RegistrationController extends BaseController
 	 *
 	 * @param array $getVars the GET variables posted to index.php
 	 */
-	public function init(array $getVars)
+	public function init()
 	{
 		######################### PRISTUPOVA PRAVA ################################
 
 		###########################################################################
 
-		$id = requested("id",(isset($this->itemId)) ? $this->itemId : '');
-		$this->cms = requested("cms","");
-		$this->error = requested("error","");
-		$this->page = requested("page","");
-		$search = requested("search", "");
-		$this->disabled = requested("disabled", "");
+		$id = $this->requested('id', (isset($this->itemId)) ? $this->itemId : '');
+		$this->cms = $this->requested('cms', '');
+		$this->error = $this->requested('error', '');
+		$this->page = $this->requested('page', '');
+		$search = $this->requested('search', '');
+		$this->disabled = $this->requested('disabled', '');
 
-		if(isset($_POST['checker'])){
-			$id = $_POST['checker'];
+		if($id = $this->requested('checker')){
 			$query_id = NULL;
 			foreach($id as $key => $value) {
 				$query_id .= $value.',';
@@ -205,7 +205,7 @@ class RegistrationController extends BaseController
 
 		// requested for meals
 		foreach($this->Meal->dbColumns as $var_name) {
-			$$var_name = requested($var_name, "ne");
+			$$var_name = $this->requested($var_name, 'ne');
 			$this->mealData[$var_name] = $$var_name;
 		}
 
@@ -213,7 +213,7 @@ class RegistrationController extends BaseController
 		foreach($this->Visitor->dbColumns as $key) {
 			if($key == 'bill') $value = 0;
 			else $value = "";
-			$this->data[$key] = requested($key, $value);
+			$this->data[$key] = $this->requested($key, $value);
 		}
 	}
 
@@ -238,18 +238,18 @@ class RegistrationController extends BaseController
 		$blocks = $this->getblocks();
 
 		foreach($blocks as $blockData){
-			$$blockData['id'] = requested('blck_' . $blockData['id'],0);
+			$$blockData['id'] = $this->requested('blck_' . $blockData['id'], 0);
 			$programs_data[$blockData['id']] = $$blockData['id'];
 			//echo $blockData['id'].":".$$blockData['id']."|";
 		}
 
 		// requested for visitors
 		foreach($this->Visitor->dbColumns as $key) {
-				if($key == 'bill') $$key = requested($key, 0);
+				if($key == 'bill') $$key = $this->requested($key, 0);
 				elseif($key == 'birthday') {
-					$$key = cleardate2DB(requested($key, 0), "Y-m-d");
+					$$key = cleardate2DB($this->requested($key, 0), 'Y-m-d');
 				}
-				else $$key = requested($key, null);
+				else $$key = $this->requested($key, null);
 				$db_data[$key] = $$key;
 		}
 
@@ -259,7 +259,7 @@ class RegistrationController extends BaseController
 
 		// requested for meals
 		foreach($this->Meal->dbColumns as $var_name) {
-			$$var_name = requested($var_name, null);
+			$$var_name = $this->requested($var_name, null);
 			$meals_data[$var_name] = $$var_name;
 		}
 		//if(!$this->error) {
@@ -313,17 +313,17 @@ class RegistrationController extends BaseController
 		$blocks = $this->getblocks();
 
 		foreach($blocks as $blockData){
-			$$blockData['id'] = requested('blck_' . $blockData['id'],0);
+			$$blockData['id'] = $this->requested('blck_' . $blockData['id'],0);
 			$programs_data[$blockData['id']] = $$blockData['id'];
 			//echo $blockData['id'].":".$$blockData['id']."|";
 		}
 
 		foreach($this->Visitor->dbColumns as $key) {
-				if($key == 'bill') $$key = requested($key, 0);
+				if($key == 'bill') $$key = $this->requested($key, 0);
 				elseif($key == 'birthday') {
-					$$key = cleardate2DB(requested($key, 0), "Y-m-d");
+					$$key = cleardate2DB($this->requested($key, 0), 'Y-m-d');
 				}
-				else $$key = requested($key, null);
+				else $$key = $this->requested($key, null);
 				$db_data[$key] = $$key;
 		}
 
@@ -332,7 +332,7 @@ class RegistrationController extends BaseController
 		$db_data['hash'] = hash('sha1', microtime());
 
 		foreach($this->Meal->dbColumns as $var_name) {
-			$$var_name = requested($var_name, null);
+			$$var_name = $this->requested($var_name, null);
 			$meals_data[$var_name] = $$var_name;
 		}
 		// i must add visitor's ID because it is empty
@@ -388,7 +388,7 @@ class RegistrationController extends BaseController
 
 		$dbData = $this->Visitor->getData($id);
 		foreach($this->Visitor->dbColumns as $key) {
-			$this->data[$key] = requested($key, $dbData[$key]);
+			$this->data[$key] = $this->requested($key, $dbData[$key]);
 		}
 
 		$DB_data = $this->database
@@ -398,7 +398,7 @@ class RegistrationController extends BaseController
 			->fetch();
 
 		foreach($this->Meal->dbColumns as $var_name) {
-			$$var_name = requested($var_name, $DB_data[$var_name]);
+			$$var_name = $this->requested($var_name, $DB_data[$var_name]);
 			$this->mealData[$var_name] = $$var_name;
 		}
 	}
@@ -420,7 +420,7 @@ class RegistrationController extends BaseController
 
 		$dbData = $this->Visitor->getData($id);
 		foreach($this->Visitor->dbColumns as $key) {
-			$this->data[$key] = requested($key, $dbData[$key]);
+			$this->data[$key] = $this->requested($key, $dbData[$key]);
 		}
 
 		$DB_data = $this->database
@@ -430,7 +430,7 @@ class RegistrationController extends BaseController
 			->fetch();
 
 		foreach($this->Meal->dbColumns as $var_name) {
-			$$var_name = requested($var_name, $DB_data[$var_name]);
+			$$var_name = $this->requested($var_name, $DB_data[$var_name]);
 			$this->mealData[$var_name] = $$var_name;
 		}
 	}

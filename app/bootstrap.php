@@ -85,13 +85,18 @@ define('CAT_DIR',		PRJ_DIR.'category');
 define('EXP_DIR',		PRJ_DIR.'export');
 define('SET_DIR',		PRJ_DIR.'settings');
 
+if(!function_exists('dd')) {
+	function dd($variable) {
+		\Tracy\Debugger::dump($variable);
+		die;
+	}
+}
+
 /**
  * Connecting to Database
  */
 $connection = $container->createServiceConnection();
 $database = $container->createServiceDatabase();
-
-
 
 // Tracy database panel
 Nette\Database\Helpers::createDebugPanel($connection);
@@ -116,12 +121,17 @@ $router->setDefaults(array(
  first route that match is used
 */
 $router->connect('/', array(), true, true);
-//$router->connect('/<:controller>/<:action>', array(), true, true);
 $router->connect('/<:controller>', array(), true, true);
 $router->connect('/<:controller>/<:action>', array(), true, true);
 $routing = $router->getRouting();
+// arguments of action
+$args = $router->getArgs();
+// query string
+$params = $router->getParams();
 
 $target = $parameters['appDir'] . '/controllers/'. $routing['controller'].'Controller.php';
+
+$container->parameters['router'] = $router;
 
 //get target
 if(file_exists($target)) {
@@ -136,6 +146,7 @@ if(file_exists($target)) {
 	) {
 		include_once(INC_DIR.'access.inc.php');
 	}
+
 	require_once($target);
 
 	//modify page to fit naming convention
@@ -144,7 +155,6 @@ if(file_exists($target)) {
 	//instantiate the appropriate class
 	if(class_exists($class)) {
 		$controller = new $class($database, $container);
-		$controller->setRouting($routing);
 	} else {
 		//did we name our class correctly?
 		die('class does not exist!');
@@ -154,12 +164,5 @@ if(file_exists($target)) {
 	die('page does not exist!');
 }
 
-$getParams = $router->getParams();
-
-//if(empty($getParams)) {
-//	redirect('?mid='.$data['id']);
-//}
-
 //once we have the controller instantiated, execute the default function
-//pass any GET varaibles to the main method
-$controller->init($getParams);
+$controller->init();

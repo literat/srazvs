@@ -75,16 +75,17 @@ class CategoryController extends BaseController
 	 */
 	public function __construct($database, $container)
 	{
-		if($this->meetingId = requested("mid","")){
+		$this->database = $database;
+		$this->container = $container;
+		$this->router = $this->container->parameters['router'];
+		$this->Category = $this->container->createServiceCategory();
+		$this->View = $this->container->createServiceView();
+
+		if($this->meetingId = $this->requested('mid', '')){
 			$_SESSION['meetingID'] = $this->meetingId;
 		} else {
 			$this->meetingId = $_SESSION['meetingID'];
 		}
-
-		$this->database = $database;
-		$this->container = $container;
-		$this->Category = $this->container->createServiceCategory();
-		$this->View = $this->container->createServiceView();
 	}
 
 	/**
@@ -92,17 +93,17 @@ class CategoryController extends BaseController
 	 *
 	 * @param array $getVars the GET variables posted to index.php
 	 */
-	public function init(array $getVars)
+	public function init()
 	{
 		include_once(INC_DIR.'access.inc.php');
 
 		########################## KONTROLA ###############################
 
 		//$mid = $_SESSION['meetingID'];
-		$id = requested("id",$this->categoryId);
-		$this->cms = requested("cms","");
-		$this->error = requested("error","");
-		$this->page = requested("page",$this->page);
+		$id = $this->requested('id', $this->categoryId);
+		$this->cms = $this->requested('cms', '');
+		$this->error = $this->requested('error', '');
+		$this->page = $this->requested('page', $this->page);
 
 		######################### DELETE CATEGORY #########################
 
@@ -138,7 +139,7 @@ class CategoryController extends BaseController
 		$this->template = "form";
 
 		foreach($this->Category->dbColumns as $key) {
-			$this->data[$key] = requested($key, "");
+			$this->data[$key] = $this->requested($key, '');
 		}
 	}
 
@@ -161,7 +162,7 @@ class CategoryController extends BaseController
 	private function create()
 	{
 		foreach($this->Category->dbColumns as $key) {
-			$db_data[$key] = requested($key, "");
+			$db_data[$key] = $this->requested($key, '');
 		}
 
 		if($this->Category->create($db_data)){
@@ -188,7 +189,7 @@ class CategoryController extends BaseController
 			->fetch();
 
 		foreach($this->Category->dbColumns as $key) {
-			$this->data[$key] = requested($key, $category[$key]);
+			$this->data[$key] = $this->requested($key, $category[$key]);
 		}
 	}
 
@@ -200,7 +201,7 @@ class CategoryController extends BaseController
 	private function update($id)
 	{
 		foreach($this->Category->dbColumns as $key) {
-			$db_data[$key] = requested($key, "");
+			$db_data[$key] = $this->requested($key, '');
 		}
 
 		if($this->Category->modify($id, $db_data)){

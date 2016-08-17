@@ -70,18 +70,13 @@ class VisitorController extends BaseController
 	 */
 	public function __construct($database, $container)
 	{
-		if($this->meetingId = requested("mid","")) {
-			$_SESSION['meetingID'] = $this->meetingId;
-		} else {
-			$this->meetingId = $_SESSION['meetingID'];
-		}
-
 		$this->templateDir = 'visitor';
 		$this->template = "listing";
 		$this->page = 'visitor';
 
 		$this->database = $database;
 		$this->container = $container;
+		$this->router = $this->container->parameters['router'];
 		$this->Visitor = $this->container->createServiceVisitor();
 		$this->View = $this->container->createServiceView();
 		$this->Emailer = $this->container->createServiceEmailer();
@@ -89,6 +84,12 @@ class VisitorController extends BaseController
 		$this->Meeting = $this->container->createServiceMeeting();
 		$this->Meal = $this->container->createServiceMeal();
 		$this->Category = $this->container->createServiceCategory();
+
+		if($this->meetingId = $this->requested('mid', '')) {
+			$_SESSION['meetingID'] = $this->meetingId;
+		} else {
+			$this->meetingId = $_SESSION['meetingID'];
+		}
 
 		$this->Visitor->setMeetingId($this->meetingId);
 		$this->Meeting->setMeetingId($this->meetingId);
@@ -100,7 +101,7 @@ class VisitorController extends BaseController
 	 *
 	 * @param array $getVars the GET variables posted to index.php
 	 */
-	public function init(array $getVars)
+	public function init()
 	{
 		######################### PRISTUPOVA PRAVA ################################
 
@@ -108,15 +109,14 @@ class VisitorController extends BaseController
 
 		###########################################################################
 
-		$id = requested("id",$this->itemId);
-		$this->cms = requested("cms","");
-		$this->error = requested("error","");
-		$this->page = requested("page","");
-		$search = requested("search", "");
-		$this->disabled = requested("disabled", "");
+		$id = $this->requested('id', $this->itemId);
+		$this->cms = $this->requested('cms', '');
+		$this->error = $this->requested('error', '');
+		$this->page = $this->requested('page', '');
+		$search = $this->requested('search', '');
+		$this->disabled = $this->requested('disabled', '');
 
-		if(isset($_POST['checker'])){
-			$id = $_POST['checker'];
+		if($id = $this->requested('checker')) {
 			$query_id = array();
 			foreach($id as $key => $value) {
 				$query_id[] = $value;
@@ -145,7 +145,7 @@ class VisitorController extends BaseController
 				$this->massmail($query_id);
 				break;
 			case "send":
-				$this->send(requested("recipients", ""));
+				$this->send($this->requested('recipients', ''));
 			// pay full charge
 			case "pay":
 				$this->pay($query_id, 'cost');
@@ -189,7 +189,7 @@ class VisitorController extends BaseController
 
 		// requested for meals
 		foreach($this->Meal->dbColumns as $var_name) {
-			$$var_name = requested($var_name, "ne");
+			$$var_name = $this->requested($var_name, 'ne');
 			$this->mealData[$var_name] = $$var_name;
 		}
 
@@ -198,7 +198,7 @@ class VisitorController extends BaseController
 			if($key == 'bill') $value = 0;
 			elseif($key == 'cost') $value = 0;
 			else $value = "";
-			$this->data[$key] = requested($key, $value);
+			$this->data[$key] = $this->requested($key, $value);
 		}
 	}
 
@@ -223,16 +223,16 @@ class VisitorController extends BaseController
 		$blocks = $this->getblocks();
 
 		foreach($blocks as $blockData){
-			$$blockData['id'] = requested($blockData['id'],0);
+			$$blockData['id'] = $this->requested($blockData['id'], 0);
 			$programs_data[$blockData['id']] = $$blockData['id'];
 			//echo $blockData['id'].":".$$blockData['id']."|";
 		}
 
 		// requested for visitors
 		foreach($this->Visitor->dbColumns as $key) {
-				if($key == 'bill') $$key = requested($key, 0);
-				elseif($key == 'cost') $$key = requested($key, 0);
-				else $$key = requested($key, null);
+				if($key == 'bill') $$key = $this->requested($key, 0);
+				elseif($key == 'cost') $$key = $this->requested($key, 0);
+				else $$key = $this->requested($key, null);
 				$DB_data[$key] = $$key;
 		}
 
@@ -242,7 +242,7 @@ class VisitorController extends BaseController
 
 		// requested for meals
 		foreach($this->Meal->dbColumns as $var_name) {
-			$$var_name = requested($var_name, null);
+			$$var_name = $this->requested($var_name, null);
 			$meals_data[$var_name] = $$var_name;
 		}
 		// create
@@ -283,13 +283,13 @@ class VisitorController extends BaseController
 		$blocks = $this->getblocks();
 
 		foreach($blocks as $blockData){
-			$$blockData['id'] = requested($blockData['id'],0);
+			$$blockData['id'] = $this->requested($blockData['id'], 0);
 			$programs_data[$blockData['id']] = $$blockData['id'];
 		}
 
 		foreach($this->Visitor->dbColumns as $key) {
-				if($key == 'bill') $$key = requested($key, 0);
-				else $$key = requested($key, null);
+				if($key == 'bill') $$key = $this->requested($key, 0);
+				else $$key = $this->requested($key, null);
 				$DB_data[$key] = $$key;
 		}
 
@@ -297,7 +297,7 @@ class VisitorController extends BaseController
 		$DB_data['meeting'] = $this->meetingId;
 
 		foreach($this->Meal->dbColumns as $var_name) {
-			$$var_name = requested($var_name, null);
+			$$var_name = $this->requested($var_name, null);
 			$meals_data[$var_name] = $$var_name;
 		}
 		// i must add visitor's ID because it is empty
@@ -327,7 +327,7 @@ class VisitorController extends BaseController
 
 		$dbData = $this->Visitor->getData($id);
 		foreach($this->Visitor->dbColumns as $key) {
-			$this->data[$key] = requested($key, $dbData[$key]);
+			$this->data[$key] = $this->requested($key, $dbData[$key]);
 		}
 
 		$data = $this->database
@@ -337,7 +337,7 @@ class VisitorController extends BaseController
 			->fetch();
 
 		foreach($this->Meal->dbColumns as $var_name) {
-			$$var_name = requested($var_name, $data[$var_name]);
+			$$var_name = $this->requested($var_name, $data[$var_name]);
 			$this->mealData[$var_name] = $$var_name;
 		}
 	}
@@ -375,15 +375,15 @@ class VisitorController extends BaseController
 	 */
 	private function send($recipients)
 	{
-		$bcc_mail = preg_replace("/\n/", "", requested("recipients", ""));
+		$bcc_mail = preg_replace("/\n/", "", $this->requested('recipients', ''));
 
 		$recipient_name = $this->Visitor->configuration['mail-sender-name'];
 		$recipient_mail = $this->Visitor->configuration['mail-sender-address'];
 
-		$subject = requested("subject", "");
+		$subject = $this->requested('subject', '');
 
 		// space to &nbsp;
-		$message = str_replace(" ","&nbsp;", requested("message", ""));
+		$message = str_replace(" ","&nbsp;", $this->requested('message', ''));
 		// new line to <br> and tags stripping
 		$message = nl2br(strip_tags($message));
 

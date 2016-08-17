@@ -106,16 +106,10 @@ class ProgramController extends BaseController
 	 */
 	public function __construct($database, $container)
 	{
-		$this->debugMode = $container->parameters['debugMode'];
-
-		if($this->meetingId = requested("mid","")){
-			$_SESSION['meetingID'] = $this->meetingId;
-		} else {
-			$this->meetingId = $_SESSION['meetingID'];
-		}
-
 		$this->database = $database;
 		$this->container = $container;
+		$this->debugMode = $this->container->parameters['debugMode'];
+		$this->router = $this->container->parameters['router'];
 		$this->Program = $this->container->createServiceProgram();
 		$this->block = $this->container->createServiceBlock();
 		$this->View = $this->container->createServiceView();
@@ -123,6 +117,12 @@ class ProgramController extends BaseController
 		$this->Export = $this->container->createServiceExports();
 		$this->Meeting = $this->container->createServiceMeeting();
 		$this->Category = $this->container->createServiceCategory();
+
+		if($this->meetingId = $this->requested('mid', '')){
+			$_SESSION['meetingID'] = $this->meetingId;
+		} else {
+			$this->meetingId = $_SESSION['meetingID'];
+		}
 
 		$this->Program->setMeetingId($this->meetingId);
 		$this->Meeting->setMeetingId($this->meetingId);
@@ -141,12 +141,12 @@ class ProgramController extends BaseController
 	 *
 	 * @param array $getVars the GET variables posted to index.php
 	 */
-	public function init(array $getVars)
+	public function init()
 	{
-		$id = requested("id",$this->programId);
-		$this->cms = requested("cms","");
-		$this->error = requested("error","");
-		$this->page = requested("page","");
+		$id = $this->requested('id', $this->programId);
+		$this->cms = $this->requested('cms', '');
+		$this->error = $this->requested('error', '');
+		$this->page = $this->requested('page', '');
 
 		######################### PRISTUPOVA PRAVA ################################
 		if(
@@ -184,7 +184,7 @@ class ProgramController extends BaseController
 				$this->publicView();
 				break;
 			case "annotation":
-				$formkey = intval(requested("formkey",""));
+				$formkey = intval($this->requested('formkey', ''));
 				$this->annotation($formkey);
 				break;
 		}
@@ -207,7 +207,7 @@ class ProgramController extends BaseController
 		foreach($this->Program->formNames as $key) {
 				if($key == 'display_in_reg') $value = 1;
 				else $value = "";
-				$this->data[$key] = requested($key, $value);
+				$this->data[$key] = $this->requested($key, $value);
 		}
 	}
 
@@ -227,10 +227,10 @@ class ProgramController extends BaseController
 
 				// TODO: better default values validation
 				// defualt input to DB
-				if($key == 'capacity' && !requested($key, $value)) {
+				if($key == 'capacity' && !$this->requested($key, $value)) {
 					$$key = 0;
 				} else {
-					$$key = requested($key, $value);
+					$$key = $this->requested($key, $value);
 				}
 		}
 
@@ -258,7 +258,7 @@ class ProgramController extends BaseController
 			} else {
 				$value = NULL;
 			}
-			$$key = requested($key, $value);
+			$$key = $this->requested($key, $value);
 		}
 
 		foreach($this->Program->dbColumns as $key) {
@@ -268,7 +268,7 @@ class ProgramController extends BaseController
 		if($this->Program->update($id, $DB_data)) {
 
 			if($this->page == 'annotation') {
-				redirect("?cms=".$this->page."&error=ok&formkey=".requested("formkey", "")."&type=".requested("type", ""));
+				redirect("?cms=".$this->page."&error=ok&formkey=".$this->requested("formkey", "")."&type=".$this-´>requested("type", ""));
 			} else {
 				redirect(PRJ_DIR.$this->page."?error=ok");
 			}
@@ -293,7 +293,7 @@ class ProgramController extends BaseController
 		$dbData = $this->Program->getData($id);
 
 		foreach($this->Program->formNames as $key) {
-			$this->data[$key] = requested($key, $dbData[$key]);
+			$this->data[$key] = $this->requested($key, $dbData[$key]);
 		}
 	}
 
@@ -317,7 +317,7 @@ class ProgramController extends BaseController
 	 */
 	private function mail()
 	{
-		$pid = requested("pid","");
+		$pid = $this->requested('pid', '');
 		$hash = form_key_hash($pid, $this->meetingId);
 		$tutors = $this->Program->getTutor($pid);
 		$recipients = $this->parseTutorEmail($tutors);
@@ -361,10 +361,10 @@ class ProgramController extends BaseController
 		$dbData = $this->Program->getData($id);
 
 		foreach($this->Program->formNames as $key) {
-			$this->data[$key] = requested($key, $dbData[$key]);
+			$this->data[$key] = $this->requested($key, $dbData[$key]);
 		}
-		$this->data['formkey'] = requested("formkey", "");
-		$this->data['type'] = requested("type", "");
+		$this->data['formkey'] = $this->requested('formkey', '');
+		$this->data['type'] = $this->requested('type', '');
 	}
 
 	/**

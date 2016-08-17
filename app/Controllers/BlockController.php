@@ -62,21 +62,21 @@ class BlockController extends BaseController
 	 */
 	public function __construct($database, $container)
 	{
-		$this->debugMode = $container->parameters['debugMode'];
-
-		if($this->meetingId = requested("mid","")){
-			$_SESSION['meetingID'] = $this->meetingId;
-		} else {
-			$this->meetingId = $_SESSION['meetingID'];
-		}
-
 		$this->database = $database;
 		$this->container = $container;
+		$this->router = $this->container->parameters['router'];
+		$this->debugMode = $this->container->parameters['debugMode'];
 		$this->Block = $this->container->createServiceBlock();
 		$this->View = $this->container->createServiceView();
 		$this->Emailer = $this->container->createServiceEmailer();
 		$this->Meeting = $this->container->createServiceMeeting();
 		$this->Category = $this->container->createServiceCategory();
+
+		if($this->meetingId = $this->requested('mid', '')){
+			$_SESSION['meetingID'] = $this->meetingId;
+		} else {
+			$this->meetingId = $_SESSION['meetingID'];
+		}
 
 		$this->Block->setMeetingId($this->meetingId);
 		$this->Meeting->setMeetingId($this->meetingId);
@@ -95,12 +95,12 @@ class BlockController extends BaseController
 	 *
 	 * @param array $getVars the GET variables posted to index.php
 	 */
-	public function init(array $getVars)
+	public function init()
 	{
-		$id = requested("id",$this->blockId);
-		$this->cms = requested("cms","");
-		$this->error = requested("error","");
-		$this->page = requested("page","");
+		$id = $this->requested('id', $this->blockId);
+		$this->cms = $this->requested('cms', '');
+		$this->error = $this->requested('error', '');
+		$this->page = $this->requested('page', '');
 
 		######################### PRISTUPOVA PRAVA ################################
 
@@ -130,7 +130,7 @@ class BlockController extends BaseController
 				$this->mail();
 				break;
 			case "annotation":
-				$formkey = intval(requested("formkey",""));
+				$formkey = intval($this->requested('formkey', ''));
 				$this->annotation($formkey);
 				break;
 		}
@@ -158,7 +158,7 @@ class BlockController extends BaseController
 				elseif($key == 'program') $value = 0;
 				elseif($key == 'display_progs') $value = 1;
 				else $value = "";
-				$this->data[$key] = requested($key, $value);
+				$this->data[$key] = $this->requested($key, $value);
 		}
 	}
 
@@ -176,7 +176,7 @@ class BlockController extends BaseController
 				elseif($key == 'program') $value = 0;
 				elseif($key == 'display_progs') $value = 1;
 				else $value = "";
-				$$key = requested($key, $value);
+				$$key = $this->requested($key, $value);
 		}
 
 		$from = date("H:i:s",mktime($start_hour,$start_minute,0,0,0,0));
@@ -219,7 +219,7 @@ class BlockController extends BaseController
 		foreach($this->Block->formNames as $key) {
 			if($key == 'from' || $key == 'to') $value = $dbData[$key]->format('%H:%I:%S');
 			else $value = $dbData[$key];
-			$this->data[$key] = requested($key, $value);
+			$this->data[$key] = $this->requested($key, $value);
 		}
 	}
 
@@ -239,7 +239,7 @@ class BlockController extends BaseController
 				elseif($key == 'program') $value = 0;
 				elseif($key == 'display_progs') $value = 1;
 				else $value = "";
-				$$key = requested($key, $value);
+				$$key = $this->requested($key, $value);
 		}
 
 		//TODO: dodelat osetreni chyb
@@ -264,7 +264,7 @@ class BlockController extends BaseController
 
 		if($this->Block->update($id, $DB_data)) {
 			if($this->page == 'annotation') {
-				redirect("?cms=".$this->page."&error=ok&formkey=".requested("formkey", "")."&type=".requested("type", ""));
+				redirect("?cms=".$this->page."&error=ok&formkey=".$this->requested('formkey', '')."&type=".$this->requested('type', ''));
 			} else {
 				redirect(PRJ_DIR.$this->page."?error=ok");
 			}
@@ -291,7 +291,7 @@ class BlockController extends BaseController
 	 */
 	private function mail()
 	{
-		$pid = requested("pid","");
+		$pid = $this->requested('pid', '');
 		$hash = form_key_hash($pid, $this->meetingId);
 		$tutors = $this->Block->getTutor($pid);
 		$recipients = $this->parseTutorEmail($tutors);
@@ -326,10 +326,10 @@ class BlockController extends BaseController
 		$dbData = $this->Block->getData($id);
 
 		foreach($this->Block->formNames as $key) {
-			$this->data[$key] = requested($key, $dbData[$key]);
+			$this->data[$key] = $this->requested($key, $dbData[$key]);
 		}
-		$this->data['formkey'] = requested("formkey", "");
-		$this->data['type'] = requested("type", "");
+		$this->data['formkey'] = $this->requested('formkey', '');
+		$this->data['type'] = $this->requested('type', '');
 	}
 
 	/**

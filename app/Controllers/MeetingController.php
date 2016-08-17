@@ -67,17 +67,18 @@ class MeetingController extends BaseController
 	 */
 	public function __construct($database, $container)
 	{
-		if($this->meetingId = requested("mid","")){
+		$this->database = $database;
+		$this->container = $container;
+		$this->router = $this->container->parameters['router'];
+		$this->Meeting = $this->container->createServiceMeeting();
+		$this->View = $this->container->createServiceView();
+		$this->Category = $this->container->createServiceCategory();
+
+		if($this->meetingId = $this->requested('mid', '')){
 			$_SESSION['meetingID'] = $this->meetingId;
 		} else {
 			$this->meetingId = $_SESSION['meetingID'];
 		}
-
-		$this->database = $database;
-		$this->container = $container;
-		$this->Meeting = $this->container->createServiceMeeting();
-		$this->View = $this->container->createServiceView();
-		$this->Category = $this->container->createServiceCategory();
 
 		$this->Meeting->setMeetingId($this->meetingId);
 		$this->Meeting->setHttpEncoding($this->container->parameters['encoding']);
@@ -88,7 +89,7 @@ class MeetingController extends BaseController
 	 *
 	 * @param array $getVars the GET variables posted to index.php
 	 */
-	public function init(array $getVars)
+	public function init()
 	{
 		######################### PRISTUPOVA PRAVA ################################
 
@@ -96,9 +97,9 @@ class MeetingController extends BaseController
 
 		###########################################################################
 
-		$id = requested("id",$this->meetingId);
-		$this->cms = requested("cms","");
-		$this->error = requested("error","");
+		$id = $this->requested('id', $this->meetingId);
+		$this->cms = $this->requested('cms', '');
+		$this->error = $this->requested('error', '');
 
 		switch($this->cms) {
 			case "delete":
@@ -142,7 +143,7 @@ class MeetingController extends BaseController
 		$this->template = "form";
 
 		foreach($this->Meeting->dbColumns as $key) {
-			$this->data[$key] = requested($key, "");
+			$this->data[$key] = $this->requested($key, "");
 		}
 	}
 
@@ -165,7 +166,7 @@ class MeetingController extends BaseController
 	private function create()
 	{
 		foreach($this->Meeting->dbColumns as $key) {
-			$db_data[$key] = requested($key, "");
+			$db_data[$key] = $this->requested($key, "");
 		}
 
 		if($this->Meeting->create($db_data)){
@@ -187,7 +188,7 @@ class MeetingController extends BaseController
 		$this->data = $this->Meeting->getData($id);
 
 		foreach($this->Meeting->dbColumns as $key) {
-			$$key = requested($key, $this->data[$key]);
+			$$key = $this->requested($key, $this->data[$key]);
 		}
 	}
 
@@ -199,7 +200,7 @@ class MeetingController extends BaseController
 	private function update($id)
 	{
 		foreach($this->Meeting->dbColumns as $key) {
-			$db_data[$key] = requested($key, "");
+			$db_data[$key] = $this->requested($key, "");
 		}
 
 		if($this->Meeting->update($this->meetingId, $db_data)){

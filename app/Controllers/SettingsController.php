@@ -75,16 +75,18 @@ class SettingsController extends BaseController
 	 */
 	public function __construct($database, $container)
 	{
-		if($this->meetingId = requested("mid","")){
+		$this->database = $database;
+		$this->container = $container;
+		$this->router = $this->container->parameters['router'];
+		$this->Settings = $this->container->createServiceSettings();
+		$this->view = $this->container->createServiceView();
+		$this->Emailer = $this->container->createServiceEmailer();
+
+		if($this->meetingId = $this->requested('mid', '')){
 			$_SESSION['meetingID'] = $this->meetingId;
 		} else {
 			$this->meetingId = $_SESSION['meetingID'];
 		}
-		$this->database = $database;
-		$this->container = $container;
-		$this->Settings = $this->container->createServiceSettings();
-		$this->view = $this->container->createServiceView();
-		$this->Emailer = $this->container->createServiceEmailer();
 	}
 
 	/**
@@ -92,24 +94,24 @@ class SettingsController extends BaseController
 	 *
 	 * @param array $getVars the GET variables posted to index.php
 	 */
-	public function init(array $getVars)
+	public function init()
 	{
 		include_once(INC_DIR.'access.inc.php');
 
 		########################## KONTROLA ###############################
 
-		$this->cms = requested("cms","");
-		$this->error = requested("error","");
-		$this->page = requested("page",$this->page);
+		$this->cms = $this->requested('cms', '');
+		$this->error = $this->requested('error', '');
+		$this->page = $this->requested('page', $this->page);
 
 		######################### DELETE CATEGORY #########################
 
 		switch($this->cms) {
 			case "update":
-				$this->update(requested('mail', ''));
+				$this->update($this->requested('mail', ''));
 				break;
 			case "mail":
-				$this->mail(requested('mail', ''), requested('test-mail', ''));
+				$this->mail($this->requested('mail', ''), $this->requested('test-mail', ''));
 			default:
 				$this->edit();
 		}
@@ -136,7 +138,7 @@ class SettingsController extends BaseController
 	 */
 	private function update($type)
 	{
-		$error = $this->Settings->modifyMailJSON($type, requested('subject', ''), requested('message', ''));
+		$error = $this->Settings->modifyMailJSON($type, $this->requested('subject', ''), $this->requested('message', ''));
 
 		if($error == 'ok') {
 			redirect("?page=".$this->page."&error=ok");
