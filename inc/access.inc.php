@@ -36,6 +36,9 @@ else $_SESSION['user']["logged"] = true;
 
 if(isset($_SESSION['user']['logged']) && ($_SESSION['user']['logged'] == true)) {
 	// neverim session z jineho systemu, takze overuju, jestli jsou udaje pravdive
+	if(!isset($database)) {
+		$database = $this->database;
+	}
 	$user = $database->table('sunlight-users')->where('id', $_SESSION[SESSION_PREFIX.'user'])->fetch();
 
 	if($user) {
