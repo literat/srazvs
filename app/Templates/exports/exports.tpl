@@ -2,52 +2,52 @@
 <div style="width:22%;float:left;">
 	<div class='pageRibbon'>Tisk</div>
 		<div>
-			<a style='text-decoration:none; display:block; margin-bottom:4px;' href='?evidence=confirm'>
+			<a style='text-decoration:none; display:block; margin-bottom:4px;' href='evidence?type=confirm'>
 				<img style='border:none;' align='absbottom' src='<?php echo IMG_DIR; ?>icons/pdf.png' />
 				potvrzení o přijetí zálohy
 			</a>
 
-			<a style='text-decoration:none; display:block; margin-bottom:4px;' href='?evidence=evidence'>
+			<a style='text-decoration:none; display:block; margin-bottom:4px;' href='evidence?type=evidence'>
 				<img style='border:none;' align='absbottom' src='<?php echo IMG_DIR; ?>icons/pdf.png' />
 				příjmový pokladní doklad
 			</a>
 
-			<a style='text-decoration:none; display:block; margin-bottom:4px;' href='?program-public&amp;cms=public'>
+			<a style='text-decoration:none; display:block; margin-bottom:4px;' href='program-public?cms=public'>
 				<img style='border:none;' align='absbottom' src='<?php echo IMG_DIR; ?>icons/pdf.png' />
 				veřejný program
 			</a>
 
-			<a style='text-decoration:none; display:block; margin-bottom:4px;' href='?program-cards'>
+			<a style='text-decoration:none; display:block; margin-bottom:4px;' href='program-cards'>
 				<img style='border:none;' align='absbottom' src='<?php echo IMG_DIR; ?>icons/pdf.png' />
 				osobní program
 			</a>
 
-			<a style='text-decoration:none; display:block; margin-bottom:4px;' href='?program-large'>
+			<a style='text-decoration:none; display:block; margin-bottom:4px;' href='program-large'>
 				<img style='border:none;' align='absbottom' src='<?php echo IMG_DIR; ?>icons/pdf.png' />
 				program srazu - velký formát
 			</a>
 
-			<a style='text-decoration:none; display:block; margin-bottom:4px;' href='?program-badge'>
+			<a style='text-decoration:none; display:block; margin-bottom:4px;' href='program-badge'>
 				<img style='border:none;' align='absbottom' src='<?php echo IMG_DIR; ?>icons/pdf.png' />
 				program srazu - do visačky
 			</a>
 
-			<a style='text-decoration:none; display:block; margin-bottom:4px;' href='?name-badges'>
+			<a style='text-decoration:none; display:block; margin-bottom:4px;' href='name-badges'>
 				<img style='border:none;' align='absbottom' src='<?php echo IMG_DIR; ?>icons/pdf.png' />
 				jmenovky
 			</a>
 
-			<a style='text-decoration:none; display:block; margin-bottom:4px;' href='?attendance'>
+			<a style='text-decoration:none; display:block; margin-bottom:4px;' href='attendance'>
 				<img style='border:none;' align='absbottom' src='<?php echo IMG_DIR; ?>icons/pdf.png' />
 				prezenční listina
 			</a>
 
-			<a style='text-decoration:none; display:block; margin-bottom:4px;' href='?name-list'>
+			<a style='text-decoration:none; display:block; margin-bottom:4px;' href='name-list'>
 				<img style='border:none;' align='absbottom' src='<?php echo IMG_DIR; ?>icons/pdf.png' />
 				jmenný seznam
 			</a>
 
-			<a style='text-decoration:none; display:block; margin-bottom:4px;' href='?meal-ticket'>
+			<a style='text-decoration:none; display:block; margin-bottom:4px;' href='meal-ticket'>
 				<img style='border:none;' align='absbottom' src='<?php echo IMG_DIR; ?>icons/pdf.png' />
 				stravenky
 			</a>
@@ -57,17 +57,17 @@
 				zpětná vazba
 			</a>
 			-->
-			<a style='text-decoration:none; display:block; margin-bottom:4px;' href='?evidence=summary'>
+			<a style='text-decoration:none; display:block; margin-bottom:4px;' href='evidence?type=summary'>
 				<img style='border:none;' align='absbottom' src='<?php echo IMG_DIR; ?>icons/pdf.png' />
 				kompletní příjmový pokladní doklad
 			</a>
 
-			<a style='text-decoration:none; display:block; padding-right:4px;' href='?visitor-excel'>
+			<a style='text-decoration:none; display:block; padding-right:4px;' href='visitor-excel'>
 				<img style='border:none;' align='absbottom' src='<?php echo IMG_DIR; ?>icons/xlsx.png' />
 				data účastníků
 			</a>
 
-			<a style='text-decoration:none; display:block; margin-bottom:4px; margin-top:4px;' href='?program-details'>
+			<a style='text-decoration:none; display:block; margin-bottom:4px; margin-top:4px;' href='program-details'>
 				<img style='border:none;' align='absbottom' src='<?php echo IMG_DIR; ?>icons/pdf.png' />
 				detaily programů
 			</a>

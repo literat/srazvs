@@ -27,7 +27,7 @@ class ExportCest
 		$I->amOnPage('/srazvs/export/?mid=1');
 		$I->seeInCurrentUrl('/srazvs/export/');
 		$I->click('potvrzení o přijetí zálohy');
-		$I->seeInCurrentUrl('/srazvs/export/?evidence=confirm');
+		$I->seeInCurrentUrl('/srazvs/export/evidence?type=confirm');
 		$I->see('POTVRZENÍ O PŘIJETÍ ZÁLOHY');
 		$I->see('Přijato od:');
 		$I->see('Účel platby:');
@@ -41,7 +41,7 @@ class ExportCest
 		$I->amOnPage('/srazvs/export/?mid=1');
 		$I->seeInCurrentUrl('/srazvs/export/');
 		$I->click('příjmový pokladní doklad');
-		$I->seeInCurrentUrl('/srazvs/export/?evidence=evidence');
+		$I->seeInCurrentUrl('/srazvs/export/evidence?type=evidence');
 		$I->see('PŘÍJMOVÝ POKLADNÍ DOKLAD');
 		$I->see('Přijato od:');
 		$I->see('Účel platby:');
@@ -56,7 +56,7 @@ class ExportCest
 		$I->amOnPage('/srazvs/export/?mid=1');
 		$I->seeInCurrentUrl('/srazvs/export/');
 		$I->click('kompletní příjmový pokladní doklad');
-		$I->seeInCurrentUrl('/srazvs/export/?evidence=summary');
+		$I->seeInCurrentUrl('/srazvs/export/evidence?type=summary');
 		$I->see('Příjmení a Jméno');
 		$I->see('Narození');
 		$I->see('Adresa');
@@ -72,7 +72,7 @@ class ExportCest
 		$I->amOnPage('/srazvs/export/?mid=1');
 		$I->seeInCurrentUrl('/srazvs/export/');
 		$I->click('veřejný program');
-		$I->seeInCurrentUrl('/srazvs/export/?program-public&cms=public');
+		$I->seeInCurrentUrl('/srazvs/export/program-public?cms=public');
 		$I->see('program srazu vodních skautů');
 		$I->see('pátek');
 		$I->see('sobota');
@@ -86,7 +86,7 @@ class ExportCest
 		$I->amOnPage('/srazvs/export/?mid=1');
 		$I->seeInCurrentUrl('/srazvs/export/');
 		$I->click('osobní program');
-		$I->seeInCurrentUrl('/srazvs/export/?program-cards');
+		$I->seeInCurrentUrl('/srazvs/export/program-cards');
 		$I->see('SRAZ VS');
 		$I->see('pátek');
 		$I->see('sobota');
@@ -100,7 +100,7 @@ class ExportCest
 		$I->amOnPage('/srazvs/export/?mid=1');
 		$I->seeInCurrentUrl('/srazvs/export/');
 		$I->click('program srazu - velký formát');
-		$I->seeInCurrentUrl('/srazvs/export/?program-large');
+		$I->seeInCurrentUrl('/srazvs/export/program-large');
 		$I->see('program srazu vodních skautů');
 		$I->see('pátek');
 		$I->see('sobota');
@@ -114,7 +114,7 @@ class ExportCest
 		$I->amOnPage('/srazvs/export/?mid=1');
 		$I->seeInCurrentUrl('/srazvs/export/');
 		$I->click('program srazu - do visačky');
-		$I->seeInCurrentUrl('/srazvs/export/?program-badge');
+		$I->seeInCurrentUrl('/srazvs/export/program-badge');
 		$I->see('pátek');
 		$I->see('sobota');
 		$I->see('neděle');
@@ -127,7 +127,7 @@ class ExportCest
 		$I->amOnPage('/srazvs/export/?mid=1');
 		$I->seeInCurrentUrl('/srazvs/export/');
 		$I->click('jmenovky');
-		$I->seeInCurrentUrl('/srazvs/export/?name-badges');
+		$I->seeInCurrentUrl('/srazvs/export/name-badges');
 		$I->see('roboTester');
 		$I->see('DEBUG_MODE');
 	}
@@ -138,7 +138,7 @@ class ExportCest
 		$I->amOnPage('/srazvs/export/?mid=1');
 		$I->seeInCurrentUrl('/srazvs/export/');
 		$I->click('prezenční listina');
-		$I->seeInCurrentUrl('/srazvs/export/?attendance');
+		$I->seeInCurrentUrl('/srazvs/export/attendance');
 		$I->see('Příjmení a Jméno');
 		$I->see('Narození');
 		$I->see('Adresa');
@@ -153,7 +153,7 @@ class ExportCest
 		$I->amOnPage('/srazvs/export/?mid=1');
 		$I->seeInCurrentUrl('/srazvs/export/');
 		$I->click('jmenný seznam');
-		$I->seeInCurrentUrl('/srazvs/export/?name-list');
+		$I->seeInCurrentUrl('/srazvs/export/name-list');
 		$I->see('Příjmení, Jméno, Přezdívka');
 		$I->see('Adresa');
 		$I->see('Středisko/Přístav');
@@ -166,7 +166,7 @@ class ExportCest
 		$I->amOnPage('/srazvs/export/?mid=1');
 		$I->seeInCurrentUrl('/srazvs/export/');
 		$I->click('stravenky');
-		$I->seeInCurrentUrl('/srazvs/export/?meal-ticket');
+		$I->seeInCurrentUrl('/srazvs/export/meal-ticket');
 		$I->see('Pátek');
 		$I->see('Sobota');
 		$I->see('Neděle');
@@ -182,7 +182,7 @@ class ExportCest
 		$I->amOnPage('/srazvs/export/?mid=1');
 		$I->seeInCurrentUrl('/srazvs/export/');
 		$I->click('detaily programů');
-		$I->seeInCurrentUrl('/srazvs/export/?program-details');
+		$I->seeInCurrentUrl('/srazvs/export/program-details');
 		$I->see('Program:');
 		$I->see('Popis:');
 		$I->see('Lektor:');

@@ -35,7 +35,7 @@ class ExportController extends BaseController
 	public function init()
 	{
 		// program detail and program public must be public
-		if(!$this->router->getParam('program-public') && !$this->router->getParam('program-details')) {
+		if(!$this->router->getParameter('program-public') && !$this->router->getParameter('program-details')) {
 			include_once(INC_DIR.'access.inc.php');
 		}
 
@@ -48,44 +48,44 @@ class ExportController extends BaseController
 		$this->export->setMeetingId($mid);
 		$this->program->setMeetingId($mid);
 
-		switch(key($this->router->getParams())){
+		switch($this->router->getParameter('action')){
 			case 'attendance':
 				$this->export->printAttendance();
 				break;
 			case 'evidence':
 				//if(!empty($this->requested('vid'))) {
 				if($this->requested('vid')) {
-					$this->export->printEvidence($this->requested('evidence'), intval($this->requested('vid')));
+					$this->export->printEvidence($this->requested('type'), intval($this->requested('vid')));
 				} else {
-					$this->export->printEvidence($this->requested('evidence'));
+					$this->export->printEvidence($this->requested('type'));
 				}
 				break;
-			case 'visitor-excel':
+			case 'visitorExcel':
 				$this->export->printVisitorsExcel();
 				break;
-			case 'meal-ticket':
+			case 'mealTicket':
 				$this->export->printMealTicket();
 				break;
-			case 'name-badges':
+			case 'nameBadges':
 				$names =$this->requested('names', '');
 				$this->export->printNameBadges($names);
 				break;
-			case 'program-details':
+			case 'programDetails':
 				$this->export->printProgramDetails();
 				break;
-			case 'program-cards':
+			case 'programCards':
 				$this->export->printProgramCards();
 				break;
-			case 'program-large':
+			case 'programLarge':
 				$this->export->printLargeProgram();
 				break;
-			case 'program-badge':
+			case 'programBadge':
 				$this->export->printProgramBadges();
 				break;
-			case 'program-public':
+			case 'programPublic':
 				$this->export->printPublicProgram();
 				break;
-			case 'name-list':
+			case 'nameList':
 				$this->export->printNameList();
 				break;
 		}
