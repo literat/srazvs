@@ -247,7 +247,7 @@ class RegistrationController extends BaseController
 				elseif($key == 'birthday') {
 					$$key = cleardate2DB($this->requested($key, 0), 'Y-m-d');
 				}
-				else $$key = $this->requested($key, null);
+				else $$key = $this->requested($key, '');
 				$db_data[$key] = $$key;
 		}
 
