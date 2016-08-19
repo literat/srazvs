@@ -163,9 +163,8 @@ abstract class BaseController
 	 */
 	protected function requested($var, $default = NULL)
 	{
-		if($this->router->getParam($var)) $out = $this->clearString($this->router->getParam($var));
-		elseif($this->router->getArg($var)) $out = $this->clearString($this->router->getArg($var));
-		elseif(array_key_exists($var, Http::$request->getForm())) $out = Http::$request->getForm()[$var];
+		if($this->router->getParameter($var)) $out = $this->clearString($this->router->getParameter($var));
+		elseif($this->router->getPost($var)) $out = $this->clearString($this->router->getPost($var));
 		else $out = $default;
 
 		return $out;

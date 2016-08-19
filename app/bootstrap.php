@@ -7,6 +7,8 @@ use Nette\Database\Context;
 use Nette\Caching\Storages\FileStorage;
 use Nette\Database\Structure;
 use Nette\Loaders\RobotLoader;
+use Nette\Application\Routers\RouteList;
+use Nette\Application\Routers\Route;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../inc/functions.inc.php';
@@ -17,11 +19,12 @@ define('SESSION_PREFIX', md5('localhost'.'vodni'.'vodni'.'sunlight')."-");
 //nastartovani session
 session_name(SESSION_PREFIX . 'session');
 
+//$httpRequest = $container->getByType('Nette\Http\Request');
 $requestFatory = new Nette\Http\RequestFactory;
-$request = $requestFatory->createHttpRequest();
-$response = new Nette\Http\Response;
+$httpRequest = $requestFatory->createHttpRequest();
+$httpResponse = new Nette\Http\Response;
 
-$session = new Nette\Http\Session($request, $response);
+$session = new Nette\Http\Session($httpRequest, $httpResponse);
 
 $configurator = new Configurator;
 
@@ -110,47 +113,43 @@ if(!isset($_SESSION['meetingID'])) {
 		->fetchField();
 }
 
-$router = new Router();
-
-$router->setDefaults(array(
-    'controller' => 'meeting',
-    'id' => $_SESSION['meetingID'],
-));
-
 /**
- first route that match is used
-*/
-$router->connect('/', array(), true, true);
-$router->connect('/<:controller>', array(), true, true);
-$router->connect('/<:controller>/<:action>', array(), true, true);
-$routing = $router->getRouting();
-// arguments of action
-$args = $router->getArgs();
-// query string
-$params = $router->getParams();
+ * Routing
+ */
+$router = new RouteList;
+$router[] = new Route('/', [
+	'presenter' => 'Meeting',
+    'action' => 'index',
+    'id' => $_SESSION['meetingID'],
+]);
+$router[] = new Route('<presenter>[/<action>]', 'Meeting:index');
+$router[] = new Route('<presenter>/<action>[/<id>]', 'Meeting:index');
 
-$target = $parameters['appDir'] . '/controllers/'. $routing['controller'].'Controller.php';
+$appRequest = $router->match($httpRequest);
+$controllerName = $appRequest->getPresenterName();
 
-$container->parameters['router'] = $router;
+$container->addService('router', $router);
+$target = $parameters['appDir'] . '/controllers/' . $controllerName . 'Controller.php';
+$container->parameters['router'] = $appRequest;
 
 //get target
 if(file_exists($target)) {
 	//print_r(get_declared_classes());
 	if(
 		(
-			$routing['controller'] != 'Registration'
-			&& (!isset($_GET['cms']) || $_GET['cms'] != 'public')
+			$controllerName != 'Registration'
+			&& ($httpRequest->getQuery('cms') != 'public')
 		)
-			&& (!isset($_GET['cms']) || $_GET['cms'] != 'annotation')
-			&& (!isset($_POST['page']) || $_POST['page'] != 'annotation')
+			&& ($httpRequest->getQuery('cms') != 'annotation')
+			&& ($httpRequest->getPost('page') != 'annotation')
 	) {
-		include_once(INC_DIR.'access.inc.php');
+		include_once(INC_DIR . 'access.inc.php');
 	}
 
 	require_once($target);
 
 	//modify page to fit naming convention
-	$class = $routing['controller'].'Controller';
+	$class = $controllerName . 'Controller';
 
 	//instantiate the appropriate class
 	if(class_exists($class)) {
