@@ -104,7 +104,7 @@ $(function() {
 	$.timepicker.setDefaults($.timepicker.regional['cs']);
 	$( ".dateTimePicker" ).datetimepicker({
 		showOn: "button",
-		buttonImage: "../images/calendar_button.png",
+		buttonImage: "../www/images/calendar_button.png",
 		buttonImageOnly: true,
 		showWeek: true,
         firstDay: 1,
@@ -126,7 +126,7 @@ $(function() {
 	$.datepicker.setDefaults($.datepicker.regional['cs']);
 	$( ".datePicker" ).datepicker({
 		showOn: "button",
-		buttonImage: "../images/calendar_button.png",
+		buttonImage: "../www/images/calendar_button.png",
 		buttonImageOnly: true,
 		showWeek: true,
         firstDay: 1,
