@@ -20,24 +20,6 @@ function cleardate2DB ($input_datum, $format_datum)
 }
 
 /**
- * redirect()
- * - presmeruje stranku na zadane misto
- *
- * @author tomas.litera@gmail.com
- *
- * @param string $location - misto presmerovani
- */
-function redirect($location)
-{
-	header("Location: $location");
-	//header("Connection: close");
-
-	/*echo "<script type='javascript'>
-	   	   window.location='".$location."';
-	</script>";*/
-}
-
-/**
  * shortenText()
  * - zkrati text pro zobrazeni na pozadovanou delku a prida tri tecky
  *

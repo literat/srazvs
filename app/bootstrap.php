@@ -95,6 +95,14 @@ if(!function_exists('dd')) {
 	}
 }
 
+if(!function_exists('redirect')) {
+	function redirect($url) {
+		$httpResponse = new Nette\Http\Response;
+		$httpResponse->redirect($url);
+		exit;
+	}
+}
+
 /**
  * Connecting to Database
  */
