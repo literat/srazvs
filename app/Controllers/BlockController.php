@@ -168,6 +168,8 @@ class BlockController extends BaseController
 	 */
 	private function create()
 	{
+		$postData = $this->router->getPost();
+
 		foreach($this->Block->formNames as $key) {
 				if($key == 'start_hour') $value = date("H");
 				elseif($key == 'end_hour') $value = date("H")+1;
@@ -176,18 +178,22 @@ class BlockController extends BaseController
 				elseif($key == 'program') $value = 0;
 				elseif($key == 'display_progs') $value = 1;
 				else $value = "";
-				$$key = $this->requested($key, $value);
+
+				if(array_key_exists($key, $postData) && !is_null($postData[$key])) {
+					$$key = $postData[$key];
+				} else {
+					$$key = $value;
+				}
 		}
 
-		$from = date("H:i:s",mktime($start_hour,$start_minute,0,0,0,0));
-		$to = date("H:i:s",mktime($end_hour,$end_minute,0,0,0,0));
-
 		//TODO: dodelat osetreni chyb
-		if($from > $to) echo "chyba";
+		if($from > $to) new Exception('From greater than to!');
 		else {
 			foreach($this->Block->dbColumns as $key) {
 				$db_data[$key] = $$key;
 			}
+			$from = date("H:i:s",mktime($start_hour,$start_minute,0,0,0,0));
+			$to = date("H:i:s",mktime($end_hour,$end_minute,0,0,0,0));
 			$db_data['from'] = $from;
 			$db_data['to'] = $to;
 			$db_data['capacity'] = 0;
@@ -239,7 +245,8 @@ class BlockController extends BaseController
 				elseif($key == 'program') $value = 0;
 				elseif($key == 'display_progs') $value = 1;
 				else $value = "";
-				$$key = $this->requested($key, $value);
+
+				$$key = $this->router->getPost($key, $value);
 		}
 
 		//TODO: dodelat osetreni chyb
@@ -250,8 +257,8 @@ class BlockController extends BaseController
 			}
 
 			if($this->page != 'annotation') {
-				$from = date("H:i:s",mktime($start_hour,$start_minute,0,0,0,0));
-				$to = date("H:i:s",mktime($end_hour,$end_minute,0,0,0,0));
+				$from = date("H:i:s",mktime($start_hour, $start_minute,0,0,0,0));
+				$to = date("H:i:s",mktime($end_hour, $end_minute,0,0,0,0));
 				$DB_data['from'] = $from;
 				$DB_data['to'] = $to;
 				//$DB_data['capacity'] = 0;
