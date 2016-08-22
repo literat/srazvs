@@ -188,62 +188,7 @@ function getUser($uid, $index, $database)
 }
 
 
-  /*
-    * převod desitkového čísla vyjádřeného matematicky na číslo vyjádřené slovně
-    * param int $number - číslo v desítkové soustavě (od 0 do 999999)
-    * param bool $zero - true:když bude $number 0 zobrazí se na výstupu nula; false:když bude $number 0 zobrazí se na výstupu (bool)false
-    * return string nebo bool false
-    * (C) Martin Bumba, http://mbumba.cz
-  */
-function number2word($number, $zero = false)
-{
-    $jednotky = array("", "jedna","dva","tři","čtyři","pět","šest","sedm","osm","devět");
-    $mezi = array(11=>"jedenáct",12=>"dvanáct",13=>"třináct",14=>"čtrnáct",15=>"patnáct",16=>"šestnáct",17=>"sedmnáct",18=>"osmnáct",19=>"devatenáct");
-    $desitky = array("", "deset","dvacet","třicet","čtyřicet","padesát","šedesát","sedmdesát","osmdesát","devadesát");
-    $number = (string) ltrim(round($number), 0);
-    $delka = strlen($number);
 
-    if($number==0)  			return $zero ? "nula":false;             //ošetření 0
-    elseif($delka==1)        	return $jednotky[$number];  //1 řád - jednotky
-    elseif($delka==2) {                                 //2 řády - desítky
-      $desitkyAJednotky = $number{0}.$number{1};
-      if($desitkyAJednotky==10) echo "deset";
-      elseif($desitkyAJednotky<20) {
-        return $mezi[$desitkyAJednotky];
-      }
-      else {
-        return $desitky[$number{0}].$jednotky[$number{1}];
-      }
-    }
-    elseif($delka==3) {                                 //3 řády - stovky
-      if($number{0}==1)     return "sto".number2word(substr($number,1));
-      elseif($number{0}==2) return "dvěstě".number2word(substr($number,1));
-      elseif($number{0}==3 OR $number{0}==4) return $jednotky[$number{0}]."sta".number2word(substr($number,1));
-      else                 return $jednotky[$number{0}]."set".number2word(substr($number,1));
-    }
-    elseif($delka==4) {                                //4 řády - tisíce
-      if($number{0}==1) return "tisíc".number2word(substr($number,1));
-      elseif($number{0}<5) return $jednotky[$number{0}]."tisíce".number2word(substr($number,1));
-      else             return $jednotky[$number{0}]."tisíc".number2word(substr($number,1));
-    }
-    elseif($delka==5) {                                //5 řádů - desítky tisíc
-      $desitkyTisic = $number{0}.$number{1};
-      if($desitkyTisic==10)      return "desettisíc".number2word(substr($number,2));
-      elseif($desitkyTisic<20)   return $mezi[$desitkyTisic]."tisíc".number2word(substr($number,2));
-      elseif($desitkyTisic<100)  return $desitky[$number{0}].$jednotky[$number{1}]."tisíc".number2word(substr($number,2));
-    }
-    elseif($delka==6) {                                //6 řádů - stovky tisíc
-		if($number{0}==1) {
-    		if($number{1}.$number{2}==00) 	    return "stotisíc".cislo_na_slovo(substr($number,3));
-    		else						   	    return "sto".cislo_na_slovo(substr($number,1));
-		}
-		elseif($number{0}==2)					return "dvěstě".number2word(substr($number,1));
-		elseif($number{0}==3 OR $number{0}==4)	return $jednotky[$number{0}]."sta".number2word(substr($number,1));
-		else						  			return $jednotky[$number{0}]."set".number2word(substr($number,1));
-	}
-
-	return false;
-}
 
 // zaheshovane udaje, aby se nedali jen tak ziskat data z databaze
 function form_key_hash($id, $meetingId) {
