@@ -292,7 +292,7 @@ class BlockController extends BaseController
 	private function mail()
 	{
 		$pid = $this->requested('pid', '');
-		$hash = form_key_hash($pid, $this->meetingId);
+		//$hash = $this->formKeyHash($pid, $this->meetingId);
 		$tutors = $this->Block->getTutor($pid);
 		$recipients = $this->parseTutorEmail($tutors);
 

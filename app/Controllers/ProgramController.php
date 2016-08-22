@@ -318,7 +318,7 @@ class ProgramController extends BaseController
 	private function mail()
 	{
 		$pid = $this->requested('pid', '');
-		$hash = form_key_hash($pid, $this->meetingId);
+		//$hash = $this->formKeyHash($pid, $this->meetingId);
 		$tutors = $this->Program->getTutor($pid);
 		$recipients = $this->parseTutorEmail($tutors);
 

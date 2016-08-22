@@ -210,7 +210,8 @@ abstract class BaseController
 		return $html_checkbox;
 	}
 
-	protected function parseTutorEmail($item) {
+	protected function parseTutorEmail($item)
+	{
 		$mails = explode(',', $item->email);
 		$names = explode(',', $item->tutor);
 
@@ -223,6 +224,12 @@ abstract class BaseController
 		}
 
 		return $recipient;
+	}
+
+	// zaheshovane udaje, aby se nedali jen tak ziskat data z databaze
+	protected function formKeyHash($id, $meetingId)
+	{
+		return ((int)$id . $meetingId) * 116 + 39147;
 	}
 
 }

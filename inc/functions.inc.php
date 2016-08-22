@@ -186,11 +186,3 @@ function getUser($uid, $index, $database)
 
 	return $user[$index];
 }
-
-
-
-
-// zaheshovane udaje, aby se nedali jen tak ziskat data z databaze
-function form_key_hash($id, $meetingId) {
-	return ((int)$id . $meetingId) * 116 + 39147;
-}
