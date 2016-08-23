@@ -205,7 +205,8 @@ class ProgramController extends BaseController
 		$this->todo = "create";
 
 		foreach($this->Program->formNames as $key) {
-				if($key == 'display_in_reg') $value = 1;
+				if($key == 'display_in_reg') $value = '1';
+				if($key == 'capacity') $value = '0';
 				else $value = "";
 				$this->data[$key] = $this->requested($key, $value);
 		}

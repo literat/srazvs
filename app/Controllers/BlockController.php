@@ -155,8 +155,8 @@ class BlockController extends BaseController
 				elseif($key == 'end_hour') $value = date("H")+1;
 				elseif($key == 'start_minute') $value = date("i");
 				elseif($key == 'end_minute') $value = date("i");
-				elseif($key == 'program') $value = 0;
-				elseif($key == 'display_progs') $value = 1;
+				elseif($key == 'program') $value = '0';
+				elseif($key == 'display_progs') $value = '1';
 				else $value = "";
 				$this->data[$key] = $this->requested($key, $value);
 		}
@@ -176,10 +176,10 @@ class BlockController extends BaseController
 				}
 				elseif($key == 'start_hour') $$key = date('H');
 				elseif($key == 'end_hour') $$key = date('H')+1;
-				elseif($key == 'start_minute') $$key = 0;
-				elseif($key == 'end_minute') $$key = 0;
-				elseif($key == 'program') $$key = 0;
-				elseif($key == 'display_progs') $$key = 1;
+				elseif($key == 'start_minute') $$key = '0';
+				elseif($key == 'end_minute') $$key = '0';
+				elseif($key == 'program') $$key = '0';
+				elseif($key == 'display_progs') $$key = '1';
 				else $$key = '';
 		}
 
@@ -234,16 +234,19 @@ class BlockController extends BaseController
 	 */
 	private function update($id)
 	{
-		foreach($this->Block->formNames as $key) {
-				if($key == 'start_hour') $value = date("H");
-				elseif($key == 'end_hour') $value = date("H")+1;
-				elseif($key == 'start_minute') $value = date("i");
-				elseif($key == 'end_minute') $value = date("i");
-				elseif($key == 'program') $value = 0;
-				elseif($key == 'display_progs') $value = 1;
-				else $value = "";
+		$postData = $this->router->getPost();
 
-				$$key = $this->router->getPost($key, $value);
+		foreach($this->Block->formNames as $key) {
+				if(array_key_exists($key, $postData) && !is_null($postData[$key])) {
+					$$key = $postData[$key];
+				}
+				elseif($key == 'start_hour') $$key = date('H');
+				elseif($key == 'end_hour') $$key = date('H')+1;
+				elseif($key == 'start_minute') $$key = '0';
+				elseif($key == 'end_minute') $$key = '0';
+				elseif($key == 'program') $$key = '0';
+				elseif($key == 'display_progs') $$key = '1';
+				else $$key = '';
 		}
 
 		//TODO: dodelat osetreni chyb
