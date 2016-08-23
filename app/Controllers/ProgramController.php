@@ -218,20 +218,15 @@ class ProgramController extends BaseController
 	 */
 	private function create()
 	{
-		foreach($this->Program->formNames as $key) {
-				if($key == 'display_in_reg' && !isset($$key)) {
-					$value = 1;
-				} else {
-					$value = NULL;
-				}
+		$postData = $this->router->getPost();
 
-				// TODO: better default values validation
-				// defualt input to DB
-				if($key == 'capacity' && !$this->requested($key, $value)) {
-					$$key = 0;
-				} else {
-					$$key = $this->requested($key, $value);
+		foreach($this->Program->formNames as $key) {
+				if(array_key_exists($key, $postData) && !is_null($postData[$key])) {
+					$$key = $postData[$key];
 				}
+				elseif($key == 'display_in_reg') $$key = '1';
+				elseif($key == 'capacity') $$key = '0';
+				else $$key = '';
 		}
 
 		foreach($this->Program->dbColumns as $key) {
@@ -252,13 +247,14 @@ class ProgramController extends BaseController
 	 */
 	private function update($id = NULL)
 	{
+		$postData = $this->router->getPost();
+
 		foreach($this->Program->formNames as $key) {
-			if($key == 'display_in_reg' && !isset($$key)) {
-				$value = 1;
-			} else {
-				$value = NULL;
-			}
-			$$key = $this->requested($key, $value);
+				if(array_key_exists($key, $postData) && !is_null($postData[$key])) {
+					$$key = $postData[$key];
+				}
+				elseif($key == 'display_in_reg') $$key = '1';
+				else $$key = '';
 		}
 
 		foreach($this->Program->dbColumns as $key) {
