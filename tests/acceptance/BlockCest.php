@@ -1,8 +1,21 @@
 <?php
 
-
-class BlockCest
+class BlockCest extends CestCase
 {
+
+	private $simpleBlock = [
+		'fields' => [
+			'name'			=> 'testing block',
+		],
+		'options' => [
+			'day'			=> 'sobota',
+			'start_hour'	=> '10',
+			'end_hour'		=> '12',
+			'start_minute'	=> '15',
+			'end_minute'	=> '30',
+		],
+	];
+
 	public function _before(AcceptanceTester $I)
 	{
 		$I->wantTo('login to admin');
@@ -47,4 +60,29 @@ class BlockCest
 		$I->see('Kapacita:');
 		$I->see('Kategorie:');
 	}
+
+	public function it_should_create_simple_block(\AcceptanceTester $I)
+	{
+		$I->amOnPage('/srazvs/block/');
+		$I->see('Správa bloků');
+		$I->wantTo('Create new block');
+		$I->click('NOVÝ BLOK', '#content');
+		$I->seeCurrentUrlMatches('~/srazvs/block/\?cms=new~');
+		$this->fillForm($I, $this->simpleBlock);
+		$I->click('Uložit', '#content');
+		$I->seeInCurrentUrl('/srazvs/?error=ok');
+	}
+
+	public function it_should_update_simple_block(\AcceptanceTester $I)
+	{
+	}
+
+	public function it_should_create_full_block(\AcceptanceTester $I)
+	{
+	}
+
+	public function it_should_update_full_block(\AcceptanceTester $I)
+	{
+	}
+
 }
