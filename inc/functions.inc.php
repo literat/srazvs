@@ -1,24 +1,5 @@
 <?php
 
-function cleardate2DB ($input_datum, $format_datum)
-{
-			//list($d, $m, $r) = split("[/.-]", $input_datum);
-			list($d, $m, $r) = preg_split("[/|\.|-]", $input_datum);
-			// beru prvni znak a delam z nej integer
-			$rtest = $r{0};
-			$rtest += 0;
-			$mtest = $m{0};
-			$mtest += 0;
-
-			// pokud je to nula, musim odstranit prvni znak
-			if(($rtest) == 0) $r = substr($r, 1);
-			if(($mtest) == 0) $m = substr($m, 1);
-
-			$d += 0; $m += 0; $r += 0;
-			$datum = date("$format_datum",mktime(0,0,0,$m,$d,$r));
-			return $datum;
-}
-
 /**
  * shortenText()
  * - zkrati text pro zobrazeni na pozadovanou delku a prida tri tecky

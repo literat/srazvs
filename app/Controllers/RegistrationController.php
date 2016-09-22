@@ -245,7 +245,7 @@ class RegistrationController extends BaseController
 		foreach($this->Visitor->dbColumns as $key) {
 				if($key == 'bill') $$key = $this->requested($key, 0);
 				elseif($key == 'birthday') {
-					$$key = cleardate2DB($this->requested($key, 0), 'Y-m-d');
+					$$key = $this->cleardate2DB($this->requested($key, 0), 'Y-m-d');
 				}
 				else $$key = $this->requested($key, '');
 				$db_data[$key] = $$key;
@@ -319,7 +319,7 @@ class RegistrationController extends BaseController
 		foreach($this->Visitor->dbColumns as $key) {
 				if($key == 'bill') $$key = $this->requested($key, 0);
 				elseif($key == 'birthday') {
-					$$key = cleardate2DB($this->requested($key, 0), 'Y-m-d');
+					$$key = $this->cleardate2DB($this->requested($key, 0), 'Y-m-d');
 				}
 				else $$key = $this->requested($key, null);
 				$db_data[$key] = $$key;
@@ -431,6 +431,25 @@ class RegistrationController extends BaseController
 			$$var_name = $this->requested($var_name, $DB_data[$var_name]);
 			$this->mealData[$var_name] = $$var_name;
 		}
+	}
+
+	private function cleardate2DB ($inputDate, $formatDate)
+	{
+				//list($d, $m, $r) = split("[/.-]", $input_datum);
+				list($d, $m, $r) = preg_split("[/|\.|-]", $inputDate);
+				// beru prvni znak a delam z nej integer
+				$rtest = $r{0};
+				$rtest += 0;
+				$mtest = $m{0};
+				$mtest += 0;
+
+				// pokud je to nula, musim odstranit prvni znak
+				if(($rtest) == 0) $r = substr($r, 1);
+				if(($mtest) == 0) $m = substr($m, 1);
+
+				$d += 0; $m += 0; $r += 0;
+				$date = date("$formatDate",mktime(0,0,0,$m,$d,$r));
+				return $date;
 	}
 
 	/**
