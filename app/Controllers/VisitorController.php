@@ -283,7 +283,7 @@ class VisitorController extends BaseController
 		$blocks = $this->getblocks();
 
 		foreach($blocks as $blockData){
-			$$blockData['id'] = $this->requested($blockData['id'], 0);
+			$$blockData['id'] = $this->requested('blck_' . $blockData['id'], 0);
 			$programs_data[$blockData['id']] = $$blockData['id'];
 		}
 

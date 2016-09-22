@@ -203,7 +203,7 @@ class VisitorModel
 
 			$result = $this->database
 				->table('kk_visitor-program')
-				->where('visitor ? AND id ?', $ID_visitor, $oldProgram->id)
+				->where('visitor ? AND id ?', $ID_visitor, (empty($oldProgram)) ? $oldProgram : $oldProgram->id)
 				->update($data);
 		}
 
