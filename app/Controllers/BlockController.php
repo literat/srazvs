@@ -269,13 +269,15 @@ class BlockController extends BaseController
 			//$DB_data['meeting'] = $this->meetingId;
 		}
 
-		if($this->Block->update($id, $DB_data)) {
-			if($this->page == 'annotation') {
-				redirect("?cms=".$this->page."&error=ok&formkey=".$this->requested('formkey', '')."&type=".$this->requested('type', ''));
-			} else {
-				redirect(PRJ_DIR.$this->page."?error=ok");
-			}
+		$this->Block->update($id, $DB_data);
+
+		if($this->page == 'annotation') {
+			$queryString = "&error=ok&formkey=".$this->requested('formkey', '')."&type=".$this->requested('type', '');
+		} else {
+			$queryString = "?error=ok";
 		}
+
+		redirect(PRJ_DIR . $this->page . $queryString);
 	}
 
 	/**

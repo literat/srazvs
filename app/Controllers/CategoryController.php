@@ -204,9 +204,9 @@ class CategoryController extends BaseController
 			$db_data[$key] = $this->requested($key, '');
 		}
 
-		if($this->Category->modify($id, $db_data)){
-			redirect("?".$this->page."&error=ok");
-		}
+		$this->Category->modify($id, $db_data);
+
+		redirect("?".$this->page."&error=ok");
 	}
 
 	/**

@@ -262,14 +262,15 @@ class ProgramController extends BaseController
 			$DB_data[$key] = $$key;
 		}
 
-		if($this->Program->update($id, $DB_data)) {
+		$this->Program->update($id, $DB_data);
 
-			if($this->page == 'annotation') {
-				redirect("?cms=".$this->page."&error=ok&formkey=".$this->requested("formkey", "")."&type=".$this-´>requested("type", ""));
-			} else {
-				redirect(PRJ_DIR.$this->page."?error=ok");
-			}
+		if($this->page == 'annotation') {
+			$queryString = "&error=ok&formkey=".$this->requested('formkey', '')."&type=".$this->requested('type', '');
+		} else {
+			$queryString = "?error=ok";
 		}
+
+		redirect(PRJ_DIR.$this->page . $queryString);
 	}
 
 	/**
