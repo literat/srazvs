@@ -53,6 +53,9 @@ class RegistrationCest extends CestCase
 		$I->see('Třebíč - podzim 2015');
 	}
 
+	/**
+	 * @skipTest
+	 */
 	public function it_should_fail_registrate_new_visitor(AcceptanceTester $I)
 	{
 		$I->amOnPage('/srazvs/registration/');
