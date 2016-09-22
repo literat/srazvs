@@ -47,7 +47,7 @@
 				<a href="<?php echo CAT_DIR; ?>" title="kategorie">
 					<img src="<?php echo IMG_DIR; ?>categories.png" alt="kategorie" /> kategorie</a>
 			</div>
-			<?php include_once(INC_DIR.'menu.inc.php'); ?>
+			<?php echo $data['menu']; ?>
    			<!-- start of siteContent -->
    			<div id='siteContent'>
 				<div id='content'>
