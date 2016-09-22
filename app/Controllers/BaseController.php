@@ -278,4 +278,14 @@ abstract class BaseController
 
 		return $menu;
 	}
+
+	protected function getPlaceAndYear($meetingId)
+	{
+		return $this->database->query(
+			'SELECT	place, DATE_FORMAT(start_date, "%Y") AS year
+			FROM kk_meetings
+			WHERE id = ? AND deleted = ?
+			LIMIT 1', $meetingId, '0')
+			->fetch();
+	}
 }
