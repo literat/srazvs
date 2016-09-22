@@ -2,52 +2,52 @@
 <div style="width:22%;float:left;">
 	<div class='pageRibbon'>Tisk</div>
 		<div>
-			<a style='text-decoration:none; display:block; margin-bottom:4px;' href='export/evidence?type=confirm'>
+			<a style='text-decoration:none; display:block; margin-bottom:4px;' href='/srazvs/export/evidence?type=confirm'>
 				<img style='border:none;' align='absbottom' src='<?php echo IMG_DIR; ?>icons/pdf.png' />
 				potvrzení o přijetí zálohy
 			</a>
 
-			<a style='text-decoration:none; display:block; margin-bottom:4px;' href='export/evidence?type=evidence'>
+			<a style='text-decoration:none; display:block; margin-bottom:4px;' href='/srazvs/export/evidence?type=evidence'>
 				<img style='border:none;' align='absbottom' src='<?php echo IMG_DIR; ?>icons/pdf.png' />
 				příjmový pokladní doklad
 			</a>
 
-			<a style='text-decoration:none; display:block; margin-bottom:4px;' href='export/program-public?cms=public'>
+			<a style='text-decoration:none; display:block; margin-bottom:4px;' href='/srazvs/export/program-public?cms=public'>
 				<img style='border:none;' align='absbottom' src='<?php echo IMG_DIR; ?>icons/pdf.png' />
 				veřejný program
 			</a>
 
-			<a style='text-decoration:none; display:block; margin-bottom:4px;' href='export/program-cards'>
+			<a style='text-decoration:none; display:block; margin-bottom:4px;' href='/srazvs/export/program-cards'>
 				<img style='border:none;' align='absbottom' src='<?php echo IMG_DIR; ?>icons/pdf.png' />
 				osobní program
 			</a>
 
-			<a style='text-decoration:none; display:block; margin-bottom:4px;' href='export/program-large'>
+			<a style='text-decoration:none; display:block; margin-bottom:4px;' href='/srazvs/export/program-large'>
 				<img style='border:none;' align='absbottom' src='<?php echo IMG_DIR; ?>icons/pdf.png' />
 				program srazu - velký formát
 			</a>
 
-			<a style='text-decoration:none; display:block; margin-bottom:4px;' href='export/program-badge'>
+			<a style='text-decoration:none; display:block; margin-bottom:4px;' href='/srazvs/export/program-badge'>
 				<img style='border:none;' align='absbottom' src='<?php echo IMG_DIR; ?>icons/pdf.png' />
 				program srazu - do visačky
 			</a>
 
-			<a style='text-decoration:none; display:block; margin-bottom:4px;' href='export/name-badges'>
+			<a style='text-decoration:none; display:block; margin-bottom:4px;' href='/srazvs/export/name-badges'>
 				<img style='border:none;' align='absbottom' src='<?php echo IMG_DIR; ?>icons/pdf.png' />
 				jmenovky
 			</a>
 
-			<a style='text-decoration:none; display:block; margin-bottom:4px;' href='export/attendance'>
+			<a style='text-decoration:none; display:block; margin-bottom:4px;' href='/srazvs/export/attendance'>
 				<img style='border:none;' align='absbottom' src='<?php echo IMG_DIR; ?>icons/pdf.png' />
 				prezenční listina
 			</a>
 
-			<a style='text-decoration:none; display:block; margin-bottom:4px;' href='export/name-list'>
+			<a style='text-decoration:none; display:block; margin-bottom:4px;' href='/srazvs/export/name-list'>
 				<img style='border:none;' align='absbottom' src='<?php echo IMG_DIR; ?>icons/pdf.png' />
 				jmenný seznam
 			</a>
 
-			<a style='text-decoration:none; display:block; margin-bottom:4px;' href='export/meal-ticket'>
+			<a style='text-decoration:none; display:block; margin-bottom:4px;' href='/srazvs/export/meal-ticket'>
 				<img style='border:none;' align='absbottom' src='<?php echo IMG_DIR; ?>icons/pdf.png' />
 				stravenky
 			</a>
@@ -57,17 +57,17 @@
 				zpětná vazba
 			</a>
 			-->
-			<a style='text-decoration:none; display:block; margin-bottom:4px;' href='export/evidence?type=summary'>
+			<a style='text-decoration:none; display:block; margin-bottom:4px;' href='/srazvs/export/evidence?type=summary'>
 				<img style='border:none;' align='absbottom' src='<?php echo IMG_DIR; ?>icons/pdf.png' />
 				kompletní příjmový pokladní doklad
 			</a>
 
-			<a style='text-decoration:none; display:block; padding-right:4px;' href='export/visitor-excel'>
+			<a style='text-decoration:none; display:block; padding-right:4px;' href='/srazvs/export/visitor-excel'>
 				<img style='border:none;' align='absbottom' src='<?php echo IMG_DIR; ?>icons/xlsx.png' />
 				data účastníků
 			</a>
 
-			<a style='text-decoration:none; display:block; margin-bottom:4px; margin-top:4px;' href='export/program-details'>
+			<a style='text-decoration:none; display:block; margin-bottom:4px; margin-top:4px;' href='/srazvs/export/program-details'>
 				<img style='border:none;' align='absbottom' src='<?php echo IMG_DIR; ?>icons/pdf.png' />
 				detaily programů
 			</a>
