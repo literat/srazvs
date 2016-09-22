@@ -25,31 +25,6 @@ function shortenText($text, $limit, $delimiter)
 }
 
 /**
- * requested()
- * - ziska promenne z GET a POST
- *
- * @author tomasliterahotmail.com
- *
- * @param string $var - nazev pole GET nebo POST
- * @param $default - defaultni hodnota v pripade neexistence GET nebo POST
- */
-function requested($var, $default = NULL)
-{
-	//if(isset($_SESSION['data'][$var])){
-	//	$out = $_SESSION['data'][$var];
-	//	session_unset();
-	//}
-	//else {
-		if(isset($_GET[$var])) $out = clearString($_GET[$var]);
-		elseif(isset($_POST[$var])) $out = clearString($_POST[$var]);
-		else $out = $default;
-		//$_SESSION['data'][$var] = $out;
-	//}
-
-	return $out;
-}
-
-/**
  *
  *
  */

@@ -128,17 +128,10 @@ class MealModel extends BaseModel
 	 */
 	public function getMealsArray($visitorId)
 	{
-		$data = $this->database
+		return $this->database
 			->table($this->dbTable)
 			->where('visitor', $visitorId)
 			->limit(1)
 			->fetch();
-
-		foreach($this->dbColumns as $column) {
-			$$column = requested($column, $data[$column]);
-			$meals[$column] = $$column;
-		}
-
-		return $meals;
 	}
 }

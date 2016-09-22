@@ -432,16 +432,6 @@ class ExportModel
 				ORDER BY nick ASC
 				', $this->meetingId, '0')->fetchAll();
 
-		////ziskani zvolenych programu
-		$blocks = $this->database->query('SELECT 	id
-					 FROM kk_blocks
-					 WHERE meeting = ? AND program = ? AND deleted = ?', $this->meetingId, '1', '0')->fetchAll();
-
-		foreach($blocks as $block){
-			$$block['id'] = requested($block['id'],0);
-			//echo $blockData['id'].":".$$blockData['id']."|";
-		}
-
 		// load and prepare template
 		$this->View->loadTemplate('exports/program_cards');
 		$this->View->assign('result', $data);

@@ -426,13 +426,13 @@ class ProgramModel extends BaseModel
 			->limit(1)
 			->fetch();
 
-		$name = requested("name",$data['name']);
-		$description = requested("description",$data['description']);
-		$tutor = requested("tutor",$data['tutor']);
-		$email = requested("email",$data['email']);
+		$name = $data['name']; //requested("name",$data['name']);
+		$description = $data['description'];//requested("description",$data['description']);
+		$tutor = $data['tutor'];//requested("tutor",$data['tutor']);
+		$email = $data['email'];//requested("email",$data['email']);
 
 		if($type == "program"){
-			$capacity = requested("capacity",$data['capacity']);
+			$capacity = $data['capacity'];//requested("capacity",$data['capacity']);
 
 			$countData = $this->database
 				->query('SELECT COUNT(visitor) AS visitors
