@@ -83,7 +83,7 @@ abstract class BaseController
 	 * database connection
 	 * @var string
 	 */
-	private $database = NULL;
+	protected $database = NULL;
 
 	/**
 	 * debug mode
@@ -232,4 +232,15 @@ abstract class BaseController
 		return ((int)$id . $meetingId) * 116 + 39147;
 	}
 
+	/**
+	 *
+	 *
+	 */
+	protected function getUser($uid)
+	{
+		return $this->database
+			->table('sunlight-users')
+			->where('id', $uid)
+			->fetch();
+	}
 }

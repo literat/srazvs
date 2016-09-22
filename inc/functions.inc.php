@@ -23,14 +23,3 @@ function shortenText($text, $limit, $delimiter)
 
 		return $out_text;
 }
-
-/**
- *
- *
- */
-function getUser($uid, $index, $database)
-{
-	$user = $database->table('sunlight-users')->where('id', $uid)->fetch();
-
-	return $user[$index];
-}

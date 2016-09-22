@@ -380,7 +380,8 @@ class BlockController extends BaseController
 
 			/* Application Header */
 			$this->View->loadTemplate('header');
-			$this->View->assign('database',		$this->database);
+			$this->View->assign('user',		$this->getUser($_SESSION[SESSION_PREFIX.'user']));
+			$this->View->assign('database', $this->database);
 			$this->View->render(TRUE);
 		}
 

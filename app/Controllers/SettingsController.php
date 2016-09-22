@@ -176,7 +176,8 @@ class SettingsController extends BaseController
 
 		/* Application Header */
 		$this->view->loadTemplate('header');
-		$this->view->assign('database',		$this->database);
+		$this->view->assign('user',		$this->getUser($_SESSION[SESSION_PREFIX.'user']));
+		$this->view->assign('database', $this->database);
 		$this->view->render(TRUE);
 
 		// load and prepare template
