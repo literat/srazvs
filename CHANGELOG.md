@@ -1,3 +1,61 @@
+<a name="2.3.0"></a>
+# [2.3.0](https://github.com/literat/srazvs/compare/v2.2.0...v2.3.0) (2016-09-22)
+
+
+### Bug Fixes
+
+* **changelog:** Fixing badly generated changelog file ([28b4bfa](https://github.com/literat/srazvs/commit/28b4bfa))
+* **cleaning functions:** Fix different scope in access (refs #52) ([9b6eab9](https://github.com/literat/srazvs/commit/9b6eab9)), closes [#52](https://github.com/literat/srazvs/issues/52)
+* **cleaning functions:** Fix null value for not null columns (refs #52) ([fc919fc](https://github.com/literat/srazvs/commit/fc919fc)), closes [#52](https://github.com/literat/srazvs/issues/52)
+* **cleaning functions:** Get post form data and fix ids (refs #52) ([72e8ef6](https://github.com/literat/srazvs/commit/72e8ef6)), closes [#52](https://github.com/literat/srazvs/issues/52)
+* **creating block:** Fix formatting of data that goes to controller (refs #56) ([ded784d](https://github.com/literat/srazvs/commit/ded784d)), closes [#56](https://github.com/literat/srazvs/issues/56)
+* **definitions refactor:** Fixing export templates (closes #53) ([9096cec](https://github.com/literat/srazvs/commit/9096cec)), closes [#53](https://github.com/literat/srazvs/issues/53)
+* **definitions refactor:** Fixing namespace (refs #53) ([738257d](https://github.com/literat/srazvs/commit/738257d))
+* **definitions refactor:** Fixing namespaces (refs #53) ([f4bdd8f](https://github.com/literat/srazvs/commit/f4bdd8f))
+* **image path:** Fixing image path of buttons ([542d6f6](https://github.com/literat/srazvs/commit/542d6f6))
+* Absolute path to exports ([0195c8f](https://github.com/literat/srazvs/commit/0195c8f))
+* **programs:** Values for non-existing programs (refs #8) ([fb3bf0a](https://github.com/literat/srazvs/commit/fb3bf0a))
+* Added test for creating full block ([c794840](https://github.com/literat/srazvs/commit/c794840))
+* **returning to page:** Remove bad conditions (refs #36) ([ca95e11](https://github.com/literat/srazvs/commit/ca95e11))
+* **session warning:** Destroy session only if is any set (refs #57) ([3b27b32](https://github.com/literat/srazvs/commit/3b27b32))
+* Added test for creating simple block ([d071542](https://github.com/literat/srazvs/commit/d071542))
+* Creating and updating blocks ([4acc95e](https://github.com/literat/srazvs/commit/4acc95e))
+* Creating and updating programs ([8d7fe6b](https://github.com/literat/srazvs/commit/8d7fe6b))
+* Default values for blocks and programs ([5cc6c89](https://github.com/literat/srazvs/commit/5cc6c89))
+* Forgotten $this ([794b4c4](https://github.com/literat/srazvs/commit/794b4c4))
+* Little bit of refactor of creating block ([9434a62](https://github.com/literat/srazvs/commit/9434a62))
+
+### Features
+
+* **cleaning functions:** Change routing for exports and fix tests (refs #52) ([e45e7e5](https://github.com/literat/srazvs/commit/e45e7e5)), closes [#52](https://github.com/literat/srazvs/issues/52)
+* **cleaning functions:** Fix number2word call in templates (refs #52) ([fa450c2](https://github.com/literat/srazvs/commit/fa450c2)), closes [#52](https://github.com/literat/srazvs/issues/52)
+* **cleaning functions:** Generating menu by controller (refs #52) ([283dbb0](https://github.com/literat/srazvs/commit/283dbb0))
+* **cleaning functions:** Insert values into templates not connection (refs #52) ([809e7b4](https://github.com/literat/srazvs/commit/809e7b4))
+* **cleaning functions:** Move cleardate2DB to registration controller (refs #52) ([af7d3f6](https://github.com/literat/srazvs/commit/af7d3f6))
+* **cleaning functions:** Move form key hash to base controller (refs #52) ([65a8620](https://github.com/literat/srazvs/commit/65a8620))
+* **cleaning functions:** Move functions to controllers (refs #52) ([9e0c504](https://github.com/literat/srazvs/commit/9e0c504))
+* **cleaning functions:** Move getUser function to base controller (refs #52) ([c3705fe](https://github.com/literat/srazvs/commit/c3705fe))
+* **cleaning functions:** Move number2word to controller as a helper method (refs #52) ([2c10972](https://github.com/literat/srazvs/commit/2c10972))
+* **cleaning functions:** Refactor controllers to use requested method (refs #52) ([1780451](https://github.com/literat/srazvs/commit/1780451))
+* **cleaning functions:** Remove duplicated functions (refs #52) ([2a2cf76](https://github.com/literat/srazvs/commit/2a2cf76))
+* **cleaning functions:** Remove Nix routing from includes (refs #52) ([659c36a](https://github.com/literat/srazvs/commit/659c36a))
+* **cleaning functions:** Remove unused error messages (refs #52) ([1fd3574](https://github.com/literat/srazvs/commit/1fd3574))
+* **cleaning functions:** Removing redirect and using nette response (refs #52) ([ea4362e](https://github.com/literat/srazvs/commit/ea4362e))
+* **cleaning functions:** Removing rest of requested function (refs #52) ([cf299a6](https://github.com/literat/srazvs/commit/cf299a6))
+* **cleaning functions:** Removing sunlight CMS specific functions (refs #52) ([a0df030](https://github.com/literat/srazvs/commit/a0df030))
+* **cleaning functions:** Removing unused error list (refs #52) ([51e91d6](https://github.com/literat/srazvs/commit/51e91d6))
+* **cleaning functions:** Removing unused fuctions (refs #52) ([343887b](https://github.com/literat/srazvs/commit/343887b))
+* **cleaning functions:** Skip test because it not fail (refs #52) ([406ac70](https://github.com/literat/srazvs/commit/406ac70))
+* **cleaning functions:** Using Nette routing (refs #52) ([7ae5a67](https://github.com/literat/srazvs/commit/7ae5a67))
+* **cleaning functions:** Using nette string tools to remove diacritics (refs #52) ([20e7927](https://github.com/literat/srazvs/commit/20e7927))
+* **definitions refactor:** Added acceptance tests for exports (refs #53) ([8bf70eb](https://github.com/literat/srazvs/commit/8bf70eb))
+* **definitions refactor:** Move definitions to bootstrap file (refs #53) ([4fc02a8](https://github.com/literat/srazvs/commit/4fc02a8))
+* **definitions refactor:** Use debug mode from parameters (refs #53) ([ba63cb2](https://github.com/literat/srazvs/commit/ba63cb2))
+* **definitions refactor:** Using debugMode everywhere (refs #53) ([00ba0d9](https://github.com/literat/srazvs/commit/00ba0d9))
+* **defintions refactor:** Added tests for exports (refs #53) ([2424e8c](https://github.com/literat/srazvs/commit/2424e8c))
+
+
+
 <a name="2.2.0"></a>
 # 2.2.0 (2016-08-01)
 
