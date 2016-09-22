@@ -16,6 +16,26 @@ class BlockCest extends CestCase
 		],
 	];
 
+	private $fullBlock = [
+		'fields' => [
+			'name'			=> 'testing block',
+			"//textarea[@name='description']"	=> 'testování',
+			'tutor'			=> 'Tester Testovič',
+			'email'			=> 'tester@testovic.local',
+			'capacity'		=> 1,
+		],
+		'options' => [
+			'day'			=> 'sobota',
+			'start_hour'	=> '10',
+			'end_hour'		=> '12',
+			'start_minute'	=> '15',
+			'end_minute'	=> '30',
+			'program'		=> 1,
+			'display_progs'	=> 0,
+			'category'		=> 1,
+		],
+	];
+
 	public function _before(AcceptanceTester $I)
 	{
 		$I->wantTo('login to admin');
@@ -65,7 +85,7 @@ class BlockCest extends CestCase
 	{
 		$I->amOnPage('/srazvs/block/');
 		$I->see('Správa bloků');
-		$I->wantTo('Create new block');
+		$I->wantTo('Create new block with basic data');
 		$I->click('NOVÝ BLOK', '#content');
 		$I->seeCurrentUrlMatches('~/srazvs/block/\?cms=new~');
 		$this->fillForm($I, $this->simpleBlock);
@@ -79,6 +99,14 @@ class BlockCest extends CestCase
 
 	public function it_should_create_full_block(\AcceptanceTester $I)
 	{
+		$I->amOnPage('/srazvs/block/');
+		$I->see('Správa bloků');
+		$I->wantTo('Create new block with all data');
+		$I->click('NOVÝ BLOK', '#content');
+		$I->seeCurrentUrlMatches('~/srazvs/block/\?cms=new~');
+		$this->fillForm($I, $this->fullBlock);
+		$I->click('Uložit', '#content');
+		$I->seeInCurrentUrl('/srazvs/?error=ok');
 	}
 
 	public function it_should_update_full_block(\AcceptanceTester $I)
