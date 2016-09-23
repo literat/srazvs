@@ -140,6 +140,13 @@ $container->addService('router', $router);
 $target = $parameters['appDir'] . '/controllers/' . $controllerName . 'Controller.php';
 $container->parameters['router'] = $appRequest;
 
+/**
+ * Templating
+ */
+$latte = new \Latte\Engine;
+$latte->setTempDirectory(__DIR__ . '/../temp');
+$container->addService('latte', $latte);
+
 //get target
 if(file_exists($target)) {
 	//print_r(get_declared_classes());

@@ -73,6 +73,7 @@ class MeetingController extends BaseController
 		$this->Meeting = $this->container->createServiceMeeting();
 		$this->View = $this->container->createServiceView();
 		$this->Category = $this->container->createServiceCategory();
+		$this->latte = $this->container->getService('latte');
 
 		if($this->meetingId = $this->requested('mid', '')){
 			$_SESSION['meetingID'] = $this->meetingId;
@@ -221,57 +222,35 @@ class MeetingController extends BaseController
 		$error_close_reg = "";
 		$error_login = "";
 
-		// styles in header
-		$style = $this->Category->getStyles();
-
 		/* HTTP Header */
-		$this->View->loadTemplate('http_header');
-		$this->View->assign('style',		$style);
-		$this->View->render(TRUE);
-
-		/* Application Header */
-		$this->View->loadTemplate('header');
-		$this->View->assign('user',		$this->getUser($_SESSION[SESSION_PREFIX.'user']));
-		$this->View->assign('meeting',	$this->getPlaceAndYear($_SESSION['meetingID']));
-		$this->View->assign('menu',		$this->generateMenu());
-		$this->View->render(TRUE);
-
-		// load and prepare template
-		$this->View->loadTemplate($this->templateDir.'/'.$this->template);
-		$this->View->assign('error',			printError($this->error));
-		$this->View->assign('cms',				$this->cms);
-		$this->View->assign('render',			$this->render);
-		$this->View->assign('mid',				$this->meetingId);
-		$this->View->assign('error_start',		printError($error_start));
-		$this->View->assign('error_end',		printError($error_end));
-		$this->View->assign('error_open_reg',	printError($error_open_reg));
-		$this->View->assign('error_close_reg',	printError($error_close_reg));
-		$this->View->assign('error_login',		printError($error_login));
-		$this->View->assign('cms',				$this->cms);
-		$this->View->assign('mid',				$this->meetingId);
-		$this->View->assign('page',				$this->page);
+		$parameters = [
+			'cssDir'			=> CSS_DIR,
+			'jsDir'				=> JS_DIR,
+			'imgDir'			=> IMG_DIR,
+			'style'				=> $this->Category->getStyles(),
+			'user'				=> $this->getUser($_SESSION[SESSION_PREFIX.'user']),
+			'meeting'			=> $this->getPlaceAndYear($_SESSION['meetingID']),
+			'menu'				=> $this->generateMenu(),
+			'error'				=> printError($this->error),
+			'cms'				=> $this->cms,
+			'render'			=> $this->render,
+			'mid'				=> $this->meetingId,
+			'error_start'		=> printError($error_start),
+			'error_end'			=> printError($error_end),
+			'error_open_reg'	=> printError($error_open_reg),
+			'error_close_reg'	=> printError($error_close_reg),
+			'error_login'		=> printError($error_login),
+			'cms'				=> $this->cms,
+			'mid'				=> $this->meetingId,
+			'page'				=> $this->page,
+		];
 
 		if(!empty($this->data)) {
-			$this->View->assign('id',			$this->meetingId);
-			$this->View->assign('place',		$this->data['place']);
-			$this->View->assign('start_date',	$this->data['start_date']);
-			$this->View->assign('end_date',		$this->data['end_date']);
-			$this->View->assign('open_reg',		$this->data['open_reg']);
-			$this->View->assign('close_reg',	$this->data['close_reg']);
-			$this->View->assign('cost',			$this->data['cost']);
-			$this->View->assign('advance',		$this->data['advance']);
-			$this->View->assign('numbering',	$this->data['numbering']);
-			$this->View->assign('contact',		$this->data['contact']);
-			$this->View->assign('email',		$this->data['email']);
-			$this->View->assign('gsm',			$this->data['gsm']);
-
-			$this->View->assign('todo',				$this->todo);
+			$parameters['data'] = $this->data;
+			$parameters['todo'] = $this->todo;
 		}
 
-		$this->View->render(TRUE);
-
-		/* Footer */
-		$this->View->loadTemplate('footer');
-		$this->View->render(TRUE);
+		$this->latte->render(__DIR__ . '/../templates/' . $this->templateDir.'/'.$this->template . '.latte', $parameters);
 	}
+
 }

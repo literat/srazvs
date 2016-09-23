@@ -18,6 +18,7 @@ abstract class BaseController
 	 * @var string
 	 */
 	private $template = 'listing';
+	private $latte;
 
 	/**
 	 * template directory
