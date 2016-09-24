@@ -65,12 +65,6 @@ class CategoryController extends BaseController
 	private $Category;
 
 	/**
-	 * View model
-	 * @var View
-	 */
-	private $View;
-
-	/**
 	 * Prepare initial values
 	 */
 	public function __construct($database, $container)
@@ -79,7 +73,7 @@ class CategoryController extends BaseController
 		$this->container = $container;
 		$this->router = $this->container->parameters['router'];
 		$this->Category = $this->container->createServiceCategory();
-		$this->View = $this->container->createServiceView();
+		$this->latte = $this->container->getService('latte');
 
 		if($this->meetingId = $this->requested('mid', '')){
 			$_SESSION['meetingID'] = $this->meetingId;
@@ -215,42 +209,30 @@ class CategoryController extends BaseController
 	 */
 	private function render()
 	{
-		$error = "";
-
-		/* HTTP Header */
-		$this->View->loadTemplate('http_header');
-		$this->View->assign('style',		$this->Category->getStyles());
-		$this->View->render(TRUE);
-
-		/* Application Header */
-		$this->View->loadTemplate('header');
-		$this->View->assign('user',		$this->getUser($_SESSION[SESSION_PREFIX.'user']));
-		$this->View->assign('meeting',	$this->getPlaceAndYear($_SESSION['meetingID']));
-		$this->View->assign('menu',		$this->generateMenu());
-		$this->View->render(TRUE);
-
-		// load and prepare template
-		$this->View->loadTemplate($this->templateDir.'/'.$this->template);
-		$this->View->assign('heading',	$this->heading);
-		$this->View->assign('todo',		$this->todo);
-		$this->View->assign('error',	printError($this->error));
-		$this->View->assign('render',	$this->Category->getData());
-		$this->View->assign('cms',		$this->cms);
-		$this->View->assign('mid',		$this->meetingId);
-		$this->View->assign('page',		$this->page);
+		$parameters = [
+			'cssDir'	=> CSS_DIR,
+			'jsDir'		=> JS_DIR,
+			'imgDir'	=> IMG_DIR,
+			'catDir'	=> CAT_DIR,
+			'style'		=> $this->Category->getStyles(),
+			'user'		=> $this->getUser($_SESSION[SESSION_PREFIX.'user']),
+			'meeting'	=> $this->getPlaceAndYear($_SESSION['meetingID']),
+			'menu'		=> $this->generateMenu(),
+			'error'		=> printError($this->error),
+			'todo'		=> $this->todo,
+			'cms'		=> $this->cms,
+			'render'	=> $this->Category->getData(),
+			'mid'		=> $this->meetingId,
+			'page'		=> $this->page,
+			'heading'	=> $this->heading,
+		];
 
 		if(!empty($this->data)) {
-			$this->View->assign('id',		$this->categoryId);
-			$this->View->assign('name',		$this->data['name']);
-			$this->View->assign('bgcolor',	$this->data['bgcolor']);
-			$this->View->assign('bocolor',	$this->data['bocolor']);
-			$this->View->assign('focolor',	$this->data['focolor']);
+			$parameters['id'] = $this->categoryId;
+			$parameters['data'] = $this->data;
+
 		}
 
-		$this->View->render(TRUE);
-
-		/* Footer */
-		$this->View->loadTemplate('footer');
-		$this->View->render(TRUE);
+		$this->latte->render(__DIR__ . '/../templates/' . $this->templateDir.'/'.$this->template . '.latte', $parameters);
 	}
 }
