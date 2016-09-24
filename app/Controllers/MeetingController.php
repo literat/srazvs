@@ -54,12 +54,6 @@ class MeetingController extends BaseController
 	 */
 	private $Category;
 
-	/**
-	 * View model
-	 * @var View
-	 */
-	private $View;
-
 	private $container;
 
 	/**
@@ -71,7 +65,6 @@ class MeetingController extends BaseController
 		$this->container = $container;
 		$this->router = $this->container->parameters['router'];
 		$this->Meeting = $this->container->createServiceMeeting();
-		$this->View = $this->container->createServiceView();
 		$this->Category = $this->container->createServiceCategory();
 		$this->latte = $this->container->getService('latte');
 
@@ -240,8 +233,6 @@ class MeetingController extends BaseController
 			'error_open_reg'	=> printError($error_open_reg),
 			'error_close_reg'	=> printError($error_close_reg),
 			'error_login'		=> printError($error_login),
-			'cms'				=> $this->cms,
-			'mid'				=> $this->meetingId,
 			'page'				=> $this->page,
 		];
 
