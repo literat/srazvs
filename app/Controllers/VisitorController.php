@@ -24,12 +24,6 @@ class VisitorController extends BaseController
 	private $Visitor;
 
 	/**
-	 * View model
-	 * @var View
-	 */
-	private $View;
-
-	/**
 	 * Emailer class
 	 * @var Emailer
 	 */
@@ -78,12 +72,12 @@ class VisitorController extends BaseController
 		$this->container = $container;
 		$this->router = $this->container->parameters['router'];
 		$this->Visitor = $this->container->createServiceVisitor();
-		$this->View = $this->container->createServiceView();
 		$this->Emailer = $this->container->createServiceEmailer();
 		$this->Export = $this->container->createServiceExports();
 		$this->Meeting = $this->container->createServiceMeeting();
 		$this->Meal = $this->container->createServiceMeal();
 		$this->Category = $this->container->createServiceCategory();
+		$this->latte = $this->container->getService('latte');
 
 		if($this->meetingId = $this->requested('mid', '')) {
 			$_SESSION['meetingID'] = $this->meetingId;
@@ -466,81 +460,50 @@ class VisitorController extends BaseController
 			$error_group_num = "";
 			$error_bill = "";
 			$error_cost = "";
-
-			$program_switcher = $this->Visitor->renderProgramSwitcher($this->meetingId, $this->itemId);
-			$meals_select = $this->Meal->renderHtmlMealsSelect($this->mealData, $this->disabled);
-			$province_select = $this->Meeting->renderHtmlProvinceSelect($this->data['province']);
 		}
 
-		/* HTTP Header */
-		$this->View->loadTemplate('http_header');
-		$this->View->assign('style',		$this->Category->getStyles());
-		$this->View->render(TRUE);
-
-		/* Application Header */
-		$this->View->loadTemplate('header');
-		$this->View->assign('user',		$this->getUser($_SESSION[SESSION_PREFIX.'user']));
-		$this->View->assign('meeting',	$this->getPlaceAndYear($_SESSION['meetingID']));
-		$this->View->assign('menu',		$this->generateMenu());
-		$this->View->render(TRUE);
-
-		// load and prepare template
-		$this->View->loadTemplate($this->templateDir.'/'.$this->template);
-		$this->View->assign('heading',	$this->heading);
-		$this->View->assign('todo',		$this->todo);
-		$this->View->assign('error',	printError($this->error));
-
-		$this->View->assign('cms',		$this->cms);
-		$this->View->assign('render',	$this->Visitor->getData());
-		$this->View->assign('mid',		$this->meetingId);
-		$this->View->assign('page',		$this->page);
-
-		$this->View->assign('visitor-count',	$this->Visitor->getCount());
-		$this->View->assign('meeting-price',	$this->Visitor->meeting_price);
-		$this->View->assign('search',			$this->Visitor->search);
-
-		$this->View->assign('recipient_mails',	$this->recipients);
+		$parameters = [
+			'cssDir'			=> CSS_DIR,
+			'jsDir'				=> JS_DIR,
+			'imgDir'			=> IMG_DIR,
+			'visitDir'			=> VISIT_DIR,
+			'expDir'			=> EXP_DIR,
+			'style'				=> $this->Category->getStyles(),
+			'user'				=> $this->getUser($_SESSION[SESSION_PREFIX.'user']),
+			'meeting'			=> $this->getPlaceAndYear($_SESSION['meetingID']),
+			'menu'				=> $this->generateMenu(),
+			'error'				=> printError($this->error),
+			'todo'				=> $this->todo,
+			'cms'				=> $this->cms,
+			'render'			=> $this->Visitor->getData(),
+			'mid'				=> $this->meetingId,
+			'page'				=> $this->page,
+			'heading'			=> $this->heading,
+			'visitorCount'		=> $this->Visitor->getCount(),
+			'meetingPrice'		=> $this->Visitor->meeting_price,
+			'search'			=> $this->Visitor->search,
+			'recipient_mails'	=> $this->recipients,
+		];
 
 		if(!empty($this->data)) {
-			$this->View->assign('id',				$this->itemId);
-			$this->View->assign('name',				$this->data['name']);
-			$this->View->assign('surname',			$this->data['surname']);
-			$this->View->assign('nick',				$this->data['nick']);
-			$this->View->assign('email',			$this->data['email']);
-			$this->View->assign('birthday',			(empty($this->data['birthday'])) ? '' : $this->data['birthday']->format('Y-m-d'));
-			$this->View->assign('street',			$this->data['street']);
-			$this->View->assign('city',				$this->data['city']);
-			$this->View->assign('postal_code',		$this->data['postal_code']);
-			$this->View->assign('group_num',		$this->data['group_num']);
-			$this->View->assign('group_name',		$this->data['group_name']);
-			$this->View->assign('troop_name',		$this->data['troop_name']);
-			$this->View->assign('province',			$province_select);
-			$this->View->assign('meals',			$meals_select);
-			$this->View->assign('arrival',			$this->data['arrival']);
-			$this->View->assign('departure',		$this->data['departure']);
-			$this->View->assign('comment',			$this->data['comment']);
-			$this->View->assign('question',			$this->data['question']);
-			$this->View->assign('question2',		$this->data['question2']);
-			$this->View->assign('bill',				$this->data['bill']);
-			$this->View->assign('cost',				$this->data['cost']);
-			$this->View->assign('checked',			$this->data['checked']);
-			$this->View->assign('program_switcher',	$program_switcher);
+			$parameters['id'] = $this->itemId;
+			$parameters['data'] = $this->data;
+			$parameters['birthday'] = (empty($this->data['birthday'])) ? '' : $this->data['birthday']->format('Y-m-d');
+			$parameters['province'] = $this->Meeting->renderHtmlProvinceSelect($this->data['province']);
+			$parameters['meals'] = $this->Meal->renderHtmlMealsSelect($this->mealData, $this->disabled);
+			$parameters['program_switcher'] = $this->Visitor->renderProgramSwitcher($this->meetingId, $this->itemId);
+			$parameters['error_name'] = printError($error_name);
+			$parameters['error_surname'] = printError($error_surname);
+			$parameters['error_nick'] = printError($error_nick);
+			$parameters['error_email'] = printError($error_email);
+			$parameters['error_postal_code'] = printError($error_postal_code);
+			$parameters['error_surname'] = printError($error_surname);
+			$parameters['error_group_num'] = printError($error_group_num);
+			$parameters['error_bill'] = printError($error_bill);
+			$parameters['error_cost'] = printError($error_cost);
 
-			$this->View->assign('error_name',			printError($error_name));
-			$this->View->assign('error_surname',		printError($error_surname));
-			$this->View->assign('error_nick',			printError($error_nick));
-			$this->View->assign('error_email',			printError($error_email));
-			$this->View->assign('error_postal_code',	printError($error_postal_code));
-			$this->View->assign('error_surname',		printError($error_surname));
-			$this->View->assign('error_group_num',		printError($error_group_num));
-			$this->View->assign('error_bill',			printError($error_bill));
-			$this->View->assign('error_cost',			printError($error_cost));
 		}
 
-		$this->View->render(TRUE);
-
-		/* Footer */
-		$this->View->loadTemplate('footer');
-		$this->View->render(TRUE);
+		$this->latte->render(__DIR__ . '/../templates/' . $this->templateDir.'/'.$this->template . '.latte', $parameters);
 	}
 }
