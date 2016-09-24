@@ -171,6 +171,18 @@ abstract class BaseController
 		return $out;
 	}
 
+	protected function processClearString($string)
+	{
+		//specialni znaky
+		$string = htmlspecialchars($string);
+		//html tagy
+		$string = strip_tags($string);
+		//slashes
+		$string = stripslashes($string);
+
+		return $string;
+	}
+
 	/**
 	 * clearString()
 	 * - ocisti retezec od html, backslashu a specialnich znaku
@@ -182,12 +194,13 @@ abstract class BaseController
 	 */
 	protected function clearString($string)
 	{
-		//specialni znaky
-		$string = htmlspecialchars($string);
-		//html tagy
-		$string = strip_tags($string);
-		//slashes
-		$string = stripslashes($string);
+		if(is_array($string)) {
+			foreach ($string as $key => $value) {
+				$string[$key] = $this->processClearString($value);
+			}
+		} else {
+			$string = $this->processClearString($string);
+		}
 		return $string;
 	}
 
