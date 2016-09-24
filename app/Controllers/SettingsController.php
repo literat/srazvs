@@ -59,12 +59,6 @@ class SettingsController extends BaseController
 	private $Settings;
 
 	/**
-	 * View model
-	 * @var View
-	 */
-	private $view;
-
-	/**
 	 * Emailer model
 	 * @var Emailer
 	 */
@@ -79,8 +73,8 @@ class SettingsController extends BaseController
 		$this->container = $container;
 		$this->router = $this->container->parameters['router'];
 		$this->Settings = $this->container->createServiceSettings();
-		$this->view = $this->container->createServiceView();
 		$this->Emailer = $this->container->createServiceEmailer();
+		$this->latte = $this->container->getService('latte');
 
 		if($this->meetingId = $this->requested('mid', '')){
 			$_SESSION['meetingID'] = $this->meetingId;
@@ -171,25 +165,25 @@ class SettingsController extends BaseController
 		$error = "";
 
 		/* HTTP Header */
-		$this->view->loadTemplate('http_header');
-		$this->view->render(TRUE);
+		//$this->view->loadTemplate('http_header');
+		//$this->view->render(TRUE);
 
 		/* Application Header */
-		$this->view->loadTemplate('header');
-		$this->view->assign('user',		$this->getUser($_SESSION[SESSION_PREFIX.'user']));
-		$this->view->assign('meeting',	$this->getPlaceAndYear($_SESSION['meetingID']));
-		$this->view->assign('menu',		$this->generateMenu());
-		$this->view->render(TRUE);
+		//$this->view->loadTemplate('header');
+		//$this->view->assign('user',		$this->getUser($_SESSION[SESSION_PREFIX.'user']));
+		//$this->view->assign('meeting',	$this->getPlaceAndYear($_SESSION['meetingID']));
+		//$this->view->assign('menu',		$this->generateMenu());
+		//$this->view->render(TRUE);
 
 		// load and prepare template
-		$this->view->loadTemplate($this->templateDir.'/'.$this->template);
-		$this->view->assign('heading',	$this->heading);
-		$this->view->assign('todo',		$this->todo);
-		$this->view->assign('error',	printError($this->error));
-		$this->view->assign('cms',		$this->cms);
-		$this->view->assign('mid',		$this->meetingId);
-		$this->view->assign('page',		$this->page);
-
+		//$this->view->loadTemplate($this->templateDir.'/'.$this->template);
+		//$this->view->assign('heading',	$this->heading);
+		//$this->view->assign('todo',		$this->todo);
+		//$this->view->assign('error',	printError($this->error));
+		//$this->view->assign('cms',		$this->cms);
+		//$this->view->assign('mid',		$this->meetingId);
+		//$this->view->assign('page',		$this->page);
+/*
 		$this->view->assign('payment_subject',		$this->Settings->getMailJSON('cost')->subject);
 		$this->view->assign('payment_message',		$this->Settings->getMailJSON('cost')->message);
 		$this->view->assign('payment_html_message',	html_entity_decode($this->Settings->getMailJSON('cost')->message));
@@ -205,11 +199,40 @@ class SettingsController extends BaseController
 		$this->view->assign('reg_subject',			$this->Settings->getMailJSON('post_reg')->subject);
 		$this->view->assign('reg_message',			$this->Settings->getMailJSON('post_reg')->message);
 		$this->view->assign('reg_html_message',		html_entity_decode($this->Settings->getMailJSON('post_reg')->message));
-
-		$this->view->render(TRUE);
+*/
+		//$this->view->render(TRUE);
 
 		/* Footer */
-		$this->view->loadTemplate('footer');
-		$this->view->render(TRUE);
+		//$this->view->loadTemplate('footer');
+		//$this->view->render(TRUE);
+
+		$parameters = [
+			'cssDir'				=> CSS_DIR,
+			'jsDir'					=> JS_DIR,
+			'imgDir'				=> IMG_DIR,
+			'user'					=> $this->getUser($_SESSION[SESSION_PREFIX.'user']),
+			'meeting'				=> $this->getPlaceAndYear($_SESSION['meetingID']),
+			'menu'					=> $this->generateMenu(),
+			'error'					=> printError($this->error),
+			'todo'					=> $this->todo,
+			'cms'					=> $this->cms,
+			'mid'					=> $this->meetingId,
+			'page'					=> $this->page,
+			'heading'				=> $this->heading,
+			'payment_subject'		=> $this->Settings->getMailJSON('cost')->subject,
+			'payment_message'		=> $this->Settings->getMailJSON('cost')->message,
+			'payment_html_message'	=> html_entity_decode($this->Settings->getMailJSON('cost')->message),
+			'advance_subject'		=> $this->Settings->getMailJSON('advance')->subject,
+			'advance_message'		=> $this->Settings->getMailJSON('advance')->message,
+			'advance_html_message'	=> html_entity_decode($this->Settings->getMailJSON('advance')->message),
+			'tutor_subject'			=> $this->Settings->getMailJSON('tutor')->subject,
+			'tutor_message'			=> $this->Settings->getMailJSON('tutor')->message,
+			'tutor_html_message'	=> html_entity_decode($this->Settings->getMailJSON('tutor')->message),
+			'reg_subject'			=> $this->Settings->getMailJSON('post_reg')->subject,
+			'reg_message'			=> $this->Settings->getMailJSON('post_reg')->message,
+			'reg_html_message'		=> html_entity_decode($this->Settings->getMailJSON('post_reg')->message),
+		];
+
+		$this->latte->render(__DIR__ . '/../templates/' . $this->templateDir.'/'.$this->template . '.latte', $parameters);
 	}
 }
