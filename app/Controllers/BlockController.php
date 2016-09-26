@@ -52,10 +52,12 @@ class BlockController extends BaseController
 
 	private $container;
 	private $Block;
-	private $View;
 	private $Emailer;
 	private $Meeting;
 	private $Category;
+
+	/** @var string template directory */
+	private $templateDir = 'blocks';
 
 	/**
 	 * Prepare model classes and get meeting id
@@ -67,10 +69,10 @@ class BlockController extends BaseController
 		$this->router = $this->container->parameters['router'];
 		$this->debugMode = $this->container->parameters['debugMode'];
 		$this->Block = $this->container->createServiceBlock();
-		$this->View = $this->container->createServiceView();
 		$this->Emailer = $this->container->createServiceEmailer();
 		$this->Meeting = $this->container->createServiceMeeting();
 		$this->Category = $this->container->createServiceCategory();
+		$this->latte = $this->container->getService('latte');
 
 		if($this->meetingId = $this->requested('mid', '')){
 			$_SESSION['meetingID'] = $this->meetingId;
@@ -374,70 +376,57 @@ class BlockController extends BaseController
 			$display_progs_checkbox = $this->renderHtmlCheckBox('display_progs', 0, $this->data['display_progs']);
 		}
 
+		$parameters = [
+			'cssDir'	=> CSS_DIR,
+			'jsDir'		=> JS_DIR,
+			'imgDir'	=> IMG_DIR,
+			'wwwDir'	=> HTTP_DIR,
+			'error'		=> printError($this->error),
+			'todo'		=> $this->todo,
+			'cms'		=> $this->cms,
+			'render'	=> $this->Block->getData(),
+			'mid'		=> $this->meetingId,
+			'page'		=> $this->page,
+			'heading'	=> $this->heading,
+		];
+
 		if($this->cms != 'annotation') {
-			/* HTTP Header */
-			$this->View->loadTemplate('http_header');
-			$this->View->assign('style',		$this->Category->getStyles());
-			$this->View->render(TRUE);
-
-			/* Application Header */
-			$this->View->loadTemplate('header');
-			$this->View->assign('user',		$this->getUser($_SESSION[SESSION_PREFIX.'user']));
-			$this->View->assign('meeting',	$this->getPlaceAndYear($_SESSION['meetingID']));
-			$this->View->assign('menu',		$this->generateMenu());
-			$this->View->render(TRUE);
+			$parameters = array_merge($parameters, [
+				'style'		=> $this->Category->getStyles(),
+				'user'		=> $this->getUser($_SESSION[SESSION_PREFIX.'user']),
+				'meeting'	=> $this->getPlaceAndYear($_SESSION['meetingID']),
+				'menu'		=> $this->generateMenu(),
+			]);
 		}
-
-		// load and prepare template
-		$this->View->loadTemplate('blocks/'.$this->template);
-		$this->View->assign('heading',	$this->heading);
-		$this->View->assign('todo',		$this->todo);
-		$this->View->assign('error',	printError($this->error));
-
-		$this->View->assign('cms',		$this->cms);
-		$this->View->assign('render',	$this->Block->getData());
-		$this->View->assign('mid',		$this->meetingId);
-		$this->View->assign('page',		$this->page);
 
 		if(!empty($this->data)) {
-			$this->View->assign('id',					$this->blockId);
-			$this->View->assign('name',					$this->data['name']);
-			$this->View->assign('description',			$this->data['description']);
-			$this->View->assign('tutor',				$this->data['tutor']);
-			$this->View->assign('email',				$this->data['email']);
-			$this->View->assign('error_name',			printError($error_name));
-			$this->View->assign('error_description',	printError($error_description));
-			$this->View->assign('error_tutor',			printError($error_tutor));
-			$this->View->assign('error_email',			printError($error_email));
-			$this->View->assign('cat_roll',				$cat_roll);
-			$this->View->assign('day_roll',				$day_roll);
-			$this->View->assign('day',					$this->data['day']);
-			$this->View->assign('from',					$this->data['from']);
-			$this->View->assign('to',					$this->data['to']);
-			$this->View->assign('program',				$this->data['program']);
-			$this->View->assign('hour_roll',			$hour_roll);
-			$this->View->assign('minute_roll',			$minute_roll);
-			$this->View->assign('end_hour_roll',		$end_hour_roll);
-			$this->View->assign('end_minute_roll',		$end_minute_roll);
-			$this->View->assign('program_checkbox',		$program_checkbox);
-			$this->View->assign('display_progs_checkbox',$display_progs_checkbox);
-			$this->View->assign('type',					isset($this->data['type']) ? $this->data['type'] : NULL);
-			$this->View->assign('hash',					isset($this->data['formkey']) ? $this->data['formkey'] : NULL);
-			$this->View->assign('formkey',				((int)$this->blockId.$this->meetingId) * 116 + 39147);
-			$this->View->assign('meeting_heading',		$this->Meeting->getRegHeading());
-			$this->View->assign('capacity',				$this->data['capacity']);
-			$this->View->assign('category',				$this->data['category']);
-			$this->View->assign('block',				$this->itemId);
-			$this->View->assign('error_material',		printError($error_material));
-			$this->View->assign('material',				$this->data['material']);
-			$this->View->assign('page_title',			'Registrace programů pro lektory');
+
+			$parameters = array_merge($parameters, [
+				'id'				=> $this->blockId,
+				'data'				=> $this->data,
+				'error_name'		=> printError($error_name),
+				'error_description'	=> printError($error_description),
+				'error_tutor'		=> printError($error_tutor),
+				'error_email'		=> printError($error_email),
+				'cat_roll'			=> $cat_roll,
+				'day_roll'			=> $day_roll,
+				'hour_roll'			=> $hour_roll,
+				'minute_roll'		=> $minute_roll,
+				'end_hour_roll'		=> $end_hour_roll,
+				'end_minute_roll'	=> $end_minute_roll,
+				'program_checkbox'	=> $program_checkbox,
+				'display_progs_checkbox'	=> $display_progs_checkbox,
+				'formkey'			=> ((int)$this->blockId.$this->meetingId) * 116 + 39147,
+				'meeting_heading'	=> $this->Meeting->getRegHeading(),
+				'block'				=> $this->itemId,
+				'error_material'	=> printError($error_material),
+				'page_title'		=> 'Registrace programů pro lektory',
+				'type'				=> isset($this->data['type']) ? $this->data['type'] : NULL,
+				'hash'				=> isset($this->data['formkey']) ? $this->data['formkey'] : NULL,
+			]);
 		}
 
-		$this->View->render(TRUE);
-
-		/* Footer */
-		$this->View->loadTemplate('footer');
-		$this->View->render(TRUE);
+		$this->latte->render(__DIR__ . '/../templates/' . $this->templateDir.'/'.$this->template . '.latte', $parameters);
 	}
 
 	/**
