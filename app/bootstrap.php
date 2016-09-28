@@ -11,7 +11,6 @@ use Nette\Application\Routers\RouteList;
 use Nette\Application\Routers\Route;
 
 require_once __DIR__ . '/../vendor/autoload.php';
-require_once __DIR__ . '/../inc/functions.inc.php';
 require_once __DIR__ . '/../inc/errors.inc.php';
 
 define('SESSION_PREFIX', md5('localhost'.'vodni'.'vodni'.'sunlight')."-");
