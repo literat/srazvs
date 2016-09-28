@@ -70,12 +70,6 @@ class ProgramController extends BaseController
 	private $Program;
 
 	/**
-	 * View model
-	 * @var View
-	 */
-	private $View;
-
-	/**
 	 * Emailer class
 	 * @var Emailer
 	 */
@@ -92,6 +86,9 @@ class ProgramController extends BaseController
 	 * @var Category
 	 */
 	private $Category;
+
+	/** @var Latte/latte latte */
+	private $latte;
 
 	/**
 	 * Meeting class
@@ -112,11 +109,11 @@ class ProgramController extends BaseController
 		$this->router = $this->container->parameters['router'];
 		$this->Program = $this->container->createServiceProgram();
 		$this->block = $this->container->createServiceBlock();
-		$this->View = $this->container->createServiceView();
 		$this->Emailer = $this->container->createServiceEmailer();
 		$this->Export = $this->container->createServiceExports();
 		$this->Meeting = $this->container->createServiceMeeting();
 		$this->Category = $this->container->createServiceCategory();
+		$this->latte = $this->container->getService('latte');
 
 		if($this->meetingId = $this->requested('mid', '')){
 			$_SESSION['meetingID'] = $this->meetingId;
@@ -389,91 +386,78 @@ class ProgramController extends BaseController
 			// time select boxes
 		}
 
+		$parameters = [
+			'cssDir'	=> CSS_DIR,
+			'jsDir'		=> JS_DIR,
+			'imgDir'	=> IMG_DIR,
+			'wwwDir'	=> HTTP_DIR,
+			'expDir'	=> EXP_DIR,
+			'error'		=> printError($this->error),
+			'todo'		=> $this->todo,
+			'cms'		=> $this->cms,
+			'render'	=> $this->Program->getData(),
+			'mid'		=> $this->meetingId,
+			'page'		=> $this->page,
+			'heading'	=> $this->heading,
+		];
+
 		if($this->cms != 'public' && $this->cms != 'annotation') {
-			/* HTTP Header */
-			$this->View->loadTemplate('http_header');
-			$this->View->assign('style',		$this->Category->getStyles());
-			$this->View->render(TRUE);
-
-			/* Application Header */
-			$this->View->loadTemplate('header');
-			$this->View->assign('user',		$this->getUser($_SESSION[SESSION_PREFIX.'user']));
-			$this->View->assign('meeting',	$this->getPlaceAndYear($_SESSION['meetingID']));
-			$this->View->assign('menu',		$this->generateMenu());
-			$this->View->render(TRUE);
+			$parameters = array_merge($parameters, [
+				'style'		=> $this->Category->getStyles(),
+				'user'		=> $this->getUser($_SESSION[SESSION_PREFIX.'user']),
+				'meeting'	=> $this->getPlaceAndYear($_SESSION['meetingID']),
+				'menu'		=> $this->generateMenu(),
+			]);
 		}
-
-		// load and prepare template
-		$this->View->loadTemplate($this->templateDir.'/'.$this->template);
-		$this->View->assign('heading',	$this->heading);
-		$this->View->assign('todo',		$this->todo);
-		$this->View->assign('error',	printError($this->error));
-
-		$this->View->assign('cms',		$this->cms);
-		$this->View->assign('render',	$this->Program->getData());
-		$this->View->assign('mid',		$this->meetingId);
-		$this->View->assign('page',		$this->page);
-		$this->View->assign('css',		$this->Category->getStyles());
 
 		if(!empty($this->data)) {
-			$this->View->assign('id',						$this->programId);
-			$this->View->assign('name',						$this->data['name']);
-			$this->View->assign('description',				$this->data['description']);
-			$this->View->assign('tutor',					$this->data['tutor']);
-			$this->View->assign('email',					$this->data['email']);
-			$this->View->assign('material',					$this->data['material']);
-			$this->View->assign('capacity',					$this->data['capacity']);
-			$this->View->assign('block',					$this->data['block']);
-			$this->View->assign('category',					$this->data['category']);
-			$this->View->assign('error_name',				printError($error_name));
-			$this->View->assign('error_description',		printError($error_description));
-			$this->View->assign('error_tutor',				printError($error_tutor));
-			$this->View->assign('error_email',				printError($error_email));
-			$this->View->assign('error_material',			printError($error_material));
-			$this->View->assign('cat_roll',					$cat_roll);
-			$this->View->assign('block_select',				$block_select);
-			$this->View->assign('display_in_reg_checkbox',	$display_in_reg_checkbox);
-			$this->View->assign('program_visitors',			$this->Program->getProgramVisitors($this->programId));
-			$this->View->assign('page_title',				'Registrace programů pro lektory');
-			$this->View->assign('meeting_heading',			$this->Meeting->getRegHeading());
-			$this->View->assign('type',						isset($this->data['type']) ? $this->data['type'] : NULL);
-			$this->View->assign('hash',						isset($this->data['formkey']) ? $this->data['formkey'] : NULL);
-			$this->View->assign('formkey',					((int)$this->programId.$this->meetingId) * 116 + 39147);
-		} elseif($this->cms == 'public') {
-			$this->View->assign('meeting_heading',			$this->Meeting->getRegHeading());
+			$parameters = array_merge($parameters, [
+				'id'				=> $this->programId,
+				'data'				=> $this->data,
+				'error_name'		=> printError($error_name),
+				'error_description'	=> printError($error_description),
+				'error_tutor'		=> printError($error_tutor),
+				'error_email'		=> printError($error_email),
+				'error_material'	=> printError($error_material),
+				'cat_roll'			=> $cat_roll,
+				'block_select'		=> $block_select,
+				'program_visitors'	=> $this->Program->getProgramVisitors($this->programId),
+				'display_in_reg_checkbox'	=> $display_in_reg_checkbox,
+				'formkey'			=> ((int)$this->programId.$this->meetingId) * 116 + 39147,
+				'meeting_heading'	=> $this->Meeting->getRegHeading(),
+				'block'				=> $this->itemId,
+				'page_title'		=> 'Registrace programů pro lektory',
+				'type'				=> isset($this->data['type']) ? $this->data['type'] : NULL,
+				'hash'				=> isset($this->data['formkey']) ? $this->data['formkey'] : NULL,
+			]);
+		}
+
+		if($this->cms == 'public') {
+			$parameters['meeting_heading'] = $this->Meeting->getRegHeading();
 			////otevirani a uzavirani prihlasovani
-			if(($this->Meeting->getRegOpening() < time()) || $this->debugMode){
-				$this->View->assign('display_program',	TRUE);
+			if(($this->Meeting->getRegOpening() < time()) || $this->debugMode) {
+				$parameters['display_program'] = true;
 			} else {
-				$this->View->assign('display_program',	FALSE);
+				$parameters['display_program'] = false;
 			}
-			$this->View->assign('public_program',		$this->Meeting->renderPublicProgramOverview());
-			$this->View->assign('page_title',			'Srazy VS - veřejný program');
-			$this->View->assign('style',				'table { border-collapse:separate; width:100%; }
-														td { .width:100%; text-align:center; padding:0px; }
-														td.day { border:1px solid black; background-color:#777777; width:80px; }
-														td.time { background-color:#cccccc; width:80px; }'
-			);
+			$parameters['public_program'] = $this->Meeting->renderPublicProgramOverview();
+			$parameters['page_title'] = 'Srazy VS - veřejný program';
+			$parameters['style'] = 'table { border-collapse:separate; width:100%; }
+				td { .width:100%; text-align:center; padding:0px; }
+				td.day { border:1px solid black; background-color:#777777; width:80px; }
+				td.time { background-color:#cccccc; width:80px; }';
 		} elseif($this->cms == 'annotation') {
-			$this->View->assign('meeting_heading',			$this->Meeting->getRegHeading());
+			$parameters['meeting_heading'] = $this->Meeting->getRegHeading();
 			////otevirani a uzavirani prihlasovani
-			if(($this->Meeting->getRegOpening() < time()) || $this->debugMode){
-				$this->View->assign('display_program',	TRUE);
+			if(($this->Meeting->getRegOpening() < time()) || $this->debugMode) {
+				$parameters['display_program'] = true;
 			} else {
-				$this->View->assign('display_program',	FALSE);
+				$parameters['display_program'] = false;
 			}
-			$this->View->assign('type',		$this->data['type']);
-			$this->View->assign('formkey',	$this->data['formkey']);
-		} else {
-
+			$parameters['type'] = $this->data['type'];
+			$parameters['formkey'] = $this->data['formkey'];
 		}
 
-		$this->View->render(TRUE);
-
-		/* Footer */
-		if($this->cms != 'public' && $this->cms != 'annotation') {
-			$this->View->loadTemplate('footer');
-			$this->View->render(TRUE);
-		}
+		$this->latte->render(__DIR__ . '/../templates/' . $this->templateDir.'/'.$this->template . '.latte', $parameters);
 	}
 }

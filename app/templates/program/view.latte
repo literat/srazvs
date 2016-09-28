@@ -1,0 +1,42 @@
+{layout '../@vodni_layout.latte'}
+
+{block content}
+	<!-- content -->
+	<div id="content-program">
+	<div id="content-pad-program">
+	<h1>Program srazu vodních skautů</h1>
+	<br />
+	<h2>{$meeting_heading}</h2>
+	<br />
+	<p>info: Po rozkliknutí programu se Vám zobrazí jeho detail.</p>
+
+	<!-- PROGRAM SRAZU -->
+
+{if $display_program}
+
+	{$public_program|noescape}
+
+	<br />
+	<a style="text-decoration:none; padding-right:4px;" href="{$expDir}/?program-public">
+		<img style='border:none;' align='absbottom' src='{$imgDir}icons/pdf.png' />
+	</a>
+	<a href="{$expDir}/?program-public&cms=public">Stáhněte si program srazu ve formátu PDF</a>
+	<br />
+	<a style="text-decoration:none; padding-right:4px;" href="{$expDir}/?program-details">
+		<img style='border:none;' align='absbottom' src='{$imgDir}icons/pdf.png' />
+	</a>
+	<a href="{$expDir}/?program-details&cms=public">Stáhněte si detaily programů srazu ve formátu PDF</a>
+	<p style="text-align:center; font-size:medium;">Změna programu vyhrazena!</p>
+
+	<!-- PROGRAM SRAZU -->
+
+{else}
+		<div>Registrace není otevřena, sraz se stále ještě připravuje!</div>
+{/if}
+				<p></p>
+				<p style="text-align: center; "></p>
+			</div>
+		</div>
+		<div class="cleaner"></div>
+	</div>
+</div>
