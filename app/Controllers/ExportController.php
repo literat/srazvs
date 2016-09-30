@@ -10,11 +10,11 @@ class ExportController extends BaseController
 	 * This template variable will hold the 'view' portion of our MVC for this
 	 * controller
 	 */
-	public $template = 'export';
+	public $template = 'exports';
 
 	private $container;
 	private $export;
-	private $view;
+	private $latte;
 	private $program;
 
 	public function __construct($database, $container)
@@ -23,8 +23,9 @@ class ExportController extends BaseController
 		$this->container = $container;
 		$this->router = $this->container->parameters['router'];
 		$this->export = $this->container->createServiceExports();
-		$this->view = $this->container->createServiceView();
 		$this->program = $this->container->createServiceProgram();
+		$this->latte = $this->container->getService('latte');
+		$this->templateDir = 'exports';
 	}
 
 	/**
@@ -90,32 +91,25 @@ class ExportController extends BaseController
 				break;
 		}
 
-		/* HTTP Header */
-		$this->view->loadTemplate('http_header');
-		$this->view->render(TRUE);
+		$parameters = [
+			'cssDir'	=> CSS_DIR,
+			'jsDir'		=> JS_DIR,
+			'imgDir'	=> IMG_DIR,
+			'wwwDir'	=> HTTP_DIR,
+			'user'		=> $this->getUser($_SESSION[SESSION_PREFIX.'user']),
+			'meeting'	=> $this->getPlaceAndYear($_SESSION['meetingID']),
+			'menu'		=> $this->generateMenu(),
+			'graph'		=> $this->export->renderGraph(),
+			'graphHeight'	=> $this->export->getGraphHeight(),
+			'account'	=> $this->export->getMoney('account'),
+			'balance'	=> $this->export->getMoney('balance'),
+			'suma'		=> $this->export->getMoney('suma'),
+			'programs'	=> $this->program->renderExportPrograms(),
+			'materials'	=> $this->export->getMaterial(),
+			'meals'		=> $this->export->renderMealCount(),
+		];
 
-		/* Application Header */
-		$this->view->loadTemplate('header');
-		$this->view->assign('user',		$this->getUser($_SESSION[SESSION_PREFIX.'user']));
-		$this->view->assign('meeting',	$this->getPlaceAndYear($_SESSION['meetingID']));
-		$this->view->assign('menu',		$this->generateMenu());
-		$this->view->render(TRUE);
-
-		// load and prepare template
-		$this->view->loadTemplate('exports/exports');
-		$this->view->assign('graph',		$this->export->renderGraph());
-		$this->view->assign('graphHeight',	$this->export->getGraphHeight());
-		$this->view->assign('account',		$this->export->getMoney('account'));
-		$this->view->assign('balance',		$this->export->getMoney('balance'));
-		$this->view->assign('suma',			$this->export->getMoney('suma'));
-		$this->view->assign('programs',		$this->program->renderExportPrograms());
-		$this->view->assign('materials',	$this->export->getMaterial());
-		$this->view->assign('meals',		$this->export->renderMealCount());
-		$this->view->render(TRUE);
-
-		/* Footer */
-		$this->view->loadTemplate('footer');
-		$this->view->render(TRUE);
+		$this->latte->render(__DIR__ . '/../templates/' . $this->templateDir.'/'.$this->template . '.latte', $parameters);
 	}
 
 	/**
