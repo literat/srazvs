@@ -32,12 +32,6 @@ class RegistrationController extends BaseController
 	private $Visitor;
 
 	/**
-	 * View model
-	 * @var View
-	 */
-	private $View;
-
-	/**
 	 * Emailer class
 	 * @var Emailer
 	 */
@@ -75,6 +69,9 @@ class RegistrationController extends BaseController
 
 	protected $hash = NULL;
 
+	/** @var Latte/latte latte */
+	private $latte;
+
 	/**
 	 * Prepare model classes and get meeting id
 	 */
@@ -89,12 +86,12 @@ class RegistrationController extends BaseController
 		$this->container = $container;
 		$this->router = $this->container->parameters['router'];
 		$this->Visitor = $this->container->createServiceVisitor();
-		$this->View = $this->container->createServiceView();
 		$this->Emailer = $this->container->createServiceEmailer();
 		$this->Export = $this->container->createServiceExports();
 		$this->Meeting = $this->container->createServiceMeeting();
 		$this->Meal = $this->container->createServiceMeal();
 		$this->Program = $this->container->createServiceProgram();
+		$this->latte = $this->container->getService('latte');
 
 		$this->debugMode = $this->container->parameters['debugMode'];
 
@@ -486,62 +483,39 @@ class RegistrationController extends BaseController
 
 		}
 
-		/* Application Header */
-		$this->View->loadTemplate('vodni_header');
-		$this->View->assign('page_title',	"Registrace srazu VS");
-		$this->View->render(TRUE);
-
-		// load and prepare template
-		$this->View->loadTemplate($this->templateDir.'/'.$this->template);
-		$this->View->assign('heading',	$this->heading);
-		$this->View->assign('todo',		$this->todo);
-		$this->View->assign('error',	printError($this->error));
-
-		$this->View->assign('cms',		$this->cms);
-		$this->View->assign('render',	$this->Visitor->getData());
-		$this->View->assign('mid',		$this->meetingId);
-		$this->View->assign('page',		$this->page);
-
-		$this->View->assign('meeting_heading',	$this->Meeting->getRegHeading());
-
-		////otevirani a uzavirani prihlasovani
-		$this->View->assign(
-			'disabled',
-			$this->Meeting->isRegOpen($this->debugMode) ? "" : "disabled"
-		);
+		$parameters = [
+			'cssDir'	=> CSS_DIR,
+			'jsDir'		=> JS_DIR,
+			'imgDir'	=> IMG_DIR,
+			'wwwDir'	=> HTTP_DIR,
+			'error'		=> printError($this->error),
+			'todo'		=> $this->todo,
+			'cms'		=> $this->cms,
+			'render'	=> $this->Visitor->getData(),
+			'mid'		=> $this->meetingId,
+			'page'		=> $this->page,
+			'heading'	=> $this->heading,
+			'page_title'=> "Registrace srazu VS",
+			'meeting_heading'	=> $this->Meeting->getRegHeading(),
+			////otevirani a uzavirani prihlasovani
+			'disabled'	=> $this->Meeting->isRegOpen($this->debugMode) ? "" : "disabled",
+		];
 
 		if(!empty($this->data)) {
-			$this->View->assign('id',				(isset($this->itemId)) ? $this->itemId : '');
-			$this->View->assign('name',				$this->data['name']);
-			$this->View->assign('surname',			$this->data['surname']);
-			$this->View->assign('nick',				$this->data['nick']);
-			$this->View->assign('email',			$this->data['email']);
-			$this->View->assign('birthday',			date_format(date_create($this->data['birthday']),"d.m.Y"));
-			$this->View->assign('street',			$this->data['street']);
-			$this->View->assign('city',				$this->data['city']);
-			$this->View->assign('postal_code',		$this->data['postal_code']);
-			$this->View->assign('group_num',		$this->data['group_num']);
-			$this->View->assign('group_name',		$this->data['group_name']);
-			$this->View->assign('troop_name',		$this->data['troop_name']);
-			$this->View->assign('province',			$province_select);
-			$this->View->assign('meals',			$meals_select);
-			$this->View->assign('arrival',			$this->data['arrival']);
-			$this->View->assign('departure',		$this->data['departure']);
-			$this->View->assign('comment',			$this->data['comment']);
-			$this->View->assign('question',			$this->data['question']);
-			$this->View->assign('question2',			$this->data['question2']);
-			$this->View->assign('bill',				$this->data['bill']);
-			$this->View->assign('cost',				$this->Meeting->getPrice('cost'));
-			$this->View->assign('checked',			(empty($this->data['checked']) ? '0' : $this->data['checked']));
-			$this->View->assign('programs',			$program_switcher);
-			$this->View->assign('hash',				$this->hash);
-			$this->View->assign('is-reg-open',		$this->Meeting->isRegOpen($this->debugMode));
+			$parameters = array_merge($parameters, [
+				'id'				=> isset($this->itemId) ? $this->itemId : '',
+				'data'				=> $this->data,
+				'birthday'			=> date_format(date_create($this->data['birthday']),"d.m.Y"),
+				'province'			=> $province_select,
+				'meals'				=> $meals_select,
+				'cost'				=> $this->Meeting->getPrice('cost'),
+				'checked'			=> empty($this->data['checked']) ? '0' : $this->data['checked'],
+				'programs'			=> $program_switcher,
+				'hash'				=> $this->hash,
+				'isRegistrationOpen'		=> $this->Meeting->isRegOpen($this->debugMode),
+			]);
 		}
 
-		$this->View->render(TRUE);
-
-		/* Footer */
-		$this->View->loadTemplate('vodni_footer');
-		$this->View->render(TRUE);
+		$this->latte->render(__DIR__ . '/../templates/' . $this->templateDir.'/'.$this->template . '.latte', $parameters);
 	}
 }
