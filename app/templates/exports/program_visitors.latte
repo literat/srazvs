@@ -21,26 +21,20 @@
 	</style>
 </head>
 <body>
-    <table>
-		<?php
-			$i = 0;
-			foreach($data['result'] as $row) {
-				if($i % 44 == 0){
-        ?>
+	<table>
+		{foreach $result as $row}
+			{if $iterator->counter % 44 == 0}
 		<tr>
 			<td class="header">Příjmení a Jméno</td>
 			<td class="header">Přezdívka</td>
 			<td class="header">Podpis</td>
 		</tr>
-		<?php } ?>
+		{/if}
 		<tr>
-			<td class="name"><?php echo $row['surname']." ".$row['name']; ?></td>
-			<td class="birthday"><?php echo $row['nick']; ?></td>
+			<td class="name">{$row['surname']} {$row['name']}</td>
+			<td class="birthday">{$row['nick']}</td>
 			<td class="signature">&nbsp;</td>
 		</tr>
-		<?php
-				$i++;
-			}
-        ?>
+		{/foreach}
 	</table>
 </body>

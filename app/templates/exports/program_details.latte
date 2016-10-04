@@ -21,25 +21,25 @@
 	</style>
 </head>
 <body>
-	<?php foreach($data['result'] as $row){ ?>
+	{foreach $result as $row}
     <table class="form">
         <tr>
             <td class="label">Program:</td>
-            <td class="text"><?php echo $row['name']; ?></td>
+            <td class="text">{$row['name']}</td>
         </tr>
         <tr>
             <td class="label">Popis:</td>
-            <td class="text"><?php echo $row['description']; ?></td></tr>
+            <td class="text">{$row['description']}</td></tr>
         <tr>
             <td class="label">Lektor:</td>
-            <td class="text"><?php echo $row['tutor']; ?></td>
+            <td class="text">{$row['tutor']}</td>
         </tr>
         <tr>
             <td class="label">E-mail:</td>
             <td class="text">
-                <a href="mailto:<?php echo $row['email']; ?>" title="e-mail"><?php echo $row['email']; ?></a>
+                <a href="mailto:{$row['email']}" title="e-mail">{$row['email']}</a>
             </td>
         </tr>
     </table>
-    <?php } ?>
+    {/foreach}
 </body>

@@ -1,0 +1,63 @@
+<head>
+	<style>
+		body {
+			font-family:Verdana,Arial,Geneva,Sans-Serif;
+			font-size:10px;
+			text-align:left;
+		}
+
+		table {
+			border-collapse:collapse;
+			width:100%;
+		}
+
+		td {
+			text-align:center;
+			border-right:1px dotted black;
+			vertical-align:middle;
+		}
+
+		img {height:32px;}
+
+		.cutLine {border: 2px dotted black; vertical-align:top;}
+
+		.nick {font-size:17px;color:navy;}
+
+		.meal {font-weight:bold;}
+
+		td.name {
+			font-size:14px;
+			width:220px;
+			padding-right:5px;
+		}
+
+		.name, .group_name, .meeting {text-align:right;}
+		.program, .nick {font-weight:bold;}
+	</style>
+</head>
+<body>
+{foreach $result as $row}
+	{var $noMeal = $imgDir . 'meals/nomeal.png'}
+	{var $dinner = $imgDir . "meals/dinner.png"}
+	{var $breakfast = $imgDir . "meals/breakfast.png"}
+	{var $lunch = $imgDir . "meals/lunch.png"}
+
+	{var $imgUrl1 = ($row['fry_dinner'] == "ano") ? $dinner : $nomeal}
+	{var $imgUrl2 = ($row['sat_breakfast'] == "ano") ? $breakfast : $nomeal}
+	{var $imgUrl3 = ($row['sat_lunch'] == "ano") ? $lunch : $nomeal}
+	{var $imgUrl4 = ($row['sat_dinner'] == "ano") ? $dinner : $nomeal}
+	{var $imgUrl5 = ($row['sun_breakfast'] == "ano") ? $breakfast : $nomeal}
+	{var $imgUrl6 = ($row['sun_lunch'] == "ano") ? $lunch : $nomeal}
+	<table class='cutLine'>
+	<tr>
+	<td><div>Pátek</div><div><img src='{$imgUrl1}' /></div><div class='meal'>Večeře</div></td>
+	<td><div>Sobota</div><div><img src='{$imgUrl2}' /></div><div class='meal'>Snídaně</div></td>
+	<td><div>Sobota</div><div><img src='{$imgUrl3}' /></div><div class='meal'>Oběd</div></td>
+	<td><div>Sobota</div><div><img src='{$imgUrl4}' /></div><div class='meal'>Večeře</div></td>
+	<td><div>Neděle</div><div><img src='{$imgUrl5}' /></div><div class='meal'>Snídaně</div></td>
+	<td><div>Neděle</div><div><img src='{$imgUrl6}' /></div><div class='meal'>Oběd</div></td>
+	<td class='name'><span class='nick'>{$row['nick']}</span>{$row['name']} {$row['surname']}</td>
+	</tr>
+    </table>
+{/else}
+</body>

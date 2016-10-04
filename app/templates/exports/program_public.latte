@@ -1,0 +1,56 @@
+<head>
+	<style>
+		body {
+			font-family:Arial,Geneva,Sans-Serif;
+			font-size:15px;
+			text-align:center;
+		}
+
+		table {
+			border-collapse:collapse;
+			width:100%;
+		}
+
+		td {
+			width:100%;
+			text-align:center;
+			padding:3px 0 0 0;
+		}
+
+		td.day {
+			border:1px solid black;
+			background-color:#777777;
+			width:80px;
+		}
+
+		td.time {
+			border:1px solid black;
+			background-color:#cccccc;
+			width:100px;
+		}
+		{$styles}
+	</style>
+</head>
+<body>
+	<h2>{$header}</h2>
+	<h4>program srazu vodních skautů</h4>
+
+	<table>
+			{var $days = array("pátek", "sobota", "neděle")}
+			{foreach $days as $day}
+					<tr>
+						<td class='day' colspan='2' >{$day}</td>
+					</tr>
+					{var $result = \App\ExportModel::getLargeProgramData($meeting_id, $day, $database)}
+					{foreach $result as $row}
+					<tr>
+						<td class='time'>{$row['from']} - {$row['to']}</td>
+						<td class='category cat-{ $row['style']}' style='border:1px solid black;'>
+							<div>{ $row['name']}</div>
+							{php echo \App\ProgramModel::getProgramsLarge($row['id'], $database)}
+						</td>
+					</tr>
+					{/foreach}
+		{/foreach}
+	</table>
+</body>

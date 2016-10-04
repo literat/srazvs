@@ -1,0 +1,45 @@
+{include 'evidence_header.latte'}
+
+{capture $heading}
+<tr>
+	<td class='header'>Příjmení a Jméno</td>
+	<td class='header'>Narození</td>
+	<td class='header'>Adresa</td>
+	<td class='header'>Jednotka</td>
+	<td class='header'>Záloha</td>
+	<td class='header'>Doplatek</td>
+	<td class='header'>Podpis</td>
+</tr>
+{/capture}
+
+<body>
+	<table class='summary'>
+	{$heading|noescape}
+	{foreach $result as $row}
+		{if $iterator->counter % 44 == 0}
+		{$heading|noescape}
+		{/if}
+		<tr>
+			<td class='name'>
+				{$row['surname']} {$row['name']}
+			</td>
+			<td class='birthday'>
+				{$row['birthday']}
+			</td>
+			<td class='address'>
+				{$row['street']}, {$row['city']}, {$row['postal_code']}
+			</td>
+			<td class='group'>
+				{$row['group_num']}
+			</td>
+			<td>
+				{$row['bill']}
+			</td>
+			<td>
+				{$row['balance']}
+			</td>
+			<td class='signature'>&nbsp;</td>
+		</tr>
+	{/foreach}
+	</table>
+</body>

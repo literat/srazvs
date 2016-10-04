@@ -25,31 +25,27 @@
 	</style>
 </head>
 <body>
-<?php
-$i = 0;
-foreach($data['result'] as $row) {
-	if($i%2 == 0) {
-?>
+{foreach $result as $row}
+	{if $iterator->counter % 2 == 0}
 	<table>
 		<tr>
 		  <td class='cutLine'>
-<?php }	else { ?>
+	{else}
 	<td class='cutLine'>
-<?php } ?>
+	{/if}
 	<table>
 		<tr>
 			<td class='nick'>
-				<h1><?php echo $row['nick']; ?></h1>
+				<h1>{$row['nick']}</h1>
 			</td>
 		</tr>
 	</table>
-<?php if($i%2 == 0) { ?>
+	{if $iterator->counter % 2 == 0}
 	</td>
-<?php }	else { ?>
+	{else}
 			</td>
 		</tr>
 	</table>
-<?php }
-	$i++;
-} ?>
+	{/if}
+{/foreach}
 </body>

@@ -1,14 +1,11 @@
-<?php echo $data['header']; ?>
+{include 'evidence_header.latte'}
 <body>
-	<?php
-		$i = 1;
-        foreach($data['result'] as $row) {
-	?>
+    {foreach $result as $row}
 	<h2>PŘÍJMOVÝ POKLADNÍ DOKLAD</h2>
 	<table>
         <tr>
             <td width="34" style="text-align:center;">
-                <img width="32" src="<?php echo $data['LOGODIR']; ?>vs_logo.jpg" />
+                <img width="32" src="{$imgDir}logos/vs_logo.jpg" />
             </td>
             <td width="450">
                 <b>Junák - český skaut, Kapitanát vodních skautů, z. s.</b><br />
@@ -17,8 +14,8 @@
                 &nbsp;&nbsp;http://vodni.skauting.cz/ | mustek@hkvs.cz | +420 777 222 141  <br />
             </td>
             <td>
-                <strong>číslo:</strong> <?php echo $row['numbering'].'/PPD'.sprintf("%03d", $i); ?><br />
-                <strong>ze dne:</strong> <?php echo $row['date']; ?><br />
+                <strong>číslo:</strong> {$row['numbering']}/PPD{$iterator->counter|invoiceNumber}<br />
+                <strong>ze dne:</strong> {$row['date']}<br />
             </td>
          </tr>
          <tr>
@@ -26,7 +23,7 @@
                 <table style="border:none;width:100%;">
                     <tr>
                         <td style="border:none;">
-                            <b>Přijato od:</b> <?php echo $row['name']." ".$row['surname'].", ".$row['street'].", ".$row['city'].", ".$row['postal_code']; ?>
+                            <b>Přijato od:</b> {$row['name']} {$row['surname']}, {$row['street']}, {$row['city']}, {$row['postal_code']}
                         </td>
                     </tr>
                     <tr>
@@ -36,7 +33,7 @@
                     </tr>
                      <tr>
                         <td style="border:none;">
-                            <b>Celkem Kč:</b> =<?php echo $row['balance']; ?>,- &nbsp;&nbsp;&nbsp;&nbsp; <strong>Slovy Kč:</strong> <?php echo ucfirst(\ExportController::number2word($row['balance'], true)); ?>korun~
+                            <b>Celkem Kč:</b> ={$row['balance']},- &nbsp;&nbsp;&nbsp;&nbsp; <strong>Slovy Kč:</strong> {$row['balance']|number2word:true|capitalize}korun~
                         </td>
                     </tr>
                     <tr>
@@ -49,8 +46,5 @@
         </tr>
 	</table>
 	<br />
-	<?php
-		$i++;
-		}
-	?>
+	{/foreach}
 </body>

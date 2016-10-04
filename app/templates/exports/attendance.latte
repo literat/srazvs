@@ -21,12 +21,9 @@
 	</style>
 </head>
 <body>
-    <table>
-		<?php
-			$i = 0;
-			foreach($data['result'] as $row) {
-				if($i % 44 == 0){
-        ?>
+	<table>
+		{foreach $result as $row}
+			{if $iterator->counter % 45 == 0}
 		<tr>
 			<td class="header">Příjmení a Jméno</td>
 			<td class="header">Narození</td>
@@ -34,17 +31,14 @@
 			<td class="header">Středisko/Přístav</td>
 			<td class="header">Podpis</td>
 		</tr>
-		<?php } ?>
+			{/fi}
 		<tr>
-			<td class="name"><?php echo $row['surname']." ".$row['name']; ?></td>
-			<td class="birthday"><?php echo $row['birthday']; ?></td>
-			<td class="address"><?php echo $row['street'].", ".$row['city'].", ".$row['postal_code']; ?></td>
-			<td class="group"><?php echo $row['group_num'].", ".$row['group_name']; ?></td>
+			<td class="name">{$row['surname']} {$row['name']}</td>
+			<td class="birthday">{$row['birthday']}</td>
+			<td class="address">{$row['street']}, {$row['city']}, {$row['postal_code']}</td>
+			<td class="group">{$row['group_num']}, {$row['group_name']}</td>
 			<td class="signature">&nbsp;</td>
 		</tr>
-		<?php
-				$i++;
-			}
-        ?>
+		{/foreach}
 	</table>
 </body>

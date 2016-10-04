@@ -32,47 +32,43 @@
 	</style>
 </head>
 <body>
-<?php
-$i = 0;
-foreach($data['result'] as $row) {
-	if($i%2 == 0){ ?>
+{foreach $result as $row}
+	{if $iterator->counter % 2 == 0}
 		<table>
 			<tr>
 				<td class='cutLine'>
-	<?php } else { ?>
+	{else}
 		<td class='cutLine'>
-	<?php } ?>
+	{/if}
 	<table>
 		<tr>
 			<td class='name'>
-				<span class='nick'><?php echo $row['nick']; ?></span> <?php echo $row['name']." ".$row['surname']; ?>";
+				<span class='nick'>{$row['nick']}</span> {$row['name']} {$row['surname']}
 			</td>
 		</tr>
 		<tr>
 
 		</tr>
-			<?php echo \App\ExportModel::getPdfBlocks($row['id'], $data['database']); ?>
+			{php echo \App\ExportModel::getPdfBlocks($row['id'], $database)}
 		<tr>
 			<td class='meeting'>
-				SRAZ VS - <?php echo $row['place']." ".$row['start_date']." ".$row['end_date']; ?>
+				SRAZ VS - {$row['place']} {$row['start_date']} {$row['end_date']}
 			</td>
 		</tr>
 	</table>
 
-	<?php if($i%2 == 0){ ?>
+	{if $iterator->counter % 2 == 0}
 		</td>
-	<?php } else { ?>
+	{else}
 		</td>
 	</tr>
 </table>
-<?php }
-	$i++;
-}
+	{/if}
+{/foreach}
 
-if($i%2 != 0){
-?>
+{if $iterator->counter % 2 != 0}
 			<td class='cutLine'></td>
 		</tr>
 	</table>
-<?php } ?>
+{/if}
 </body>
