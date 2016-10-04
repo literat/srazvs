@@ -75,9 +75,6 @@ services:
         class: App\ExportModel
         arguments: [
             @database,
-            @pdffactory,
-            @excelfactory,
-            @view,
             @category,
             %debugMode%
         ]

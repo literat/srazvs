@@ -1,5 +1,15 @@
+{capture $heading}
+<tr>
+	<td class="header">Příjmení a Jméno</td>
+	<td class="header">Narození</td>
+	<td class="header">Adresa</td>
+	<td class="header">Středisko/Přístav</td>
+	<td class="header">Podpis</td>
+</tr>
+{/capture}
+
 <head>
-	<style>
+	<style n:syntax='off'>
 		body {
 			font-family:Arial,Geneva,Sans-Serif;
 			text-align:left;
@@ -22,16 +32,11 @@
 </head>
 <body>
 	<table>
+		{$heading|noescape}
 		{foreach $result as $row}
 			{if $iterator->counter % 45 == 0}
-		<tr>
-			<td class="header">Příjmení a Jméno</td>
-			<td class="header">Narození</td>
-			<td class="header">Adresa</td>
-			<td class="header">Středisko/Přístav</td>
-			<td class="header">Podpis</td>
-		</tr>
-			{/fi}
+			{$heading|noescape}
+			{/if}
 		<tr>
 			<td class="name">{$row['surname']} {$row['name']}</td>
 			<td class="birthday">{$row['birthday']}</td>

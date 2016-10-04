@@ -17,15 +17,6 @@ class ExportModel
 	/** @var int meeting ID */
 	private $meetingId;
 
-	/** @var Mpdf factory */
-	public $pdf;
-
-	/** @var View */
-	private $View;
-
-	/** @var PHPExcel factory */
-	private $excel;
-
 	/** @var int graph height */
 	private $graphHeight;
 
@@ -38,12 +29,9 @@ class ExportModel
 	private $debugMode;
 
 	/** Constructor */
-	public function __construct($database, PdfFactory $pdf, ExcelFactory $excel, View $View, $category, $debug)
+	public function __construct($database, $category, $debug)
 	{
 		$this->database = $database;
-		$this->pdf = $pdf;
-		$this->excel = $excel;
-		$this->View = $View;
 		$this->category = $category;
 		$this->debugMode = $debug;
 	}
@@ -66,26 +54,6 @@ class ExportModel
 	public function getMeetingId()
 	{
 		return $this->meetingId;
-	}
-
-	/**
-	 * Create PDF
-	 *
-	 * @return	Mpdf
-	 */
-	public function createPdf()
-	{
-		return $this->pdf->create();
-	}
-
-	/**
-	 * Create Excel
-	 *
-	 * @return	PHPExcel
-	 */
-	public function createExcel()
-	{
-		return $this->excel->create();
 	}
 
 	/**
@@ -157,15 +125,12 @@ class ExportModel
 	/**
 	 * Print Attendance into PDF file
 	 *
-	 * @param	string	file type
+	 * @param	void
 	 * @return	file	PDF file
 	 */
-	public function printAttendance($file_type = "pdf")
+	public function attendance()
 	{
-		// output file name
-		$output_filename = "attendance_list.".$file_type;
-
-		$data = $this->database->query('SELECT	vis.id AS id,
+		return $this->database->query('SELECT	vis.id AS id,
 						name,
 						surname,
 						nick,
@@ -182,30 +147,6 @@ class ExportModel
 				WHERE meeting = ? AND vis.deleted = ?
 				ORDER BY surname ASC',
 				$this->meetingId, '0')->fetchAll();
-
-		// load and prepare template
-		$this->View->loadTemplate('exports/attendance');
-		$this->View->assign('result', $data);
-		$template = $this->View->render(false);
-
-		// prepare header
-		$attendance_header = $data[0]['place']." ".$data[0]['year'];
-
-		$pdf = $this->createPdf();
-
-		// set header
-		$pdf->SetHeader($attendance_header.'|sraz VS|Prezenční listina');
-		// write html
-		$pdf->WriteHTML($template, 0);
-
-		/* debugging */
-		if($this->debugMode){
-			echo $template;
-			exit('DEBUG_MODE');
-		} else {
-			// download
-			$pdf->Output($output_filename, "D");
-		}
 	}
 
 	/**

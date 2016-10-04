@@ -18,6 +18,7 @@ class ExportController extends BaseController
 	private $program;
 	private $model;
 	private $pdf;
+	private $excel;
 
 	public function __construct($database, $container)
 	{
@@ -30,6 +31,7 @@ class ExportController extends BaseController
 		$this->templateDir = 'exports';
 		$this->pdf = $this->container->createServicePdffactory();
 		$this->debugMode = $this->container->parameters['debugMode'];
+		$this->excel = $this->container->createServiceExcelfactory();
 	}
 
 	/**
@@ -55,7 +57,7 @@ class ExportController extends BaseController
 
 		switch($this->router->getParameter('action')){
 			case 'attendance':
-				$this->export->printAttendance();
+				$this->renderAttendance();
 				break;
 			case 'evidence':
 				//if(!empty($this->requested('vid'))) {
@@ -147,6 +149,36 @@ class ExportController extends BaseController
 		$parameters = [
 			'imgDir'	=> IMG_DIR,
 			'result'	=> $data,
+		];
+
+		$template = $this->latte->renderToString(__DIR__ . '/../templates/' . $this->templateDir.'/'.$this->template . '.latte', $parameters);
+
+		$this->publish($pdf, $filename, $template);
+	}
+
+	/**
+	 * Print Attendance into PDF file
+	 *
+	 * @param	void
+	 * @return	file	PDF file
+	 */
+	public function renderAttendance()
+	{
+		// output file name
+		$filename = "attendance_list.pdf";
+		$this->template = 'attendance';
+
+		$pdf = $this->pdf->create();
+		$data = $this->model->attendance();
+
+		// prepare header
+		$attendanceHeader = $data[0]['place'] . ' ' . $data[0]['year'];
+
+		// set header
+		$pdf->SetHeader($attendanceHeader.'|sraz VS|Prezenční listina');
+
+		$parameters = [
+			'result' => $data,
 		];
 
 		$template = $this->latte->renderToString(__DIR__ . '/../templates/' . $this->templateDir.'/'.$this->template . '.latte', $parameters);
