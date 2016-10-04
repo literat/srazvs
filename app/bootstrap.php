@@ -144,6 +144,7 @@ $container->parameters['router'] = $appRequest;
  */
 $latte = new \Latte\Engine;
 $latte->setTempDirectory(__DIR__ . '/../temp');
+$latte->addFilter(NULL, 'Filters::common');
 $container->addService('latte', $latte);
 
 //get target
