@@ -263,27 +263,22 @@ class ExportModel
 	}
 
 	/**
-	 * Print Evidence into PDF file
+	 * Return data for evidence
 	 *
-	 * @param	string	type of evidence
-	 * @param	int		ID of visitor
-	 * @param	string	file type
-	 * @return	file	PDF file
+	 * @param	int		$visitroId		ID of visitor
+	 * @return	array	data from database
 	 */
-	public function printEvidence($evidence_type, $visitor_id = NULL, $file_type = "pdf")
+	public function evidence($visitorId = null)
 	{
-		$evidence_limit = "";
-		$specific_visitor = "";
+		$evidenceLimit = '';
+		$specificVisitor = '';
 
-		if(isset($visitor_id) && $visitor_id != NULL){
-			$evidence_limit = "LIMIT 1";
-			$specific_visitor = "vis.id='".$visitor_id."' AND";
+		if(isset($visitorId) && $visitorId != NULL){
+			$evidenceLimit = 'LIMIT 1';
+			$specificVisitor = "vis.id='" . $visitorId . "' AND";
 		}
 
-		// output file name
-		$output_filename = "faktura.".$file_type;
-
-		$data = $this->database->query('SELECT	vis.id AS id,
+		return $this->database->query('SELECT	vis.id AS id,
 					name,
 					surname,
 					street,
@@ -300,51 +295,9 @@ class ExportModel
 					numbering
 			FROM kk_visitors AS vis
 			LEFT JOIN kk_meetings AS meets ON meets.id = vis.meeting
-			WHERE ' . $specific_visitor . ' meeting = ? AND vis.deleted = ?
+			WHERE ' . $specificVisitor . ' meeting = ? AND vis.deleted = ?
 			ORDER BY surname, name
-			' . $evidence_limit, $this->meetingId, '0')->fetchAll();
-
-		// summary header
-		$hkvs_header = "Junák - český skaut, Kapitanát vodních skautů, z. s. | ";
-		$hkvs_header .= "Senovážné náměstí 977/24, Praha 1, 110 00 | ";
-		$hkvs_header .= "IČ: 65991753, ČÚ: 2300183549/2010";
-
-		$pdf = $this->createPdf();
-
-		// load and prepare template
-		$this->View->loadTemplate('exports/evidence_header');
-		$this->View->assign('header', $this->View->render(false));
-		// multiple evidence type/template
-		switch($evidence_type){
-			case "summary":
-				$this->View->loadTemplate('exports/evidence_summary');
-				// specific mPDF settings
-				$pdf->defaultfooterfontsize = 16;
-				$pdf->defaultfooterfontstyle = 'B';
-				$pdf->SetHeader($hkvs_header);
-				break;
-			case "confirm":
-				$this->View->loadTemplate('exports/evidence_confirm');
-				break;
-			default:
-				$this->View->loadTemplate('exports/evidence');
-				break;
-		}
-		$this->View->assign('LOGODIR', IMG_DIR.'logos/');
-		$this->View->assign('result', $data);
-		$template = $this->View->render(false);
-
-		// write html
-		$pdf->WriteHTML($template, 0);
-
-		/* debugging */
-		if($this->debugMode){
-			echo $template;
-			exit('DEBUG_MODE');
-		} else {
-			// download
-			$pdf->Output($output_filename, "D");
-		}
+			' . $evidenceLimit, $this->meetingId, '0')->fetchAll();
 	}
 
 	public static function getPdfBlocks($vid, $database)

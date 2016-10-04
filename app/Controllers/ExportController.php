@@ -16,16 +16,20 @@ class ExportController extends BaseController
 	private $export;
 	private $latte;
 	private $program;
+	private $model;
+	private $pdf;
 
 	public function __construct($database, $container)
 	{
 		$this->database = $database;
 		$this->container = $container;
 		$this->router = $this->container->parameters['router'];
-		$this->export = $this->container->createServiceExports();
+		$this->model = $this->container->createServiceExports();
 		$this->program = $this->container->createServiceProgram();
 		$this->latte = $this->container->getService('latte');
 		$this->templateDir = 'exports';
+		$this->pdf = $this->container->createServicePdffactory();
+		$this->debugMode = $this->container->parameters['debugMode'];
 	}
 
 	/**
@@ -46,7 +50,7 @@ class ExportController extends BaseController
 			$mid = $_SESSION['meetingID'];
 		}
 
-		$this->export->setMeetingId($mid);
+		$this->model->setMeetingId($mid);
 		$this->program->setMeetingId($mid);
 
 		switch($this->router->getParameter('action')){
@@ -56,9 +60,9 @@ class ExportController extends BaseController
 			case 'evidence':
 				//if(!empty($this->requested('vid'))) {
 				if($this->requested('vid')) {
-					$this->export->printEvidence($this->requested('type'), intval($this->requested('vid')));
+					$this->renderEvidence($this->requested('type'), intval($this->requested('vid')));
 				} else {
-					$this->export->printEvidence($this->requested('type'));
+					$this->renderEvidence($this->requested('type'));
 				}
 				break;
 			case 'visitorExcel':
@@ -99,14 +103,14 @@ class ExportController extends BaseController
 			'user'		=> $this->getUser($_SESSION[SESSION_PREFIX.'user']),
 			'meeting'	=> $this->getPlaceAndYear($_SESSION['meetingID']),
 			'menu'		=> $this->generateMenu(),
-			'graph'		=> $this->export->renderGraph(),
-			'graphHeight'	=> $this->export->getGraphHeight(),
-			'account'	=> $this->export->getMoney('account'),
-			'balance'	=> $this->export->getMoney('balance'),
-			'suma'		=> $this->export->getMoney('suma'),
+			'graph'		=> $this->model->renderGraph(),
+			'graphHeight'	=> $this->model->getGraphHeight(),
+			'account'	=> $this->model->getMoney('account'),
+			'balance'	=> $this->model->getMoney('balance'),
+			'suma'		=> $this->model->getMoney('suma'),
 			'programs'	=> $this->program->renderExportPrograms(),
-			'materials'	=> $this->export->getMaterial(),
-			'meals'		=> $this->export->renderMealCount(),
+			'materials'	=> $this->model->getMaterial(),
+			'meals'		=> $this->model->renderMealCount(),
 		];
 
 		$this->latte->render(__DIR__ . '/../templates/' . $this->templateDir.'/'.$this->template . '.latte', $parameters);
@@ -149,4 +153,19 @@ class ExportController extends BaseController
 
 		$this->publish($pdf, $filename, $template);
 	}
+
+	protected function publish($pdf, $filename, $template)
+	{
+		/* debugging */
+		if($this->debugMode){
+			echo $template;
+			exit('DEBUG_MODE');
+		} else {
+			// write html
+			$pdf->WriteHTML($template, 0);
+			// download
+			$pdf->Output($filename, "D");
+		}
+	}
+
 }
