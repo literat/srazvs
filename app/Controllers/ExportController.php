@@ -10,7 +10,7 @@ class ExportController extends BaseController
 	 * This template variable will hold the 'view' portion of our MVC for this
 	 * controller
 	 */
-	public $template = 'exports';
+	protected $templateName = 'exports';
 
 	private $container;
 	private $export;
@@ -19,6 +19,8 @@ class ExportController extends BaseController
 	private $model;
 	private $pdf;
 	private $excel;
+	private $filename;
+	private $parameters;
 
 	public function __construct($database, $container)
 	{
@@ -29,7 +31,7 @@ class ExportController extends BaseController
 		$this->program = $this->container->createServiceProgram();
 		$this->latte = $this->container->getService('latte');
 		$this->templateDir = 'exports';
-		$this->pdf = $this->container->createServicePdffactory();
+		$this->pdf = $this->container->createServicePdffactory()->create();
 		$this->debugMode = $this->container->parameters['debugMode'];
 		$this->excel = $this->container->createServiceExcelfactory();
 	}
@@ -68,32 +70,32 @@ class ExportController extends BaseController
 				}
 				break;
 			case 'visitorExcel':
-				$this->export->printVisitorsExcel();
+				$this->renderVisitorsExcel();
 				break;
 			case 'mealTicket':
-				$this->export->printMealTicket();
+				$this->renderMealTicket();
 				break;
 			case 'nameBadges':
 				$names =$this->requested('names', '');
-				$this->export->printNameBadges($names);
+				$this->renderNameBadges($names);
 				break;
 			case 'programDetails':
-				$this->export->printProgramDetails();
+				$this->renderProgramDetails();
 				break;
 			case 'programCards':
-				$this->export->printProgramCards();
+				$this->renderProgramCards();
 				break;
 			case 'programLarge':
-				$this->export->printLargeProgram();
+				$this->renderLargeProgram();
 				break;
 			case 'programBadge':
-				$this->export->printProgramBadges();
+				$this->renderProgramBadges();
 				break;
 			case 'programPublic':
-				$this->export->printPublicProgram();
+				$this->renderPublicProgram();
 				break;
 			case 'nameList':
-				$this->export->printNameList();
+				$this->renderNameList();
 				break;
 		}
 
@@ -115,45 +117,42 @@ class ExportController extends BaseController
 			'meals'		=> $this->model->renderMealCount(),
 		];
 
-		$this->latte->render(__DIR__ . '/../templates/' . $this->templateDir.'/'.$this->template . '.latte', $parameters);
+		$this->latte->render(__DIR__ . '/../templates/' . $this->templateDir.'/'.$this->templateName . '.latte', $parameters);
 	}
 
 	public function renderEvidence($type, $visitorId = null)
 	{
-		$filename = 'faktura.pdf';
+		$this->filename = 'faktura.pdf';
 
 		// summary header
 		$hkvsHeader = "Junák - český skaut, Kapitanát vodních skautů, z. s. | ";
 		$hkvsHeader .= "Senovážné náměstí 977/24, Praha 1, 110 00 | ";
 		$hkvsHeader .= "IČ: 65991753, ČÚ: 2300183549/2010";
 
-		$pdf = $this->pdf->create();
 		$data = $this->model->evidence($visitorId);
 
 		switch($type){
 			case "summary":
-				$this->template = 'evidence_summary';
+				$this->templateName = 'evidence_summary';
 				// specific mPDF settings
 				$pdf->defaultfooterfontsize = 16;
 				$pdf->defaultfooterfontstyle = 'B';
 				$pdf->SetHeader($hkvsHeader);
 				break;
 			case "confirm":
-				$this->template = 'evidence_confirm';
+				$this->templateName = 'evidence_confirm';
 				break;
 			default:
-				$this->template = 'evidence';
+				$this->templateName = 'evidence';
 				break;
 		}
 
-		$parameters = [
+		$this->parameters = [
 			'imgDir'	=> IMG_DIR,
 			'result'	=> $data,
 		];
 
-		$template = $this->latte->renderToString(__DIR__ . '/../templates/' . $this->templateDir.'/'.$this->template . '.latte', $parameters);
-
-		$this->publish($pdf, $filename, $template);
+		$this->publish();
 	}
 
 	/**
@@ -165,38 +164,86 @@ class ExportController extends BaseController
 	public function renderAttendance()
 	{
 		// output file name
-		$filename = "attendance_list.pdf";
-		$this->template = 'attendance';
+		$this->filename = "attendance_list.pdf";
+		$this->templateName = 'attendance';
 
-		$pdf = $this->pdf->create();
 		$data = $this->model->attendance();
 
 		// prepare header
 		$attendanceHeader = $data[0]['place'] . ' ' . $data[0]['year'];
 
 		// set header
-		$pdf->SetHeader($attendanceHeader.'|sraz VS|Prezenční listina');
+		$this->pdf->SetHeader($attendanceHeader.'|sraz VS|Prezenční listina');
 
-		$parameters = [
+		$this->parameters = [
 			'result' => $data,
 		];
 
-		$template = $this->latte->renderToString(__DIR__ . '/../templates/' . $this->templateDir.'/'.$this->template . '.latte', $parameters);
-
-		$this->publish($pdf, $filename, $template);
+		$this->publish();
 	}
 
-	protected function publish($pdf, $filename, $template)
+	/**
+	 * Print meal tickets into PDF file
+	 *
+	 * @param	void
+	 * @return	file	PDF file
+	 */
+	public function renderMealTicket()
 	{
+		// output file name
+		$this->filename= 'vlastni_stravenky.pdf';
+		$this->templateName = 'meal_ticket';
+
+		$data = $this->model->mealTicket();
+
+		$this->parameters = [
+			'imgDir'	=> IMG_DIR,
+			'result'	=> $data,
+		];
+
+		$this->publish();
+	}
+
+	/**
+	 * Print name list into PDF file
+	 *
+	 * @param	void
+	 * @return	file	PDF file
+	 */
+	public function renderNameList()
+	{
+		// output file name
+		$this->filename = 'name_list.pdf';
+		$this->templateName = 'name_list';
+
+		$data = $this->model->nameList();
+
+		// prepare header
+		$namelistHeader = $data[0]['place'] . " " . $data[0]['year'];
+
+		// set header
+		$this->pdf->SetHeader($namelistHeader.'|sraz VS|Jméno, Příjmení, Přezdívka');
+
+		$this->parameters = [
+			'result'	=> $data,
+		];
+
+		$this->publish();
+	}
+
+	protected function publish()
+	{
+		$template = $this->latte->renderToString(__DIR__ . '/../templates/' . $this->templateDir . '/' . $this->templateName . '.latte', $this->parameters);
+
 		/* debugging */
 		if($this->debugMode){
 			echo $template;
 			exit('DEBUG_MODE');
 		} else {
 			// write html
-			$pdf->WriteHTML($template, 0);
+			$this->pdf->WriteHTML($template, 0);
 			// download
-			$pdf->Output($filename, "D");
+			$this->pdf->Output($filename, "D");
 		}
 	}
 

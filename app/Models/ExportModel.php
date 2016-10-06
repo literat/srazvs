@@ -57,17 +57,14 @@ class ExportModel
 	}
 
 	/**
-	 * Print Attendance into PDF file
+	 * Return data for meal tickets
 	 *
-	 * @param	string	file type
-	 * @return	file	PDF file
+	 * @param	void
+	 * @return	array
 	 */
-	public function printMealTicket($fileType = "pdf")
+	public function mealTicket()
 	{
-		// output file name
-		$outputFilename= "vlastni_stravenky.".$fileType;
-
-		$data = $this->database->query('SELECT	vis.id AS id,
+		return $this->database->query('SELECT	vis.id AS id,
 				name,
 				surname,
 				nick,
@@ -101,25 +98,6 @@ class ExportModel
 		LEFT JOIN kk_meetings AS meets ON meets.id = vis.meeting
 		WHERE meeting = ? AND vis.deleted = ?
 		', $this->meetingId, '0')->fetchAll();
-
-		// load and prepare template
-		$this->View->loadTemplate('exports/meal_ticket');
-		$this->View->assign('result', $data);
-		$template = $this->View->render(false);
-
-		$pdf = $this->createPdf();
-
-		// write html
-		$pdf->WriteHTML($template, 0);
-
-		/* debugging */
-		if($this->debugMode){
-			echo $template;
-			exit('DEBUG_MODE');
-		} else {
-			// download
-			$pdf->Output($outputFilename, "D");
-		}
 	}
 
 	/**
@@ -150,17 +128,14 @@ class ExportModel
 	}
 
 	/**
-	 * Print name list into PDF file
+	 * Return data for name list
 	 *
-	 * @param	string	file type
-	 * @return	file	PDF file
+	 * @param	void
+	 * @return	array    data
 	 */
-	public function printNameList($file_type = "pdf")
+	public function nameList()
 	{
-		// output file name
-		$output_filename = "name_list.".$file_type;
-
-		$data = $this->database->query('SELECT	vis.id AS id,
+		return $this->database->query('SELECT	vis.id AS id,
 						name,
 						surname,
 						nick,
@@ -177,30 +152,6 @@ class ExportModel
 				WHERE meeting = ? AND vis.deleted = ?
 				ORDER BY nick ASC
 				', $this->meetingId, '0')->fetchAll();
-
-		// load and prepare template
-		$this->View->loadTemplate('exports/name_list');
-		$this->View->assign('result', $data);
-		$template = $this->View->render(false);
-
-		// prepare header
-		$namelist_header = $data[0]['place']." ".$data[0]['year'];
-
-		$pdf = $this->createPdf();
-
-		// set header
-		$pdf->SetHeader($namelist_header.'|sraz VS|Jméno, Příjmení, Přezdívka');
-		// write html
-		$pdf->WriteHTML($template, 0);
-
-		/* debugging */
-		if($this->debugMode){
-			echo $template;
-			exit('DEBUG_MODE');
-		} else {
-			// download
-			$pdf->Output($output_filename, "D");
-		}
 	}
 
 	/**

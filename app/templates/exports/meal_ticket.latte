@@ -1,5 +1,5 @@
 <head>
-	<style>
+	<style n:syntax='off'>
 		body {
 			font-family:Verdana,Arial,Geneva,Sans-Serif;
 			font-size:10px;
@@ -37,17 +37,17 @@
 </head>
 <body>
 {foreach $result as $row}
-	{var $noMeal = $imgDir . 'meals/nomeal.png'}
+	{var $noMeal = $imgDir . "meals/nomeal.png"}
 	{var $dinner = $imgDir . "meals/dinner.png"}
 	{var $breakfast = $imgDir . "meals/breakfast.png"}
 	{var $lunch = $imgDir . "meals/lunch.png"}
 
-	{var $imgUrl1 = ($row['fry_dinner'] == "ano") ? $dinner : $nomeal}
-	{var $imgUrl2 = ($row['sat_breakfast'] == "ano") ? $breakfast : $nomeal}
-	{var $imgUrl3 = ($row['sat_lunch'] == "ano") ? $lunch : $nomeal}
-	{var $imgUrl4 = ($row['sat_dinner'] == "ano") ? $dinner : $nomeal}
-	{var $imgUrl5 = ($row['sun_breakfast'] == "ano") ? $breakfast : $nomeal}
-	{var $imgUrl6 = ($row['sun_lunch'] == "ano") ? $lunch : $nomeal}
+	{var $imgUrl1 = ($row['fry_dinner'] == "ano") ? $dinner : $noMeal}
+	{var $imgUrl2 = ($row['sat_breakfast'] == "ano") ? $breakfast : $noMeal}
+	{var $imgUrl3 = ($row['sat_lunch'] == "ano") ? $lunch : $noMeal}
+	{var $imgUrl4 = ($row['sat_dinner'] == "ano") ? $dinner : $noMeal}
+	{var $imgUrl5 = ($row['sun_breakfast'] == "ano") ? $breakfast : $noMeal}
+	{var $imgUrl6 = ($row['sun_lunch'] == "ano") ? $lunch : $noMeal}
 	<table class='cutLine'>
 	<tr>
 	<td><div>Pátek</div><div><img src='{$imgUrl1}' /></div><div class='meal'>Večeře</div></td>
@@ -59,5 +59,5 @@
 	<td class='name'><span class='nick'>{$row['nick']}</span>{$row['name']} {$row['surname']}</td>
 	</tr>
     </table>
-{/else}
+{/foreach}
 </body>
