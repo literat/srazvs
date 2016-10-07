@@ -1,5 +1,5 @@
 <head>
-	<style>
+	<style n:syntax='off'>
 		body {
 			font-family:Arial,Geneva,Sans-Serif;
 			font-size:15px;
@@ -46,7 +46,7 @@
 					<tr>
 						<td class='time'>{$row['from']} - {$row['to']}</td>
 						<td class='category cat-{ $row['style']}' style='border:1px solid black;'>
-							<div>{ $row['name']}</div>
+							<div>{$row['name']}</div>
 							{php echo \App\ProgramModel::getProgramsLarge($row['id'], $database)}
 						</td>
 					</tr>

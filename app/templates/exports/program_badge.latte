@@ -1,5 +1,5 @@
 <head>
-	<style>
+	<style n:syntax='off'>
 		body {
 			font-family:Verdana,Arial,Geneva,Sans-Serif;
 			font-size:9px;
@@ -36,7 +36,7 @@
 {var $days = array("PÁTEK", "SOBOTA", "NEDĚLE")}
 
 {foreach $result as $unused}
-	{if $iterator->counter % 2 == 0}
+	{if $iterator->counter % 2 == 1}
 	<table>
 		<tr>
 			<td class='cutLine'>
@@ -90,14 +90,14 @@
 				{/if}
 			{/foreach}
 		{/if}
-	{/if}
+	{/foreach}
 				</table>
 
 			</td>
 		</tr>
 	</table>
 
-	{if $iterator->counter % 2 == 0}
+	{if $iterator->counter % 2 == 1}
 			</td>
 	{else}
 			</td>
@@ -105,6 +105,6 @@
 	</table>
 	{/if}
 
-	{breakIf $iterator->counter == 9}
+	{breakIf $iterator->counter == 10}
 {/foreach}
 </body>
