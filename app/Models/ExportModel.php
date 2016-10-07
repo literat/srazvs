@@ -2,8 +2,6 @@
 
 namespace App;
 
-use Nette\Utils\Strings;
-
 /**
  * Export Model
  *
@@ -228,19 +226,14 @@ class ExportModel
 	}
 
 	/**
-	 * Print Program into PDF file
+	 * Return data for program cards
 	 *
-	 * @param	string	type of evidence
-	 * @param	int		ID of visitor
-	 * @param	string	file type
-	 * @return	file	PDF file
+	 * @param	void
+	 * @return	array	data
 	 */
-	public function printProgramCards($file_type = "pdf")
+	public function programCards()
 	{
-		$filename = "vlastni_programy";
-		$fileaddr = "../tmp/".$filename.".".$file_type;
-
-		$data = $this->database->query('SELECT	vis.id AS id,
+		return $this->database->query('SELECT	vis.id AS id,
 						name,
 						surname,
 						nick,
@@ -276,35 +269,6 @@ class ExportModel
 				WHERE meeting = ? AND vis.deleted = ?
 				ORDER BY nick ASC
 				', $this->meetingId, '0')->fetchAll();
-
-		// load and prepare template
-		$this->View->loadTemplate('exports/program_cards');
-		$this->View->assign('result', $data);
-		$this->View->assign('database', $this->database);
-		//$this->View->assign('blocks' getBlocks($data['id']));
-		$template = $this->View->render(false);
-
-		// prepare header
-		$attendance_header = $data[0]['place']." ".$data[0]['year'];
-
-		$pdf = $this->createPdf();
-
-		$pdf->SetWatermarkImage(IMG_DIR.'logos/watermark.jpg', 0.1, '');
-		$pdf->showWatermarkImage = true;
-
-		// write html
-		$pdf->WriteHTML($template, 0);
-
-		/* debugging */
-		if($this->debugMode){
-			echo $template;
-			exit('DEBUG_MODE');
-		} else {
-			// download
-			$output_filename = $filename.'.'.$file_type;
-			$pdf->Output($output_filename, "D");
-		}
-
 	}
 
 	public static function getLargeProgramData($meeting_id, $day_val, $database)
@@ -324,17 +288,14 @@ class ExportModel
 	}
 
 	/**
-	 * Print Program into PDF file
+	 * Return data for large program
 	 *
-	 * @param	string	type of evidence
-	 * @param	int		ID of visitor
-	 * @param	string	file type
-	 * @return	file	PDF file
+	 * @param	void
+	 * @return	array	data
 	 */
-	public function printLargeProgram($file_type = "pdf")
+	public function largeProgram()
 	{
-		// prepare header
-		$data = $this->database->query('SELECT	id,
+		return $this->database->query('SELECT	id,
 						place,
 						DATE_FORMAT(start_date, "%Y") AS year,
 						UNIX_TIMESTAMP(open_reg) AS open_reg,
@@ -343,48 +304,17 @@ class ExportModel
 				WHERE id = ?
 				ORDER BY id DESC
 				LIMIT 1', $this->meetingId)->fetch();
-
-		$meeting_header = $data['place']." ".$data['year'];
-		$filename = Strings::toAscii($data['place'].$data['year']."-program");
-
-		// load and prepare template
-		$this->View->loadTemplate('exports/program_large');
-		$this->View->assign('header', $meeting_header);
-		$this->View->assign('meeting_id', $this->meetingId);
-		$this->View->assign('database', $this->database);
-
-		$template = $this->View->render(false);
-
-		$pdf = $this->createPdf();
-		$pdf->paperFormat = 'B1';
-
-		// write html
-		$pdf->WriteHTML($template, 0);
-
-		/* debugging */
-		if($this->debugMode){
-			echo $template;
-			exit('DEBUG_MODE');
-		} else {
-			// download
-			$output_filename = $filename.'.'.$file_type;
-			$pdf->Output($output_filename, "D");
-		}
-
 	}
 
 	/**
-	 * Print Program into PDF file
+	 * Return data for public program
 	 *
-	 * @param	string	type of evidence
-	 * @param	int		ID of visitor
-	 * @param	string	file type
-	 * @return	file	PDF file
+	 * @param	void
+	 * @return	array	data
 	 */
-	public function printPublicProgram($file_type = "pdf")
+	public function publicProgram()
 	{
-		// prepare header
-		$data = $this->database->query('SELECT	id,
+		return $this->database->query('SELECT	id,
 						place,
 						DATE_FORMAT(start_date, "%Y") AS year,
 						UNIX_TIMESTAMP(open_reg) AS open_reg,
@@ -393,130 +323,33 @@ class ExportModel
 				WHERE id = ?
 				ORDER BY id DESC
 				LIMIT 1', $this->meetingId)->fetch();
-
-		$meeting_header = $data['place']." ".$data['year'];
-		$filename = Strings::toAscii($data['place'].$data['year']."-program");
-
-		// load and prepare template
-		$this->View->loadTemplate('exports/program_public');
-		$this->View->assign('header', $meeting_header);
-		$this->View->assign('meeting_id', $this->meetingId);
-		$this->View->assign('database', $this->database);
-		$this->View->assign('styles', $this->category->getStyles());
-
-		$template = $this->View->render(false);
-
-		$pdf = $this->createPdf();
-
-		// write html
-		$pdf->WriteHTML($template, 0);
-
-		/* debugging */
-		if($this->debugMode){
-			echo $template;
-			exit('DEBUG_MODE');
-		} else {
-			// download
-			$output_filename = $filename.'.'.$file_type;
-			$pdf->Output($output_filename, "D");
-		}
-
 	}
 
 	/**
-	 * Print Program into PDF file
+	 * Return data for program badges
 	 *
-	 * @param	string	type of evidence
-	 * @param	int		ID of visitor
-	 * @param	string	file type
-	 * @return	file	PDF file
+	 * @param	void
+	 * @return	array	data
 	 */
-	public function printProgramBadges($file_type = "pdf")
+	public function programBadges()
 	{
-		// prepare header
-		$data = $this->database->query('SELECT	*
+		return $this->database->query('SELECT	*
 			FROM kk_visitors AS vis
 			WHERE meeting = ? AND vis.deleted = ?', $this->meetingId, '0')->fetchAll();
-
-		$filename = 'program-badge';
-
-		// load and prepare template
-		$this->View->loadTemplate('exports/program_badge');
-		$this->View->assign('meeting_id', $this->meetingId);
-		$this->View->assign('result', $data);
-		$this->View->assign('database', $this->database);
-
-		/* debugging */
-		if($this->debugMode){
-			$template = $this->View->render(true);
-			exit('DEBUG_MODE');
-		} else {
-			$template = $this->View->render(false);
-		}
-
-		$pdf = $this->createPdf();
-		$pdf->setMargins(5, 5, 9, 5);
-
-		// write html
-		$pdf->WriteHTML($template, 0);
-
-		/* debugging */
-		if(!$this->debugMode){
-			// download
-			$output_filename = $filename.'.'.$file_type;
-			$pdf->Output($output_filename, "D");
-		}
-
 	}
 
-	public function printNameBadges($names = NULL)
+	/**
+	 * Return data for name badges
+	 *
+	 * @param	void
+	 * @return	array	data
+	 */
+	public function nameBadges()
 	{
-		$output_filename = "jmenovky.pdf";
-
-		$_data = array();
-
-		if(empty($names)) {
-			$data = $this->database->query('SELECT	vis.id AS id,
-							nick
-					FROM kk_visitors AS vis
-					WHERE meeting = ? AND vis.deleted = ?', $this->meetingId, '0')->fetchAll();
-
-			foreach($data as $row) {
-				array_push($_data, $row);
-			}
-		} else {
-			$names = preg_replace('/\s+/','',$names);
-
-			$values = explode(',',$names);
-			foreach($values as $value) {
-				$row['nick'] = $value;
-				array_push($_data, $row);
-			}
-		}
-
-		// load and prepare template
-		$this->View->loadTemplate('exports/name_badge');
-		$this->View->assign('result', $_data);
-		$template = $this->View->render(FALSE);
-
-		$pdf = $this->createPdf();
-		$pdf->setMargins(15, 15, 10, 5);
-
-		// set watermark
-		$pdf->SetWatermarkImage(IMG_DIR.'logos/watermark-waves.jpg', 0.1, '');
-		$pdf->showWatermarkImage = TRUE;
-
-		// write html
-		$pdf->WriteHTML($template, 0);
-
-		/* debugging */
-		if($this->debugMode){
-			echo $template;
-			exit('DEBUG_MODE');
-		} else {
-			// download
-			$pdf->Output($output_filename, "D");
-		}
+		return $this->database->query('SELECT	vis.id AS id,
+						nick
+				FROM kk_visitors AS vis
+				WHERE meeting = ? AND vis.deleted = ?', $this->meetingId, '0')->fetchAll();
 	}
 
 	/**
@@ -686,18 +519,14 @@ class ExportModel
 	}
 
 	/**
-	 * Print visitors on program into PDF file
+	 * Return data for visitors's program
 	 *
-	 * @param	string	type of evidence
-	 * @param	int		ID of visitor
-	 * @param	string	file type
+	 * @param	int		program id
 	 * @return	file	PDF file
 	 */
-	public function printProgramVisitors($programId)
+	public function programVisitors($programId)
 	{
-		$output_filename = "ucastnici-programu.pdf";
-
-		$data = $this->database
+		return $this->database
 			->query('SELECT vis.name AS name,
 							vis.surname AS surname,
 							vis.nick AS nick,
@@ -706,43 +535,17 @@ class ExportModel
 					LEFT JOIN `kk_visitor-program` AS visprog ON vis.id = visprog.visitor
 					LEFT JOIN `kk_programs` AS prog ON prog.id = visprog.program
 					WHERE visprog.program = ? AND vis.deleted = ?', $programId, '0')->fetchAll();
-
-		// load and prepare template
-		$this->View->loadTemplate('exports/program_visitors');
-		$this->View->assign('result', $data);
-		$template = $this->View->render(false);
-
-		// prepare header
-		$program_header = $data[0]['program'];
-
-		$pdf = $this->createPdf();
-
-		// set header
-		$pdf->SetHeader($program_header.'|sraz VS|Účastnící programu');
-		// write html
-		$pdf->WriteHTML($template, 0);
-
-		/* debugging */
-		if($this->debugMode){
-			echo $template;
-			exit('DEBUG_MODE');
-		} else {
-			// download
-			$pdf->Output($output_filename, "D");
-		}
 	}
 
 	/**
-	 * Print details of program into PDF file
+	 * Return data for details of program
 	 *
 	 * @param	void
-	 * @return	file	PDF file
+	 * @return	array	data
 	 */
-	public function printProgramDetails()
+	public function programDetails()
 	{
-		$output_filename = "vypis-programu.pdf";
-
-		$data = $this->database
+		return $this->database
 			->query('SELECT prog.name AS name,
 						 prog.description AS description,
 						 prog.tutor AS tutor,
@@ -752,80 +555,17 @@ class ExportModel
 					WHERE block.meeting = ?
 						AND prog.deleted = ?
 						AND block.deleted = ?', $this->meetingId, '0', '0')->fetchAll();
-
-		// load and prepare template
-		$this->View->loadTemplate('exports/program_details');
-		$this->View->assign('result', $data);
-		$template = $this->View->render(false);
-
-		$pdf = $this->createPdf();
-
-		// set header
-		$pdf->SetHeader('Výpis programů|sraz VS');
-		// write html
-		$pdf->WriteHTML($template, 0);
-
-		/* debugging */
-		if($this->debugMode){
-			echo $template;
-			exit('DEBUG_MODE');
-		} else {
-			// download
-			$pdf->Output($output_filename, "D");
-		}
 	}
 
 	/**
-	 * Print data of visitors into excel file
+	 * Return data for visitor excel
 	 *
-	 * @return	file	*.xlsx file type
+	 * @param   void
+	 * @return	array	data
 	 */
-	public function printVisitorsExcel()
+	public function visitorsExcel()
 	{
-		$excel = $this->createExcel();
-
-		$excel->getProperties()->setCreator("HKVS Srazy K + K")->setTitle("Návštěvníci");
-
-		// Zde si vyvoláme aktivní list (nastavený nahoře) a vyplníme buňky A1 a A2
-		$list = $excel->setActiveSheetIndex(0);
-
-		$list->setCellValue('A1', 'ID');
-		$list->setCellValue('B1', 'symbol');
-		$list->setCellValue('C1', 'Jméno');
-		$list->setCellValue('D1', 'Příjmení');
-		$list->setCellValue('E1', 'Přezdívka');
-		$list->setCellValue('F1', 'Narození');
-		$list->setCellValue('G1', 'E-mail');
-		$list->setCellValue('H1', 'Adresa');
-		$list->setCellValue('I1', 'Město');
-		$list->setCellValue('J1', 'PSČ');
-		$list->setCellValue('K1', 'Kraj');
-		$list->setCellValue('L1', 'Evidence');
-		$list->setCellValue('M1', 'Středisko/Přístav');
-		$list->setCellValue('N1', 'Oddíl');
-		$list->setCellValue('O1', 'Účet');
-		$list->setCellValue('P1', 'Připomínky');
-		$list->setCellValue('Q1', 'Příjezd');
-		$list->setCellValue('R1', 'Odjezd');
-		$list->setCellValue('S1', 'Otázka');
-
-		$excel->getActiveSheet()->getStyle('A1:Z1')->getFont()->setBold(true);
-
-		$excel->getActiveSheet()->getColumnDimension('C')->setWidth(15);
-		$excel->getActiveSheet()->getColumnDimension('D')->setWidth(15);
-		$excel->getActiveSheet()->getColumnDimension('F')->setWidth(15);
-		$excel->getActiveSheet()->getColumnDimension('G')->setWidth(30);
-		$excel->getActiveSheet()->getColumnDimension('H')->setWidth(20);
-		$excel->getActiveSheet()->getColumnDimension('I')->setWidth(15);
-		$excel->getActiveSheet()->getColumnDimension('K')->setWidth(20);
-		$excel->getActiveSheet()->getColumnDimension('M')->setWidth(30);
-		$excel->getActiveSheet()->getColumnDimension('N')->setWidth(20);
-		$excel->getActiveSheet()->getColumnDimension('P')->setWidth(20);
-		$excel->getActiveSheet()->getColumnDimension('Q')->setWidth(20);
-		$excel->getActiveSheet()->getColumnDimension('R')->setWidth(20);
-		$excel->getActiveSheet()->getColumnDimension('S')->setWidth(20);
-
-		$visitors = $this->database
+		return $this->database
 			->query('
 		SELECT vis.id AS id,
 			code,
@@ -861,58 +601,6 @@ class ExportModel
 		LEFT JOIN `kk_programs` AS progs ON visprog.program = progs.id*/
 		LEFT JOIN `kk_meals` AS mls ON mls.visitor = vis.id
 		WHERE vis.deleted = ? AND meeting = ?', '0', $this->meetingId)->fetchAll();
-
-		$i = 2;
-		foreach($visitors as $data) {
-			$list->setCellValue('A'.$i, $data['id']);
-			$list->setCellValue('B'.$i, $data['code']);
-			$list->setCellValue('C'.$i, $data['name']);
-			$list->setCellValue('D'.$i, $data['surname']);
-			$list->setCellValue('E'.$i, $data['nick']);
-			$list->setCellValue('F'.$i, $data['birthday']);
-			$list->setCellValue('G'.$i, $data['email']);
-			$list->setCellValue('H'.$i, $data['street']);
-			$list->setCellValue('I'.$i, $data['city']);
-			$list->setCellValue('J'.$i, $data['postal_code']);
-			$list->setCellValue('K'.$i, $data['province']);
-			$list->setCellValue('L'.$i, $data['group_num']);
-			$list->setCellValue('M'.$i, $data['group_name']);
-			$list->setCellValue('N'.$i, $data['troop_name']);
-			$list->setCellValue('O'.$i, $data['bill']);
-			$list->setCellValue('P'.$i, $data['comment']);
-			$list->setCellValue('Q'.$i, $data['arrival']);
-			$list->setCellValue('R'.$i, $data['departure']);
-			$list->setCellValue('S'.$i, $data['question']);
-			$list->setCellValue('S'.$i, $data['question2']);
-			$list->setCellValue('T'.$i, $data['all']);
-			$list->setCellValue('U'.$i, $data['fry_dinner']);
-			$list->setCellValue('V'.$i, $data['sat_breakfast']);
-			$list->setCellValue('W'.$i, $data['sat_lunch']);
-			$list->setCellValue('X'.$i, $data['sat_dinner']);
-			$list->setCellValue('Y'.$i, $data['sun_breakfast']);
-			$list->setCellValue('Z'.$i, $data['sun_lunch']);
-			$i++;
-
-		}
-
-		// stahnuti souboru
-		$filename = 'export-MS-'.date('Y-m-d',time()).'.xlsx';
-
-		$excel->setActiveSheetIndex(0);
-
-		header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-		header('Content-Disposition: attachment;filename="'.$filename.'"');
-		header('Cache-Control: max-age=0');
-
-		// If you're serving to IE over SSL, then the following may be needed
-		header ('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
-		header ('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT'); // always modified
-		header ('Cache-Control: cache, must-revalidate'); // HTTP/1.1
-		header ('Pragma: public'); // HTTP/1.0
-
-		$ExcelWriter = \PHPExcel_IOFactory::createWriter($excel, 'Excel2007');
-		$ExcelWriter->save('php://output');
-		exit;
 	}
 
 }

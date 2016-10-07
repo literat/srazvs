@@ -174,9 +174,6 @@ class ProgramController extends BaseController
 			case "mail":
 				$this->mail();
 				break;
-			case 'export-visitors':
-				$this->Export->printProgramVisitors($id);
-				break;
 			case "public":
 				$this->publicView();
 				break;

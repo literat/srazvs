@@ -131,7 +131,7 @@ abstract class BaseController
 				$this->mail();
 				break;
 			case 'export-visitors':
-				$this->Export->printProgramVisitors($id);
+				$this->Export->renderProgramVisitors($id);
 				break;
 
 		}
