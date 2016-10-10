@@ -78,8 +78,6 @@ services:
             @category,
             %debugMode%
         ]
-    view:
-        class: App\View
     category:
         class: App\CategoryModel
         arguments: [
