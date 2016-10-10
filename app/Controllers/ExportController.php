@@ -144,9 +144,9 @@ class ExportController extends BaseController
 			case "summary":
 				$this->templateName = 'evidence_summary';
 				// specific mPDF settings
-				$pdf->defaultfooterfontsize = 16;
-				$pdf->defaultfooterfontstyle = 'B';
-				$pdf->SetHeader($hkvsHeader);
+				$this->pdf->defaultfooterfontsize = 16;
+				$this->pdf->defaultfooterfontstyle = 'B';
+				$this->pdf->SetHeader($hkvsHeader);
 				break;
 			case "confirm":
 				$this->templateName = 'evidence_confirm';
@@ -304,8 +304,8 @@ class ExportController extends BaseController
 	 */
 	public function renderPublicProgram()
 	{
-		$this->templateName = 'program_public.pdf';
-		$this->filename = Strings::toAscii($data['place'].$data['year']."-program");
+		$this->templateName = 'program_public';
+		$this->filename = Strings::toAscii($data['place'] . $data['year'] . '-program' . '.pdf');
 
 		$data = $this->model->publicProgram();
 
