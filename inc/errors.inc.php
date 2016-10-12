@@ -23,6 +23,6 @@ function printError($error)
 	elseif($error != "") $html = "<span class='error'>".$errors[$error]."</span>";
 	else $html = "";
 
-	echo $html;
+	return $html;
 }
 ?>

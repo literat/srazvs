@@ -165,7 +165,7 @@ $(function() {
 		</tr>
 		<tr>
 			<td class='label'><label><span class="required">*</span>Datum narození:</label></td>
-			<td><div class="picker"><input {$disabled} id="birthday" class="datePicker" type='text' name='birthday' size='30' value='{$data['birthday']}' /></div> (datum ve formátu dd.mm.rrrr)</td>
+			<td><div class="picker"><input {$disabled} id="birthday" class="datePicker" type='text' name='birthday' size='30' value='{$data['birthday']|date:'%d.%m.%Y'}' /></div> (datum ve formátu dd.mm.rrrr)</td>
 		</tr>
 		<tr>
 			<td class='label'><label><span class="required">*</span>Ulice:</label></td>

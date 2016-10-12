@@ -6,7 +6,7 @@
 <h1>Registrace na srazy K + K</h1>
 <h2>{$meeting_heading}</h2>
 <br />
-{$error}
+{$error|noescape}
 
 <!-- REGISTRACNI FORMULAR SRAZU -->
 
@@ -50,7 +50,7 @@
 	</tr>
 	<tr>
 		<td class='label'>Datum narození:</td>
-		<td>{$data['birthday']}</td>
+		<td>{$data['birthday']|date:'%d.%m.%Y'}</td>
 	</tr>
 	<tr>
 		<td class='label'>Ulice:</td>
