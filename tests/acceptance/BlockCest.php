@@ -90,7 +90,7 @@ class BlockCest extends CestCase
 		$I->seeCurrentUrlMatches('~/srazvs/block/\?cms=new~');
 		$this->fillForm($I, $this->simpleBlock);
 		$I->click('Uložit', '#content');
-		$I->seeInCurrentUrl('/srazvs/?error=ok');
+		$I->seeInCurrentUrl('/srazvs/block?error=ok');
 	}
 
 	public function it_should_update_simple_block(\AcceptanceTester $I)
@@ -106,7 +106,7 @@ class BlockCest extends CestCase
 		$I->seeCurrentUrlMatches('~/srazvs/block/\?cms=new~');
 		$this->fillForm($I, $this->fullBlock);
 		$I->click('Uložit', '#content');
-		$I->seeInCurrentUrl('/srazvs/?error=ok');
+		$I->seeInCurrentUrl('/srazvs/block?error=ok');
 	}
 
 	public function it_should_update_full_block(\AcceptanceTester $I)
