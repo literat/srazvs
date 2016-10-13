@@ -133,7 +133,17 @@ $router[] = new Route('<presenter>[/<action>]', 'Meeting:index');
 $router[] = new Route('<presenter>/<action>[/<id>]', 'Meeting:index');
 
 $appRequest = $router->match($httpRequest);
-$controllerName = $appRequest->getPresenterName();
+
+if($appRequest) {
+	$controllerName = $appRequest->getPresenterName();
+} else {
+	$badRequestException = new \Nette\Application\BadRequestException('Page not found!', 404);
+	$error = new \App\Presenters\Error4xxPresenter();
+	$httpResponse->setCode(Nette\Http\Response::S404_NOT_FOUND);
+	$error->render404($badRequestException);
+	die;
+}
+
 
 $container->addService('router', $router);
 $target = $parameters['appDir'] . '/controllers/' . $controllerName . 'Controller.php';
