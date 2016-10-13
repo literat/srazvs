@@ -31,14 +31,6 @@ class AllPagesCest
 		$I->see('Srazy VS');
 	}
 
-	public function ensure_that_meeting_works(\AcceptanceTester $I)
-	{
-		$I = $this->logIn($I);
-		$I->wantTo('ensure that meeting works');
-		$I->amOnPage('/srazvs/meeting/');
-		$I->see('Správa srazů');
-	}
-
 	public function ensure_that_programs_works(\AcceptanceTester $I)
 	{
 		$I = $this->logIn($I);
