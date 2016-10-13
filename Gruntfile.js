@@ -27,7 +27,7 @@ module.exports = function (grunt) {
 
 		shell: {
 			nette_tester: {
-				command: 'php -f vendor/nette/tester/Tester/tester.php -- -c tests/php.ini -j 10 tests/unit',
+				command: 'php -f vendor/nette/tester/Tester/tester.php -- -c tests/php-unix.ini -j 10 tests/unit',
 			},
 			codeception: {
 				command: 'php -f vendor/codeception/codeception/codecept run acceptance',
