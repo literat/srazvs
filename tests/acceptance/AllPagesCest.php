@@ -71,4 +71,12 @@ class AllPagesCest
 		$I->see('Nastavení systému');
 	}
 
+	public function it_should_get_error_404_on_nonexisting_page(\AcceptanceTester $I)
+	{
+		$I->amOnPage('/srazvs/registration/www.qrka.cz');
+		$I->seeResponseCodeIs(404);
+		$I->amOnPage('/srazvs/program/www.qrka.cz');
+		$I->seeResponseCodeIs(404);
+	}
+
 }
