@@ -23,12 +23,14 @@ if($cms == "logout") {
 
 ######## Kontrola prihlaseni
 $nologin = true;
-
+//dd(isset($_SESSION) && (!isset($_SESSION[SESSION_PREFIX.'user'])) || !isset($_SESSION[SESSION_PREFIX.'password']));
 //kontrola casove existence session a delky jeji necinnosti
 if(isset($_SESSION) && (!isset($_SESSION[SESSION_PREFIX.'user']) || !isset($_SESSION[SESSION_PREFIX.'password']))) {
 	$_SESSION['user']["logged"] = false;
 	session_unset();
-	session_destroy();
+	if(session_id()) {
+		session_destroy();
+	}
 	header("Location: ".HTTP_DIR."admin/");
 	exit('Session Not Exists');
 }
