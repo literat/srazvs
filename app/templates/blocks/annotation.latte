@@ -9,15 +9,15 @@
 		<br />
 		<h2>{$meeting_heading}</h2>
 		<br />
-		{$error}
+		{$error|noescape}
 
-		<form action='?program' method='post'>
+		<form action='/srazvs/block' method='post'>
 
 			<div class='button-line'>
 				<button type='submit' onclick=\"this.form.submit()\">
 					<img src='{$imgDir}icons/save.png' /> Uložit
 				</button>
-				<button type='button' onclick="window.location.replace('{$wwwDir}sraz-kk-setkani-cinovniku.p77.html')">
+				<button type='button' onclick="window.location.replace({$wwwDir} + 'sraz-kk-setkani-cinovniku.p77.html')">
 					<img src='{$imgDir}icons/storno.png'  /> Storno
 				</button>
 			</div>
@@ -36,14 +36,6 @@
 				<tr>
 					<td class='label'><label>Popis:</label></td>
 					<td><textarea name='description' rows='10' cols="70">{$data['description']}</textarea>{$error_description}</td>
-				</tr>
-				<tr>
-					<td colspan="2">Doplň, prosím, vybavení, které budeš potřebovat na Tvůj program a které máme zajistit.
-					</td>
-				</tr>
-				<tr>
-					<td class='label'><label>Materiál:</label></td>
-					<td><textarea name='material' rows='2' cols="70">{$data['material']}</textarea>{$error_material}</td>
 				</tr>
 				<tr>
 					<td class='label'><label>Lektor:</label></td>
@@ -65,19 +57,20 @@
 
 			<input type='hidden' name='cms' value='modify'>
 			<input type='hidden' name='id' value='{$id}'>
-			<input type='hidden' name='formkey' value='{$hash}'>
-			<input type='hidden' name='type' value='{$data['type']}'>
+			<input type='hidden' name='guid' value='{$data['guid']}'>
 			<input type='hidden' name='program' value='{$data['program']}'>
 			<input type='hidden' name='category' value='{$data['category']}'>
-			<input type='hidden' name='from' value='{$data['from']}'>
-			<input type='hidden' name='to' value='{$data['to']}'>
+			<input type='hidden' name='start_hour' value='{$data['start_hour']}'>
+			<input type='hidden' name='end_hour' value='{$data['end_hour']}'>
+			<input type='hidden' name='start_minute' value='{$data['start_minute']}'>
+			<input type='hidden' name='end_minute' value='{$data['end_minute']}'>
 			<input type='hidden' name='day' value='{$data['day']}'>
 			<input type='hidden' name='page' value='annotation'>
 
 			<div class='button-line'>
 				<button type='submit' onclick=\"this.form.submit()\">
 					<img src='{$imgDir}icons/save.png' /> Uložit</button>
-				<button type='button' onclick="window.location.replace('{$wwwDir}sraz-kk-setkani-cinovniku.p77.html')">
+				<button type='button' onclick="window.location.replace({$wwwDir} + 'sraz-kk-setkani-cinovniku.p77.html')">
 					<img src='{$imgDir}icons/storno.png'  /> Storno</button>
 			</div>
 
