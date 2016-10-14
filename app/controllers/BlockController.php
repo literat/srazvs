@@ -59,6 +59,8 @@ class BlockController extends BaseController
 	/** @var string template directory */
 	private $templateDir = 'blocks';
 
+	private $action;
+
 	/**
 	 * Prepare model classes and get meeting id
 	 */
@@ -99,45 +101,54 @@ class BlockController extends BaseController
 	 */
 	public function init()
 	{
+		$this->action = $this->requested('action');
 		$id = $this->requested('id', $this->blockId);
 		$this->cms = $this->requested('cms', '');
 		$this->error = $this->requested('error', '');
 		$this->page = $this->requested('page', '');
 
+		$action = $this->cms ? $this->cms : $this->action;
+
 		######################### PRISTUPOVA PRAVA ################################
 
-		if($this->cms != 'annotation' && $this->page != 'annotation') {
+		if($action != 'annotation') {
 			include_once(INC_DIR.'access.inc.php');
 		}
 
 		###########################################################################
 
-		switch($this->cms) {
+		switch($action) {
 			case "delete":
 				$this->delete($id);
+				$this->render();
 				break;
 			case "new":
 				$this->__new();
+				$this->render();
 				break;
 			case "create":
 				$this->create();
+				$this->render();
 				break;
 			case "edit":
 				$this->edit($id);
+				$this->render();
 				break;
 			case "modify":
 				$this->update($id);
+				$this->render();
 				break;
 			case "mail":
 				$this->mail();
+				$this->render();
 				break;
 			case "annotation":
-				$formkey = intval($this->requested('formkey', ''));
-				$this->annotation($formkey);
+				$this->annotationRender($id);
+				break;
+			default:
+				$this->render();
 				break;
 		}
-
-		$this->render();
 	}
 
 	/**
@@ -258,28 +269,22 @@ class BlockController extends BaseController
 				$DB_data[$key] = $$key;
 			}
 
-			if($this->page != 'annotation') {
-				$from = date("H:i:s",mktime($start_hour, $start_minute,0,0,0,0));
-				$to = date("H:i:s",mktime($end_hour, $end_minute,0,0,0,0));
-				$DB_data['from'] = $from;
-				$DB_data['to'] = $to;
-				//$DB_data['capacity'] = 0;
-			} else {
-				$DB_data['program'] = $_POST['program'];
-			}
-
-			//$DB_data['meeting'] = $this->meetingId;
+			$from = date("H:i:s",mktime($start_hour, $start_minute,0,0,0,0));
+			$to = date("H:i:s",mktime($end_hour, $end_minute,0,0,0,0));
+			$DB_data['from'] = $from;
+			$DB_data['to'] = $to;
+			$DB_data['program'] = $this->requested('program');
 		}
 
 		$this->Block->update($id, $DB_data);
 
 		if($this->page == 'annotation') {
-			$queryString = "&error=ok&formkey=".$this->requested('formkey', '')."&type=".$this->requested('type', '');
+			$queryString = '/' . $DB_data['guid'] . '?error=ok';
 		} else {
 			$queryString = "?error=ok";
 		}
 
-		redirect(PRJ_DIR . $this->page . $queryString);
+		redirect(PRJ_DIR . 'block/' . $this->page . $queryString);
 	}
 
 	/**
@@ -320,27 +325,48 @@ class BlockController extends BaseController
 	 * @param  int $id of item
 	 * @return void
 	 */
-	private function annotation($formkey)
+	private function annotationRender($guid)
 	{
 		$this->template = 'annotation';
 
 		$this->heading = "úprava bloku";
 		$this->todo = "modify";
 
-		$mid = (($formkey - 39147) / 116)%100;
-		$id = floor((($formkey - 39147) / 116) / 100);
+		$data = $this->Block->annotation($guid);
 
 		$this->Meeting->setRegistrationHandlers();
 
-		$this->blockId = $id;
+		$this->blockId = $data['id'];
 
-		$dbData = $this->Block->getData($id);
+		$error_name = "";
+		$error_description = "";
+		$error_tutor = "";
+		$error_email = "";
+		$error_material = "";
 
-		foreach($this->Block->formNames as $key) {
-			$this->data[$key] = $this->requested($key, $dbData[$key]);
-		}
-		$this->data['formkey'] = $this->requested('formkey', '');
-		$this->data['type'] = $this->requested('type', '');
+		$parameters = [
+			'cssDir'	=> CSS_DIR,
+			'jsDir'		=> JS_DIR,
+			'imgDir'	=> IMG_DIR,
+			'wwwDir'	=> HTTP_DIR,
+			'error'		=> printError($this->error),
+			'todo'		=> $this->todo,
+			'cms'		=> $this->cms,
+			'data'		=> $data,
+			'mid'		=> $this->meetingId,
+			'id'		=> $this->blockId,
+			'page'		=> $this->page,
+			'heading'	=> $this->heading,
+			'page_title'=> 'Registrace programů pro lektory',
+			'meeting_heading'	=> $this->Meeting->getRegHeading(),
+			'error_name'		=> printError($error_name),
+			'error_description'	=> printError($error_description),
+			'error_tutor'		=> printError($error_tutor),
+			'error_email'		=> printError($error_email),
+			'error_material'	=> printError($error_material),
+		];
+
+		$this->latte->render(__DIR__ . '/../templates/' . $this->templateDir.'/'.$this->template . '.latte', $parameters);
 	}
 
 	/**
@@ -420,7 +446,6 @@ class BlockController extends BaseController
 				'meeting_heading'	=> $this->Meeting->getRegHeading(),
 				'block'				=> $this->itemId,
 				'error_material'	=> printError($error_material),
-				'page_title'		=> 'Registrace programů pro lektory',
 				'type'				=> isset($this->data['type']) ? $this->data['type'] : NULL,
 				'hash'				=> isset($this->data['formkey']) ? $this->data['formkey'] : NULL,
 			]);
