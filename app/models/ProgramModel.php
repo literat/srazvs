@@ -32,8 +32,8 @@ class ProgramModel extends BaseModel
 	/** Constructor */
 	public function __construct($database)
 	{
-		$this->dbColumns = array("name", "block", "display_in_reg", "description", "tutor", "email", "category", "material", "capacity");
-		$this->formNames = array("name", "description", "material", "tutor", "email", "capacity", "display_in_reg", "block", "category");
+		$this->dbColumns = array('guid', "name", "block", "display_in_reg", "description", "tutor", "email", "category", "material", "capacity");
+		$this->formNames = array('guid', "name", "description", "material", "tutor", "email", "capacity", "display_in_reg", "block", "category");
 		$this->dbTable = "kk_programs";
 		$this->database = $database;
 	}
@@ -240,6 +240,15 @@ class ProgramModel extends BaseModel
 		}
 
 		return $data;
+	}
+
+	public function annotation($guid)
+	{
+		return $this->database
+				->table($this->dbTable)
+				->where('guid ? AND deleted ?', $guid, '0')
+				->limit(1)
+				->fetch();
 	}
 
 	/**
@@ -456,15 +465,15 @@ class ProgramModel extends BaseModel
 	/**
 	 * Get tutor e-mail address
 	 *
-	 * @param int $blockId id of block item
+	 * @param int $id id of block item
 	 * @return Nette\Database\Table\ActiveRow object with e-mail address
 	 */
-	public function getTutor($blockId)
+	public function getTutor($id)
 	{
 		return $this->database
 			->table($this->dbTable)
-			->select('email, tutor')
-			->where('id ? AND deleted ?', $blockId, '0')
+			->select('guid, email, tutor')
+			->where('id ? AND deleted ?', $id, '0')
 			->limit(1)
 			->fetch();
 	}
