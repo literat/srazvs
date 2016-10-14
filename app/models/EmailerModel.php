@@ -92,16 +92,16 @@ class Emailer
 	 * Sends an e-mail to lecture master
 	 *
 	 * @param	array	recipient mail and name
-	 * @param	string	hash
+	 * @param	string	guid
 	 * @param	string	program | block
 	 * @return	mixed	true | error information
 	 */
-	public function tutor(array $recipients, $hash, $type)
+	public function tutor(array $recipients, $guid, $type)
 	{
 		$lang['block']['cs'] = "bloku";
 		$lang['program']['cs'] = "programu";
 
-		$tutorFormUrl = PRJ_DIR . $type . "/?cms=annotation&type=" . $type . "&formkey=" . $hash;
+		$tutorFormUrl = PRJ_DIR . $type . "/annotation/" . $guid;
 
 		// e-mail templates
 		$template = $this->getTemplate('tutor');

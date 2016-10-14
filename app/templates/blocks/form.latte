@@ -13,7 +13,7 @@
 	<button type='button' onclick="window.location.replace({$page})">
 		<img src='{$imgDir}icons/storno.png'  /> Storno</button>
  {if $cms == "edit"}
-	<button type='button' onclick="window.location.replace('?cms=mail&pid={$id}')">
+	<button type='button' onclick="window.location.replace('/srazvs/block/mail/' + {$id})">
 		<img src='{$imgDir}icons/mail.png'  /> Odeslat lektorovi</button>
   <button type='button' onclick="this.target='_blank';window.location.replace('/srazvs/block/annotation/' + {$data['guid']})">
       <img src='{$imgDir}icons/search.png'  /> Náhled anotace</button>

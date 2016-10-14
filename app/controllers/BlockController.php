@@ -139,8 +139,7 @@ class BlockController extends BaseController
 				$this->render();
 				break;
 			case "mail":
-				$this->mail();
-				$this->render();
+				$this->mailRender($id);
 				break;
 			case "annotation":
 				$this->annotationRender($id);
@@ -305,17 +304,15 @@ class BlockController extends BaseController
 	 *
 	 * @return void
 	 */
-	private function mail()
+	private function mailRender($id)
 	{
-		$pid = $this->requested('pid', '');
-		//$hash = $this->formKeyHash($pid, $this->meetingId);
-		$tutors = $this->Block->getTutor($pid);
+		$tutors = $this->Block->getTutor($id);
 		$recipients = $this->parseTutorEmail($tutors);
 
-		if($this->Emailer->tutor($recipients, $this->meetingId, 'block')) {
-			redirect("?block&error=mail_send");
+		if($this->Emailer->tutor($recipients, $tutors->guid, 'block')) {
+			redirect('/srazvs/block?error=mail_send');
 		} else {
-			redirect("block?id=".$pid."&error=email&cms=edit");
+			redirect('block?id=' . $id . '&error=email&cms=edit');
 		}
 	}
 

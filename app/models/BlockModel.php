@@ -240,7 +240,7 @@ class BlockModel extends BaseModel
 	{
 		return $this->database
 			->table($this->dbTable)
-			->select('email, tutor')
+			->select('guid, email, tutor')
 			->where('id ? AND deleted ?', $blockId, '0')
 			->limit(1)
 			->fetch();
