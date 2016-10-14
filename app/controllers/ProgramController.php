@@ -97,6 +97,7 @@ class ProgramController extends BaseController
 	private $Meeting;
 
 	private $block;
+	private $action;
 
 	/**
 	 * Prepare model classes and get meeting id
@@ -140,50 +141,57 @@ class ProgramController extends BaseController
 	 */
 	public function init()
 	{
+		$this->action = $this->requested('action');
 		$id = $this->requested('id', $this->programId);
 		$this->cms = $this->requested('cms', '');
 		$this->error = $this->requested('error', '');
 		$this->page = $this->requested('page', '');
 
+		$action = $this->cms ? $this->cms : $this->action;
+
 		######################### PRISTUPOVA PRAVA ################################
-		if(
-			$this->cms != 'public'
-			&& $this->cms != 'annotation'
-			&& $this->page != 'annotation'
-		) {
+
+		if($this->cms != 'public' && $action != 'annotation') {
 			include_once(INC_DIR.'access.inc.php');
 		}
+
 		###########################################################################
 
-		switch($this->cms) {
+		switch($action) {
 			case "delete":
 				$this->delete($id);
+				$this->render();
 				break;
 			case "new":
 				$this->__new();
+				$this->render();
 				break;
 			case "create":
 				$this->create();
+				$this->render();
 				break;
 			case "edit":
 				$this->edit($id);
+				$this->render();
 				break;
 			case "modify":
 				$this->update($id);
+				$this->render();
 				break;
 			case "mail":
-				$this->mail();
+				$this->mailRender($id);
 				break;
 			case "public":
 				$this->publicView();
+				$this->render();
 				break;
 			case "annotation":
-				$formkey = intval($this->requested('formkey', ''));
-				$this->annotation($formkey);
+				$this->annotationRender($id);
+				break;
+			default:
+				$this->render();
 				break;
 		}
-
-		$this->render();
 	}
 
 	/**
@@ -259,12 +267,12 @@ class ProgramController extends BaseController
 		$this->Program->update($id, $DB_data);
 
 		if($this->page == 'annotation') {
-			$queryString = "&error=ok&formkey=".$this->requested('formkey', '')."&type=".$this->requested('type', '');
+			$queryString = '/' . $DB_data['guid'] . '?error=ok';
 		} else {
 			$queryString = "?error=ok";
 		}
 
-		redirect(PRJ_DIR.$this->page . $queryString);
+		redirect(PRJ_DIR . 'program/' . $this->page . $queryString);
 	}
 
 	/**
@@ -307,17 +315,15 @@ class ProgramController extends BaseController
 	 *
 	 * @return void
 	 */
-	private function mail()
+	private function mailRender($id)
 	{
-		$pid = $this->requested('pid', '');
-		//$hash = $this->formKeyHash($pid, $this->meetingId);
-		$tutors = $this->Program->getTutor($pid);
+		$tutors = $this->Program->getTutor($id);
 		$recipients = $this->parseTutorEmail($tutors);
 
-		if($this->Emailer->tutor($recipients, $this->meetingId, 'program')) {
-			redirect("?program&error=mail_send");
+		if($this->Emailer->tutor($recipients, $tutors->guid, 'program')) {
+			redirect('/srazvs/program?error=mail_send');
 		} else {
-			redirect("process.php?id=".$pid."&error=email&cms=edit");
+			redirect('program?id=' . $id . '&error=email&cms=edit');
 		}
 	}
 
@@ -337,26 +343,48 @@ class ProgramController extends BaseController
 	 * @param  int $id of item
 	 * @return void
 	 */
-	private function annotation($formkey)
+	private function annotationRender($guid)
 	{
 		$this->template = 'annotation';
 
 		$this->heading = "úprava programu";
 		$this->todo = "modify";
 
-		$mid = (($formkey - 39147) / 116)%100;
-		$id = floor((($formkey - 39147) / 116) / 100);
+		$data = $this->Program->annotation($guid);
 
 		$this->Meeting->setRegistrationHandlers();
-		$this->programId = $id;
 
-		$dbData = $this->Program->getData($id);
+		$this->programId = $data->id;
 
-		foreach($this->Program->formNames as $key) {
-			$this->data[$key] = $this->requested($key, $dbData[$key]);
-		}
-		$this->data['formkey'] = $this->requested('formkey', '');
-		$this->data['type'] = $this->requested('type', '');
+		$error_name = "";
+		$error_description = "";
+		$error_tutor = "";
+		$error_email = "";
+		$error_material = "";
+
+		$parameters = [
+			'cssDir'	=> CSS_DIR,
+			'jsDir'		=> JS_DIR,
+			'imgDir'	=> IMG_DIR,
+			'wwwDir'	=> HTTP_DIR,
+			'error'		=> printError($this->error),
+			'todo'		=> $this->todo,
+			'cms'		=> $this->cms,
+			'data'		=> $data,
+			'mid'		=> $this->meetingId,
+			'id'		=> $this->programId,
+			'page'		=> $this->page,
+			'heading'	=> $this->heading,
+			'page_title'=> 'Registrace programů pro lektory',
+			'meeting_heading'	=> $this->Meeting->getRegHeading(),
+			'error_name'		=> printError($error_name),
+			'error_description'	=> printError($error_description),
+			'error_tutor'		=> printError($error_tutor),
+			'error_email'		=> printError($error_email),
+			'error_material'	=> printError($error_material),
+		];
+
+		$this->latte->render(__DIR__ . '/../templates/' . $this->templateDir.'/'.$this->template . '.latte', $parameters);
 	}
 
 	/**
