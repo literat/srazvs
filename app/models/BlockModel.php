@@ -35,6 +35,7 @@ class BlockModel extends BaseModel
 	public function __construct($database)
 	{
 		$this->dbColumns = array(
+			'guid',
 			"name",
 			"day",
 			"from",
@@ -50,6 +51,7 @@ class BlockModel extends BaseModel
 			"meeting"*/
 		);
 		$this->formNames = array(
+			'guid',
 			"name",
 			"day",
 			"start_hour",
@@ -87,7 +89,8 @@ class BlockModel extends BaseModel
 	{
 		if(isset($block_id)) {
 			$data = $this->database
-				->query('SELECT name,
+				->query('SELECT guid,
+								name,
 								DATE_FORMAT(`from`,"%H") AS start_hour,
 								DATE_FORMAT(`to`,"%H") AS end_hour,
 								DATE_FORMAT(`from`,"%i") AS start_minute,
@@ -109,7 +112,8 @@ class BlockModel extends BaseModel
 						$block_id, '0')->fetch();
 		} else {
 			$data = $this->database
-				->query('SELECT 	blocks.id AS id,
+				->query('SELECT blocks.guid AS guid,
+							blocks.id AS id,
 							blocks.name AS name,
 							cat.name AS cat_name,
 							day,
@@ -127,6 +131,33 @@ class BlockModel extends BaseModel
 		}
 
 		return $data;
+	}
+
+	public function annotation($guid)
+	{
+		return $this->database
+				->query('SELECT guid,
+								id,
+								name,
+								DATE_FORMAT(`from`,"%H") AS start_hour,
+								DATE_FORMAT(`to`,"%H") AS end_hour,
+								DATE_FORMAT(`from`,"%i") AS start_minute,
+								DATE_FORMAT(`to`,"%i") AS end_minute,
+								`day`,
+								`from`,
+								`to`,
+								program,
+								display_progs,
+								description,
+								material,
+								tutor,
+								email,
+								capacity,
+								category
+						FROM kk_blocks
+						WHERE guid = ? AND deleted = ?
+						LIMIT 1',
+						$guid, '0')->fetch();
 	}
 
 	/**
