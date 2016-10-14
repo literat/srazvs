@@ -8,15 +8,15 @@
 		<br />
 		<h2>{$meeting_heading}</h2>
 		<br />
-		{$error}
+		{$error|noescape}
 
-		<form action='?program' method='post'>
+		<form action='/srazvs/program' method='post'>
 
 			<div class='button-line'>
 				<button type='submit' onclick=\"this.form.submit()\">
 					<img src='{$imgDir}icons/save.png' /> Uložit
 				</button>
-				<button type='button' onclick="window.location.replace('{$httpDir}sraz-kk-setkani-cinovniku.p77.html')">
+				<button type='button' onclick="window.location.replace({$wwwDir} + 'sraz-kk-setkani-cinovniku.p77.html')">
 					<img src='{$imgDir}icons/storno.png'  /> Storno
 				</button>
 			</div>
@@ -63,17 +63,16 @@
 			</table>
 
 			<input type='hidden' name='cms' value='modify'>
-			<input type='hidden' name='id' value='{id}'>
-			<input type='hidden' name='formkey' value='{hash}'>
-			<input type='hidden' name='type' value='{type}'>
-			<input type='hidden' name='block' value='{block}'>
-			<input type='hidden' name='category' value='{category}'>
+			<input type='hidden' name='id' value='{$id}'>
+			<input type='hidden' name='guid' value='{$data->guid}'>
+			<input type='hidden' name='block' value='{$data->block}'>
+			<input type='hidden' name='category' value='{$data->category}'>
 			<input type='hidden' name='page' value='annotation'>
 
 			<div class='button-line'>
 				<button type='submit' onclick=\"this.form.submit()\">
 					<img src='{$imgDir}icons/save.png' /> Uložit</button>
-				<button type='button' onclick="window.location.replace('{$httpDir}sraz-kk-setkani-cinovniku.p77.html')">
+				<button type='button' onclick="window.location.replace({$wwwDir} + 'sraz-kk-setkani-cinovniku.p77.html')">
 					<img src='{$imgDir}icons/storno.png'  /> Storno</button>
 			</div>
 

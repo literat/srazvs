@@ -2,7 +2,7 @@
 
 {block content}
 <div class='siteContentRibbon'>Správa programů</div>
-{$error}
+{$error|noescape}
 <div class='pageRibbon'>{$heading}</div>
 
 <form action='?program' method='post'>
@@ -13,9 +13,9 @@
 		<button type='button' onclick="window.location.replace({$page})">
 			<img src='{$imgDir}icons/storno.png'  /> Storno</button>
 	{if $cms == "edit"}
-		<button type='button' onclick="window.location.replace('?cms=mail&pid={$id}')">
+		<button type='button' onclick="window.location.replace('/srazvs/program/mail/' + {$id})">
 			<img src='{$imgDir}icons/mail.png'  /> Odeslat lektorovi</button>
-		<button type='button' onclick="this.target='_blank';window.location.replace('?cms=annotation&type=program&formkey={$formkey}')">
+		<button type='button' onclick="this.target='_blank';window.location.replace('/srazvs/program/annotation/' + {$data['guid']})">
 			<img src='{$imgDir}icons/search.png'  /> Náhled anotace</button>
 	{/if}
 	</div>
@@ -62,6 +62,7 @@
 	<input type='hidden' name='cms' value='{$todo}'>
 	<input type='hidden' name='page' value='{$page}'>
 	<input type='hidden' name='id' value='{$id}'>
+	<input type='hidden' name='guid' value='{$data['guid']}'>
 </form>
 
 {$program_visitors|noescape}
