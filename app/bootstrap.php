@@ -167,6 +167,7 @@ if(file_exists($target)) {
 		)
 			&& ($httpRequest->getQuery('cms') != 'annotation')
 			&& ($httpRequest->getPost('page') != 'annotation')
+			&& ($appRequest->getParameter('action') != 'annotation')
 	) {
 		include_once(INC_DIR . 'access.inc.php');
 	}
