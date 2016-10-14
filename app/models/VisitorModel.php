@@ -137,6 +137,7 @@ class VisitorModel
 				);
 				// insert into binding table
 				// var programs_data contains requested values in format block-id => program-id
+				$bindingsData['guid'] = md5(uniqid());
 				$result_binding = $this->database->query('INSERT INTO `kk_visitor-program`', $bindingsData);
 
 				if(!$result_binding){

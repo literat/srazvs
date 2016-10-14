@@ -108,6 +108,7 @@ class MeetingModel
 	 */
 	public function create(array $data)
 	{
+		$data['guid'] = md5(uniqid());
 		$result = $this->database->query('INSERT INTO ' . $this->dbTable, $data);
 
 		return $result;
