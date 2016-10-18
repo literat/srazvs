@@ -145,6 +145,8 @@ $appRequest = $router->match($httpRequest);
 
 if($appRequest) {
 	$controllerName = $appRequest->getPresenterName();
+	$action = $appRequest->getParameter('action');
+	$id = $appRequest->getParameter('id');
 } else {
 	$badRequestException = new \Nette\Application\BadRequestException('Page not found!', 404);
 	$error = new \App\Presenters\Error4xxPresenter();
@@ -166,18 +168,20 @@ $latte->setTempDirectory(__DIR__ . '/../temp');
 $latte->addFilter(NULL, 'Filters::common');
 $container->addService('latte', $latte);
 
+$publicPages = [
+	'Block.annotation',
+	'Program.annotation',
+	'Program.public',
+	'Export.programPublic',
+	'Export.programDetails',
+	'Registration.',
+];
+
 //get target
 if(file_exists($target)) {
-	//print_r(get_declared_classes());
-	if(
-		(
-			$controllerName != 'Registration'
-			&& ($httpRequest->getQuery('cms') != 'public')
-		)
-			&& ($httpRequest->getQuery('cms') != 'annotation')
-			&& ($httpRequest->getPost('page') != 'annotation')
-			&& ($appRequest->getParameter('action') != 'annotation')
-	) {
+
+	// access control
+	if(!array_search($controllerName.'.'.$action, $publicPages)) {
 		include_once(INC_DIR . 'access.inc.php');
 	}
 
