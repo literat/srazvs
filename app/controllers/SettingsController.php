@@ -90,8 +90,6 @@ class SettingsController extends BaseController
 	 */
 	public function init()
 	{
-		include_once(INC_DIR.'access.inc.php');
-
 		########################## KONTROLA ###############################
 
 		$this->cms = $this->requested('cms', '');

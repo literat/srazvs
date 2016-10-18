@@ -89,8 +89,6 @@ class CategoryController extends BaseController
 	 */
 	public function init()
 	{
-		include_once(INC_DIR.'access.inc.php');
-
 		########################## KONTROLA ###############################
 
 		//$mid = $_SESSION['meetingID'];

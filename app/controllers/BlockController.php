@@ -109,14 +109,6 @@ class BlockController extends BaseController
 
 		$action = $this->cms ? $this->cms : $this->action;
 
-		######################### PRISTUPOVA PRAVA ################################
-
-		if($action != 'annotation') {
-			include_once(INC_DIR.'access.inc.php');
-		}
-
-		###########################################################################
-
 		switch($action) {
 			case "delete":
 				$this->delete($id);

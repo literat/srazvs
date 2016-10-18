@@ -99,12 +99,6 @@ abstract class BaseController
 	 */
 	public function init()
 	{
-		######################### PRISTUPOVA PRAVA ################################
-
-		include_once(INC_DIR.'access.inc.php');
-
-		###########################################################################
-
 		$id = $this->requested("id",$this->itemId);
 		$this->cms = $this->requested("cms","");
 		$this->error = $this->requested("error","");

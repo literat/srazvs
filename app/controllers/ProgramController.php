@@ -149,14 +149,6 @@ class ProgramController extends BaseController
 
 		$action = $this->cms ? $this->cms : $this->action;
 
-		######################### PRISTUPOVA PRAVA ################################
-
-		if($this->cms != 'public' && $action != 'annotation') {
-			include_once(INC_DIR.'access.inc.php');
-		}
-
-		###########################################################################
-
 		switch($action) {
 			case "delete":
 				$this->delete($id);
@@ -426,7 +418,7 @@ class ProgramController extends BaseController
 			'heading'	=> $this->heading,
 		];
 
-		if($this->cms != 'public' && $this->cms != 'annotation') {
+		if($this->action != 'public' && $this->action != 'annotation') {
 			$parameters = array_merge($parameters, [
 				'style'		=> $this->Category->getStyles(),
 				'user'		=> $this->getUser($_SESSION[SESSION_PREFIX.'user']),
@@ -457,7 +449,7 @@ class ProgramController extends BaseController
 			]);
 		}
 
-		if($this->cms == 'public') {
+		if($this->action == 'public') {
 			$parameters['meeting_heading'] = $this->Meeting->getRegHeading();
 			////otevirani a uzavirani prihlasovani
 			if(($this->Meeting->getRegOpening() < time()) || $this->debugMode) {

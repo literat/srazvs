@@ -48,11 +48,6 @@ class ExportController extends BaseController
 	 */
 	public function init()
 	{
-		// program detail and program public must be public
-		if(!$this->router->getParameter('program-public') && !$this->router->getParameter('program-details')) {
-			include_once(INC_DIR.'access.inc.php');
-		}
-
 		if($this->meetingId = $this->requested('mid', '')){
 			$_SESSION['meetingID'] = $this->meetingId;
 		} else {
