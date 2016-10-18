@@ -88,9 +88,18 @@ define('EXP_DIR',		PRJ_DIR.'export');
 define('SET_DIR',		PRJ_DIR.'settings');
 
 if(!function_exists('dd')) {
-	function dd($variable) {
-		\Tracy\Debugger::dump($variable);
-		die;
+	/**
+	 * Dump the passed variables and end the script.
+	 *
+	 * @param  mixed
+	 * @return void
+	 */
+	function dd() {
+		array_map(function ($x){
+			(\Tracy\Debugger::dump($x));
+		}, func_get_args());
+
+		die(1);
 	}
 }
 
