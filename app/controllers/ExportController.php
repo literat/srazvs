@@ -67,11 +67,11 @@ class ExportController extends BaseController
 				$this->renderAttendance();
 				break;
 			case 'evidence':
-				//if(!empty($this->requested('vid'))) {
+				$type = $this->requested('id');
 				if($this->requested('vid')) {
-					$this->renderEvidence($this->requested('type'), intval($this->requested('vid')));
+					$this->renderEvidence($type, intval($this->requested('vid')));
 				} else {
-					$this->renderEvidence($this->requested('type'));
+					$this->renderEvidence($type);
 				}
 				break;
 			case 'visitorExcel':
