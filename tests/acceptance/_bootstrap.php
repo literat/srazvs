@@ -37,4 +37,20 @@ class CestCase
 		}
 	}
 
+	protected function logIn(\AcceptanceTester $I)
+	{
+		$I->wantTo('Log In to Admin');
+		$I->amOnPage('admin/');
+		$I->seeInCurrentUrl('admin/');
+		$I->fillField('username','tester');
+		$I->fillField('password','tester');
+		$I->checkOption('persistent');
+		$I->click('Přihlásit', '#content');
+		$I->see('Úvod');
+		$I->see('tester');
+		//$this->cookie = $I->grabCookie('vodni.skauting.local');
+
+		return $I;
+	}
+
 }
