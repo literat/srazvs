@@ -1,3 +1,67 @@
+<a name="2.4.0"></a>
+# [2.4.0](https://github.com/literat/srazvs/compare/v2.3.0...v2.4.0) (2016-10-18)
+
+
+### Bug Fixes
+
+* **annotation:** Added guid in block model (refs #60) ([17538be](https://github.com/literat/srazvs/commit/17538be))
+* **annotation:** Added guid to programs and return annotation (refs #60) ([bc7e71d](https://github.com/literat/srazvs/commit/bc7e71d))
+* **annotation:** Added test for annotation (refs #60) ([c54c34b](https://github.com/literat/srazvs/commit/c54c34b))
+* **annotation:** Buttons should be accesible by codeception (refs #60) ([f42f214](https://github.com/literat/srazvs/commit/f42f214))
+* **annotation:** Comment smart object trait (refs #60) ([cb4dd77](https://github.com/literat/srazvs/commit/cb4dd77))
+* **annotation:** Fix templates for working with annotation (refs #60) ([ce67dcf](https://github.com/literat/srazvs/commit/ce67dcf)), closes [#60](https://github.com/literat/srazvs/issues/60)
+* **annotation:** Fixing annotation mail sending (refs #60) ([13a43b1](https://github.com/literat/srazvs/commit/13a43b1))
+* **annotation:** Generating guid (refs #60) ([623340d](https://github.com/literat/srazvs/commit/623340d))
+* **annotation:** Generating guid (refs #60) ([e4c372d](https://github.com/literat/srazvs/commit/e4c372d))
+* **annotation:** Login helper for codeception tests (refs #60) ([1e75ee5](https://github.com/literat/srazvs/commit/1e75ee5))
+* **annotation:** Program templates (refs #60) ([98f0516](https://github.com/literat/srazvs/commit/98f0516))
+* **annotation:** Refactor block controller to use action for annotations (refs #60) ([72d882c](https://github.com/literat/srazvs/commit/72d882c))
+* **annotation:** Refactor programs to use actions and guid (refs #60) ([05b3bb0](https://github.com/literat/srazvs/commit/05b3bb0))
+* **annotation:** Unblock annotation action (refs #60) ([84f3d9a](https://github.com/literat/srazvs/commit/84f3d9a))
+* **controllers:** Added error presenters (refs #58) ([49e688e](https://github.com/literat/srazvs/commit/49e688e))
+* **controllers:** Added error templates (refs #58) ([ecc0929](https://github.com/literat/srazvs/commit/ecc0929))
+* **controllers:** Added php.ini for Unix and Windows (refs #58) ([cd12d01](https://github.com/literat/srazvs/commit/cd12d01))
+* **controllers:** Added test for non existing pages (refs #58) ([12c1538](https://github.com/literat/srazvs/commit/12c1538))
+* **controllers:** Fix bad application request and return error (refs #58) ([89dba54](https://github.com/literat/srazvs/commit/89dba54)), closes [#58](https://github.com/literat/srazvs/issues/58)
+* **controllers:** Rename Controllers to controllers (refs #58) ([753b5d5](https://github.com/literat/srazvs/commit/753b5d5))
+* **git:** Rename Models to models ([73570d7](https://github.com/literat/srazvs/commit/73570d7))
+* **latte:** Added noescape for displaying error (refs #54) ([edc7662](https://github.com/literat/srazvs/commit/edc7662))
+* **latte:** Fix scope and template name (refs #54) ([6b4dbb8](https://github.com/literat/srazvs/commit/6b4dbb8)), closes [#54](https://github.com/literat/srazvs/issues/54)
+* **latte:** Testing date by registration (refs #54) ([4c87faf](https://github.com/literat/srazvs/commit/4c87faf))
+* **meeting creation:** Do not escape error (refs #19) ([630ae6f](https://github.com/literat/srazvs/commit/630ae6f))
+* **meeting creation:** Fix nonexting key in array (refs #19) ([3861df1](https://github.com/literat/srazvs/commit/3861df1)), closes [#19](https://github.com/literat/srazvs/issues/19)
+* **session:** Destroy session only if exists (refs #59) ([2f58679](https://github.com/literat/srazvs/commit/2f58679))
+* **unit test:** Fix runnig unit test by skipping one and repair two (refs #60) ([e866452](https://github.com/literat/srazvs/commit/e866452)), closes [#60](https://github.com/literat/srazvs/issues/60)
+
+### Features
+
+* **dd:** Better dump and die ([94f47b2](https://github.com/literat/srazvs/commit/94f47b2))
+* **latte:** Added latte templating system into dependencies (refs #54) ([486fc69](https://github.com/literat/srazvs/commit/486fc69))
+* **latte:** Clean up after template conversion (refs #54) ([091d656](https://github.com/literat/srazvs/commit/091d656))
+* **latte:** Clear also strings in array (refs #54) ([d153da9](https://github.com/literat/srazvs/commit/d153da9))
+* **latte:** Convert category templates to latte (refs #54) ([05effb7](https://github.com/literat/srazvs/commit/05effb7))
+* **latte:** Convert meeting templates to latte (refs #54) ([a906cb2](https://github.com/literat/srazvs/commit/a906cb2))
+* **latte:** Converting blocks templates to latte (refs #54) ([8b5a3eb](https://github.com/literat/srazvs/commit/8b5a3eb))
+* **latte:** Converting export templates to latte (refs #54) ([753a693](https://github.com/literat/srazvs/commit/753a693))
+* **latte:** Converting exports page template to latte (refs #54) ([93b0fdb](https://github.com/literat/srazvs/commit/93b0fdb))
+* **latte:** Converting program templates to latte (refs #54) ([979589d](https://github.com/literat/srazvs/commit/979589d))
+* **latte:** Converting registration templates to latte (refs #54) ([3351b68](https://github.com/literat/srazvs/commit/3351b68))
+* **latte:** Converting settings templates to latte (refs #54) ([536ab62](https://github.com/literat/srazvs/commit/536ab62))
+* **latte:** Converting visitor templates to latte (refs #54) ([0d84069](https://github.com/literat/srazvs/commit/0d84069))
+* **latte:** Creating own latte filters (refs #54) ([4a62f77](https://github.com/literat/srazvs/commit/4a62f77))
+* **latte:** Fix failing acceptance test for blocks (refs #54) ([323b987](https://github.com/literat/srazvs/commit/323b987)), closes [#54](https://github.com/literat/srazvs/issues/54)
+* **latte:** Fix mistakes in templates (refs #54) ([77c857b](https://github.com/literat/srazvs/commit/77c857b)), closes [#54](https://github.com/literat/srazvs/issues/54)
+* **latte:** Move attendance to controller and prepare model (refs #54) ([4e7e1e6](https://github.com/literat/srazvs/commit/4e7e1e6))
+* **latte:** Refactor of exports (refs #54) ([638c40e](https://github.com/literat/srazvs/commit/638c40e))
+* **latte:** Refactoring export classes and templates (refs #54) ([be62967](https://github.com/literat/srazvs/commit/be62967))
+* **latte:** Removing old header and footer templates (refs #54) ([9b3b17e](https://github.com/literat/srazvs/commit/9b3b17e))
+* **latte:** Removing unused code (refs #54) ([6e170f8](https://github.com/literat/srazvs/commit/6e170f8))
+* **latte:** Removing unused code (refs #54) ([ae03e26](https://github.com/literat/srazvs/commit/ae03e26))
+* **latte:** Split functionality between model and controller (refs #54) ([21b64fa](https://github.com/literat/srazvs/commit/21b64fa))
+* **meeting creation:** Added acceptance test for creating meeting (refs #19) ([effdfa5](https://github.com/literat/srazvs/commit/effdfa5))
+
+
+
 <a name="2.3.0"></a>
 # [2.3.0](https://github.com/literat/srazvs/compare/v2.2.0...v2.3.0) (2016-09-22)
 
