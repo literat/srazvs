@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @skip
+ */
+
 use Tester\Assert;
 use Mockery\MockInterface;
 use App\ExportModel;
@@ -32,6 +36,7 @@ class RegistrationCode4BankTest extends Tester\TestCase
 
 $mockedDatabase = Mockery::mock(Nette\Database\Context::class);
 $mockedContainer = Mockery::mock(Nette\DI\Container::class);
+$mockedContainer->parameters['router'] = null;
 
 $RegistrationController = new RegistrationController(
 	$mockedDatabase,
