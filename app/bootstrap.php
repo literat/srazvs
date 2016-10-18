@@ -114,8 +114,8 @@ if(!function_exists('redirect')) {
 /**
  * Connecting to Database
  */
-$connection = $container->createServiceConnection();
-$database = $container->createServiceDatabase();
+$connection = $container->getService('connection');
+$database = $container->getService('database');
 
 // Tracy database panel
 Nette\Database\Helpers::createDebugPanel($connection);
