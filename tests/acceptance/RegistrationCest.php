@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * Registration must be public
+ */
+
 class RegistrationCest extends CestCase
 {
 

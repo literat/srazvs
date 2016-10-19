@@ -39,7 +39,6 @@ class CestCase
 
 	protected function logIn(\AcceptanceTester $I)
 	{
-		$I->wantTo('Log In to Admin');
 		$I->amOnPage('admin/');
 		$I->seeInCurrentUrl('admin/');
 		$I->fillField('username','tester');
