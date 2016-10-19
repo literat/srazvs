@@ -174,14 +174,14 @@ $publicPages = [
 	'Program.public',
 	'Export.programPublic',
 	'Export.programDetails',
-	'Registration.',
+	'Registration.index',
 ];
 
 //get target
 if(file_exists($target)) {
 
 	// access control
-	if(!array_search($controllerName.'.'.$action, $publicPages)) {
+	if(array_search($controllerName.'.'.$action, $publicPages) === false) {
 		include_once(INC_DIR . 'access.inc.php');
 	}
 
