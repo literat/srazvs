@@ -1,5 +1,9 @@
 <?php
 
+namespace App\Presenters;
+
+use Nette\Database\Context;
+use Nette\DI\Container;
 use Tracy\Debugger;
 
 /**
@@ -11,7 +15,7 @@ use Tracy\Debugger;
  * @copyright 2013-06-12 <tomaslitera@hotmail.com>
  * @package srazvs
  */
-class RegistrationController extends BaseController
+class RegistrationPresenter extends BasePresenter
 {
 	/**
 	 * template
@@ -68,14 +72,14 @@ class RegistrationController extends BaseController
 	protected $error = FALSE;
 
 	protected $hash = NULL;
-
-	/** @var Latte/latte latte */
-	private $latte;
+	private $item;
+	private $disabled;
+	private $mealData;
 
 	/**
 	 * Prepare model classes and get meeting id
 	 */
-	public function __construct($database, $container)
+	public function __construct(Context $database, Container $container)
 	{
 		$this->item = '';
 

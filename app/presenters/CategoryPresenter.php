@@ -1,26 +1,32 @@
 <?php
+
+namespace App\Presenters;
+
+use Nette\Database\Context;
+use Nette\DI\Container;
+
 /**
  * This file handles the retrieval and serving of news articles
  */
-class CategoryController extends BaseController
+class CategoryPresenter extends BasePresenter
 {
 	/**
 	 * template
 	 * @var string
 	 */
-	private $template = 'listing';
+	protected $template = 'listing';
 
 	/**
 	 * template directory
 	 * @var string
 	 */
-	private $templateDir = 'category';
+	protected $templateDir = 'category';
 
 	/**
 	 * meeting ID
 	 * @var integer
 	 */
-	private $meetingId = 0;
+	protected $meetingId = 0;
 
 	/**
 	 * category ID
@@ -29,28 +35,10 @@ class CategoryController extends BaseController
 	private $categoryId = NULL;
 
 	/**
-	 * action what to do
-	 * @var string
-	 */
-	private $cms = '';
-
-	/**
 	 * page where to return
 	 * @var string
 	 */
-	private $page = 'category';
-
-	/**
-	 * data
-	 * @var array
-	 */
-	private $data = array();
-
-	/**
-	 * error handler
-	 * @var string
-	 */
-	private $error = '';
+	protected $page = 'category';
 
 	/**
 	 * DI container
@@ -67,7 +55,7 @@ class CategoryController extends BaseController
 	/**
 	 * Prepare initial values
 	 */
-	public function __construct($database, $container)
+	public function __construct(Context $database, Container $container)
 	{
 		$this->database = $database;
 		$this->container = $container;
@@ -213,7 +201,7 @@ class CategoryController extends BaseController
 			'imgDir'	=> IMG_DIR,
 			'catDir'	=> CAT_DIR,
 			'style'		=> $this->Category->getStyles(),
-			'user'		=> $this->getUser($_SESSION[SESSION_PREFIX.'user']),
+			'user'		=> $this->getSunlightUser($_SESSION[SESSION_PREFIX.'user']),
 			'meeting'	=> $this->getPlaceAndYear($_SESSION['meetingID']),
 			'menu'		=> $this->generateMenu(),
 			'error'		=> printError($this->error),

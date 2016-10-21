@@ -1,5 +1,10 @@
 <?php
 
+namespace App\Presenters;
+
+use Nette\Database\Context;
+use Nette\DI\Container;
+
 /**
  * Program controller
  *
@@ -8,19 +13,19 @@
  * @created 2013-06-05
  * @author Tomas Litera <tomaslitera@hotmail.com>
  */
-class ProgramController extends BaseController
+class ProgramPresenter extends BasePresenter
 {
 	/**
 	 * This template variable will hold the 'this->View' portion of our MVC for this
 	 * controller
 	 */
-	private $template = 'listing';
+	protected $template = 'listing';
 
 	/**
 	 * Template directory
 	 * @var string
 	 */
-	private $templateDir = 'program';
+	protected $templateDir = 'program';
 
 	/**
 	 * ID of item
@@ -32,30 +37,7 @@ class ProgramController extends BaseController
 	 * ID of meeting
 	 * @var integer
 	 */
-	private $meetingId = 0;
-
-	/**
-	 * Error
-	 * @var string
-	 */
-	private $error = '';
-	/**
-	 * Action command
-	 * @var string
-	 */
-	private $cms;
-
-	/**
-	 * Page where to go
-	 * @var string
-	 */
-	private $page = '';
-
-	/**
-	 * DB data
-	 * @var array
-	 */
-	private $data = array();
+	protected $meetingId = 0;
 
 	/**
 	 * Object farm container
@@ -87,9 +69,6 @@ class ProgramController extends BaseController
 	 */
 	private $Category;
 
-	/** @var Latte/latte latte */
-	private $latte;
-
 	/**
 	 * Meeting class
 	 * @var Meeting
@@ -102,7 +81,7 @@ class ProgramController extends BaseController
 	/**
 	 * Prepare model classes and get meeting id
 	 */
-	public function __construct($database, $container)
+	public function __construct(Context $database, Container $container)
 	{
 		$this->database = $database;
 		$this->container = $container;
@@ -424,7 +403,7 @@ class ProgramController extends BaseController
 		if($this->action != 'public' && $this->action != 'annotation') {
 			$parameters = array_merge($parameters, [
 				'style'		=> $this->Category->getStyles(),
-				'user'		=> $this->getUser($_SESSION[SESSION_PREFIX.'user']),
+				'user'		=> $this->getSunlightUser($_SESSION[SESSION_PREFIX.'user']),
 				'meeting'	=> $this->getPlaceAndYear($_SESSION['meetingID']),
 				'menu'		=> $this->generateMenu(),
 			]);

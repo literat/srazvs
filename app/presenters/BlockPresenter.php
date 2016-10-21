@@ -1,4 +1,10 @@
 <?php
+
+namespace App\Presenters;
+
+use Nette\Database\Context;
+use Nette\DI\Container;
+
 /**
  * Block controller
  *
@@ -7,13 +13,13 @@
  * @created 2013-06-03
  * @author Tomas Litera <tomaslitera@hotmail.com>
  */
-class BlockController extends BaseController
+class BlockPresenter extends BasePresenter
 {
 	/**
 	 * This template variable will hold the 'this->View' portion of our MVC for this
 	 * controller
 	 */
-	private $template = 'listing';
+	protected $template = 'listing';
 
 	/**
 	 * ID of item
@@ -25,30 +31,7 @@ class BlockController extends BaseController
 	 * ID of meeting
 	 * @var integer
 	 */
-	private $meetingId = 0;
-
-	/**
-	 * Error
-	 * @var string
-	 */
-	private $error = '';
-	/**
-	 * Action command
-	 * @var string
-	 */
-	private $cms;
-
-	/**
-	 * Page where to go
-	 * @var string
-	 */
-	private $page = '';
-
-	/**
-	 * DB data
-	 * @var array
-	 */
-	private $data = array();
+	protected $meetingId = 0;
 
 	private $container;
 	private $Block;
@@ -57,14 +40,14 @@ class BlockController extends BaseController
 	private $Category;
 
 	/** @var string template directory */
-	private $templateDir = 'blocks';
+	protected $templateDir = 'blocks';
 
 	private $action;
 
 	/**
 	 * Prepare model classes and get meeting id
 	 */
-	public function __construct($database, $container)
+	public function __construct(Context $database, Container $container)
 	{
 		$this->database = $database;
 		$this->container = $container;
@@ -411,7 +394,7 @@ class BlockController extends BaseController
 		if($this->cms != 'annotation') {
 			$parameters = array_merge($parameters, [
 				'style'		=> $this->Category->getStyles(),
-				'user'		=> $this->getUser($_SESSION[SESSION_PREFIX.'user']),
+				'user'		=> $this->getSunlightUser($_SESSION[SESSION_PREFIX.'user']),
 				'meeting'	=> $this->getPlaceAndYear($_SESSION['meetingID']),
 				'menu'		=> $this->generateMenu(),
 			]);

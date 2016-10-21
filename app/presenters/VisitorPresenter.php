@@ -1,5 +1,10 @@
 <?php
 
+namespace App\Presenters;
+
+use Nette\Database\Context;
+use Nette\DI\Container;
+
 /**
  * Visitor controller
  *
@@ -9,7 +14,7 @@
  * @copyright 2013-06-12 <tomaslitera@hotmail.com>
  * @package srazvs
  */
-class VisitorController extends BaseController
+class VisitorPresenter extends BasePresenter
 {
 	/**
 	 * Object farm container
@@ -59,10 +64,12 @@ class VisitorController extends BaseController
 	 */
 	private $recipients = NULL;
 
+	private $disabled;
+
 	/**
 	 * Prepare model classes and get meeting id
 	 */
-	public function __construct($database, $container)
+	public function __construct(Context $database, Container $container)
 	{
 		$this->templateDir = 'visitor';
 		$this->template = "listing";
@@ -463,7 +470,7 @@ class VisitorController extends BaseController
 			'visitDir'			=> VISIT_DIR,
 			'expDir'			=> EXP_DIR,
 			'style'				=> $this->Category->getStyles(),
-			'user'				=> $this->getUser($_SESSION[SESSION_PREFIX.'user']),
+			'user'				=> $this->getSunlightUser($_SESSION[SESSION_PREFIX.'user']),
 			'meeting'			=> $this->getPlaceAndYear($_SESSION['meetingID']),
 			'menu'				=> $this->generateMenu(),
 			'error'				=> printError($this->error),

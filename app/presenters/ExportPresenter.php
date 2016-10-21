@@ -1,5 +1,9 @@
 <?php
 
+namespace App\Presenters;
+
+use Nette\Database\Context;
+use Nette\DI\Container;
 use Nette\Utils\Strings;
 
 /**
@@ -7,7 +11,7 @@ use Nette\Utils\Strings;
  *
  * This file handles the retrieval and serving of exports
  */
-class ExportController extends BaseController
+class ExportPresenter extends BasePresenter
 {
 	/**
 	 * This template variable will hold the 'view' portion of our MVC for this
@@ -17,7 +21,6 @@ class ExportController extends BaseController
 
 	private $container;
 	private $export;
-	private $latte;
 	private $program;
 	private $model;
 	private $pdf;
@@ -26,7 +29,7 @@ class ExportController extends BaseController
 	private $parameters;
 	private $category;
 
-	public function __construct($database, $container)
+	public function __construct(Context $database, Container $container)
 	{
 		$this->database = $database;
 		$this->container = $container;
@@ -108,7 +111,7 @@ class ExportController extends BaseController
 			'jsDir'		=> JS_DIR,
 			'imgDir'	=> IMG_DIR,
 			'wwwDir'	=> HTTP_DIR,
-			'user'		=> $this->getUser($_SESSION[SESSION_PREFIX.'user']),
+			'user'		=> $this->getSunlightUser($_SESSION[SESSION_PREFIX.'user']),
 			'meeting'	=> $this->getPlaceAndYear($_SESSION['meetingID']),
 			'menu'		=> $this->generateMenu(),
 			'graph'		=> $this->model->renderGraph(),

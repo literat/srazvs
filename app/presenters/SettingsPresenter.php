@@ -1,50 +1,38 @@
 <?php
+
+namespace App\Presenters;
+
+use Nette\Database\Context;
+use Nette\DI\Container;
+
 /**
  * This file handles the retrieval and serving of news articles
  */
-class SettingsController extends BaseController
+class SettingsPresenter extends BasePresenter
 {
 	/**
 	 * template
 	 * @var string
 	 */
-	private $template = 'form';
+	protected $template = 'form';
 
 	/**
 	 * template directory
 	 * @var string
 	 */
-	private $templateDir = 'settings';
+	protected $templateDir = 'settings';
 
 	/**
 	 * meeting ID
 	 * @var integer
 	 */
-	private $meetingId = 0;
-
-	/**
-	 * action what to do
-	 * @var string
-	 */
-	private $cms = '';
+	protected $meetingId = 0;
 
 	/**
 	 * page where to return
 	 * @var string
 	 */
-	private $page = 'settings';
-
-	/**
-	 * data
-	 * @var array
-	 */
-	private $data = array();
-
-	/**
-	 * error handler
-	 * @var string
-	 */
-	private $error = '';
+	protected $page = 'settings';
 
 	/**
 	 * Container class
@@ -67,7 +55,7 @@ class SettingsController extends BaseController
 	/**
 	 * Prepare initial values
 	 */
-	public function __construct($database, $container)
+	public function __construct(Context $database, Container $container)
 	{
 		$this->database = $database;
 		$this->container = $container;
@@ -166,7 +154,7 @@ class SettingsController extends BaseController
 			'cssDir'				=> CSS_DIR,
 			'jsDir'					=> JS_DIR,
 			'imgDir'				=> IMG_DIR,
-			'user'					=> $this->getUser($_SESSION[SESSION_PREFIX.'user']),
+			'user'					=> $this->getSunlightUser($_SESSION[SESSION_PREFIX.'user']),
 			'meeting'				=> $this->getPlaceAndYear($_SESSION['meetingID']),
 			'menu'					=> $this->generateMenu(),
 			'error'					=> printError($this->error),
