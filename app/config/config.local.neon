@@ -113,3 +113,10 @@ services:
             @block,
             @database
         ]
+    authService:
+        class: AuthService
+    userService:
+        class: UserService
+
+extensions:
+    skautis: Skautis\Nette\SkautisExtension
