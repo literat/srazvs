@@ -157,7 +157,7 @@ if($appRequest) {
 
 
 $container->addService('router', $router);
-$target = $parameters['appDir'] . '/controllers/' . $controllerName . 'Controller.php';
+$target = $parameters['appDir'] . '/presenters/' . $controllerName . 'Presenter.php';
 $container->parameters['router'] = $appRequest;
 
 /**
@@ -188,7 +188,7 @@ if(file_exists($target)) {
 	require_once($target);
 
 	//modify page to fit naming convention
-	$class = $controllerName . 'Controller';
+	$class = 'App\Presenters\\' . $controllerName . 'Presenter';
 
 	//instantiate the appropriate class
 	if(class_exists($class)) {
