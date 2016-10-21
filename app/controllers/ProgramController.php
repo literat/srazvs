@@ -178,6 +178,9 @@ class ProgramController extends BaseController
 				$this->render();
 				break;
 			case "annotation":
+				if(is_numeric($id)) {
+					$this->update($id);
+				}
 				$this->annotationRender($id);
 				break;
 			default:

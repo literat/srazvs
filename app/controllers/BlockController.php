@@ -134,6 +134,9 @@ class BlockController extends BaseController
 				$this->mailRender($id);
 				break;
 			case "annotation":
+				if(is_numeric($id)) {
+					$this->update($id);
+				}
 				$this->annotationRender($id);
 				break;
 			default:
