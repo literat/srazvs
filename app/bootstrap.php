@@ -175,6 +175,8 @@ $publicPages = [
 	'Export.programPublic',
 	'Export.programDetails',
 	'Registration.index',
+	'Auth.login',
+	'Auth.skautis',
 ];
 
 //get target
