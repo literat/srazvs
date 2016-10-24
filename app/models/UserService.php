@@ -64,7 +64,7 @@ class UserService extends BaseService
 
 
 	/**
-	 * Returns complete list of information abour logged user
+	 * Returns complete list of information about logged user
 	 *
 	 * @param   void
 	 * @return  type
@@ -76,6 +76,17 @@ class UserService extends BaseService
 		return $person;
 	}
 
+	/**
+	 * Returns complete list of information about logged user unit
+	 *
+	 * @param   void
+	 * @return  type
+	 */
+	public function getUnitDetail()
+	{
+		return $this->skautis->org->unitDetail();
+	}
+
 
 	/**
 	 * Check if login session is still valid
@@ -85,7 +96,7 @@ class UserService extends BaseService
 	 */
 	public function isLoggedIn()
 	{
-		return $this->skautis->isLoggedIn();
+		return $this->skautis->getUser()->isLoggedIn();
 	}
 
 

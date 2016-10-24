@@ -26,7 +26,8 @@ class AuthService extends \BaseService
 	 */
 	public function setInit(array $arr)
 	{
-		$this->skautis->setLoginData($arr['skautIS_Token'], $arr['skautIS_IDRole'], $arr['skautIS_IDUnit']);
+		//$this->skautis->setLoginData($arr['skautIS_Token'], $arr['skautIS_IDRole'], $arr['skautIS_IDUnit']);
+		$this->skautis->setLoginData($arr);
 	}
 
 
