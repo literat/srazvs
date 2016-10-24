@@ -75,6 +75,7 @@ class RegistrationPresenter extends BasePresenter
 	private $item;
 	private $disabled;
 	private $mealData;
+	private $user;
 
 	/**
 	 * Prepare model classes and get meeting id
@@ -117,6 +118,8 @@ class RegistrationPresenter extends BasePresenter
 		} else {
 			$this->Meeting->setRegistrationHandlers();
 		}
+
+		$this->user = $this->container->getService('userService');
 	}
 
 	/**
@@ -126,10 +129,6 @@ class RegistrationPresenter extends BasePresenter
 	 */
 	public function init()
 	{
-		######################### PRISTUPOVA PRAVA ################################
-
-		###########################################################################
-
 		$id = $this->requested('id', (isset($this->itemId)) ? $this->itemId : '');
 		$this->cms = $this->requested('cms', '');
 		$this->error = $this->requested('error', '');
@@ -504,6 +503,22 @@ class RegistrationPresenter extends BasePresenter
 			////otevirani a uzavirani prihlasovani
 			'disabled'	=> $this->Meeting->isRegOpen($this->debugMode) ? "" : "disabled",
 		];
+
+		if($this->user->isLoggedIn()) {
+			$skautisUser = $this->user->getPersonalDetail();
+			$skautisUnit = $this->user->getUnitDetail();
+
+			$this->data['name'] = $skautisUser->FirstName;
+			$this->data['surname'] = $skautisUser->LastName;
+			$this->data['nick'] = $skautisUser->NickName;
+			$this->data['email'] = $skautisUser->Email;
+			$this->data['street'] = $skautisUser->Street;
+			$this->data['city'] = $skautisUser->City;
+			$this->data['postal_code'] = preg_replace('/\s+/','',$skautisUser->Postcode);
+			$this->data['birthday'] = $skautisUser->Birthday;
+			$this->data['group_name'] = $skautisUnit->DisplayName;
+			$this->data['group_num'] = $skautisUnit->RegistrationNumber;
+		}
 
 		if(!empty($this->data)) {
 			$parameters = array_merge($parameters, [
