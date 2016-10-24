@@ -118,6 +118,7 @@ class VisitorModel
 			. Strings::substring($DB_data['birthday'], 2, 2);
 
 		$DB_data['birthday'] = new \DateTime($DB_data['birthday']);
+		$DB_data['guid'] = md5(uniqid());
 
 		$ID_visitor = $this->database
 			->table($this->dbTable)
