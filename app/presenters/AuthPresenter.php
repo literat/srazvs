@@ -125,7 +125,7 @@ class AuthPresenter extends BasePresenter
 
 			//if (!$this->context->userService->isLoggedIn()) {
 			if (!$this->container->getService('userService')->isLoggedIn()) {
-				throw new \Skautis\Exception\AuthenticationException("Nemáte platné přihlášení do skautISu");
+				throw new \Skautis\Wsdl\AuthenticationException("Nemáte platné přihlášení do skautISu");
 			}
 			//$me = $this->context->userService->getPersonalDetail();
 			$me = $this->container->getService('userService')->getPersonalDetail();
@@ -137,7 +137,7 @@ class AuthPresenter extends BasePresenter
 			if (isset($ReturnUrl)) {
 				$this->context->application->restoreRequest($ReturnUrl);
 			}
-		} catch (\Skautis\Exception\AuthenticationException $e) {
+		} catch (\Skautis\Wsdl\AuthenticationException $e) {
 			$this->flashMessage($e->getMessage(), "danger");
 			$this->redirect(":Auth:Login");
 		}
