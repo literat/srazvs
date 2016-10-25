@@ -507,6 +507,7 @@ class RegistrationPresenter extends BasePresenter
 		if($this->user->isLoggedIn()) {
 			$skautisUser = $this->user->getPersonalDetail();
 			$skautisUnit = $this->user->getUnitDetail();
+			$skautisUserUnit = $this->user->getPersonUnitDetail();
 
 			$this->data['name'] = $skautisUser->FirstName;
 			$this->data['surname'] = $skautisUser->LastName;
@@ -518,6 +519,7 @@ class RegistrationPresenter extends BasePresenter
 			$this->data['birthday'] = $skautisUser->Birthday;
 			$this->data['group_name'] = $skautisUnit->DisplayName;
 			$this->data['group_num'] = $skautisUnit->RegistrationNumber;
+			$this->data['troop_name'] = $skautisUserUnit->Unit;
 		}
 
 		if(!empty($this->data)) {

@@ -73,6 +73,7 @@ class UserService extends BaseService
 	{
 		$user = $this->getUserDetail();
 		$person = $this->skautis->org->personDetail((array("ID" => $user->ID_Person)));
+
 		return $person;
 	}
 
@@ -87,6 +88,19 @@ class UserService extends BaseService
 		return $this->skautis->org->unitDetail();
 	}
 
+	/**
+	 * Returns complete list of information about logged user unit
+	 *
+	 * @param   void
+	 * @return  type
+	 */
+	public function getPersonUnitDetail()
+	{
+		$user = $this->getUserDetail();
+		$membership = $this->skautis->org->membershipAllPerson((array('ID_Person' => $user->ID_Person, "ID_MembershipType" => "radne")));
+		return $membership->MembershipAllOutput;
+		//return $this->skautis->org->unitDetail((['ID_Unit' => $membership->MembershipAllOutput->ID_Unit]));
+	}
 
 	/**
 	 * Check if login session is still valid
