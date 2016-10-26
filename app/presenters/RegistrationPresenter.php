@@ -502,6 +502,7 @@ class RegistrationPresenter extends BasePresenter
 			'meeting_heading'	=> $this->Meeting->getRegHeading(),
 			////otevirani a uzavirani prihlasovani
 			'disabled'	=> $this->Meeting->isRegOpen($this->debugMode) ? "" : "disabled",
+			'loggedIn'	=> $this->user->isLoggedIn(),
 		];
 
 		if($this->user->isLoggedIn()) {

@@ -498,6 +498,10 @@ a.link:hover, button:hover {
 	color:#000000;
 }
 
+#content-pad-program a.link.skaut {
+	text-align:right;
+}
+
 button.datedit:hover,
 button.colormixer:hover {background-color:#e5e5e5;}
 

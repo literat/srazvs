@@ -137,7 +137,13 @@ $(function() {
 
 <!-- REGISTRACNI FORMULAR SRAZU -->
 
-<a href="/srazvs/auth/login/skautis">Přihlásit se SkautISem</a>
+{if !$loggedIn}
+<a class="link skautis" href="/srazvs/auth/login/skautis">
+	<img src='{$imgDir}icons/skaut.png' /> Vyplnit přihlášu pomocí SkautIS účtu
+</a>
+{/if}
+
+<hr />
 
 <form id="registration" action='' method='post'>
 	<div class='button-line'>
