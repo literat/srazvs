@@ -69,12 +69,13 @@ class UserService extends BaseService
 	 * @param   void
 	 * @return  type
 	 */
-	public function getPersonalDetail()
+	public function getPersonalDetail($personId = null)
 	{
-		$user = $this->getUserDetail();
-		$person = $this->skautis->org->personDetail((array("ID" => $user->ID_Person)));
+		if(!$personId) {
+			$personId = $this->getUserDetail()->ID_Person;
+		}
 
-		return $person;
+		return $this->skautis->org->personDetail((["ID" => $personId]));
 	}
 
 	/**
@@ -83,9 +84,9 @@ class UserService extends BaseService
 	 * @param   void
 	 * @return  type
 	 */
-	public function getUnitDetail()
+	public function getParentUnitDetail($unitId)
 	{
-		return $this->skautis->org->unitDetail();
+		return $this->skautis->org->unitAll((array("ID_UnitChild" => $unitId)));
 	}
 
 	/**
@@ -94,12 +95,22 @@ class UserService extends BaseService
 	 * @param   void
 	 * @return  type
 	 */
-	public function getPersonUnitDetail()
+	public function getUnitDetail($unitId)
 	{
-		$user = $this->getUserDetail();
-		$membership = $this->skautis->org->membershipAllPerson((array('ID_Person' => $user->ID_Person, "ID_MembershipType" => "radne")));
+		return $this->skautis->org->unitDetail((array("ID" => $unitId)));
+	}
+
+	/**
+	 * Returns complete list of information about logged user unit
+	 *
+	 * @param   void
+	 * @return  type
+	 */
+	public function getPersonUnitDetail($personId)
+	{
+		$membership = $this->skautis->org->membershipAllPerson((array('ID_Person' => $personId, "ID_MembershipType" => "radne")));
+
 		return $membership->MembershipAllOutput;
-		//return $this->skautis->org->unitDetail((['ID_Unit' => $membership->MembershipAllOutput->ID_Unit]));
 	}
 
 	/**

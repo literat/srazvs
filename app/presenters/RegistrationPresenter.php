@@ -505,9 +505,15 @@ class RegistrationPresenter extends BasePresenter
 		];
 
 		if($this->user->isLoggedIn()) {
-			$skautisUser = $this->user->getPersonalDetail();
-			$skautisUnit = $this->user->getUnitDetail();
-			$skautisUserUnit = $this->user->getPersonUnitDetail();
+			$userDetail = $this->user->getUserDetail();
+			$skautisUser = $this->user->getPersonalDetail($userDetail->ID_Person);
+			$membership = $this->user->getPersonUnitDetail($userDetail->ID_Person);
+
+			if(!preg_match('/^[1-9]{1}[0-9a-zA-Z]{2}\.[0-9a-zA-Z]{1}[0-9a-zA-Z]{1}$/', $membership->RegistrationNumber)) {
+				$skautisUserUnit = $this->user->getParentUnitDetail($membership->ID_Unit)[0];
+			} else {
+				$skautisUserUnit = $this->user->getUnitDetail($membership->ID_Unit);
+			}
 
 			$this->data['name'] = $skautisUser->FirstName;
 			$this->data['surname'] = $skautisUser->LastName;
@@ -517,9 +523,11 @@ class RegistrationPresenter extends BasePresenter
 			$this->data['city'] = $skautisUser->City;
 			$this->data['postal_code'] = preg_replace('/\s+/','',$skautisUser->Postcode);
 			$this->data['birthday'] = $skautisUser->Birthday;
-			$this->data['group_name'] = $skautisUnit->DisplayName;
-			$this->data['group_num'] = $skautisUnit->RegistrationNumber;
-			$this->data['troop_name'] = $skautisUserUnit->Unit;
+			$this->data['group_name'] = $skautisUserUnit->DisplayName;
+			$this->data['group_num'] = $skautisUserUnit->RegistrationNumber;
+			if(isset($membership->Unit)) {
+				$this->data['troop_name'] = $membership->Unit;
+			}
 		}
 
 		if(!empty($this->data)) {
