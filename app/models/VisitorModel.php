@@ -3,6 +3,7 @@
 namespace App;
 
 use Nette\Utils\Strings;
+use Tracy\Debugger;
 
 /**
  * Visitor
@@ -118,6 +119,7 @@ class VisitorModel
 			. Strings::substring($DB_data['birthday'], 2, 2);
 
 		$DB_data['birthday'] = new \DateTime($DB_data['birthday']);
+		$DB_data['reg_daytime'] = (new \DateTime())->format('Y-m-d H:i:s');
 		$DB_data['guid'] = md5(uniqid());
 
 		$ID_visitor = $this->database
@@ -147,7 +149,7 @@ class VisitorModel
 				}
 			}
 
-			if($return) {
+			if(!$return) {
 				// create meals for visitor
 				if(!$return = $this->Meals->create($meals_data)){
 					$return = "ERROR_CREATE_MEALS";
