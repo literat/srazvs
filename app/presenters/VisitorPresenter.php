@@ -117,6 +117,8 @@ class VisitorPresenter extends BasePresenter
 			foreach($ids as $key => $value) {
 				$query_id[] = $value;
 			}
+		} elseif($id) {
+			$query_id = $id;
 		} else {
 			$query_id = $ids;
 		}
