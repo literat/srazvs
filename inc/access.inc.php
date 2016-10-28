@@ -54,8 +54,8 @@ if(isset($_SESSION['user']['logged']) && ($_SESSION['user']['logged'] == true)) 
 		}
 
 		$uid = $_SESSION[SESSION_PREFIX.'user'];
-		// 20 slunda || 19 dytta || 7 pavlik || 105 liska || 21 Pumpa || 155 jantikjanouch || 165 OVAMysak || 46 Luca || 2 hvezdar || 178 cednik || 182 tester
-		if(($uid != 19) && ($uid != 7) && ($uid != 105) && ($uid != 21) && ($uid != 20) && ($uid != 155) && ($uid != 165) && ($uid != 46) && ($uid != 2) && ($uid != 13) && ($uid != 178) && ($uid != 182)){
+		// 20 slunda || 19 dytta || 7 pavlik || 105 liska || 21 Pumpa || 155 jantikjanouch || 165 OVAMysak || 46 Luca || 2 hvezdar || 178 cednik || 182 tester || 179 koblizek
+		if(($uid != 19) && ($uid != 7) && ($uid != 105) && ($uid != 21) && ($uid != 20) && ($uid != 155) && ($uid != 165) && ($uid != 46) && ($uid != 2) && ($uid != 13) && ($uid != 178) && ($uid != 182) && ($uid != 179)){
 			header("Location: ".HTTP_DIR."admin/");
 		}
 	} else {
