@@ -59,7 +59,7 @@ $container = $configurator->createContainer();
 $parameters = $container->getParameters();
 
 define('ROOT_DIR', $parameters['wwwDir']);
-define('HTTP_DIR', 'http://'.$_SERVER['HTTP_HOST'] . '/');
+define('HTTP_DIR', '//'.$_SERVER['HTTP_HOST'] . '/');
 
 /**
  * Application's definitions
