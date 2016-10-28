@@ -65,6 +65,7 @@ class VisitorPresenter extends BasePresenter
 	private $recipients = NULL;
 
 	private $disabled;
+	private $mealData;
 
 	/**
 	 * Prepare model classes and get meeting id
