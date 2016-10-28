@@ -124,7 +124,7 @@ class VisitorModel
 
 		$ID_visitor = $this->database
 			->table($this->dbTable)
-			->insert($DB_data);
+			->insert($DB_data)->id;
 
 		// visitor's id is empty and i must add one
 		$meals_data['visitor'] = $ID_visitor;
@@ -149,7 +149,8 @@ class VisitorModel
 				}
 			}
 
-			if(!$return) {
+			if($return) {
+
 				// create meals for visitor
 				if(!$return = $this->Meals->create($meals_data)){
 					$return = "ERROR_CREATE_MEALS";
