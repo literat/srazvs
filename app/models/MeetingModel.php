@@ -36,6 +36,9 @@ class MeetingModel
 	/** @var string registration heading text */
 	public $regHeading = '';
 
+	public $eventId;
+	public $courseId;
+
 	private $configuration;
 	private $program;
 	private $httpEncoding;
@@ -528,4 +531,23 @@ class MeetingModel
 			->limit(1)
 			->fetchField('province_name');
 	}
+
+	public function getEventId() {
+		return $this->database
+			->table('kk_meetings')
+			->select('skautis_event_id')
+			->where('id', $this->meetingId)
+			->limit(1)
+			->fetchField('skautis_event_id');
+	}
+
+	public function getCourseId() {
+		return $this->database
+			->table('kk_meetings')
+			->select('skautis_course_id')
+			->where('id', $this->meetingId)
+			->limit(1)
+			->fetchField('skautis_course_id');
+	}
+
 }
