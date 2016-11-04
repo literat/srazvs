@@ -76,6 +76,7 @@ class RegistrationPresenter extends BasePresenter
 	private $disabled;
 	private $mealData;
 	private $user;
+	private $event;
 
 	/**
 	 * Prepare model classes and get meeting id
@@ -120,6 +121,7 @@ class RegistrationPresenter extends BasePresenter
 		}
 
 		$this->user = $this->container->getService('userService');
+		$this->event = $this->container->getService('eventService');
 	}
 
 	/**
@@ -263,6 +265,12 @@ class RegistrationPresenter extends BasePresenter
 		//if(!$this->error) {
 			// create
 			if($vid = $this->Visitor->create($db_data, $meals_data, $programs_data)) {
+				//dd($this->user->isLoggedIn(), $this->Meeting->getEventId(), $this->Meeting->getCourseId());
+				if($this->user->isLoggedIn() && $this->Meeting->getEventId() && $this->Meeting->getCourseId()) {
+					$personId = $this->user->getUserDetail()->ID_Person;
+					dd($this->event->insertParticipant($personId, $this->Meeting->eventId, $this->Meeting->courseId));
+				}
+
 				######################## ODESILAM EMAIL ##########################
 				Debugger::log('Creating Visitor ' . $vid, 'info');
 				// zaheshovane udaje, aby se nedali jen tak ziskat data z databaze
