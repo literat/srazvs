@@ -117,6 +117,8 @@ services:
         class: AuthService
     userService:
         class: UserService
+    eventService:
+        class: EventService
 
 extensions:
     skautis: Skautis\Nette\SkautisExtension
