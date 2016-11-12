@@ -120,15 +120,15 @@ class ProgramPresenter extends BasePresenter
 	 */
 	public function init()
 	{
-		$this->action = $this->requested('action');
+		$action = $this->requested('action');
 		$id = $this->requested('id', $this->programId);
 		$this->cms = $this->requested('cms', '');
 		$this->error = $this->requested('error', '');
 		$this->page = $this->requested('page', '');
 
-		$action = $this->cms ? $this->cms : $this->action;
+		$this->action = $this->cms ? $this->cms : $action;
 
-		switch($action) {
+		switch($this->action) {
 			case "delete":
 				$this->delete($id);
 				$this->render();
