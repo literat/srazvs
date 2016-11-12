@@ -271,9 +271,9 @@ class ExportModel
 				', $this->meetingId, '0')->fetchAll();
 	}
 
-	public static function getLargeProgramData($meeting_id, $day_val, $database)
+	public function getLargeProgramData($day)
 	{
-		return $database->query('SELECT 	blocks.id AS id,
+		return $this->database->query('SELECT 	blocks.id AS id,
 						day,
 						DATE_FORMAT(`from`, "%H:%i") AS `from`,
 						DATE_FORMAT(`to`, "%H:%i") AS `to`,
@@ -284,7 +284,7 @@ class ExportModel
 			FROM kk_blocks AS blocks
 			LEFT JOIN kk_categories AS cat ON cat.id = blocks.category
 			WHERE blocks.deleted = ? AND day = ? AND meeting = ?
-			ORDER BY `from` ASC', '0', $day_val, $meeting_id)->fetchAll();
+			ORDER BY `from` ASC', '0', $day, $this->meetingId)->fetchAll();
 	}
 
 	/**

@@ -1,3 +1,51 @@
+<a name="2.5.0"></a>
+# [2.5.0](https://github.com/literat/srazvs/compare/v2.4.0...v2.5.0) (2016-11-12)
+
+
+### Bug Fixes
+
+* **database panel:** Get service instead of creating it every time (refs #64) ([193976d](https://github.com/literat/srazvs/commit/193976d))
+* **no data export:** Redirect with error if there is no data for export (closes #62) ([af3814f](https://github.com/literat/srazvs/commit/af3814f)), closes [#62](https://github.com/literat/srazvs/issues/62)
+* **page_title:** Get right action or cms parameter (closes #69) ([2529f89](https://github.com/literat/srazvs/commit/2529f89)), closes [#69](https://github.com/literat/srazvs/issues/69)
+* **public pages:** Fix access control and registration page (refs #65) ([892e683](https://github.com/literat/srazvs/commit/892e683)), closes [#65](https://github.com/literat/srazvs/issues/65)
+* **public pages:** Saving annotations (refs #65) ([e90562e](https://github.com/literat/srazvs/commit/e90562e))
+* **query:** Refactor static methods call to non-static (closes #67) ([0963834](https://github.com/literat/srazvs/commit/0963834)), closes [#67](https://github.com/literat/srazvs/issues/67)
+* **skauis:** Noescape error (refs #66) ([36b4797](https://github.com/literat/srazvs/commit/36b4797))
+* **skautis:** Added forgotten property (refs #66) ([17890b5](https://github.com/literat/srazvs/commit/17890b5))
+* **skautis:** Fix deleting visitors in admin (refs #66) ([d809f4d](https://github.com/literat/srazvs/commit/d809f4d)), closes [#66](https://github.com/literat/srazvs/issues/66)
+* **skautis:** Fix registration time (refs #66) ([052cef7](https://github.com/literat/srazvs/commit/052cef7)), closes [#66](https://github.com/literat/srazvs/issues/66)
+* **skautis:** Generate new guid for new visitor (refs #66) ([33928ab](https://github.com/literat/srazvs/commit/33928ab))
+* **visitor excel link:** Fix link for generating excel with visitor data (refs #61) ([1f1dab8](https://github.com/literat/srazvs/commit/1f1dab8)), closes [#61](https://github.com/literat/srazvs/issues/61)
+
+### Features
+
+* **app version:** Display application version automatically ([6df3ee1](https://github.com/literat/srazvs/commit/6df3ee1))
+* **boat offers:** do not display boat offers (refs #68) ([ddb8b5c](https://github.com/literat/srazvs/commit/ddb8b5c))
+* **cool url:** Prepare cool urls for exports ([5298520](https://github.com/literat/srazvs/commit/5298520))
+* **new user:** Added Koblizek to users ([0721821](https://github.com/literat/srazvs/commit/0721821))
+* **presenters:** Move and rename controllers to presenters (refs #55) ([421f629](https://github.com/literat/srazvs/commit/421f629))
+* **presenters:** Use presenters by bootstrap (refs #55) ([040a701](https://github.com/literat/srazvs/commit/040a701))
+* **public pages:** Added array with public pages a logic for including acces control (refs #65) ([ea442e5](https://github.com/literat/srazvs/commit/ea442e5))
+* **public pages:** Fix urls in templates (refs #65) ([b022c79](https://github.com/literat/srazvs/commit/b022c79)), closes [#65](https://github.com/literat/srazvs/issues/65)
+* **public pages:** Removing access control from controllers (refs #65) ([0d58575](https://github.com/literat/srazvs/commit/0d58575))
+* **public pages:** Testing public pages (refs #65) ([4e488ba](https://github.com/literat/srazvs/commit/4e488ba))
+* **skautis:** Added basic support for skautis (refs #66) ([74880d0](https://github.com/literat/srazvs/commit/74880d0))
+* **skautis:** Added link to skautis login (refs #66) ([25d039c](https://github.com/literat/srazvs/commit/25d039c))
+* **skautis:** Added login link (refs #66) ([f817812](https://github.com/literat/srazvs/commit/f817812))
+* **skautis:** Can handle any protocol http(s) (refs #66) ([6838189](https://github.com/literat/srazvs/commit/6838189))
+* **skautis:** Composer update (refs #66) ([a92dd0b](https://github.com/literat/srazvs/commit/a92dd0b))
+* **skautis:** Copy basic support functionality for skautis (refs #66) ([56a844b](https://github.com/literat/srazvs/commit/56a844b))
+* **skautis:** Fix exception namespace (refs #66) ([206904e](https://github.com/literat/srazvs/commit/206904e)), closes [#66](https://github.com/literat/srazvs/issues/66)
+* **skautis:** Get person unit/troop detail (refs #66) ([f119635](https://github.com/literat/srazvs/commit/f119635))
+* **skautis:** Getting righ troop name and parent unit (refs #66) ([15e93ca](https://github.com/literat/srazvs/commit/15e93ca))
+* **skautis:** Handle requests and display data (refs #66) ([98538ec](https://github.com/literat/srazvs/commit/98538ec))
+* **skautis:** Refactor services and fix errors (refs #66) ([f65bba0](https://github.com/literat/srazvs/commit/f65bba0)), closes [#66](https://github.com/literat/srazvs/issues/66)
+* **skautis:** Return inserted id (refs #66) ([7d047ca](https://github.com/literat/srazvs/commit/7d047ca))
+* **skautis:** Set auth presenter public (refs #66) ([701856c](https://github.com/literat/srazvs/commit/701856c))
+* **skautis:** Style and hide login button (refs #66) ([40ace33](https://github.com/literat/srazvs/commit/40ace33))
+
+
+
 <a name="2.4.0"></a>
 # [2.4.0](https://github.com/literat/srazvs/compare/v2.3.0...v2.4.0) (2016-10-18)
 

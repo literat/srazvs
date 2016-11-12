@@ -14,6 +14,7 @@ function printError($error)
 		"del"				=> "Položka byla smazána!",
 		"checked"			=> "Položka byla zkontrolována!",
 		"unchecked"			=> "Položce byl odebrán příznak!",
+		"no_data"			=> "Nejsou žádná data k zobrazení!",
 	);
 
 	if(!empty($error) && !array_key_exists($error, $errors)) $error = 'ok';
