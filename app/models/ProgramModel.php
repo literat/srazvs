@@ -384,8 +384,8 @@ class ProgramModel extends BaseModel
 		return $html;
 	}
 
-	public static function getProgramsLarge($id, $database){
-		$result = $database
+	public function getProgramsLarge($id){
+		$result = $this->database
 			->query('SELECT progs.name AS name,
 						cat.style AS style
 				FROM kk_programs AS progs

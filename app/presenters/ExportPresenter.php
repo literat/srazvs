@@ -285,9 +285,8 @@ class ExportPresenter extends BasePresenter
 
 		$this->parameters = [
 			'header'		=> $meetingHeader,
-			'meeting_id'	=> $this->meetingId,
-			'result'		=> $data,
-			'database'		=> $this->database,
+			'export'		=> $this->model,
+			'program'		=> $this->program,
 		];
 
 		$this->publish();
@@ -311,10 +310,9 @@ class ExportPresenter extends BasePresenter
 
 		$this->parameters = [
 			'header'		=> $meetingHeader,
-			'meeting_id'	=> $this->meetingId,
-			'result'		=> $data,
-			'database'		=> $this->database,
 			'styles'		=> $this->category->getStyles(),
+			'export'		=> $this->model,
+			'program'		=> $this->program,
 		];
 
 		$this->publish();

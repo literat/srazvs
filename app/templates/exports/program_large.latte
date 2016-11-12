@@ -54,13 +54,13 @@
 					<tr>
 						<td class='day' colspan='2' >{$day}</td>
 					</tr>
-					{var $result = \App\ExportModel::getLargeProgramData($meeting_id, $day, $database)}
+					{var $result = $export->getLargeProgramData($day)}
 					{foreach $result as $row}
 					<tr>
 						<td class='time'>{$row['from']} - {$row['to']}</td>
 						<td style='border:1px solid black;'>
 							<div>{$row['name']}</div>
-							{php echo \App\ProgramModel::getProgramsLarge($row['id'], $database)}
+							{php echo $program->getProgramsLarge($row['id'])}
 						</td>
 					</tr>
 					{/foreach}
