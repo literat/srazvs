@@ -111,6 +111,14 @@ if(!function_exists('redirect')) {
 	}
 }
 
+if(!function_exists('appVersion')) {
+	function appVersion() {
+		$packagePath = realpath(__DIR__ . '/../package.json');
+		$package = json_decode(file_get_contents($packagePath));
+		return $package->version;
+	}
+}
+
 /**
  * Connecting to Database
  */
