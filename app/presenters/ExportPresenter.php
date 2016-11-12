@@ -57,6 +57,7 @@ class ExportPresenter extends BasePresenter
 			$this->meetingId = $_SESSION['meetingID'];
 		}
 
+		$this->error = $this->requested('error', '');
 		$this->model->setMeetingId($this->meetingId);
 		$this->program->setMeetingId($this->meetingId);
 
@@ -122,6 +123,7 @@ class ExportPresenter extends BasePresenter
 			'programs'	=> $this->program->renderExportPrograms(),
 			'materials'	=> $this->model->getMaterial(),
 			'meals'		=> $this->model->renderMealCount(),
+			'error'		=> printError($this->error),
 		];
 
 		$this->latte->render(__DIR__ . '/../templates/' . $this->templateDir.'/'.$this->templateName . '.latte', $parameters);
@@ -137,6 +139,10 @@ class ExportPresenter extends BasePresenter
 		$hkvsHeader .= "IČ: 65991753, ČÚ: 2300183549/2010";
 
 		$data = $this->model->evidence($visitorId);
+
+		if(!$data) {
+			redirect('/srazvs/export/?error=no_data');
+		}
 
 		switch($type){
 			case "summary":
