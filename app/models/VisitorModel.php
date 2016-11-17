@@ -109,7 +109,7 @@ class VisitorModel
 	 *
 	 * @return	boolean
 	 */
-	public function create(array $DB_data, $meals_data, $programs_data)
+	public function create(array $DB_data, $meals_data, $programs_data, $returnGuid = false)
 	{
 		$return = true;
 
@@ -161,7 +161,11 @@ class VisitorModel
 		}
 
 		//return $return;
-		return $ID_visitor;
+		if($returnGuid) {
+			return $DB_data['guid'];
+		} else {
+			return $ID_visitor;
+		}
 	}
 
 	/**
@@ -213,6 +217,59 @@ class VisitorModel
 		}
 
 		return $ID_visitor;
+	}
+
+/**
+	 * Modify a visitor
+	 *
+	 * @param	int		$visitor_id		ID of a visitor
+	 * @param	array	$db_data		Visitor's database data
+	 * @param	array	$meals_data		Data of meals
+	 * @param	array	$programs_data	Program's data
+	 * @return	mixed					TRUE or array of errors
+	 */
+	public function modifyByGuid($guid, $DB_data, $meals_data, $programs_data)
+	{
+		// for returning specific error
+		$error = array('visitor' => TRUE, 'meal' => TRUE, 'program' => TRUE);
+
+		$DB_data['code'] =
+			Strings::substring($DB_data['name'], 0, 1)
+			. Strings::substring($DB_data['surname'], 0, 1)
+			. Strings::substring($DB_data['birthday'], 2, 2);
+
+		$DB_data['birthday'] = new \DateTime($DB_data['birthday']);
+
+		$result = $this->database
+			->table($this->dbTable)
+			->where('guid', $guid)
+			->update($DB_data);
+
+		$visitor = $this->findByGuid($guid);
+
+		// change meals
+		$result = $this->Meals->modify($visitor->id, $meals_data);
+		$error['meal'] = $result;
+
+		// gets data from database
+		$programBlocks = $this->Blocks->getProgramBlocks($DB_data['meeting']);
+
+		// get program of visitor
+		$oldPrograms = $this->getVisitorPrograms($visitor->id);
+
+		// update old data to new existing
+		foreach($programBlocks as $programBlock){
+			$data = array('program' => $programs_data[$programBlock->id]);
+			// read first value from array and shift it to the end
+			$oldProgram = array_shift($oldPrograms);
+
+			$result = $this->database
+				->table('kk_visitor-program')
+				->where('visitor ? AND id ?', $visitor->id, (empty($oldProgram)) ? $oldProgram : $oldProgram->id)
+				->update($data);
+		}
+
+		return $guid;
 	}
 
 	/**
@@ -426,6 +483,36 @@ class VisitorModel
 		} else {
 			return $data;
 		}
+	}
+
+	/**
+	 * Return visitor by id
+	 *
+	 * @param  int    $id
+	 * @return mixed
+	 */
+	public function findById($id)
+	{
+		return $this->database
+				->table($this->dbTable)
+				->where('id ? AND deleted ?', $id, '0')
+				->limit(1)
+				->fetch();
+	}
+
+	/**
+	 * Return visitor by guid
+	 *
+	 * @param  string  $guid
+	 * @return mixed
+	 */
+	public function findByGuid($guid)
+	{
+		return $this->database
+				->table($this->dbTable)
+				->where('guid ? AND deleted ?', $guid, '0')
+				->limit(1)
+				->fetch();
 	}
 
 	/**

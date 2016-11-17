@@ -76,6 +76,7 @@ class RegistrationPresenter extends BasePresenter
 	private $disabled;
 	private $mealData;
 	private $user;
+	private $action;
 
 	/**
 	 * Prepare model classes and get meeting id
@@ -165,7 +166,9 @@ class RegistrationPresenter extends BasePresenter
 			}
 		}
 
-		switch($this->cms) {
+		$this->action = $this->router->getParameter('action') ? $this->router->getParameter('action') : $this->cms;
+//dd($this->cms, $this->action);
+		switch($this->action) {
 			case "new":
 				$this->__new();
 				break;
@@ -173,13 +176,13 @@ class RegistrationPresenter extends BasePresenter
 				$this->create();
 				break;
 			case "edit":
-				$this->edit($id);
+				$this->edit($this->router->getParameter('id'));
 				break;
 			case "modify":
-				$this->update($id);
+				$this->update($this->router->getParameter('id'));
 				break;
 			case "check":
-				$this->check($id);
+				$this->check($this->router->getParameter('id'));
 				break;
 			default:
 				$this->__new();
@@ -242,18 +245,18 @@ class RegistrationPresenter extends BasePresenter
 		}
 
 		// requested for visitors
-		foreach($this->Visitor->dbColumns as $key) {
-				if($key == 'bill') $$key = $this->requested($key, 0);
-				elseif($key == 'birthday') {
-					$$key = $this->cleardate2DB($this->requested($key, 0), 'Y-m-d');
+		foreach($this->Visitor->dbColumns as $column) {
+				if($column == 'bill') $$column = $this->requested($column, 0);
+				elseif($column == 'birthday') {
+					$$column = $this->cleardate2DB($this->requested($column, 0), 'Y-m-d');
 				}
-				else $$key = $this->requested($key, '');
-				$db_data[$key] = $$key;
+				else $$column = $this->requested($column, '');
+				$newVisitor[$column] = $$column;
 		}
 
 		// i must add visitor's ID because it is empty
-		$db_data['meeting'] = $this->meetingId;
-		$db_data['hash'] = hash('sha1', microtime());
+		$newVisitor['meeting'] = $this->meetingId;
+		//$newVisitor['hash'] = hash('sha1', microtime());
 
 		// requested for meals
 		foreach($this->Meal->dbColumns as $var_name) {
@@ -262,29 +265,31 @@ class RegistrationPresenter extends BasePresenter
 		}
 		//if(!$this->error) {
 			// create
-			if($vid = $this->Visitor->create($db_data, $meals_data, $programs_data)) {
+			if($guid = $this->Visitor->create($newVisitor, $meals_data, $programs_data, true)) {
 				######################## ODESILAM EMAIL ##########################
-				Debugger::log('Creating Visitor ' . $vid, 'info');
+				Debugger::log('Creating Visitor ' . $guid, 'info');
 				// zaheshovane udaje, aby se nedali jen tak ziskat data z databaze
-				$code4bank = $this->code4Bank($db_data);
-				//$hash = ((int)$vid.$this->meetingId) * 147 + 49873;
-				$hash = $db_data['hash'];
+				$code4bank = $this->code4Bank($newVisitor);
+				//$hash = ((int)$visitorId.$this->meetingId) * 147 + 49873;
+				//$hash = $newVisitor['hash'];
 
-				$recipient_mail = $db_data['email'];
-				$recipient_name = $db_data['name']." ".$db_data['surname'];
+				$recipient_mail = $newVisitor['email'];
+				$recipient_name = $newVisitor['name']." ".$newVisitor['surname'];
 				$recipient = [$recipient_mail => $recipient_name];
 
-				$return = $this->Emailer->sendRegistrationSummary($recipient, $hash, $code4bank);
+				$return = $this->Emailer->sendRegistrationSummary($recipient, $guid, $code4bank);
 
 				if($return === TRUE) {
 					Debugger::log('Mail send to ' . $recipient_mail, 'info');
-					if(is_int($vid)) {
-						$vid = "ok";
-					}
-					redirect("?hash=".$hash."&error=".$vid."&cms=check");
+					//if(is_int($visitorId)) {
+					//	$visitorId = "ok";
+					//}
+					//redirect("?hash=".$hash."&error=".$visitorId."&cms=check");
+					redirect('/srazvs/registration/check/' . $guid . '?error=ok');
 				} else {
 					Debugger::log('Mail not send to ' . $recipient_mail, 'error');
-					redirect("?hash=".$hash."&error=email&cms=check");
+					//redirect("?hash=".$hash."&error=email&cms=check");
+					redirect('/srazvs/registration/check/' . $guid . '?error=email');
 					//echo 'Došlo k chybě při odeslání e-mailu.';
 					//echo 'Chybová hláška: ' . $return;
 				}
@@ -304,7 +309,7 @@ class RegistrationPresenter extends BasePresenter
 	 * @param  int 	$id 	of item
 	 * @return void
 	 */
-	private function update($id = NULL)
+	private function update($guid)
 	{
 		// TODO
 		////ziskani zvolenych programu
@@ -316,49 +321,51 @@ class RegistrationPresenter extends BasePresenter
 			//echo $blockData['id'].":".$$blockData['id']."|";
 		}
 
-		foreach($this->Visitor->dbColumns as $key) {
-				if($key == 'bill') $$key = $this->requested($key, 0);
-				elseif($key == 'birthday') {
-					$$key = $this->cleardate2DB($this->requested($key, 0), 'Y-m-d');
+		foreach($this->Visitor->dbColumns as $column) {
+				if($column == 'bill') $$column = $this->requested($column, 0);
+				elseif($column == 'birthday') {
+					$$column = $this->cleardate2DB($this->requested($column, 0), 'Y-m-d');
 				}
-				else $$key = $this->requested($key, null);
-				$db_data[$key] = $$key;
+				else $$column = $this->requested($column, null);
+				$db_data[$column] = $$column;
 		}
 
 		// i must add visitor's ID because it is empty
 		$db_data['meeting'] = $this->meetingId;
-		$db_data['hash'] = hash('sha1', microtime());
+		//$db_data['hash'] = hash('sha1', microtime());
 
 		foreach($this->Meal->dbColumns as $var_name) {
 			$$var_name = $this->requested($var_name, null);
 			$meals_data[$var_name] = $$var_name;
 		}
 		// i must add visitor's ID because it is empty
-		$meals_data['visitor'] = $id;
+		$meals_data['visitor'] = $this->itemId;
 
-		if($vid = $this->Visitor->modify($id, $db_data, $meals_data, $programs_data)){
+		if($guid = $this->Visitor->modifyByGuid($guid, $db_data, $meals_data, $programs_data)){
 			######################## ODESILAM EMAIL ##########################
-			Debugger::log('Visitor ' . $id . ' was modified', 'info');
+			Debugger::log('Visitor ' . $guid . ' was modified', 'info');
 			// zaheshovane udaje, aby se nedali jen tak ziskat data z databaze
 			$code4bank = substr($db_data['name'], 0, 1).substr($db_data['surname'], 0, 1).substr($db_data['birthday'], 2, 2);
-			//$hash = ((int)$vid.$this->meetingId) * 147 + 49873;
-			$hash = $db_data['hash'];
+			//$hash = ((int)$visitorId.$this->meetingId) * 147 + 49873;
+			//$hash = $db_data['hash'];
 
 			$recipient_mail = $db_data['email'];
 			$recipient_name = $db_data['name']." ".$db_data['surname'];
 			$recipient = [$recipient_mail => $recipient_name];
 
-			$return = $this->Emailer->sendRegistrationSummary($recipient, $hash, $code4bank);
+			$return = $this->Emailer->sendRegistrationSummary($recipient, $guid, $code4bank);
 
 			if($return === TRUE) {
 				Debugger::log('Mail send to ' . $recipient_mail, 'info');
-				if(is_numeric($vid)) {
-					$vid = "ok";
-				}
-				redirect("?hash=".$hash."&error=".$vid."&cms=check");
+				//if(is_numeric($visitorId)) {
+				//	$visitorId = "ok";
+				//}
+				//redirect("?hash=".$hash."&error=".$visitorId."&cms=check");
+				redirect('/srazvs/registration/check/' . $guid . '?error=ok');
 			} else {
 				Debugger::log('Mail not send to ' . $recipient_mail, 'error');
-				redirect("?hash=".$hash."&error=email&cms=check");
+				//redirect("?hash=".$hash."&error=email&cms=check");
+				redirect('/srazvs/registration/check/' . $guid . '?error=email');
 				//echo 'Došlo k chybě při odeslání e-mailu.';
 				//echo 'Chybová hláška: ' . $return;
 			}
@@ -372,65 +379,52 @@ class RegistrationPresenter extends BasePresenter
 	/**
 	 * Prepare data for editing
 	 *
-	 * @param  int $id of item
+	 * @param  string  $guid
 	 * @return void
 	 */
-	private function edit($id)
+	private function edit($guid)
 	{
 		$this->template = 'form';
 
 		$this->heading = "úprava programu";
 		$this->todo = "modify";
 
-		$this->itemId = $id;
+		$this->data = $this->Visitor->findByGuid($guid);
+		$this->itemId = $this->data->id;
+		$this->mealData = $this->Meal->getMealsArray($this->data->id);
 
-		$dbData = $this->Visitor->getData($id);
-		foreach($this->Visitor->dbColumns as $key) {
-			$this->data[$key] = $this->requested($key, $dbData[$key]);
-		}
+		//foreach($this->Visitor->dbColumns as $key) {
+		//	$this->data[$key] = $this->requested($key, $dbData[$key]);
+		//}
 
-		$DB_data = $this->database
-			->table('kk_meals')
-			->where('visitor', $this->itemId)
-			->limit(1)
-			->fetch();
+		//$DB_data = $this->database
+		//	->table('kk_meals')
+		//	->where('visitor', $this->itemId)
+		//	->limit(1)
+		//	->fetch();
 
-		foreach($this->Meal->dbColumns as $var_name) {
-			$$var_name = $this->requested($var_name, $DB_data[$var_name]);
-			$this->mealData[$var_name] = $$var_name;
-		}
+		//foreach($this->Meal->dbColumns as $var_name) {
+		//	$$var_name = $this->requested($var_name, $DB_data[$var_name]);
+		//	$this->mealData[$var_name] = $$var_name;
+		//}
 	}
 
 	/**
 	 * Prepare data for check
 	 *
-	 * @param  int $id of item
+	 * @param  string  $guid
 	 * @return void
 	 */
-	private function check($id)
+	private function check($guid)
 	{
 		$this->template = 'check';
 
 		$this->heading = "kontrola přihlášky";
 		$this->todo = NULL;
 
-		$this->itemId = $id;
-
-		$dbData = $this->Visitor->getData($id);
-		foreach($this->Visitor->dbColumns as $key) {
-			$this->data[$key] = $this->requested($key, $dbData[$key]);
-		}
-
-		$DB_data = $this->database
-			->table('kk_meals')
-			->where('visitor', $this->itemId)
-			->limit(1)
-			->fetch();
-
-		foreach($this->Meal->dbColumns as $var_name) {
-			$$var_name = $this->requested($var_name, $DB_data[$var_name]);
-			$this->mealData[$var_name] = $$var_name;
-		}
+		$this->data = $this->Visitor->findByGuid($guid);
+		$this->itemId = $this->data->id;
+		$this->mealData = $this->Meal->getMealsArray($this->data->id);
 	}
 
 	private function cleardate2DB ($inputDate, $formatDate)
@@ -474,8 +468,8 @@ class RegistrationPresenter extends BasePresenter
 			$error_city = "";
 			$error_group_name = "";
 
-			if($this->cms == 'check') {
-				$meals_select = $this->Meal->getMealsArray($this->itemId);
+			if($this->action == 'check') {
+				$meals_select = $this->mealData;
 				$province_select = $this->Meeting->getProvinceNameById($this->data['province']);
 				$program_switcher = $this->Program->getSelectedPrograms($this->itemId);
 			} else {
@@ -541,7 +535,7 @@ class RegistrationPresenter extends BasePresenter
 				'cost'				=> $this->Meeting->getPrice('cost'),
 				'checked'			=> empty($this->data['checked']) ? '0' : $this->data['checked'],
 				'programs'			=> $program_switcher,
-				'hash'				=> $this->hash,
+				'guid'				=> $this->data->guid,
 				'isRegistrationOpen'		=> $this->Meeting->isRegOpen($this->debugMode),
 			]);
 		}

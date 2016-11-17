@@ -17,7 +17,7 @@
 	<a class="link" href="{$wwwDir}srazvs/registration/">
 		<img src='{$imgDir}icons/new.png' /> Nová přihláška
 	</a>
-	<a class="link" href="{$wwwDir}srazvs/registration/?hash={$data['hash']}">
+	<a class="link" href="{$wwwDir}srazvs/registration/edit/{$guid}">
 		<img src='{$imgDir}icons/edit.gif'  /> Upravit
 	</a>
 </div>
@@ -122,11 +122,13 @@
 <p><h3>Děkujeme za přihlášení na sraz VS.</h3></p>
 
 {if $isRegistrationOpen}
-<div class='button-line'>
-	<button type="button" onClick="window.location.replace({$wwwDir} + 'srazvs/registration/')">
-		<img src='{$imgDir}icons/new.png' /> Nová přihláška</button>
-	<button type='button' onClick="window.location.replace({$wwwDir} + 'srazvs/registration/?hash=' + {$hash})">
-		<img src='{$imgDir}icons/edit.gif'  /> Upravit</button>
+<div id="button-line" class='button-line'>
+	<a class="link" href="{$wwwDir}srazvs/registration/">
+		<img src='{$imgDir}icons/new.png' /> Nová přihláška
+	</a>
+	<a class="link" href="{$wwwDir}srazvs/registration/edit/{$guid}">
+		<img src='{$imgDir}icons/edit.gif'  /> Upravit
+	</a>
 </div>
 {else}
 <div class='button-line'>
