@@ -121,12 +121,12 @@ class MealModel extends BaseModel
 	}
 
 	/**
-	 * Get meals data into array
+	 * Get meals data by visitor id
 	 *
 	 * @param	integer	visitor id
-	 * @return	array	meal => ano|ne
+	 * @return	mixed
 	 */
-	public function getMealsArray($visitorId)
+	public function findByVisitorId($visitorId)
 	{
 		return $this->database
 			->table($this->dbTable)

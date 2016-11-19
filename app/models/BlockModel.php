@@ -208,6 +208,15 @@ class BlockModel extends BaseModel
 		return $data;
 	}
 
+	public function idsFromCurrentMeeting($meetingId)
+	{
+		return $this->database
+			->table($this->dbTable)
+			->select('id')
+			->where('meeting ? AND program ? AND deleted ?', $meetingId, '1', '0')
+			->fetchAll();
+	}
+
 	public static function getExportBlocks($meetingId, $dayVal, $database)
 	{
 		$result = $database
