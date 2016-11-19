@@ -71,6 +71,7 @@ class VisitorModel
 		$this->Programs = $Program;
 		$this->Blocks = $Blocks;
 		$this->dbColumns = array(
+								"guid",
 								"name",
 								"surname",
 								"nick",
