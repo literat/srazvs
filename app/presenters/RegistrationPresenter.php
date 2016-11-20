@@ -167,7 +167,7 @@ class RegistrationPresenter extends BasePresenter
 			case "edit":
 				$this->edit($this->router->getParameter('id'));
 				break;
-			case "modify":
+			case "update":
 				$this->update($this->router->getParameter('id'));
 				break;
 			case "check":
@@ -265,7 +265,7 @@ class RegistrationPresenter extends BasePresenter
 			}
 		} else {
 			Debugger::log('Visitor not created', 'error');
-			redirect("?page=".$this->page."&error=error");
+			redirect("?error=error");
 		}
 	}
 
@@ -328,7 +328,7 @@ class RegistrationPresenter extends BasePresenter
 			}
 		} else {
 			Debugger::log('Visitor modification failed!', 'error');
-			redirect("?page=".$this->page."&error=error");
+			redirect("?error=error");
 		}
 	}
 
@@ -343,7 +343,7 @@ class RegistrationPresenter extends BasePresenter
 		$this->template = 'form';
 
 		$this->heading = "úprava programu";
-		$this->todo = "modify";
+		$this->todo = "update";
 
 		$this->data = $this->Visitor->findByGuid($guid);
 		$this->itemId = $this->data->id;
@@ -414,7 +414,6 @@ class RegistrationPresenter extends BasePresenter
 			$error_group_name = "";
 
 			if($this->action == 'check') {
-				//dd($this->mealData);
 				$meals_select = $this->mealData;
 				$province_select = $this->Meeting->getProvinceNameById($this->data['province']);
 				$program_switcher = $this->Program->getSelectedPrograms($this->itemId);
