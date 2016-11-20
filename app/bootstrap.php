@@ -183,6 +183,10 @@ $publicPages = [
 	'Export.programPublic',
 	'Export.programDetails',
 	'Registration.index',
+	'Registration.check',
+	'Registration.create',
+	'Registration.edit',
+	'Registration.update',
 	'Auth.login',
 	'Auth.skautis',
 ];
