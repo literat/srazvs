@@ -230,6 +230,7 @@ class VisitorPresenter extends BasePresenter
 		foreach($this->Visitor->dbColumns as $key) {
 				if($key == 'bill') $$key = $this->requested($key, 0);
 				elseif($key == 'cost') $$key = $this->requested($key, 0);
+				elseif($key == 'checked') $$key = $this->requested($key, 0);
 				else $$key = $this->requested($key, null);
 				$DB_data[$key] = $$key;
 		}
@@ -505,6 +506,9 @@ class VisitorPresenter extends BasePresenter
 			$parameters['error_group_num'] = printError($error_group_num);
 			$parameters['error_bill'] = printError($error_bill);
 			$parameters['error_cost'] = printError($error_cost);
+			$parameters['checked'] = empty($this->data['checked']) ? '0' : $this->data['checked'];
+			$parameters['cost']	= $this->Meeting->getPrice('cost');
+			$parameters['guid'] = isset($this->data->guid) ? $this->data->guid : '';
 
 		}
 

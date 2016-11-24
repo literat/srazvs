@@ -86,7 +86,7 @@
 		</tr>
 		<tr>
 			<td class='label'><label>Kraj:</label></td>
-			<td>{$data['province']}</td>
+			<td>{$province|noescape}</td>
 		</tr>
 		<tr>
 			<td class='label'><label>Stravování:</label></td>
@@ -129,7 +129,10 @@
 		<input type='hidden' name='id' value='{$id}'>
 		<input type='hidden' name='cms' value='{$todo}'>
 		<input type='hidden' name='page' value='{$page}'>
-		<input type='hidden' name='checked' value='{$data['checked']}'>
+		<input type='hidden' name='checked' value='{$checked}'>
+		<input type="hidden" name="bill" value="0" />
+		<input type="hidden" name="cost" value='{$cost}' />
+		<input type='hidden' name='guid' value='{$guid}' />
 
 		<div class='button-line'>
 		<button type='submit' onclick=\"this.form.submit()\">

@@ -377,10 +377,11 @@ class ProgramModel extends BaseModel
 					->table('kk_visitor-program')
 					->where('program ? AND visitor ?', $data->id, $vid)
 					->fetchAll();
-				if($rows == 1) $html .= $data['name'];
+				if($rows) $html .= $data['name'];
 			}
 			$html .= "</div>\n";
 		}
+
 		return $html;
 	}
 
