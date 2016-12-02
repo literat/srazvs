@@ -17,6 +17,9 @@ use Tracy\Debugger;
  */
 class VisitorPresenter extends BasePresenter
 {
+
+	const PATH = '/srazvs/visitor';
+
 	/**
 	 * Object farm container
 	 * @var Container
@@ -74,7 +77,6 @@ class VisitorPresenter extends BasePresenter
 		$this->template = "listing";
 		$this->page = 'visitor';
 
-		$this->database = $database;
 		$this->container = $container;
 		$this->router = $this->container->parameters['router'];
 		$this->setModel($this->container->getService('visitor'));
@@ -193,7 +195,7 @@ class VisitorPresenter extends BasePresenter
 		// requested for visitors fields
 		foreach($this->getModel()->dbColumns as $key) {
 			if($key == 'bill') $value = 0;
-			elseif($key == 'cost') $value = 0;
+			elseif($key == 'cost') $value = $this->Meeting->getPrice('cost');
 			else $value = "";
 			$this->data[$key] = $this->requested($key, $value);
 		}
@@ -250,12 +252,12 @@ class VisitorPresenter extends BasePresenter
 				if(is_int($vid)) {
 					$vid = "ok";
 				}
-				redirect("?page=".$this->page."&error=ok");
+				redirect(self::PATH . "?page=".$this->page."&error=ok");
 			} else {
-				redirect("?page=".$this->page."&error=error");
+				redirect(self::PATH . "?page=".$this->page."&error=error");
 			}
 		} else {
-			redirect("?page=".$this->page."&error=error");
+			redirect(self::PATH . "?page=".$this->page."&error=error");
 		}
 	}
 
@@ -293,9 +295,9 @@ class VisitorPresenter extends BasePresenter
 		$meals_data['visitor'] = $id;
 
 		if($this->getModel()->modify($id, $DB_data, $meals_data, $programs_data)){
-			redirect("?page=".$this->page."&error=ok");
+			redirect(self::PATH . "?page=".$this->page."&error=ok");
 		} else {
-			redirect("?page=".$this->page."&error=error");
+			redirect(self::PATH . "?page=".$this->page."&error=error");
 		}
 	}
 
@@ -315,6 +317,7 @@ class VisitorPresenter extends BasePresenter
 		$this->itemId = $id;
 
 		$dbData = $this->getModel()->getData($id);
+
 		foreach($this->getModel()->dbColumns as $key) {
 			$this->data[$key] = $this->requested($key, $dbData[$key]);
 		}
@@ -336,7 +339,7 @@ class VisitorPresenter extends BasePresenter
 	private function actionDelete($id)
 	{
 		if($this->getModel()->delete($id)) {
-			  redirect("?error=del");
+			  redirect(self::PATH . "?error=del");
 		}
 	}
 
@@ -379,7 +382,7 @@ class VisitorPresenter extends BasePresenter
 		if($return){
 			$error = 'E_MAIL_NOTICE';
 			$error = 'mail_send';
-			redirect("?error=".$error);
+			redirect(self::PATH . "?error=".$error);
 		}
 		else {
 			$error = 'E_MAIL_ERROR';
@@ -401,12 +404,12 @@ class VisitorPresenter extends BasePresenter
 			$visitor->payCharge($ids, 'cost');
 		} catch(\Exception $e) {
 			Debugger::log('Visitor: Action pay for id ' . $ids . ' failed, result: ' . $e->getMessage(), Debugger::ERROR);
-			redirect("?".$this->page."&error=already_paid");
+			redirect(self::PATH . "?".$this->page."&error=already_paid");
 		}
 
 		$recipients = $visitor->getRecipients($ids);
 		$this->getEmailer()->sendPaymentInfo($recipients, 'cost');
-		redirect("?".$this->page."&error=mail_send");
+		redirect(self::PATH . "?".$this->page."&error=mail_send");
 	}
 
 	protected function actionAdvance($ids)
@@ -417,12 +420,12 @@ class VisitorPresenter extends BasePresenter
 			$this->Visitor->payCharge($ids, 'advance');
 		} catch(\Exception $e) {
 			Debugger::log('Visitor: Action advance for id ' . $ids . ' failed, result: ' . $e->getMessage(), Debugger::ERROR);
-			redirect("?".$this->page."&error=already_paid");
+			redirect(self::PATH . "?".$this->page."&error=already_paid");
 		}
 
 		$recipients = $visitor->getRecipients($ids);
 		$this->getEmailer()->sendPaymentInfo($recipients, 'advance');
-		redirect("?".$this->page."&error=mail_send");
+		redirect(self::PATH . "?".$this->page."&error=mail_send");
 	}
 
 	/**
@@ -434,7 +437,7 @@ class VisitorPresenter extends BasePresenter
 	private function actionChecked($id)
 	{
 		if($this->getModel()->checked($id, '1')) {
-			  redirect("?error=checked");
+			  redirect(self::PATH . "?error=checked");
 		}
 	}
 
@@ -447,7 +450,7 @@ class VisitorPresenter extends BasePresenter
 	private function actionUnchecked($id)
 	{
 		if($this->getModel()->checked($id, 0)) {
-			  redirect("?error=unchecked");
+			  redirect(self::PATH . "?error=unchecked");
 		}
 	}
 
@@ -511,7 +514,7 @@ class VisitorPresenter extends BasePresenter
 			$parameters['error_cost'] = printError($error_cost);
 			$parameters['checked'] = empty($this->data['checked']) ? '0' : $this->data['checked'];
 			$parameters['cost']	= $this->Meeting->getPrice('cost');
-			$parameters['guid'] = isset($this->data->guid) ? $this->data->guid : '';
+			$parameters['guid'] = isset($this->data['guid']) ? $this->data['guid'] : '';
 
 		}
 

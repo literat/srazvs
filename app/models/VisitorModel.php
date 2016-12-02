@@ -455,6 +455,7 @@ class VisitorModel
 				->fetch();
 		} else {
 			$data = $this->database->query('SELECT 	vis.id AS id,
+								vis.guid AS guid,
 								code,
 								name,
 								surname,
