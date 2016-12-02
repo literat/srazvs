@@ -2,6 +2,8 @@
 
 namespace App;
 
+use Nette\Database\Context;
+
 /**
  * BaseModel
  *
@@ -12,10 +14,10 @@ namespace App;
  */
 abstract class BaseModel
 {
-	/** Table in Database */
-	protected $dbTable;
+	/** @var string */
+	protected $table = null;
 
-	/** Database connection */
+	/** @var Nette\Database\Context */
 	protected $database;
 
 	/** Constructor */
@@ -89,4 +91,41 @@ abstract class BaseModel
 	{
 
 	}
+
+	/**
+	 * @return Nette\Database\Context
+	 */
+	protected function getDatabase()
+	{
+		return $this->database;
+	}
+
+	/**
+	 * @param  Nette\Database\Context $database
+	 * @return $this
+	 */
+	protected function setDatabase(Context $database)
+	{
+		$this->database = $database;
+		return $this;
+	}
+
+	/**
+	 * @return string
+	 */
+	protected function getTable()
+	{
+		return $this->table;
+	}
+
+	/**
+	 * @param  string $table
+	 * @return $this
+	 */
+	protected function setTable($table)
+	{
+		$this->table = $table;
+		return $this;
+	}
+
 }

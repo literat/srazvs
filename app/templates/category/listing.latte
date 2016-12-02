@@ -4,10 +4,10 @@
 		<div class='siteContentRibbon'>Správa kategorií</div>
 		<div class='pageRibbon'>seznam kategorií</div>
 
-		{$error}
+		{$error|noescape}
 
 		<div class='link'>
-			<a class='link' href='?cms=new'>
+			<a class='link' href='{$catDir}/new'>
 				<img src='{$imgDir}icons/new.png' />NOVÁ KATEGORIE</a>
 		</div>
 
@@ -44,12 +44,12 @@
 			{foreach $render as $id => $category}
 				<tr class='radek1'>
 					<td>
-						<a href='?id={$id}&amp;cms=edit' title='Upravit kategorii'>
+						<a href='{$catDir}/edit/{$id}' title='Upravit kategorii'>
 							<img class='edit' src='{$imgDir}icons/edit.gif' />
 						</a>
 					</td>
 					<td>
-						<a href="javascript:confirmation('?id={$id}.&amp;cms=delete', 'opravdu smazat kategorii {$category->name}? jste si jisti?')" title='Odstranit'>
+						<a href="javascript:confirmation('{$catDir}/delete/{$id}', 'opravdu smazat kategorii {$category->name}? jste si jisti?')" title='Odstranit'>
 							<img class='edit' src='{$imgDir}icons/delete.gif' />
 						</a>
 					</td>

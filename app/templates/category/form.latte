@@ -4,7 +4,7 @@
 <div class='siteContentRibbon'>Správa kategorií</div>
 <div class='pageRibbon'>{$heading}</div>
 
-<form action='{$catDir}' method='post'>
+<form action='{$catDir}/{$todo}' method='post'>
 
 	<div class='button-line'>
 		<button type='submit' onclick=\"this.form.submit()\">
@@ -94,7 +94,6 @@ window.onload = function(){
 			</td>
 		</tr>
 	</table>
-	<input type='hidden' name='cms' value='{$todo}'>
 	<input type='hidden' name='id' value='{$id}'>
 	<input type='hidden' name='page' value='{$page}'>
 </form>

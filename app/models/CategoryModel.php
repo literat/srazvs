@@ -15,19 +15,23 @@ use Nette\Utils\Strings;
  */
 class CategoryModel extends BaseModel
 {
-	/**
-	 * Array of database block table columns
-	 *
-	 * @var array	DB_columns[]
-	 */
-	public $dbColumns = array();
+	/** @var array */
+	public $dbColumns = [
+		'name',
+		'bgcolor',
+		'bocolor',
+		'focolor',
+	];
 
-	/** Constructor */
+	/** @var string */
+	protected $table = 'kk_categories';
+
+	/**
+	 * @param Nette\Database\Context $database
+	 */
 	public function __construct($database)
 	{
-		$this->dbColumns = array("name", "bgcolor", "bocolor", "focolor");
-		$this->dbTable = "kk_categories";
-		$this->database = $database;
+		$this->setDatabase($database);
 	}
 
 	/**
@@ -37,11 +41,7 @@ class CategoryModel extends BaseModel
 	 */
 	public function getData()
 	{
-		$data = $this->database
-			->table($this->dbTable)
-			->where('deleted', '0')
-			->order('name')
-			->fetchAll();
+		$data = $this->all();
 
 		if(!$data) {
 			Debugger::log('Category: no data found!', Debugger::ERROR);
@@ -61,8 +61,8 @@ class CategoryModel extends BaseModel
 	{
 		$style = Strings::toAscii($dbData['name']);
 		$dbData['style'] = $style;
-		$result = $this->database
-			->table($this->dbTable)
+		$result = $this->getDatabase()
+			->table($this->getTable())
 			->insert($dbData);
 
 		return $result;
@@ -80,8 +80,8 @@ class CategoryModel extends BaseModel
 		$style = Strings::toAscii($dbData['name']);
 		$style = str_replace(" ", "_", $style);
 		$dbData['style'] = $style;
-		$result = $this->database
-			->table($this->dbTable)
+		$result = $this->getDatabase()
+			->table($this->getTable())
 			->where('id', $id)
 			->update($dbData);
 
@@ -97,10 +97,7 @@ class CategoryModel extends BaseModel
 	{
 		$style = "";
 
-		$data = $this->database
-			->table($this->dbTable)
-			->where('deleted', '0')
-			->fetchAll();
+		$data = $this->all();
 
 		foreach($data as $id => $category) {
 			$style .= "
@@ -125,8 +122,8 @@ class CategoryModel extends BaseModel
 	{
 		$html_select = "<select style='width: 225px; font-size: 10px' class='field' name='category'>\n";
 
-		$result = $this->database
-			->table('kk_categories')
+		$result = $this->getDatabase()
+			->table($this->getTable())
 			->where(1)
 			->fetchAll();
 
@@ -148,10 +145,20 @@ class CategoryModel extends BaseModel
 	 */
 	public function find($id)
 	{
-		return $this->database
-			->table('kk_categories')
+		return $this->getDatabase()
+			->table($this->getTable())
 			->where('id', $id)
 			->limit(1)
 			->fetch();
 	}
+
+	public function all()
+	{
+		return $this->getDatabase()
+			->table($this->getTable())
+			->where('deleted', '0')
+			->order('name')
+			->fetchAll();
+	}
+
 }

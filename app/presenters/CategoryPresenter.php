@@ -47,6 +47,7 @@ class CategoryPresenter extends BasePresenter
 	 */
 	public function __construct(Context $database, Container $container)
 	{
+		$this->database = $database;
 		$this->setContainer($container);
 		$this->setRouter($container->parameters['router']);
 		$this->setModel($container->getService('category'));
@@ -70,13 +71,14 @@ class CategoryPresenter extends BasePresenter
 
 		//$mid = $_SESSION['meetingID'];
 		$id = $this->requested('id', $this->categoryId);
-		$this->cms = $this->requested('cms', '');
 		$this->error = $this->requested('error', '');
 		$this->page = $this->requested('page', $this->page);
 
 		######################### DELETE CATEGORY #########################
 
-		switch($this->cms) {
+		$action = $this->getRouter()->getParameter('action');
+
+		switch($action) {
 			case "delete":
 				$this->actionDelete($id);
 				break;
