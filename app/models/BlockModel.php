@@ -254,4 +254,18 @@ class BlockModel extends BaseModel
 			->limit(1)
 			->fetch();
 	}
+
+	/**
+	 * @param  int $meetingId
+	 * @return Database
+	 */
+	public function findByMeeting($meetingId)
+	{
+		return $this->database
+			->table($this->dbTable)
+			->select('id')
+			->where('meeting ? AND program ? AND deleted ?', $meetingId, '1', '0')
+			->fetchAll();
+	}
+
 }

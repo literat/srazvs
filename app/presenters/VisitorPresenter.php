@@ -67,6 +67,9 @@ class VisitorPresenter extends BasePresenter
 	private $disabled;
 	private $mealData;
 
+	/** @var Block */
+	protected $block;
+
 	/**
 	 * Prepare model classes and get meeting id
 	 */
@@ -85,6 +88,7 @@ class VisitorPresenter extends BasePresenter
 		$this->Meeting = $this->container->createServiceMeeting();
 		$this->Meal = $this->container->createServiceMeal();
 		$this->Category = $this->container->createServiceCategory();
+		$this->setBlock($this->container->createServiceBlock());
 		$this->latte = $this->container->getService('latte');
 
 		if($this->meetingId = $this->requested('mid', '')) {
@@ -200,15 +204,6 @@ class VisitorPresenter extends BasePresenter
 		}
 	}
 
-	private function getblocks()
-	{
-		return $this->database
-			->table('kk_blocks')
-			->select('id')
-			->where('meeting ? AND program ? AND deleted ?', $this->meetingId, '1', '0')
-			->fetchAll();
-	}
-
 	/**
 	 * Process data from form
 	 *
@@ -218,7 +213,7 @@ class VisitorPresenter extends BasePresenter
 	{
 		// TODO
 		////ziskani zvolenych programu
-		$blocks = $this->getblocks();
+		$blocks = $this->block->findByMeeting($this->meetingId);
 
 		foreach($blocks as $blockData){
 			$$blockData['id'] = $this->requested($blockData['id'], 0);
@@ -279,7 +274,7 @@ class VisitorPresenter extends BasePresenter
 	{
 		// TODO
 		////ziskani zvolenych programu
-		$blocks = $this->getblocks();
+		$blocks = $this->block->findByMeeting($this->meetingId);
 
 		foreach($blocks as $blockData){
 			$$blockData['id'] = $this->requested('blck_' . $blockData['id'], 0);
@@ -514,4 +509,23 @@ class VisitorPresenter extends BasePresenter
 
 		$this->latte->render(__DIR__ . '/../templates/' . $this->templateDir.'/'.$this->template . '.latte', $parameters);
 	}
+
+	/**
+	 * @return Block
+	 */
+	protected function getBlock()
+	{
+		return $this->block;
+	}
+
+	/**
+	 * @param  Blocks $block
+	 * @return $this
+	 */
+	protected function setBlock($block)
+	{
+		$this->block = $block;
+		return $this;
+	}
+
 }
