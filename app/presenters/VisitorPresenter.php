@@ -82,13 +82,13 @@ class VisitorPresenter extends BasePresenter
 		$this->database = $database;
 		$this->container = $container;
 		$this->router = $this->container->parameters['router'];
-		$this->Visitor = $this->container->createServiceVisitor();
-		$this->Emailer = $this->container->createServiceEmailer();
-		$this->Export = $this->container->createServiceExports();
-		$this->Meeting = $this->container->createServiceMeeting();
-		$this->Meal = $this->container->createServiceMeal();
-		$this->Category = $this->container->createServiceCategory();
-		$this->setBlock($this->container->createServiceBlock());
+		$this->Visitor = $this->container->getService('visitor');
+		$this->Emailer = $this->container->getService('emailer');
+		$this->Export = $this->container->getService('exports');
+		$this->Meeting = $this->container->getService('meeting');
+		$this->Meal = $this->container->getService('meal');
+		$this->Category = $this->container->getService('category');
+		$this->setBlock($this->container->getService('block'));
 		$this->latte = $this->container->getService('latte');
 
 		if($this->meetingId = $this->requested('mid', '')) {
