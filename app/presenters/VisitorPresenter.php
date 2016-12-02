@@ -480,7 +480,7 @@ class VisitorPresenter extends BasePresenter
 			'page'				=> $this->page,
 			'heading'			=> $this->heading,
 			'visitorCount'		=> $this->Visitor->getCount(),
-			'meetingPrice'		=> $this->Visitor->meeting_price,
+			'meetingPrice'		=> $this->Meeting->getPrice('cost'),
 			'search'			=> $this->Visitor->search,
 			'recipient_mails'	=> $this->recipients,
 		];
