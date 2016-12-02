@@ -35,12 +35,6 @@ class SettingsPresenter extends BasePresenter
 	protected $page = 'settings';
 
 	/**
-	 * Container class
-	 * @var [type]
-	 */
-	private $container;
-
-	/**
 	 * Category model
 	 * @var Category
 	 */

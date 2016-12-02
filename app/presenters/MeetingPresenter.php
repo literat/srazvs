@@ -48,7 +48,6 @@ class MeetingPresenter extends BasePresenter
 	 */
 	private $Category;
 
-	private $container;
 	private $Meeting;
 
 	/**

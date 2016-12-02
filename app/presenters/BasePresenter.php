@@ -17,6 +17,17 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 	 */
 	protected $backlink;
 
+	/** @var Model */
+	protected $model;
+
+	/** @var Nette\DI\Container */
+	protected $container;
+
+	/** @var Latte */
+	protected $latte;
+
+	/** @var Router */
+	protected $router;
 
 	/**
 	 * Startup
@@ -45,7 +56,6 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 	 * @var string
 	 */
 	protected $template = 'listing';
-	protected $latte;
 
 	/**
 	 * template directory
@@ -102,12 +112,6 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 	protected $error = '';
 
 	/**
-	 * error handler
-	 * @var string
-	 */
-	protected $router = '';
-
-	/**
 	 * database connection
 	 * @var string
 	 */
@@ -158,11 +162,6 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 		}
 
 		$this->render();
-	}
-
-	public function setRouter($router)
-	{
-		$this->router = $router;
 	}
 
 	protected function code4Bank($data)
@@ -322,6 +321,78 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 			WHERE id = ? AND deleted = ?
 			LIMIT 1', $meetingId, '0')
 			->fetch();
+	}
+
+	/**
+	 * @return Model
+	 */
+	protected function getModel()
+	{
+		return $this->model;
+	}
+
+	/**
+	 * @param  Model $model
+	 * @return $this
+	 */
+	protected function setModel($model)
+	{
+		$this->model = $model;
+		return $this;
+	}
+
+	/**
+	 * @return Container
+	 */
+	protected function getContainer()
+	{
+		return $this->container;
+	}
+
+	/**
+	 * @param  Container $container
+	 * @return $this
+	 */
+	protected function setContainer($container)
+	{
+		$this->container = $container;
+		return $this;
+	}
+
+	/**
+	 * @return Router
+	 */
+	protected function getRouter()
+	{
+		return $this->router;
+	}
+
+	/**
+	 * @param  Router $router
+	 * @return $this
+	 */
+	protected function setRouter($router)
+	{
+		$this->router = $router;
+		return $this;
+	}
+
+	/**
+	 * @return Latte
+	 */
+	protected function getLatte()
+	{
+		return $this->latte;
+	}
+
+	/**
+	 * @param  Latte $latte
+	 * @return $this
+	 */
+	protected function setLatte($latte)
+	{
+		$this->latte = $latte;
+		return $this;
 	}
 
 }

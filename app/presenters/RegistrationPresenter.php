@@ -24,12 +24,6 @@ class RegistrationPresenter extends BasePresenter
 	protected $template = 'form';
 
 	/**
-	 * Object farm container
-	 * @var Container
-	 */
-	private $container;
-
-	/**
 	 * Visitor model
 	 * @var VisitorModel
 	 */

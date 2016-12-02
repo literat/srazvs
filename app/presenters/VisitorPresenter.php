@@ -20,15 +20,6 @@ class VisitorPresenter extends BasePresenter
 
 	const PATH = '/srazvs/visitor';
 
-	/**
-	 * Object farm container
-	 * @var Container
-	 */
-	private $container;
-
-	/** @var VisitorModel */
-	private $model;
-
 	/** @var Emailer */
 	private $emailer;
 

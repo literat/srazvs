@@ -33,7 +33,6 @@ class BlockPresenter extends BasePresenter
 	 */
 	protected $meetingId = 0;
 
-	private $container;
 	private $Block;
 	private $Emailer;
 	private $Meeting;

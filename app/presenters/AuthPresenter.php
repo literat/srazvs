@@ -16,7 +16,6 @@ use UserService;
 class AuthPresenter extends BasePresenter
 {
 
-	private $container;
 	private $service;
 	private $user;
 

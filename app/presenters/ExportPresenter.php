@@ -19,10 +19,8 @@ class ExportPresenter extends BasePresenter
 	 */
 	protected $templateName = 'exports';
 
-	private $container;
 	private $export;
 	private $program;
-	private $model;
 	private $pdf;
 	private $excel;
 	private $filename;

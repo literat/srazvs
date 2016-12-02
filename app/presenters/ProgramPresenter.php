@@ -40,12 +40,6 @@ class ProgramPresenter extends BasePresenter
 	protected $meetingId = 0;
 
 	/**
-	 * Object farm container
-	 * @var Container
-	 */
-	private $container;
-
-	/**
 	 * Program model
 	 * @var ProgramModel
 	 */
