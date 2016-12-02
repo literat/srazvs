@@ -15,17 +15,14 @@
 
 <div class='pageRibbon'>seznam účastníků</div>
 <div class='link'>
-	<form action='?visitor' method='post'>
+	<form action='' method='get'>
 		<label>hledej:</label>
 		<input type='text' name='search' size='30' value='{$search}' />
         <button type='submit' onClick=\"this.form.submit()\">
   			<img src='{$imgDir}icons/search.png' /> Hledej
 		</button>
- 		<!--<button type='button' onclick=\"window.location.replace('index.php')\">
-  		<img src='".$ICODIR}small/storno.png'  /> Zpět</button>-->
-		<input type='hidden' name='cms' value='search' />
 	</form>
-	<a class='link' href='{$visitDir}/?cms=new&page=visitor'>
+	<a class='link' href='{$visitDir}/new?page=visitor'>
 		<img src='{$imgDir}icons/new.png' />NOVÝ ÚČASTNÍK
 	</a>
 </div>
@@ -46,20 +43,20 @@ $(document).ready(function() {
 	} );
 } );
 </script>
-<form name='checkerForm' method='post' action='?visitor'>
+<form name='checkerForm' method='post' action='{$visitDir}'>
 	<a href='javascript:select(1)'>Zaškrtnout vše</a> /
 	<a href='javascript:select(0)'>Odškrtnout vše</a>
 	<span style='margin-left:10px;'>Zaškrtnuté:</span>
-	<button onClick="this.form.submit()" title='Záloha' value='advance' name='cms' type='submit'>
+	<button onClick="this.form.action='{$visitDir|noescape}/advance';" title='Záloha' type='submit'>
 		<img class='edit' src='{$imgDir}icons/advance.png' /> Záloha
 	</button>
-	<button onClick="this.form.submit()" title='Platba' value='pay' name='cms' type='submit'>
+	<button onClick="this.form.action='{$visitDir|noescape}/pay';" title='Platba' type='submit'>
 		<img class='edit' src='{$imgDir}icons/pay.png' /> Platba
 	</button>
-	<button onClick="return confirm('Opravdu SMAZAT tyto účastníky? Jste si jisti?')" title='Smazat' value='delete' name='cms' type='submit'>
+	<button onClick="this.form.action='{$visitDir|noescape}/delete'; return confirm('Opravdu SMAZAT tyto účastníky? Jste si jisti?')" title='Smazat' type='submit'>
 		<img class='edit' src='{$imgDir}icons/delete.gif' /> Smazat
 	</button>
-	<button onclick="this.form.submit();" title='Hromadný e-mail' value='massmail' name='cms' type='submit'>
+	<button onclick="this.form.action='{$visitDir|noescape}/massmail';" title='Hromadný e-mail' type='submit'>
 		<img src='{$imgDir}icons/mail.png'  /> Hromadný e-mail
 	</button>
 	<table id='VisitorsTable' class='list tablesorter'>
@@ -137,32 +134,32 @@ $(document).ready(function() {
 			<tr id='visitor-{$row['id']}' class='radek1{$row['checked'] ? ' checked' : ''}'>
 				<td><input type='checkbox' name='checker[]'  value='{$row['id']}' /></td>
 				<td>
-					<a href='?id={$row['id']}&cms=edit&page=visitor' title='Upravit'>
+					<a href='{$visitDir}/edit/{$row['id']}?page=visitor' title='Upravit'>
 						<img class='edit' src='{$imgDir}icons/edit.gif' />
 					</a>
 				</td>
 				<td>
-					<a class='checker' href='?id={$row['id']}&cms={$row['checked'] ? 'un' : ''}checked&page=visitor' title='Zkontrolováno'>
+					<a class='checker' href='{$visitDir}/{$row['checked'] ? 'un' : ''}checked/{$row['id']}?page=visitor' title='Zkontrolováno'>
 						<img class='edit' src='{$imgDir}icons/check{$row['checked'] ? '3' : ''}.png' />
 					</a>
 				</td>
 				<td>
-					<a href='?id={$row['id']}&amp;cms=advance&amp;search={$search}&page=visitor' title='Záloha'>
+					<a href='{$visitDir}/advance/{$row['id']}?search={$search}&page=visitor' title='Záloha'>
 						<img class='edit' src='{$imgDir}icons/advance.png' />
 					</a>
 				</td>
 				<td>
-					<a href='?id={$row['id']}&amp;cms=pay&amp;search={$search}&page=visitor' title='Zaplatit'>
+					<a href='{$visitDir}/pay/{$row['id']}?search={$search}&page=visitor' title='Zaplatit'>
 						<img class='edit' src='{$imgDir}icons/pay.png' />
 					</a>
 				</td>
 				<td>
-					<a href='{$expDir}/?evidence=confirm&vid={$row['id']}' title='Doklad'>
+					<a href='{$expDir}/evidence/confirm/{$row['id']}' title='Doklad'>
 						<img class='edit' src='{$imgDir}icons/pdf.png' />
 					</a>
 				</td>
 				<td>
-					<a href="javascript:confirmation('?id={$row['id']}&amp;cms=delete&amp;search={$search}', 'účastník: {$row['nick']} -> Opravdu SMAZAT tohoto účastníka? Jste si jisti?')" title='Odstranit'>
+					<a href="javascript:confirmation('{$visitDir}/delete/{$row['id']}?search={$search}', 'účastník: {$row['nick']} -> Opravdu SMAZAT tohoto účastníka? Jste si jisti?')" title='Odstranit'>
 						<img class='edit' src='{$imgDir}icons/delete.gif' />
 					</a>
 				</td>
@@ -185,16 +182,16 @@ $(document).ready(function() {
 	<a href='javascript:select(1)'>Zaškrtnout vše</a> /
 	<a href='javascript:select(0)'>Odškrtnout vše</a>
 	<span style='margin-left:10px;'>Zaškrtnuté:</span>
-	<button onClick="this.form.submit()" title='Záloha' value='advance' name='cms' type='submit'>
+	<button onClick="this.form.action='{$visitDir|noescape}/advance';" title='Záloha' type='submit'>
 		<img class='edit' src='{$imgDir}icons/advance.png' /> Záloha
 	</button>
-	<button onClick="this.form.submit()" title='Platba' value='pay' name='cms' type='submit'>
+	<button onClick="this.form.action='{$visitDir|noescape}/pay';" title='Platba' type='submit'>
 		<img class='edit' src='{$imgDir}icons/pay.png' /> Platba
 	</button>
-	<button onClick="return confirm('Opravdu SMAZAT tyto účastníky? Jste si jisti?')" title='Smazat' value='delete' name='cms' type='submit'>
+	<button onClick="this.form.action='{$visitDir|noescape}/delete'; return confirm('Opravdu SMAZAT tyto účastníky? Jste si jisti?')" title='Smazat' type='submit'>
 		<img class='edit' src='{$imgDir}icons/delete.gif' /> Smazat
 	</button>
-	<button onclick="this.form.submit();" title='Hromadný e-mail' value='massmail' name='cms' type='submit'>
+	<button onclick="this.form.action='{$visitDir|noescape}/massmail';" title='Hromadný e-mail' type='submit'>
 		<img src='{$imgDir}icons/mail.png'  /> Hromadný e-mail
 	</button>
 

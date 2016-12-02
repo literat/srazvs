@@ -110,10 +110,14 @@ class VisitorPresenter extends BasePresenter
 	public function init()
 	{
 		$id = $this->requested('id', $this->itemId);
-		$this->cms = $this->requested('cms', '');
 		$this->error = $this->requested('error', '');
 		$this->page = $this->requested('page', '');
+
 		$search = $this->requested('search', '');
+		if(isset($search)){
+			$this->Visitor->setSearch($search);
+		}
+
 		$this->disabled = $this->requested('disabled', '');
 
 		if($ids = $this->requested('checker')) {
@@ -127,7 +131,9 @@ class VisitorPresenter extends BasePresenter
 			$query_id = $ids;
 		}
 
-		switch($this->cms) {
+		$action = $this->requested('action', '');
+
+		switch($action) {
 			case "delete":
 				$this->delete($query_id);
 				break;
@@ -155,12 +161,6 @@ class VisitorPresenter extends BasePresenter
 			// pay advance
 			case "advance":
 				$this->pay($query_id, 'advance');
-				break;
-			// searching
-			case "search":
-				if(isset($search)){
-					$this->Visitor->setSearch($search);
-				}
 				break;
 			// export all visitors to excel
 			case "export":
@@ -474,7 +474,6 @@ class VisitorPresenter extends BasePresenter
 			'menu'				=> $this->generateMenu(),
 			'error'				=> printError($this->error),
 			'todo'				=> $this->todo,
-			'cms'				=> $this->cms,
 			'render'			=> $this->Visitor->getData(),
 			'mid'				=> $this->meetingId,
 			'page'				=> $this->page,

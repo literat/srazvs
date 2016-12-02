@@ -7,7 +7,7 @@
 {$error}
 <div class='pageRibbon'>{$heading}</div>
 
-<form action='?visitor' method='post'>
+<form action='{$visitDir}/{$todo}' method='post'>
 
 	<div class='button-line'>
 		<button type='submit' onclick=\"this.form.submit()\">
@@ -127,7 +127,6 @@
 		{$program_switcher|noescape}
 
 		<input type='hidden' name='id' value='{$id}'>
-		<input type='hidden' name='cms' value='{$todo}'>
 		<input type='hidden' name='page' value='{$page}'>
 		<input type='hidden' name='checked' value='{$checked}'>
 		<input type="hidden" name="bill" value="0" />
