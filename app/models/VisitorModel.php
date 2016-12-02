@@ -4,6 +4,7 @@ namespace App;
 
 use Nette\Utils\Strings;
 use Tracy\Debugger;
+use \Exception;
 
 /**
  * Visitor
@@ -361,11 +362,7 @@ class VisitorModel
 	 */
 	public function payCharge($query_id, $type)
 	{
-		$billData = $this->database
-			->table($this->dbTable)
-			->select('bill')
-			->where('id', $query_id)
-			->fetch();
+		$billData = $this->getBill($query_id);
 
 		if($billData['bill'] < $this->Meeting->getPrice('cost')){
 			$bill = array('bill' => $this->Meeting->getPrice($type));
@@ -376,7 +373,7 @@ class VisitorModel
 
 			return $payResult;
 		} else {
-			return 'already_paid';
+			throw new Exception('Charge already paid!');
 		}
 	}
 
@@ -537,5 +534,18 @@ class VisitorModel
 		}
 
 		return $recipient_mails;
+	}
+
+	/**
+	 * @param  int  $id
+	 * @return Visitor
+	 */
+	public function getBill($id)
+	{
+		return $this->database
+			->table($this->dbTable)
+			->select('bill')
+			->where('id', $id)
+			->fetch();
 	}
 }

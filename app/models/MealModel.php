@@ -134,4 +134,5 @@ class MealModel extends BaseModel
 			->limit(1)
 			->fetch();
 	}
+
 }

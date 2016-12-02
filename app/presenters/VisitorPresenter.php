@@ -4,6 +4,7 @@ namespace App\Presenters;
 
 use Nette\Database\Context;
 use Nette\DI\Container;
+use Tracy\Debugger;
 
 /**
  * Visitor controller
@@ -22,17 +23,11 @@ class VisitorPresenter extends BasePresenter
 	 */
 	private $container;
 
-	/**
-	 * Visitor model
-	 * @var VisitorModel
-	 */
-	private $Visitor;
+	/** @var VisitorModel */
+	private $model;
 
-	/**
-	 * Emailer class
-	 * @var Emailer
-	 */
-	private $Emailer;
+	/** @var Emailer */
+	private $emailer;
 
 	/**
 	 * Export class
@@ -82,8 +77,8 @@ class VisitorPresenter extends BasePresenter
 		$this->database = $database;
 		$this->container = $container;
 		$this->router = $this->container->parameters['router'];
-		$this->Visitor = $this->container->getService('visitor');
-		$this->Emailer = $this->container->getService('emailer');
+		$this->setModel($this->container->getService('visitor'));
+		$this->setEmailer($this->container->getService('emailer'));
 		$this->Export = $this->container->getService('exports');
 		$this->Meeting = $this->container->getService('meeting');
 		$this->Meal = $this->container->getService('meal');
@@ -97,7 +92,7 @@ class VisitorPresenter extends BasePresenter
 			$this->meetingId = $_SESSION['meetingID'];
 		}
 
-		$this->Visitor->setMeetingId($this->meetingId);
+		$this->getModel()->setMeetingId($this->meetingId);
 		$this->Meeting->setMeetingId($this->meetingId);
 		$this->Meeting->setHttpEncoding($this->container->parameters['encoding']);
 	}
@@ -115,7 +110,7 @@ class VisitorPresenter extends BasePresenter
 
 		$search = $this->requested('search', '');
 		if(isset($search)){
-			$this->Visitor->setSearch($search);
+			$this->getModel()->setSearch($search);
 		}
 
 		$this->disabled = $this->requested('disabled', '');
@@ -135,42 +130,42 @@ class VisitorPresenter extends BasePresenter
 
 		switch($action) {
 			case "delete":
-				$this->delete($query_id);
+				$this->actionDelete($query_id);
 				break;
 			case "new":
-				$this->__new();
+				$this->actionNew();
 				break;
 			case "create":
-				$this->create();
+				$this->actionCreate();
 				break;
 			case "edit":
-				$this->edit($id);
+				$this->actionEdit($id);
 				break;
 			case "modify":
-				$this->update($id);
+				$this->actionUpdate($id);
 				break;
 			case "massmail":
-				$this->massmail($query_id);
+				$this->actionMassmail($query_id);
 				break;
 			case "send":
-				$this->send($this->requested('recipients', ''));
+				$this->actionSend($this->requested('recipients', ''));
 			// pay full charge
 			case "pay":
-				$this->pay($query_id, 'cost');
+				$this->actionPay($query_id);
 				break;
 			// pay advance
 			case "advance":
-				$this->pay($query_id, 'advance');
+				$this->actionAdvance($query_id);
 				break;
 			// export all visitors to excel
 			case "export":
 				$this->Export->printVisitorsExcel();
 				break;
 			case "checked":
-				$this->checked($id);
+				$this->actionChecked($id);
 				break;
 			case "unchecked":
-				$this->unchecked($id);
+				$this->actionUnchecked($id);
 				break;
 		}
 
@@ -182,7 +177,7 @@ class VisitorPresenter extends BasePresenter
 	 *
 	 * @return void
 	 */
-	private function __new()
+	private function actionNew()
 	{
 		$this->template = 'form';
 
@@ -196,7 +191,7 @@ class VisitorPresenter extends BasePresenter
 		}
 
 		// requested for visitors fields
-		foreach($this->Visitor->dbColumns as $key) {
+		foreach($this->getModel()->dbColumns as $key) {
 			if($key == 'bill') $value = 0;
 			elseif($key == 'cost') $value = 0;
 			else $value = "";
@@ -209,7 +204,7 @@ class VisitorPresenter extends BasePresenter
 	 *
 	 * @return void
 	 */
-	private function create()
+	private function actionCreate()
 	{
 		// TODO
 		////ziskani zvolenych programu
@@ -222,7 +217,7 @@ class VisitorPresenter extends BasePresenter
 		}
 
 		// requested for visitors
-		foreach($this->Visitor->dbColumns as $key) {
+		foreach($this->getModel()->dbColumns as $key) {
 				if($key == 'bill') $$key = $this->requested($key, 0);
 				elseif($key == 'cost') $$key = $this->requested($key, 0);
 				elseif($key == 'checked') $$key = $this->requested($key, 0);
@@ -240,7 +235,7 @@ class VisitorPresenter extends BasePresenter
 			$meals_data[$var_name] = $$var_name;
 		}
 		// create
-		if($vid = $this->Visitor->create($DB_data, $meals_data, $programs_data)){
+		if($vid = $this->getModel()->create($DB_data, $meals_data, $programs_data)){
 			######################## ODESILAM EMAIL ##########################
 
 			// zaheshovane udaje, aby se nedali jen tak ziskat data z databaze
@@ -251,7 +246,7 @@ class VisitorPresenter extends BasePresenter
 			$recipient_name = $DB_data['name']." ".$DB_data['surname'];
 			$recipient = [$recipient_mail => $recipient_name];
 
-			if($return = $this->Emailer->sendRegistrationSummary($recipient, $hash, $code4bank)) {
+			if($return = $this->getEmailer()->sendRegistrationSummary($recipient, $hash, $code4bank)) {
 				if(is_int($vid)) {
 					$vid = "ok";
 				}
@@ -270,18 +265,18 @@ class VisitorPresenter extends BasePresenter
 	 * @param  int 	$id 	of item
 	 * @return void
 	 */
-	private function update($id = NULL)
+	private function actionUpdate($id = NULL)
 	{
 		// TODO
 		////ziskani zvolenych programu
-		$blocks = $this->block->findByMeeting($this->meetingId);
+		$blocks = $this->getBlock()->findByMeeting($this->meetingId);
 
 		foreach($blocks as $blockData){
 			$$blockData['id'] = $this->requested('blck_' . $blockData['id'], 0);
 			$programs_data[$blockData['id']] = $$blockData['id'];
 		}
 
-		foreach($this->Visitor->dbColumns as $key) {
+		foreach($this->getModel()->dbColumns as $key) {
 				if($key == 'bill') $$key = $this->requested($key, 0);
 				else $$key = $this->requested($key, null);
 				$DB_data[$key] = $$key;
@@ -297,7 +292,7 @@ class VisitorPresenter extends BasePresenter
 		// i must add visitor's ID because it is empty
 		$meals_data['visitor'] = $id;
 
-		if($this->Visitor->modify($id, $DB_data, $meals_data, $programs_data)){
+		if($this->getModel()->modify($id, $DB_data, $meals_data, $programs_data)){
 			redirect("?page=".$this->page."&error=ok");
 		} else {
 			redirect("?page=".$this->page."&error=error");
@@ -310,7 +305,7 @@ class VisitorPresenter extends BasePresenter
 	 * @param  int $id of item
 	 * @return void
 	 */
-	private function edit($id)
+	private function actionEdit($id)
 	{
 		$this->template = 'form';
 
@@ -319,16 +314,12 @@ class VisitorPresenter extends BasePresenter
 
 		$this->itemId = $id;
 
-		$dbData = $this->Visitor->getData($id);
-		foreach($this->Visitor->dbColumns as $key) {
+		$dbData = $this->getModel()->getData($id);
+		foreach($this->getModel()->dbColumns as $key) {
 			$this->data[$key] = $this->requested($key, $dbData[$key]);
 		}
 
-		$data = $this->database
-			->table('kk_meals')
-			->where('visitor', $this->itemId)
-			->limit(1)
-			->fetch();
+		$data = $this->Meal->findByVisitorId($this->itemId);
 
 		foreach($this->Meal->dbColumns as $var_name) {
 			$$var_name = $this->requested($var_name, $data[$var_name]);
@@ -342,9 +333,9 @@ class VisitorPresenter extends BasePresenter
 	 * @param  int $id of item
 	 * @return void
 	 */
-	private function delete($id)
+	private function actionDelete($id)
 	{
-		if($this->Visitor->delete($id)) {
+		if($this->getModel()->delete($id)) {
 			  redirect("?error=del");
 		}
 	}
@@ -354,11 +345,11 @@ class VisitorPresenter extends BasePresenter
 	 *
 	 * @return void
 	 */
-	private function massmail($query_id)
+	private function actionMassmail($query_id)
 	{
 		$this->template = 'mail';
 
-		$recipient_mails = $this->Visitor->getMail($query_id);
+		$recipient_mails = $this->getModel()->getMail($query_id);
 		$this->recipients = rtrim($recipient_mails, "\n,");
 	}
 
@@ -367,12 +358,12 @@ class VisitorPresenter extends BasePresenter
 	 *
 	 * @return void
 	 */
-	private function send($recipients)
+	private function actionSend($recipients)
 	{
 		$bcc_mail = preg_replace("/\n/", "", $this->requested('recipients', ''));
 
-		$recipient_name = $this->Visitor->configuration['mail-sender-name'];
-		$recipient_mail = $this->Visitor->configuration['mail-sender-address'];
+		$recipient_name = $this->getModel()->configuration['mail-sender-name'];
+		$recipient_mail = $this->getModel()->configuration['mail-sender-address'];
 
 		$subject = $this->requested('subject', '');
 
@@ -383,7 +374,7 @@ class VisitorPresenter extends BasePresenter
 
 		$message = "<html><head><title>".$subject."</title></head><body>\n".$message."\n</body>\n</html>";
 
-		$return = $this->Emailer->sendMail($recipient_mail, $recipient_name, $subject, $message, $bcc_mail);
+		$return = $this->getEmailer()->sendMail($recipient_mail, $recipient_name, $subject, $message, $bcc_mail);
 
 		if($return){
 			$error = 'E_MAIL_NOTICE';
@@ -402,18 +393,36 @@ class VisitorPresenter extends BasePresenter
 	 * @param  string 	$payment_type cost|advance
 	 * @return void
 	 */
-	private function pay($query_id, $payment_type)
+	private function actionPay($ids)
 	{
-		$return = $this->Visitor->payCharge($query_id, $payment_type);
+		$visitor = $this->getModel();
 
-		if($return != 'already_paid') {
-			$recipients = $this->Visitor->getRecipients($query_id);
-			$this->Emailer->sendPaymentInfo($recipients, $payment_type);
-			redirect("?".$this->page."&error=mail_send");
-		} else {
-			echo 'Došlo k chybě při odeslání e-mailu.';
-			echo 'Chybová hláška: ' . $return;
+		try {
+			$visitor->payCharge($ids, 'cost');
+		} catch(\Exception $e) {
+			Debugger::log('Visitor: Action pay for id ' . $ids . ' failed, result: ' . $e->getMessage(), Debugger::ERROR);
+			redirect("?".$this->page."&error=already_paid");
 		}
+
+		$recipients = $visitor->getRecipients($ids);
+		$this->getEmailer()->sendPaymentInfo($recipients, 'cost');
+		redirect("?".$this->page."&error=mail_send");
+	}
+
+	protected function actionAdvance($ids)
+	{
+		$visitor = $this->getModel();
+
+		try {
+			$this->Visitor->payCharge($ids, 'advance');
+		} catch(\Exception $e) {
+			Debugger::log('Visitor: Action advance for id ' . $ids . ' failed, result: ' . $e->getMessage(), Debugger::ERROR);
+			redirect("?".$this->page."&error=already_paid");
+		}
+
+		$recipients = $visitor->getRecipients($ids);
+		$this->getEmailer()->sendPaymentInfo($recipients, 'advance');
+		redirect("?".$this->page."&error=mail_send");
 	}
 
 	/**
@@ -422,9 +431,9 @@ class VisitorPresenter extends BasePresenter
 	 * @param  int $id of item
 	 * @return void
 	 */
-	private function checked($id)
+	private function actionChecked($id)
 	{
-		if($this->Visitor->checked($id, '1')) {
+		if($this->getModel()->checked($id, '1')) {
 			  redirect("?error=checked");
 		}
 	}
@@ -435,9 +444,9 @@ class VisitorPresenter extends BasePresenter
 	 * @param  int $id of item
 	 * @return void
 	 */
-	private function unchecked($id)
+	private function actionUnchecked($id)
 	{
-		if($this->Visitor->checked($id, 0)) {
+		if($this->getModel()->checked($id, 0)) {
 			  redirect("?error=unchecked");
 		}
 	}
@@ -474,13 +483,13 @@ class VisitorPresenter extends BasePresenter
 			'menu'				=> $this->generateMenu(),
 			'error'				=> printError($this->error),
 			'todo'				=> $this->todo,
-			'render'			=> $this->Visitor->getData(),
+			'render'			=> $this->getModel()->getData(),
 			'mid'				=> $this->meetingId,
 			'page'				=> $this->page,
 			'heading'			=> $this->heading,
-			'visitorCount'		=> $this->Visitor->getCount(),
+			'visitorCount'		=> $this->getModel()->getCount(),
 			'meetingPrice'		=> $this->Meeting->getPrice('cost'),
-			'search'			=> $this->Visitor->search,
+			'search'			=> $this->getModel()->search,
 			'recipient_mails'	=> $this->recipients,
 		];
 
@@ -490,7 +499,7 @@ class VisitorPresenter extends BasePresenter
 			$parameters['birthday'] = (empty($this->data['birthday'])) ? '' : $this->data['birthday']->format('Y-m-d');
 			$parameters['province'] = $this->Meeting->renderHtmlProvinceSelect($this->data['province']);
 			$parameters['meals'] = $this->Meal->renderHtmlMealsSelect($this->mealData, $this->disabled);
-			$parameters['program_switcher'] = $this->Visitor->renderProgramSwitcher($this->meetingId, $this->itemId);
+			$parameters['program_switcher'] = $this->getModel()->renderProgramSwitcher($this->meetingId, $this->itemId);
 			$parameters['error_name'] = printError($error_name);
 			$parameters['error_surname'] = printError($error_surname);
 			$parameters['error_nick'] = printError($error_nick);
@@ -524,6 +533,42 @@ class VisitorPresenter extends BasePresenter
 	protected function setBlock($block)
 	{
 		$this->block = $block;
+		return $this;
+	}
+
+	/**
+	 * @return Visitor
+	 */
+	protected function getModel()
+	{
+		return $this->model;
+	}
+
+	/**
+	 * @param  Visitor $model
+	 * @return $this
+	 */
+	protected function setModel($model)
+	{
+		$this->model = $model;
+		return $this;
+	}
+
+	/**
+	 * @return Emailer
+	 */
+	protected function getEmailer()
+	{
+		return $this->emailer;
+	}
+
+	/**
+	 * @param  Emailer $emailer
+	 * @return $this
+	 */
+	protected function setEmailer($emailer)
+	{
+		$this->emailer = $emailer;
 		return $this;
 	}
 
