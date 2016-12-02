@@ -395,4 +395,28 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 		return $this;
 	}
 
+	/**
+	 * Render CSS coding of styles
+	 *
+	 * @return	string	CSS
+	 */
+	protected function getStyles()
+	{
+		$style = '';
+
+		$data = $this->getContainer()->getService('category')->all();
+
+		foreach($data as $id => $category) {
+			$style .= "
+				.cat-" . $category->style . " {
+					border: 2px solid #" . $category->bocolor . ";
+					background-color: #" . $category->bgcolor . ";
+					color: #" . $category->focolor . ";
+				}
+			";
+		}
+
+		return $style;
+	}
+
 }

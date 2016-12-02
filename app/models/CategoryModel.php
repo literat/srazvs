@@ -89,30 +89,6 @@ class CategoryModel extends BaseModel
 	}
 
 	/**
-	 * Render CSS coding of styles
-	 *
-	 * @return	string	CSS
-	 */
-	public function getStyles()
-	{
-		$style = "";
-
-		$data = $this->all();
-
-		foreach($data as $id => $category) {
-			$style .= "
-				.cat-" . $category->style . " {
-					border: 2px solid #" . $category->bocolor . ";
-					background-color: #" . $category->bgcolor . ";
-					color: #" . $category->focolor . ";
-				}
-			";
-		}
-
-		return $style;
-	}
-
-	/**
 	 * Render HTML <select>
 	 *
 	 * @param	int	ID of selected category

@@ -192,7 +192,7 @@ class CategoryPresenter extends BasePresenter
 			'jsDir'		=> JS_DIR,
 			'imgDir'	=> IMG_DIR,
 			'catDir'	=> CAT_DIR,
-			'style'		=> $model->getStyles(),
+			'style'		=> $this->getStyles(),
 			'user'		=> $this->getSunlightUser($_SESSION[SESSION_PREFIX.'user']),
 			'meeting'	=> $this->getPlaceAndYear($_SESSION['meetingID']),
 			'menu'		=> $this->generateMenu(),
