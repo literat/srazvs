@@ -141,4 +141,17 @@ class CategoryModel extends BaseModel
 
 		return $html_select;
 	}
+
+	/**
+	 * @param  int $id
+	 * @return ActiveRow
+	 */
+	public function find($id)
+	{
+		return $this->database
+			->table('kk_categories')
+			->where('id', $id)
+			->limit(1)
+			->fetch();
+	}
 }

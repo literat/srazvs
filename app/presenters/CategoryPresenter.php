@@ -10,6 +10,8 @@ use Nette\DI\Container;
  */
 class CategoryPresenter extends BasePresenter
 {
+
+	const PATH = '/srazvs/category';
 	/**
 	 * template
 	 * @var string
@@ -41,27 +43,14 @@ class CategoryPresenter extends BasePresenter
 	protected $page = 'category';
 
 	/**
-	 * DI container
-	 * @var Nette\DI\Container
-	 */
-	private $container;
-
-	/**
-	 * Category model
-	 * @var Category
-	 */
-	private $Category;
-
-	/**
 	 * Prepare initial values
 	 */
 	public function __construct(Context $database, Container $container)
 	{
-		$this->database = $database;
-		$this->container = $container;
-		$this->router = $this->container->parameters['router'];
-		$this->Category = $this->container->createServiceCategory();
-		$this->latte = $this->container->getService('latte');
+		$this->setContainer($container);
+		$this->setRouter($container->parameters['router']);
+		$this->setModel($container->getService('category'));
+		$this->setLatte($container->getService('latte'));
 
 		if($this->meetingId = $this->requested('mid', '')){
 			$_SESSION['meetingID'] = $this->meetingId;
@@ -89,19 +78,19 @@ class CategoryPresenter extends BasePresenter
 
 		switch($this->cms) {
 			case "delete":
-				$this->delete($id);
+				$this->actionDelete($id);
 				break;
 			case "new":
-				$this->__new();
+				$this->actionNew();
 				break;
 			case "create":
-				$this->create();
+				$this->actionCreate();
 				break;
 			case "edit":
-				$this->edit($id);
+				$this->actionEdit($id);
 				break;
 			case "modify":
-				$this->update($id);
+				$this->actionUpdate($id);
 				break;
 		}
 
@@ -112,13 +101,13 @@ class CategoryPresenter extends BasePresenter
 	 * Prepare new item
 	 * @return void
 	 */
-	private function __new()
+	private function actionNew()
 	{
 		$this->heading = "nová kategorie";
 		$this->todo = "create";
 		$this->template = "form";
 
-		foreach($this->Category->dbColumns as $key) {
+		foreach($this->getModel()->dbColumns as $key) {
 			$this->data[$key] = $this->requested($key, '');
 		}
 	}
@@ -128,10 +117,10 @@ class CategoryPresenter extends BasePresenter
 	 * @param  int $id of item
 	 * @return void
 	 */
-	private function delete($id)
+	private function actionDelete($id)
 	{
-		if($this->Category->delete($id)){
-	  		redirect("?category&error=del");
+		if($this->getModel()->delete($id)){
+			redirect(self::PATH . "?page=category&error=del");
 		}
 	}
 
@@ -139,14 +128,16 @@ class CategoryPresenter extends BasePresenter
 	 * Create new item in DB
 	 * @return void
 	 */
-	private function create()
+	private function actionCreate()
 	{
-		foreach($this->Category->dbColumns as $key) {
+		$model = $this->getModel();
+
+		foreach($model->dbColumns as $key) {
 			$db_data[$key] = $this->requested($key, '');
 		}
 
-		if($this->Category->create($db_data)){
-			redirect("?".$this->page."&error=ok");
+		if($model->create($db_data)){
+			redirect(self::PATH . "?page=" . $this->page . "&error=ok");
 		}
 	}
 
@@ -155,20 +146,17 @@ class CategoryPresenter extends BasePresenter
 	 * @param  int $id of item
 	 * @return void
 	 */
-	private function edit($id)
+	private function actionEdit($id)
 	{
 		$this->heading = "úprava kategorie";
 		$this->todo = "modify";
 		$this->template = "form";
 		$this->categoryId = $id;
 
-		$category = $this->database
-			->table('kk_categories')
-			->where('id', $id)
-			->limit(1)
-			->fetch();
+		$model = $this->getModel();
+		$category = $model->find($id);
 
-		foreach($this->Category->dbColumns as $key) {
+		foreach($model->dbColumns as $key) {
 			$this->data[$key] = $this->requested($key, $category[$key]);
 		}
 	}
@@ -178,15 +166,15 @@ class CategoryPresenter extends BasePresenter
 	 * @param  int $id of item
 	 * @return void
 	 */
-	private function update($id)
+	private function actionUpdate($id)
 	{
-		foreach($this->Category->dbColumns as $key) {
+		foreach($this->getModel()->dbColumns as $key) {
 			$db_data[$key] = $this->requested($key, '');
 		}
 
-		$this->Category->modify($id, $db_data);
+		$this->getModel()->modify($id, $db_data);
 
-		redirect("?".$this->page."&error=ok");
+		redirect(self::PATH . "?page=" . $this->page . "&error=ok");
 	}
 
 	/**
@@ -195,19 +183,21 @@ class CategoryPresenter extends BasePresenter
 	 */
 	private function render()
 	{
+		$model = $this->getModel();
+
 		$parameters = [
 			'cssDir'	=> CSS_DIR,
 			'jsDir'		=> JS_DIR,
 			'imgDir'	=> IMG_DIR,
 			'catDir'	=> CAT_DIR,
-			'style'		=> $this->Category->getStyles(),
+			'style'		=> $model->getStyles(),
 			'user'		=> $this->getSunlightUser($_SESSION[SESSION_PREFIX.'user']),
 			'meeting'	=> $this->getPlaceAndYear($_SESSION['meetingID']),
 			'menu'		=> $this->generateMenu(),
 			'error'		=> printError($this->error),
 			'todo'		=> $this->todo,
 			'cms'		=> $this->cms,
-			'render'	=> $this->Category->getData(),
+			'render'	=> $model->getData(),
 			'mid'		=> $this->meetingId,
 			'page'		=> $this->page,
 			'heading'	=> $this->heading,
@@ -221,4 +211,5 @@ class CategoryPresenter extends BasePresenter
 
 		$this->latte->render(__DIR__ . '/../templates/' . $this->templateDir.'/'.$this->template . '.latte', $parameters);
 	}
+
 }
