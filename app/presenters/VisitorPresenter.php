@@ -42,12 +42,6 @@ class VisitorPresenter extends BasePresenter
 	private $Meal;
 
 	/**
-	 * Category class
-	 * @var Category
-	 */
-	private $Category;
-
-	/**
 	 * Recipients
 	 * @var recipients
 	 */
@@ -69,13 +63,13 @@ class VisitorPresenter extends BasePresenter
 		$this->page = 'visitor';
 
 		$this->container = $container;
+		$this->database = $database;
 		$this->router = $this->container->parameters['router'];
 		$this->setModel($this->container->getService('visitor'));
 		$this->setEmailer($this->container->getService('emailer'));
 		$this->Export = $this->container->getService('exports');
 		$this->Meeting = $this->container->getService('meeting');
 		$this->Meal = $this->container->getService('meal');
-		$this->Category = $this->container->getService('category');
 		$this->setBlock($this->container->getService('block'));
 		$this->latte = $this->container->getService('latte');
 
@@ -471,7 +465,7 @@ class VisitorPresenter extends BasePresenter
 			'imgDir'			=> IMG_DIR,
 			'visitDir'			=> VISIT_DIR,
 			'expDir'			=> EXP_DIR,
-			'style'				=> $this->Category->getStyles(),
+			'style'				=> $this->getStyles(),
 			'user'				=> $this->getSunlightUser($_SESSION[SESSION_PREFIX.'user']),
 			'meeting'			=> $this->getPlaceAndYear($_SESSION['meetingID']),
 			'menu'				=> $this->generateMenu(),

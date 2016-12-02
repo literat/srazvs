@@ -392,7 +392,7 @@ class BlockPresenter extends BasePresenter
 
 		if($this->cms != 'annotation') {
 			$parameters = array_merge($parameters, [
-				'style'		=> $this->Category->getStyles(),
+				'style'		=> $this->getStyles(),
 				'user'		=> $this->getSunlightUser($_SESSION[SESSION_PREFIX.'user']),
 				'meeting'	=> $this->getPlaceAndYear($_SESSION['meetingID']),
 				'menu'		=> $this->generateMenu(),

@@ -42,12 +42,6 @@ class MeetingPresenter extends BasePresenter
 	 */
 	private $Container;
 
-	/**
-	 * Category model
-	 * @var Category
-	 */
-	private $Category;
-
 	private $Meeting;
 
 	/**
@@ -59,7 +53,6 @@ class MeetingPresenter extends BasePresenter
 		$this->container = $container;
 		$this->router = $this->container->parameters['router'];
 		$this->Meeting = $this->container->createServiceMeeting();
-		$this->Category = $this->container->createServiceCategory();
 		$this->latte = $this->container->getService('latte');
 
 		if($this->meetingId = $this->requested('mid', '')){
@@ -208,7 +201,7 @@ class MeetingPresenter extends BasePresenter
 			'cssDir'			=> CSS_DIR,
 			'jsDir'				=> JS_DIR,
 			'imgDir'			=> IMG_DIR,
-			'style'				=> $this->Category->getStyles(),
+			'style'				=> $this->getStyles(),
 			'user'				=> $this->getSunlightUser($_SESSION[SESSION_PREFIX.'user']),
 			'meeting'			=> $this->getPlaceAndYear($_SESSION['meetingID']),
 			'menu'				=> $this->generateMenu(),
