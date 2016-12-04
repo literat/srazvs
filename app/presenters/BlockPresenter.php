@@ -4,6 +4,9 @@ namespace App\Presenters;
 
 use Nette\Database\Context;
 use Nette\DI\Container;
+use App\Emailer;
+use App\MeetingModel;
+use App\CategoryModel;
 
 /**
  * Block controller
@@ -15,6 +18,9 @@ use Nette\DI\Container;
  */
 class BlockPresenter extends BasePresenter
 {
+
+	const PAGE = '/srazvs/block';
+
 	/**
 	 * This template variable will hold the 'this->View' portion of our MVC for this
 	 * controller
@@ -33,10 +39,10 @@ class BlockPresenter extends BasePresenter
 	 */
 	protected $meetingId = 0;
 
-	private $Block;
-	private $Emailer;
-	private $Meeting;
-	private $Category;
+	private $block;
+	private $emailer;
+	private $meeting;
+	private $category;
 
 	/** @var string template directory */
 	protected $templateDir = 'blocks';
@@ -49,14 +55,14 @@ class BlockPresenter extends BasePresenter
 	public function __construct(Context $database, Container $container)
 	{
 		$this->database = $database;
-		$this->container = $container;
-		$this->router = $this->container->parameters['router'];
+		$this->setContainer($container);
+		$this->setRouter($this->container->parameters['router']);
 		$this->debugMode = $this->container->parameters['debugMode'];
-		$this->Block = $this->container->createServiceBlock();
-		$this->Emailer = $this->container->createServiceEmailer();
-		$this->Meeting = $this->container->createServiceMeeting();
-		$this->Category = $this->container->createServiceCategory();
-		$this->latte = $this->container->getService('latte');
+		$this->setModel($this->container->getService('block'));
+		$this->setEmailer($this->container->getService('emailer'));
+		$this->setMeeting($this->container->getService('meeting'));
+		$this->setCategory($this->container->getService('category'));
+		$this->setLatte($this->container->getService('latte'));
 
 		if($this->meetingId = $this->requested('mid', '')){
 			$_SESSION['meetingID'] = $this->meetingId;
@@ -64,15 +70,15 @@ class BlockPresenter extends BasePresenter
 			$this->meetingId = $_SESSION['meetingID'];
 		}
 
-		$this->Block->setMeetingId($this->meetingId);
-		$this->Meeting->setMeetingId($this->meetingId);
-		$this->Meeting->setHttpEncoding($this->container->parameters['encoding']);
+		$this->getModel()->setMeetingId($this->meetingId);
+		$this->getMeeting()->setMeetingId($this->meetingId);
+		$this->getMeeting()->setHttpEncoding($this->container->parameters['encoding']);
 
 		if($this->debugMode){
-			$this->Meeting->setRegistrationHandlers(1);
+			$this->getMeeting()->setRegistrationHandlers(1);
 			$this->meetingId = 1;
 		} else {
-			$this->Meeting->setRegistrationHandlers();
+			$this->getMeeting()->setRegistrationHandlers();
 		}
 	}
 
@@ -93,23 +99,23 @@ class BlockPresenter extends BasePresenter
 
 		switch($action) {
 			case "delete":
-				$this->delete($id);
+				$this->actionDelete($id);
 				$this->render();
 				break;
 			case "new":
-				$this->__new();
+				$this->actionNew();
 				$this->render();
 				break;
 			case "create":
-				$this->create();
+				$this->actionCreate();
 				$this->render();
 				break;
 			case "edit":
-				$this->edit($id);
+				$this->actionEdit($id);
 				$this->render();
 				break;
 			case "modify":
-				$this->update($id);
+				$this->actionUpdate($id);
 				$this->render();
 				break;
 			case "mail":
@@ -132,14 +138,14 @@ class BlockPresenter extends BasePresenter
 	 *
 	 * @return void
 	 */
-	private function __new()
+	private function actionNew()
 	{
 		$this->template = 'form';
 
 		$this->heading = "nový blok";
 		$this->todo = "create";
 
-		foreach($this->Block->formNames as $key) {
+		foreach($this->getModel()->formNames as $key) {
 				if($key == 'start_hour') $value = date("H");
 				elseif($key == 'end_hour') $value = date("H")+1;
 				elseif($key == 'start_minute') $value = date("i");
@@ -155,11 +161,11 @@ class BlockPresenter extends BasePresenter
 	 * Create new item in DB
 	 * @return void
 	 */
-	private function create()
+	private function actionCreate()
 	{
-		$postData = $this->router->getPost();
+		$postData = $this->getRouter()->getPost();
 
-		foreach($this->Block->formNames as $key) {
+		foreach($this->getModel()->formNames as $key) {
 				if(array_key_exists($key, $postData) && !is_null($postData[$key])) {
 					$$key = $postData[$key];
 				}
@@ -175,7 +181,7 @@ class BlockPresenter extends BasePresenter
 		//TODO: dodelat osetreni chyb
 		if($from > $to) new Exception('From greater than to!');
 		else {
-			foreach($this->Block->dbColumns as $key) {
+			foreach($this->getModel()->dbColumns as $key) {
 				$db_data[$key] = $$key;
 			}
 			$from = date("H:i:s",mktime($start_hour,$start_minute,0,0,0,0));
@@ -186,7 +192,7 @@ class BlockPresenter extends BasePresenter
 			$db_data['meeting'] = $this->meetingId;
 		}
 
-		if($this->Block->create($db_data)){
+		if($this->getModel()->create($db_data)){
 			redirect(PRJ_DIR.$this->page."?error=ok");
 		}
 	}
@@ -197,7 +203,7 @@ class BlockPresenter extends BasePresenter
 	 * @param  int $id of Block
 	 * @return void
 	 */
-	private function edit($id)
+	private function actionEdit($id)
 	{
 		$this->template = 'form';
 
@@ -206,9 +212,9 @@ class BlockPresenter extends BasePresenter
 
 		$this->blockId = $id;
 
-		$dbData = $this->Block->getData($id);
+		$dbData = $this->getModel()->getData($id);
 
-		foreach($this->Block->formNames as $key) {
+		foreach($this->getModel()->formNames as $key) {
 			if($key == 'from' || $key == 'to') $value = $dbData[$key]->format('%H:%I:%S');
 			else $value = $dbData[$key];
 			$this->data[$key] = $this->requested($key, $value);
@@ -221,11 +227,11 @@ class BlockPresenter extends BasePresenter
 	 * @param  int 	$id 	of Block
 	 * @return void
 	 */
-	private function update($id)
+	private function actionUpdate($id)
 	{
-		$postData = $this->router->getPost();
+		$postData = $this->getRouter()->getPost();
 
-		foreach($this->Block->formNames as $key) {
+		foreach($this->getModel()->formNames as $key) {
 				if(array_key_exists($key, $postData) && !is_null($postData[$key])) {
 					$$key = $postData[$key];
 				}
@@ -241,7 +247,7 @@ class BlockPresenter extends BasePresenter
 		//TODO: dodelat osetreni chyb
 		if($from > $to) echo "chyba";
 		else {
-			foreach($this->Block->dbColumns as $key) {
+			foreach($this->getModel()->dbColumns as $key) {
 				$DB_data[$key] = $$key;
 			}
 
@@ -252,7 +258,7 @@ class BlockPresenter extends BasePresenter
 			$DB_data['program'] = $this->requested('program');
 		}
 
-		$this->Block->update($id, $DB_data);
+		$this->getModel()->update($id, $DB_data);
 
 		if($this->page == 'annotation') {
 			$queryString = '/' . $DB_data['guid'] . '?error=ok';
@@ -260,7 +266,7 @@ class BlockPresenter extends BasePresenter
 			$queryString = "?error=ok";
 		}
 
-		redirect(PRJ_DIR . 'block/' . $this->page . $queryString);
+		redirect(self::PAGE . '/' . $this->page . $queryString);
 	}
 
 	/**
@@ -269,10 +275,10 @@ class BlockPresenter extends BasePresenter
 	 * @param  int $id of Block
 	 * @return void
 	 */
-	private function delete($id)
+	private function actionDelete($id)
 	{
-		if($this->Block->delete($id)) {
-			  	redirect("?block&error=del");
+		if($this->getModel()->delete($id)) {
+				redirect(self::PAGE . "?error=del");
 		}
 	}
 
@@ -283,13 +289,13 @@ class BlockPresenter extends BasePresenter
 	 */
 	private function mailRender($id)
 	{
-		$tutors = $this->Block->getTutor($id);
+		$tutors = $this->getModel()->getTutor($id);
 		$recipients = $this->parseTutorEmail($tutors);
 
-		if($this->Emailer->tutor($recipients, $tutors->guid, 'block')) {
-			redirect('/srazvs/block?error=mail_send');
+		if($this->getEmailer()->tutor($recipients, $tutors->guid, 'block')) {
+			redirect(self::PAGE . '?error=mail_send');
 		} else {
-			redirect('block?id=' . $id . '&error=email&cms=edit');
+			redirect(self::PAGE . '/edit/' . $id . '?error=email');
 		}
 	}
 
@@ -306,9 +312,9 @@ class BlockPresenter extends BasePresenter
 		$this->heading = "úprava bloku";
 		$this->todo = "modify";
 
-		$data = $this->Block->annotation($guid);
+		$data = $this->getModel()->annotation($guid);
 
-		$this->Meeting->setRegistrationHandlers();
+		$this->getMeeting()->setRegistrationHandlers();
 
 		$this->blockId = $data['id'];
 
@@ -322,6 +328,7 @@ class BlockPresenter extends BasePresenter
 			'cssDir'	=> CSS_DIR,
 			'jsDir'		=> JS_DIR,
 			'imgDir'	=> IMG_DIR,
+			'blockDir'	=> BLOCK_DIR,
 			'wwwDir'	=> HTTP_DIR,
 			'error'		=> printError($this->error),
 			'todo'		=> $this->todo,
@@ -332,7 +339,7 @@ class BlockPresenter extends BasePresenter
 			'page'		=> $this->page,
 			'heading'	=> $this->heading,
 			'page_title'=> 'Registrace programů pro lektory',
-			'meeting_heading'	=> $this->Meeting->getRegHeading(),
+			'meeting_heading'	=> $this->getMeeting()->getRegHeading(),
 			'error_name'		=> printError($error_name),
 			'error_description'	=> printError($error_description),
 			'error_tutor'		=> printError($error_tutor),
@@ -340,7 +347,7 @@ class BlockPresenter extends BasePresenter
 			'error_material'	=> printError($error_material),
 		];
 
-		$this->latte->render(__DIR__ . '/../templates/' . $this->templateDir.'/'.$this->template . '.latte', $parameters);
+		$this->getLatte()->render(__DIR__ . '/../templates/' . $this->templateDir.'/'.$this->template . '.latte', $parameters);
 	}
 
 	/**
@@ -363,7 +370,7 @@ class BlockPresenter extends BasePresenter
 			$minutes_array = array (00 => "00", 05 => "05", 10 => "10",15 => "15", 20 => "20",25 => "25", 30 => "30",35 => "35", 40 => "40", 45 => "45", 50 => "50", 55 => "55");
 
 			// category select box
-			$cat_roll = $this->Category->renderHtmlSelect($this->data['category'], $this->database);
+			$cat_roll = $this->getCategory()->renderHtmlSelect($this->data['category'], $this->database);
 			// time select boxes
 			$day_roll = $this->renderHtmlSelectBox('day', array('pátek'=>'pátek', 'sobota'=>'sobota', 'neděle'=>'neděle'), $this->data['day'], 'width:172px;');
 			$hour_roll = $this->renderHtmlSelectBox('start_hour', $hours_array, $this->data['start_hour']);
@@ -380,11 +387,12 @@ class BlockPresenter extends BasePresenter
 			'cssDir'	=> CSS_DIR,
 			'jsDir'		=> JS_DIR,
 			'imgDir'	=> IMG_DIR,
+			'blockDir'	=> BLOCK_DIR,
 			'wwwDir'	=> HTTP_DIR,
 			'error'		=> printError($this->error),
 			'todo'		=> $this->todo,
 			'cms'		=> $this->cms,
-			'render'	=> $this->Block->getData(),
+			'render'	=> $this->getModel()->getData(),
 			'mid'		=> $this->meetingId,
 			'page'		=> $this->page,
 			'heading'	=> $this->heading,
@@ -417,7 +425,7 @@ class BlockPresenter extends BasePresenter
 				'program_checkbox'	=> $program_checkbox,
 				'display_progs_checkbox'	=> $display_progs_checkbox,
 				'formkey'			=> ((int)$this->blockId.$this->meetingId) * 116 + 39147,
-				'meeting_heading'	=> $this->Meeting->getRegHeading(),
+				'meeting_heading'	=> $this->getMeeting()->getRegHeading(),
 				'block'				=> $this->itemId,
 				'error_material'	=> printError($error_material),
 				'type'				=> isset($this->data['type']) ? $this->data['type'] : NULL,
@@ -425,7 +433,61 @@ class BlockPresenter extends BasePresenter
 			]);
 		}
 
-		$this->latte->render(__DIR__ . '/../templates/' . $this->templateDir.'/'.$this->template . '.latte', $parameters);
+		$this->getLatte()->render(__DIR__ . '/../templates/' . $this->templateDir.'/'.$this->template . '.latte', $parameters);
+	}
+
+	/**
+	 * @return Emailer
+	 */
+	protected function getEmailer()
+	{
+		return $this->emailer;
+	}
+
+	/**
+	 * @param  Emailer $emailer
+	 * @return $this
+	 */
+	protected function setEmailer(Emailer $emailer)
+	{
+		$this->emailer = $emailer;
+		return $this;
+	}
+
+	/**
+	 * @return Meeting
+	 */
+	protected function getMeeting()
+	{
+		return $this->meeting;
+	}
+
+	/**
+	 * @param  MeetingModel $meeting
+	 * @return $this
+	 */
+	protected function setMeeting(MeetingModel $meeting)
+	{
+		$this->meeting = $meeting;
+		return $this;
+	}
+
+	/**
+	 * @return Category
+	 */
+	protected function getCategory()
+	{
+		return $this->category;
+	}
+
+	/**
+	 * @param  CategoryModel $Category
+	 * @return $this
+	 */
+	protected function setCategory(CategoryModel $category)
+	{
+		$this->category = $category;
+		return $this;
 	}
 
 	/**

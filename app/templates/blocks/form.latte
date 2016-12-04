@@ -5,7 +5,7 @@
 {$error}
 <div class='pageRibbon'>{$heading}</div>
 
-<form action='/srazvs/block' method='post'>
+<form action='{$blockDir}/{$todo}' method='post'>
 
 <div class='button-line'>
 	<button type='submit' onclick=\"this.form.submit()\">
@@ -13,9 +13,9 @@
 	<button type='button' onclick="window.location.replace({$page})">
 		<img src='{$imgDir}icons/storno.png'  /> Storno</button>
  {if $cms == "edit"}
-	<button type='button' onclick="window.location.replace('/srazvs/block/mail/' + {$id})">
+	<button type='button' onclick="window.location.replace('{$blockDir}/mail/' + {$id})">
 		<img src='{$imgDir}icons/mail.png'  /> Odeslat lektorovi</button>
-  <a class='link' tarkget='_blank' href='/srazvs/block/annotation/{$data['guid']}'>
+  <a class='link' tarkget='_blank' href='{$blockDir}/annotation/{$data['guid']}'>
       <img src='{$imgDir}icons/search.png' />Náhled anotace
   </a>
  {/if}
@@ -68,7 +68,6 @@
  </tr>
 </table>
 
- <input type='hidden' name='cms' value='{$todo}'>
  <input type='hidden' name='page' value='{$page}'>
  <input type='hidden' name='id' value='{$id}'>
  <input type='hidden' name='guid' value='{$data['guid']}'>

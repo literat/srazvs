@@ -12,6 +12,7 @@ class CategoryPresenter extends BasePresenter
 {
 
 	const PATH = '/srazvs/category';
+
 	/**
 	 * template
 	 * @var string

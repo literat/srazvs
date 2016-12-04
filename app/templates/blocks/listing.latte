@@ -5,7 +5,7 @@
 		{$error|noescape}
 		<div class='pageRibbon'>seznam bloků</div>
 		<div class='link'>
-			<a class='link' href='?cms=new&page=block'>
+			<a class='link' href='{$blockDir}/new?page=block'>
 		    	<img src='{$imgDir}icons/new.png' />NOVÝ BLOK
 			</a>
 		</div>
@@ -66,12 +66,12 @@
 					{foreach $render as $row}
 				<tr class='radek1'>
 					<td>
-						<a href='?id={$row['id']}&cms=edit&page=block' title='Upravit'>
+						<a href='{$blockDir}/edit/{$row['id']}?page=block' title='Upravit'>
 							<img class='edit' src='{$imgDir}icons/edit.gif' />
 						</a>
 					</td>
 					<td>
-						<a href="javascript:confirmation('?id={$row['id']}&amp;cms=delete', 'blok: {$row['name']} {$row['from']} -> Opravdu SMAZAT tento blok? Jste si jisti?')" title='Odstranit'>
+						<a href="javascript:confirmation('{$blockDir}/delete/{$row['id']}', 'blok: {$row['name']} {$row['from']} -> Opravdu SMAZAT tento blok? Jste si jisti?')" title='Odstranit'>
 							<img class='edit' src='{$imgDir}icons/delete.gif' />
 						</a>
 					</td>
