@@ -4,6 +4,11 @@ namespace App\Presenters;
 
 use Nette\Database\Context;
 use Nette\DI\Container;
+use App\Emailer;
+use App\MeetingModel;
+use App\CategoryModel;
+use App\BlockModel;
+use App\ExportModel;
 
 /**
  * Program controller
@@ -15,6 +20,8 @@ use Nette\DI\Container;
  */
 class ProgramPresenter extends BasePresenter
 {
+
+	const PAGE = '/srazvs/program';
 	/**
 	 * This template variable will hold the 'this->View' portion of our MVC for this
 	 * controller
@@ -40,34 +47,28 @@ class ProgramPresenter extends BasePresenter
 	protected $meetingId = 0;
 
 	/**
-	 * Program model
-	 * @var ProgramModel
-	 */
-	private $Program;
-
-	/**
 	 * Emailer class
 	 * @var Emailer
 	 */
-	private $Emailer;
+	private $emailer;
 
 	/**
 	 * Export class
 	 * @var Export
 	 */
-	private $Export;
+	private $export;
 
 	/**
 	 * Category class
 	 * @var Category
 	 */
-	private $Category;
+	private $category;
 
 	/**
 	 * Meeting class
 	 * @var Meeting
 	 */
-	private $Meeting;
+	private $meeting;
 
 	private $block;
 	private $action;
@@ -78,16 +79,16 @@ class ProgramPresenter extends BasePresenter
 	public function __construct(Context $database, Container $container)
 	{
 		$this->database = $database;
-		$this->container = $container;
+		$this->setContainer($container);
 		$this->debugMode = $this->container->parameters['debugMode'];
-		$this->router = $this->container->parameters['router'];
-		$this->Program = $this->container->createServiceProgram();
-		$this->block = $this->container->createServiceBlock();
-		$this->Emailer = $this->container->createServiceEmailer();
-		$this->Export = $this->container->createServiceExports();
-		$this->Meeting = $this->container->createServiceMeeting();
-		$this->Category = $this->container->createServiceCategory();
-		$this->latte = $this->container->getService('latte');
+		$this->setRouter($this->container->parameters['router']);
+		$this->setModel($this->container->getService('program'));
+		$this->setBlock($this->container->getService('block'));
+		$this->setEmailer($this->container->getService('emailer'));
+		$this->setExport($this->container->getService('exports'));
+		$this->setMeeting($this->container->getService('meeting'));
+		$this->setCategory($this->container->getService('category'));
+		$this->setLatte($this->container->getService('latte'));
 
 		if($this->meetingId = $this->requested('mid', '')){
 			$_SESSION['meetingID'] = $this->meetingId;
@@ -95,16 +96,106 @@ class ProgramPresenter extends BasePresenter
 			$this->meetingId = $_SESSION['meetingID'];
 		}
 
-		$this->Program->setMeetingId($this->meetingId);
-		$this->Meeting->setMeetingId($this->meetingId);
-		$this->Meeting->setHttpEncoding($this->container->parameters['encoding']);
+		$this->getModel()->setMeetingId($this->meetingId);
+		$this->getMeeting()->setMeetingId($this->meetingId);
+		$this->getMeeting()->setHttpEncoding($this->container->parameters['encoding']);
 
 		if($this->debugMode){
-			$this->Meeting->setRegistrationHandlers(1);
+			$this->getMeeting()->setRegistrationHandlers(1);
 			$this->meetingId = 1;
 		} else {
-			$this->Meeting->setRegistrationHandlers();
+			$this->getMeeting()->setRegistrationHandlers();
 		}
+	}
+
+	/**
+	 * @return Emailer
+	 */
+	protected function getEmailer()
+	{
+		return $this->emailer;
+	}
+
+	/**
+	 * @param  Emailer $emailer
+	 * @return $this
+	 */
+	protected function setEmailer(Emailer $emailer)
+	{
+		$this->emailer = $emailer;
+		return $this;
+	}
+
+	/**
+	 * @return Meeting
+	 */
+	protected function getMeeting()
+	{
+		return $this->meeting;
+	}
+
+	/**
+	 * @param  MeetingModel $meeting
+	 * @return $this
+	 */
+	protected function setMeeting(MeetingModel $meeting)
+	{
+		$this->meeting = $meeting;
+		return $this;
+	}
+
+	/**
+	 * @return Category
+	 */
+	protected function getCategory()
+	{
+		return $this->category;
+	}
+
+	/**
+	 * @param  CategoryModel $Category
+	 * @return $this
+	 */
+	protected function setCategory(CategoryModel $category)
+	{
+		$this->category = $category;
+		return $this;
+	}
+
+	/**
+	 * @return Block
+	 */
+	protected function getBlock()
+	{
+		return $this->block;
+	}
+
+	/**
+	 * @param  BlockModel $block
+	 * @return $this
+	 */
+	protected function setBlock(BlockModel $block)
+	{
+		$this->block = $block;
+		return $this;
+	}
+
+	/**
+	 * @return Export
+	 */
+	protected function getExport()
+	{
+		return $this->export;
+	}
+
+	/**
+	 * @param  ExportModel $export
+	 * @return $this
+	 */
+	protected function setExport(ExportModel $export)
+	{
+		$this->export = $export;
+		return $this;
 	}
 
 	/**
@@ -124,23 +215,23 @@ class ProgramPresenter extends BasePresenter
 
 		switch($this->action) {
 			case "delete":
-				$this->delete($id);
+				$this->actionDelete($id);
 				$this->render();
 				break;
 			case "new":
-				$this->__new();
+				$this->actionNew();
 				$this->render();
 				break;
 			case "create":
-				$this->create();
+				$this->actionCreate();
 				$this->render();
 				break;
 			case "edit":
-				$this->edit($id);
+				$this->actionEdit($id);
 				$this->render();
 				break;
 			case "modify":
-				$this->update($id);
+				$this->actionUpdate($id);
 				$this->render();
 				break;
 			case "mail":
@@ -167,14 +258,14 @@ class ProgramPresenter extends BasePresenter
 	 *
 	 * @return void
 	 */
-	private function __new()
+	private function actionNew()
 	{
 		$this->template = 'form';
 
 		$this->heading = "nový program";
 		$this->todo = "create";
 
-		foreach($this->Program->formNames as $key) {
+		foreach($this->getModel()->formNames as $key) {
 				if($key == 'display_in_reg') $value = '1';
 				if($key == 'capacity') $value = '0';
 				else $value = "";
@@ -187,11 +278,11 @@ class ProgramPresenter extends BasePresenter
 	 *
 	 * @return void
 	 */
-	private function create()
+	private function actionCreate()
 	{
 		$postData = $this->router->getPost();
 
-		foreach($this->Program->formNames as $key) {
+		foreach($this->getModel()->formNames as $key) {
 				if(array_key_exists($key, $postData) && !is_null($postData[$key])) {
 					$$key = $postData[$key];
 				}
@@ -200,12 +291,12 @@ class ProgramPresenter extends BasePresenter
 				else $$key = '';
 		}
 
-		foreach($this->Program->dbColumns as $key) {
+		foreach($this->getModel()->dbColumns as $key) {
 			$DB_data[$key] = $$key;
 		}
 
-		if($this->Program->create($DB_data)){
-			redirect(PRJ_DIR.$this->page."?error=ok");
+		if($this->getModel()->create($DB_data)){
+			redirect(PRJ_DIR . $this->page."?error=ok");
 		}
 	}
 
@@ -216,11 +307,11 @@ class ProgramPresenter extends BasePresenter
 	 * @param  int 	$id 	of item
 	 * @return void
 	 */
-	private function update($id = NULL)
+	private function actionUpdate($id = NULL)
 	{
 		$postData = $this->router->getPost();
 
-		foreach($this->Program->formNames as $key) {
+		foreach($this->getModel()->formNames as $key) {
 				if(array_key_exists($key, $postData) && !is_null($postData[$key])) {
 					$$key = $postData[$key];
 				}
@@ -228,19 +319,20 @@ class ProgramPresenter extends BasePresenter
 				else $$key = '';
 		}
 
-		foreach($this->Program->dbColumns as $key) {
+		foreach($this->getModel()->dbColumns as $key) {
 			$DB_data[$key] = $$key;
 		}
 
-		$this->Program->update($id, $DB_data);
+		$this->getModel()->update($id, $DB_data);
 
 		if($this->page == 'annotation') {
 			$queryString = '/' . $DB_data['guid'] . '?error=ok';
 		} else {
 			$queryString = "?error=ok";
+			$this->poge = '';
 		}
 
-		redirect(PRJ_DIR . 'program/' . $this->page . $queryString);
+		redirect(self::PAGE . '/' . $this->page . $queryString);
 	}
 
 	/**
@@ -249,7 +341,7 @@ class ProgramPresenter extends BasePresenter
 	 * @param  int $id of item
 	 * @return void
 	 */
-	private function edit($id)
+	private function actionEdit($id)
 	{
 		$this->template = 'form';
 
@@ -258,9 +350,9 @@ class ProgramPresenter extends BasePresenter
 
 		$this->programId = $id;
 
-		$dbData = $this->Program->getData($id);
+		$dbData = $this->getModel()->getData($id);
 
-		foreach($this->Program->formNames as $key) {
+		foreach($this->getModel()->formNames as $key) {
 			$this->data[$key] = $this->requested($key, $dbData[$key]);
 		}
 	}
@@ -271,10 +363,10 @@ class ProgramPresenter extends BasePresenter
 	 * @param  int $id of item
 	 * @return void
 	 */
-	private function delete($id)
+	private function actionDelete($id)
 	{
-		if($this->Program->delete($id)) {
-			  	redirect("?program&error=del");
+		if($this->getModel()->delete($id)) {
+				redirect(self::PAGE . "?error=del");
 		}
 	}
 
@@ -285,13 +377,13 @@ class ProgramPresenter extends BasePresenter
 	 */
 	private function mailRender($id)
 	{
-		$tutors = $this->Program->getTutor($id);
+		$tutors = $this->getModel()->getTutor($id);
 		$recipients = $this->parseTutorEmail($tutors);
 
-		if($this->Emailer->tutor($recipients, $tutors->guid, 'program')) {
-			redirect('/srazvs/program?error=mail_send');
+		if($this->getEmailer()->tutor($recipients, $tutors->guid, 'program')) {
+			redirect(self::PAGE . '?error=mail_send');
 		} else {
-			redirect('program?id=' . $id . '&error=email&cms=edit');
+			redirect(self::PAGE . '/edit/' . $id . '?error=email');
 		}
 	}
 
@@ -318,9 +410,9 @@ class ProgramPresenter extends BasePresenter
 		$this->heading = "úprava programu";
 		$this->todo = "modify";
 
-		$data = $this->Program->annotation($guid);
+		$data = $this->getModel()->annotation($guid);
 
-		$this->Meeting->setRegistrationHandlers();
+		$this->getMeeting()->setRegistrationHandlers();
 
 		$this->programId = $data->id;
 
@@ -344,7 +436,7 @@ class ProgramPresenter extends BasePresenter
 			'page'		=> $this->page,
 			'heading'	=> $this->heading,
 			'page_title'=> 'Registrace programů pro lektory',
-			'meeting_heading'	=> $this->Meeting->getRegHeading(),
+			'meeting_heading'	=> $this->getMeeting()->getRegHeading(),
 			'error_name'		=> printError($error_name),
 			'error_description'	=> printError($error_description),
 			'error_tutor'		=> printError($error_tutor),
@@ -371,9 +463,9 @@ class ProgramPresenter extends BasePresenter
 			$error_material = "";
 
 			// category select box
-			$cat_roll = $this->Category->renderHtmlSelect($this->data['category']);
+			$cat_roll = $this->getCategory()->renderHtmlSelect($this->data['category']);
 			// blocks select box
-			$block_select = $this->block->renderHtmlSelect($this->data['block']);
+			$block_select = $this->getBlock()->renderHtmlSelect($this->data['block']);
 			// display in registration check box
 			$display_in_reg_checkbox = $this->renderHtmlCheckBox('display_in_reg', 0, $this->data['display_in_reg']);
 			// time select boxes
@@ -385,10 +477,11 @@ class ProgramPresenter extends BasePresenter
 			'imgDir'	=> IMG_DIR,
 			'wwwDir'	=> HTTP_DIR,
 			'expDir'	=> EXP_DIR,
+			'progDir'	=> PROG_DIR,
 			'error'		=> printError($this->error),
 			'todo'		=> $this->todo,
 			'cms'		=> $this->cms,
-			'render'	=> $this->Program->getData(),
+			'render'	=> $this->getModel()->getData(),
 			'mid'		=> $this->meetingId,
 			'page'		=> $this->page,
 			'heading'	=> $this->heading,
@@ -414,10 +507,10 @@ class ProgramPresenter extends BasePresenter
 				'error_material'	=> printError($error_material),
 				'cat_roll'			=> $cat_roll,
 				'block_select'		=> $block_select,
-				'program_visitors'	=> $this->Program->getProgramVisitors($this->programId),
+				'program_visitors'	=> $this->getModel()->getProgramVisitors($this->programId),
 				'display_in_reg_checkbox'	=> $display_in_reg_checkbox,
 				'formkey'			=> ((int)$this->programId.$this->meetingId) * 116 + 39147,
-				'meeting_heading'	=> $this->Meeting->getRegHeading(),
+				'meeting_heading'	=> $this->getMeeting()->getRegHeading(),
 				'block'				=> $this->itemId,
 				'page_title'		=> 'Registrace programů pro lektory',
 				'type'				=> isset($this->data['type']) ? $this->data['type'] : NULL,
@@ -426,23 +519,23 @@ class ProgramPresenter extends BasePresenter
 		}
 
 		if($this->action == 'public') {
-			$parameters['meeting_heading'] = $this->Meeting->getRegHeading();
+			$parameters['meeting_heading'] = $this->getMeeting()->getRegHeading();
 			////otevirani a uzavirani prihlasovani
-			if(($this->Meeting->getRegOpening() < time()) || $this->debugMode) {
+			if(($this->getMeeting()->getRegOpening() < time()) || $this->debugMode) {
 				$parameters['display_program'] = true;
 			} else {
 				$parameters['display_program'] = false;
 			}
-			$parameters['public_program'] = $this->Meeting->renderPublicProgramOverview();
+			$parameters['public_program'] = $this->getMeeting()->renderPublicProgramOverview();
 			$parameters['page_title'] = 'Srazy VS - veřejný program';
 			$parameters['style'] = 'table { border-collapse:separate; width:100%; }
 				td { .width:100%; text-align:center; padding:0px; }
 				td.day { border:1px solid black; background-color:#777777; width:80px; }
 				td.time { background-color:#cccccc; width:80px; }';
 		} elseif($this->cms == 'annotation') {
-			$parameters['meeting_heading'] = $this->Meeting->getRegHeading();
+			$parameters['meeting_heading'] = $this->getMeeting()->getRegHeading();
 			////otevirani a uzavirani prihlasovani
-			if(($this->Meeting->getRegOpening() < time()) || $this->debugMode) {
+			if(($this->getMeeting()->getRegOpening() < time()) || $this->debugMode) {
 				$parameters['display_program'] = true;
 			} else {
 				$parameters['display_program'] = false;

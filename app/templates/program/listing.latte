@@ -5,7 +5,7 @@
 		{$error|noescape}
 		<div class='pageRibbon'>seznam programů</div>
 		<div class='link'>
-			<a class='link' href='?cms=new&page=program'>
+			<a class='link' href='{$progDir}/new?page=program'>
 				<img src='{$imgDir}icons/new.png' />NOVÝ PROGRAM
 			</a>
 		</div>
@@ -68,17 +68,17 @@
 					{foreach $render as $row}
 				<tr class='radek1'>
 					<td>
-						<a href='?id={$row['id']}&cms=edit&page=program' title='Upravit'>
+						<a href='{$progDir}/edit/{$row['id']}?page=program' title='Upravit'>
 							<img class='edit' src='{$imgDir}icons/edit.gif' />
 						</a>
 					</td>
 					<td>
-						<a href='/srazvs/export/program-visitors?id={$row['id']}' title='Účastníci programu'>
+						<a href='/srazvs/export/program-visitors/{$row['id']}' title='Účastníci programu'>
 							<img class='edit' src='{$imgDir}icons/pdf.png' />
 						</a>
 					</td>
 					<td>
-						<a href="javascript:confirmation('?id={$row['id']}&amp;cms=delete', 'program: {$row['name']} -> Opravdu SMAZAT tento program? Jste si jisti?')" title='Odstranit'>
+						<a href="javascript:confirmation('{$progDir}/delete/{$row['id']}', 'program: {$row['name']} -> Opravdu SMAZAT tento program? Jste si jisti?')" title='Odstranit'>
 							<img class='edit' src='{$imgDir}icons/delete.gif' />
 						</a>
 					</td>
