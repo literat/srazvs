@@ -4,12 +4,17 @@ namespace App\Presenters;
 
 use Nette\Database\Context;
 use Nette\DI\Container;
+use App\Emailer;
+use App\SettingsModel;
 
 /**
  * This file handles the retrieval and serving of news articles
  */
 class SettingsPresenter extends BasePresenter
 {
+
+	const PAGE = '/srazvs/settings';
+
 	/**
 	 * template
 	 * @var string
@@ -35,16 +40,10 @@ class SettingsPresenter extends BasePresenter
 	protected $page = 'settings';
 
 	/**
-	 * Category model
-	 * @var Category
-	 */
-	private $Settings;
-
-	/**
 	 * Emailer model
 	 * @var Emailer
 	 */
-	private $Emailer;
+	private $emailer;
 
 	/**
 	 * Prepare initial values
@@ -52,17 +51,35 @@ class SettingsPresenter extends BasePresenter
 	public function __construct(Context $database, Container $container)
 	{
 		$this->database = $database;
-		$this->container = $container;
-		$this->router = $this->container->parameters['router'];
-		$this->Settings = $this->container->createServiceSettings();
-		$this->Emailer = $this->container->createServiceEmailer();
-		$this->latte = $this->container->getService('latte');
+		$this->setContainer($container);
+		$this->setRouter($this->container->parameters['router']);
+		$this->setModel($this->container->getService('settings'));
+		$this->setEmailer($this->container->getService('emailer'));
+		$this->setLatte($this->container->getService('latte'));
 
 		if($this->meetingId = $this->requested('mid', '')){
 			$_SESSION['meetingID'] = $this->meetingId;
 		} else {
 			$this->meetingId = $_SESSION['meetingID'];
 		}
+	}
+
+	/**
+	 * @return Emailer
+	 */
+	protected function getEmailer()
+	{
+		return $this->emailer;
+	}
+
+	/**
+	 * @param  Emailer $emailer
+	 * @return $this
+	 */
+	protected function setEmailer(Emailer $emailer)
+	{
+		$this->emailer = $emailer;
+		return $this;
 	}
 
 	/**
@@ -80,14 +97,16 @@ class SettingsPresenter extends BasePresenter
 
 		######################### DELETE CATEGORY #########################
 
-		switch($this->cms) {
+		$action = $this->getRouter()->getParameter('action');
+
+		switch($action) {
 			case "update":
-				$this->update($this->requested('mail', ''));
+				$this->actionUpdate($this->requested('mail', ''));
 				break;
 			case "mail":
-				$this->mail($this->requested('mail', ''), $this->requested('test-mail', ''));
+				$this->actionMail($this->requested('mail', ''), $this->requested('test-mail', ''));
 			default:
-				$this->edit();
+				$this->actionEdit();
 		}
 
 		$this->render();
@@ -98,7 +117,7 @@ class SettingsPresenter extends BasePresenter
 	 * @param  int $id of item
 	 * @return void
 	 */
-	private function edit()
+	private function actionEdit()
 	{
 		$this->heading = "úprava kategorie";
 		$this->template = "form";
@@ -110,13 +129,16 @@ class SettingsPresenter extends BasePresenter
 	 * @param 	string 	$type 	type of mail
 	 * @return 	void
 	 */
-	private function update($type)
+	private function actionUpdate($type)
 	{
-		$error = $this->Settings->modifyMailJSON($type, $this->requested('subject', ''), $this->requested('message', ''));
-
-		if($error == 'ok') {
-			redirect("?page=".$this->page."&error=ok");
+		try {
+			$this->getModel()->modifyMailJSON($type, $this->requested('subject', ''), $this->requested('message', ''));
+		} catch(Exception $e) {
+			Debugger::log('Settings: mail type ' . $type . ' update failed!', Debugger::ERROR);
+			redirect(self::PAGE . "?error=fail");
 		}
+
+		redirect(self::PAGE . "?error=ok");
 	}
 
 	/**
@@ -126,13 +148,13 @@ class SettingsPresenter extends BasePresenter
 	 * @param 	string 	$test_mail 	e-mail address
 	 * @return 	void
 	 */
-	private function mail($type, $test_mail)
+	private function actionMail($type, $test_mail)
 	{
-		if($this->Emailer->sendMail(array($test_mail => ''),
-									$this->Settings->getMailJSON($type)->subject,
-									html_entity_decode($this->Settings->getMailJSON($type)->message))
+		if($this->getEmailer()->sendMail(array($test_mail => ''),
+									$this->getModel()->getMailJSON($type)->subject,
+									html_entity_decode($this->getModel()->getMailJSON($type)->message))
 		) {
-			redirect("?error=mail_send");
+			redirect(self::PAGE . "?error=mail_send");
 		}
 	}
 
@@ -142,6 +164,7 @@ class SettingsPresenter extends BasePresenter
 	 */
 	private function render()
 	{
+		$settings = $this->getModel();
 		$error = "";
 
 		$parameters = [
@@ -157,18 +180,18 @@ class SettingsPresenter extends BasePresenter
 			'mid'					=> $this->meetingId,
 			'page'					=> $this->page,
 			'heading'				=> $this->heading,
-			'payment_subject'		=> $this->Settings->getMailJSON('cost')->subject,
-			'payment_message'		=> $this->Settings->getMailJSON('cost')->message,
-			'payment_html_message'	=> html_entity_decode($this->Settings->getMailJSON('cost')->message),
-			'advance_subject'		=> $this->Settings->getMailJSON('advance')->subject,
-			'advance_message'		=> $this->Settings->getMailJSON('advance')->message,
-			'advance_html_message'	=> html_entity_decode($this->Settings->getMailJSON('advance')->message),
-			'tutor_subject'			=> $this->Settings->getMailJSON('tutor')->subject,
-			'tutor_message'			=> $this->Settings->getMailJSON('tutor')->message,
-			'tutor_html_message'	=> html_entity_decode($this->Settings->getMailJSON('tutor')->message),
-			'reg_subject'			=> $this->Settings->getMailJSON('post_reg')->subject,
-			'reg_message'			=> $this->Settings->getMailJSON('post_reg')->message,
-			'reg_html_message'		=> html_entity_decode($this->Settings->getMailJSON('post_reg')->message),
+			'payment_subject'		=> $settings->getMailJSON('cost')->subject,
+			'payment_message'		=> $settings->getMailJSON('cost')->message,
+			'payment_html_message'	=> html_entity_decode($settings->getMailJSON('cost')->message),
+			'advance_subject'		=> $settings->getMailJSON('advance')->subject,
+			'advance_message'		=> $settings->getMailJSON('advance')->message,
+			'advance_html_message'	=> html_entity_decode($settings->getMailJSON('advance')->message),
+			'tutor_subject'			=> $settings->getMailJSON('tutor')->subject,
+			'tutor_message'			=> $settings->getMailJSON('tutor')->message,
+			'tutor_html_message'	=> html_entity_decode($settings->getMailJSON('tutor')->message),
+			'reg_subject'			=> $settings->getMailJSON('post_reg')->subject,
+			'reg_message'			=> $settings->getMailJSON('post_reg')->message,
+			'reg_html_message'		=> html_entity_decode($settings->getMailJSON('post_reg')->message),
 		];
 
 		$this->latte->render(__DIR__ . '/../templates/' . $this->templateDir.'/'.$this->template . '.latte', $parameters);

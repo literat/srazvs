@@ -17,6 +17,9 @@ abstract class BaseModel
 	/** @var string */
 	protected $table = null;
 
+	/** @var array */
+	protected $columns = [];
+
 	/** @var Nette\Database\Context */
 	protected $database;
 
