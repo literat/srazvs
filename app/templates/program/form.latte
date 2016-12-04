@@ -10,7 +10,7 @@
 	<div class='button-line'>
 		<button type='submit' onclick=\"this.form.submit()\">
 			<img src='{$imgDir}icons/save.png' /> Uložit</button>
-		<button type='button' onclick="window.location.replace({$page})">
+		<button type='button' onclick="window.location.replace('/srazvs/' + {$page})">
 			<img src='{$imgDir}icons/storno.png'  /> Storno</button>
 	{if $cms == "edit"}
 		<button type='button' onclick="window.location.replace('/srazvs/program/mail/' + {$id})">
