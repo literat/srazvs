@@ -76,7 +76,6 @@ class RegistrationPresenter extends BasePresenter
 	private $disabled;
 	private $mealData;
 	private $user;
-	private $action;
 
 	/**
 	 * Prepare model classes and get meeting id

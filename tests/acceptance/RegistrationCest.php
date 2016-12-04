@@ -55,7 +55,7 @@ class RegistrationCest extends CestCase
 		$I->wantTo('ensure that registration works');
 		$I->amOnPage('srazvs/registration/');
 		$I->see('Registrace na srazy VS');
-		$I->see('Třebíč - podzim 2015');
+		$I->see('Třebíč - jaro 2010');
 	}
 
 	/**
@@ -101,11 +101,11 @@ class RegistrationCest extends CestCase
 		$I->fillField('name', 'Metro');
 		$I->click('Uložit', '#registration');
 		$this->successRegistrationUri = $I->grabFromCurrentUrl();
-		$I->seeCurrentUrlMatches($this->updatedRegistrationUrl);
-		//$I->see('Údaje byly úspěšně nahrány!');
-		//$I->see('Registrace na srazy K + K');
-		//$I->see('Metro');
-		//$I->dontSee('robo', '#name');
+		$I->seeCurrentUrlMatches($this->succeededRegistrationUrl);
+		$I->see('Údaje byly úspěšně nahrány!');
+		$I->see('Registrace na srazy K + K');
+		$I->see('Metro');
+		$I->dontSee('robo', '#name');
 	}
 
 	public function visitor_should_change_its_programs(AcceptanceTester $I)
@@ -118,10 +118,10 @@ class RegistrationCest extends CestCase
 		$I->dontSeeOptionIsSelected('blck_6', '1');
 		$I->selectOption('blck_6', '1');
 		$I->click('Uložit', '#registration');
-		$I->seeCurrentUrlMatches($this->updatedRegistrationUrl);
-		//$I->see('Údaje byly úspěšně nahrány!');
-		//$I->see('Registrace na srazy K + K');
-		//$I->see('- Hry a hříčky');
+		$I->seeCurrentUrlMatches($this->succeededRegistrationUrl);
+		$I->see('Údaje byly úspěšně nahrány!');
+		$I->see('Registrace na srazy K + K');
+		$I->see('- Hry a hříčky');
 	}
 
 }

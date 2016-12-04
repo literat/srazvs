@@ -29,6 +29,9 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 	/** @var Router */
 	protected $router;
 
+	/** @var string */
+	protected $action;
+
 	/**
 	 * Startup
 	 */
@@ -392,6 +395,24 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 	protected function setLatte($latte)
 	{
 		$this->latte = $latte;
+		return $this;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getAction($fullyQualified = false)
+	{
+		return $this->action;
+	}
+
+	/**
+	 * @param  string $action
+	 * @return $this
+	 */
+	public function setAction($action)
+	{
+		$this->action = $action;
 		return $this;
 	}
 

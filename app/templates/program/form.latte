@@ -12,7 +12,7 @@
 			<img src='{$imgDir}icons/save.png' /> Uložit</button>
 		<button type='button' onclick="window.location.replace('/srazvs/' + {$page})">
 			<img src='{$imgDir}icons/storno.png'  /> Storno</button>
-	{if $cms == "edit"}
+	{if $action == "edit"}
 		<button type='button' onclick="window.location.replace('/srazvs/program/mail/' + {$id})">
 			<img src='{$imgDir}icons/mail.png'  /> Odeslat lektorovi</button>
 		<a class='link' tarkget='_blank' href='/srazvs/program/annotation/{$data['guid']}'>

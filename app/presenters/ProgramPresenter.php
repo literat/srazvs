@@ -71,7 +71,6 @@ class ProgramPresenter extends BasePresenter
 	private $meeting;
 
 	private $block;
-	private $action;
 
 	/**
 	 * Prepare model classes and get meeting id
@@ -205,15 +204,14 @@ class ProgramPresenter extends BasePresenter
 	 */
 	public function init()
 	{
-		$action = $this->requested('action');
+		$parameters = $this->getRouter()->getParameters();
+		$this->setAction($parameters['action']);
 		$id = $this->requested('id', $this->programId);
 		$this->cms = $this->requested('cms', '');
 		$this->error = $this->requested('error', '');
 		$this->page = $this->requested('page', '');
 
-		$this->action = $this->cms ? $this->cms : $action;
-
-		switch($this->action) {
+		switch($parameters['action']) {
 			case "delete":
 				$this->actionDelete($id);
 				$this->render();
@@ -329,7 +327,7 @@ class ProgramPresenter extends BasePresenter
 			$queryString = '/' . $DB_data['guid'] . '?error=ok';
 		} else {
 			$queryString = "?error=ok";
-			$this->poge = '';
+			$this->page = '';
 		}
 
 		redirect(self::PAGE . '/' . $this->page . $queryString);
@@ -429,7 +427,7 @@ class ProgramPresenter extends BasePresenter
 			'wwwDir'	=> HTTP_DIR,
 			'error'		=> printError($this->error),
 			'todo'		=> $this->todo,
-			'cms'		=> $this->cms,
+			'action'	=> $this->getAction(),
 			'data'		=> $data,
 			'mid'		=> $this->meetingId,
 			'id'		=> $this->programId,
@@ -480,7 +478,7 @@ class ProgramPresenter extends BasePresenter
 			'progDir'	=> PROG_DIR,
 			'error'		=> printError($this->error),
 			'todo'		=> $this->todo,
-			'cms'		=> $this->cms,
+			'action'		=> $this->getAction(),
 			'render'	=> $this->getModel()->getData(),
 			'mid'		=> $this->meetingId,
 			'page'		=> $this->page,

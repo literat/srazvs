@@ -25,7 +25,6 @@ class ExportPresenter extends BasePresenter
 	private $excel;
 	private $filename;
 	private $parameters;
-	private $category;
 
 	public function __construct(Context $database, Container $container)
 	{
@@ -39,7 +38,6 @@ class ExportPresenter extends BasePresenter
 		$this->pdf = $this->container->createServicePdffactory()->create();
 		$this->debugMode = $this->container->parameters['debugMode'];
 		$this->excel = $this->container->createServiceExcelfactory()->create();
-		$this->category = $this->container->createServiceCategory();
 	}
 
 	/**
@@ -314,7 +312,7 @@ class ExportPresenter extends BasePresenter
 
 		$this->parameters = [
 			'header'		=> $meetingHeader,
-			'styles'		=> $this->category->getStyles(),
+			'styles'		=> $this->getStyles(),
 			'export'		=> $this->model,
 			'program'		=> $this->program,
 		];

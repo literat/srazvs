@@ -46,8 +46,6 @@ class BlockPresenter extends BasePresenter
 	/** @var string template directory */
 	protected $templateDir = 'blocks';
 
-	private $action;
-
 	/**
 	 * Prepare model classes and get meeting id
 	 */
@@ -88,15 +86,14 @@ class BlockPresenter extends BasePresenter
 	 */
 	public function init()
 	{
-		$this->action = $this->requested('action');
+		$parameters = $this->getRouter()->getParameters();
 		$id = $this->requested('id', $this->blockId);
-		$this->cms = $this->requested('cms', '');
 		$this->error = $this->requested('error', '');
 		$this->page = $this->requested('page', '');
 
-		$action = $this->cms ? $this->cms : $this->action;
+		$this->setAction($parameters['action']);
 
-		switch($action) {
+		switch($parameters['action']) {
 			case "delete":
 				$this->actionDelete($id);
 				$this->render();
@@ -391,7 +388,7 @@ class BlockPresenter extends BasePresenter
 			'wwwDir'	=> HTTP_DIR,
 			'error'		=> printError($this->error),
 			'todo'		=> $this->todo,
-			'cms'		=> $this->cms,
+			'action'	=> $this->getAction(),
 			'render'	=> $this->getModel()->getData(),
 			'mid'		=> $this->meetingId,
 			'page'		=> $this->page,
