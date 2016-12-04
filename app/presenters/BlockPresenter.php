@@ -264,6 +264,7 @@ class BlockPresenter extends BasePresenter
 			$queryString = '/' . $DB_data['guid'] . '?error=ok';
 		} else {
 			$queryString = "?error=ok";
+			$this->page = '';
 		}
 
 		redirect(self::PAGE . '/' . $this->page . $queryString);
