@@ -2,6 +2,9 @@
 
 namespace App;
 
+use Nette\Database\Context;
+use App\CategoryModel;
+
 /**
  * Export Model
  *
@@ -27,7 +30,7 @@ class ExportModel
 	private $debugMode;
 
 	/** Constructor */
-	public function __construct($database, $category, $debug)
+	public function __construct(Context $database, CategoryModel $category, $debug)
 	{
 		$this->database = $database;
 		$this->category = $category;

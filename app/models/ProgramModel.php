@@ -2,6 +2,8 @@
 
 namespace App;
 
+use Nette\Database\Context;
+
 /**
  * Program model
  *
@@ -29,8 +31,10 @@ class ProgramModel extends BaseModel
 	 */
 	public $formNames = array();
 
+	private $dbTable;
+
 	/** Constructor */
-	public function __construct($database)
+	public function __construct(Context $database)
 	{
 		$this->dbColumns = array('guid', "name", "block", "display_in_reg", "description", "tutor", "email", "category", "material", "capacity");
 		$this->formNames = array('guid', "name", "description", "material", "tutor", "email", "capacity", "display_in_reg", "block", "category");
