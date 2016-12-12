@@ -3,6 +3,7 @@
 namespace App;
 
 use Nette\Database\Context;
+use Nette\Object;
 
 /**
  * BaseModel
@@ -12,7 +13,7 @@ use Nette\Database\Context;
  * @created 2012-12-16
  * @author Tomas Litera <tomaslitera@hotmail.com>
  */
-abstract class BaseModel
+abstract class BaseModel extends Object
 {
 	/** @var string */
 	protected $table = null;
@@ -129,6 +130,14 @@ abstract class BaseModel
 	{
 		$this->table = $table;
 		return $this;
+	}
+
+	/**
+	 * @return string
+	 */
+	protected function generateGuid()
+	{
+		return md5(uniqid());
 	}
 
 }
