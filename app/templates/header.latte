@@ -41,7 +41,23 @@
 				<a href="<?php echo CAT_DIR; ?>" title="kategorie">
 					<img src="<?php echo IMG_DIR; ?>categories.png" alt="kategorie" /> kategorie</a>
 			</div>
-			{$menu|noescape}
+
+			<!-- start of menuCanvas -->
+			<div id='menuCanvas'>
+				<div id='menuContent'>
+					<div class='menuItem'>všechny srazy</div>
+					<ul>
+						<li><a href='".MEET_DIR."/?cms=list-view'>seznam srazů</a></li>
+					</ul>
+					<div class='menuItem'>jednotlivé srazy</div>
+					<ul>
+					{foreach $menuItems as $item}
+						<li><a href='?mid={$item->mid}'>{$item->place} {$item->year}</a></li>
+					{/foreach}
+					</ul>
+				</div>
+			</div>
+			<!-- end of menuCanvas -->
    			<!-- start of siteContent -->
    			<div id='siteContent'>
 				<div id='content'>

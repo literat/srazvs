@@ -4,7 +4,9 @@
 		<div class='siteContentRibbon'>Správa kategorií</div>
 		<div class='pageRibbon'>seznam kategorií</div>
 
-		{$error|noescape}
+		{foreach $flashes as $flash}
+		<div class="flash {$flash->type}">{$flash->message}</div>
+		{/foreach}
 
 		<div class='link'>
 			<a class='link' href='{$catDir}/new'>
@@ -41,7 +43,7 @@
 				</tr>
 			</tfoot>
 			<tbody>
-			{foreach $render as $id => $category}
+			{foreach $categories as $id => $category}
 				<tr class='radek1'>
 					<td>
 						<a href='{$catDir}/edit/{$id}' title='Upravit kategorii'>

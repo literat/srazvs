@@ -4,7 +4,7 @@
 <div class='siteContentRibbon'>Správa kategorií</div>
 <div class='pageRibbon'>{$heading}</div>
 
-<form action='{$catDir}/{$todo}' method='post'>
+<form action='{$catDir}/create' method='post'>
 
 	<div class='button-line'>
 		<button type='submit' onclick=\"this.form.submit()\">
@@ -64,13 +64,13 @@ window.onload = function(){
 	<table class='form'>
 		<tr>
 			<td class="label"><label class="required">Název kategorie:</label></td>
-			<td><input type='text' name='name' size='32' value='{$data['name']}' /></td>
+			<td><input type='text' name='name' size='32' value='' /></td>
 		</tr>
 		<tr>
 			<td class="label"><label>Barva pozadí:</label></td>
 			<td>
 				<div class="picker">
-					<input id="color1" type='text' size='32' name='bgcolor' value='{$data['bgcolor']}' />
+					<input id="color1" type='text' size='32' name='bgcolor' value='' />
 					<button class="colormixer" type="button" onclick="mixer.popup()"></button>
 				</div>
 			</td>
@@ -79,7 +79,7 @@ window.onload = function(){
 			<td class="label"><label>Barva ohraničení:</label></td>
 			<td>
 				<div class="picker">
-					<input id="color2" type='text' size='32' name='bocolor' value='{$data['bocolor']}' />
+					<input id="color2" type='text' size='32' name='bocolor' value='' />
 					<button class="colormixer" type="button" onclick="mixer2.popup()"></button>
 				</div>
 			</td>
@@ -88,12 +88,10 @@ window.onload = function(){
 			<td class="label"><label>Barva písma:</label></td>
 			<td>
 				<div class="picker">
-					<input id="color3" type='text' size='26' name='focolor' value='{$data['focolor']}' />
+					<input id="color3" type='text' size='26' name='focolor' value='' />
 					<button class="colormixer" type="button" onclick="mixer3.popup()"></button>
 				</div>
 			</td>
 		</tr>
 	</table>
-	<input type='hidden' name='id' value='{$id}'>
-	<input type='hidden' name='page' value='{$page}'>
 </form>

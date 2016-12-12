@@ -20,5 +20,13 @@
 	<meta name='robots' content='all' />
 	<meta name='author' content='LITERA Tomáš(slunda); tomaslitera(zavinac)outlook(tecka)com' />
 	<meta name='copyright' content="(C) 2001 - {php date('Y')}, Litera Tomáš, Praha" />
-	{ifset $style}<style type="text/css">{$style|noescape}</style>{/ifset}
+	<style type="text/css">
+	{foreach $categories as $id => $category}
+		.cat-{$category->style} {
+			border: 2px solid #{$category->bocolor};
+			background-color: #{$category->bgcolor};
+			color: #{$category->focolor};
+		}
+	{/foreach}
+	</style>
 </head>
