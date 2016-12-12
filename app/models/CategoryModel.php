@@ -4,6 +4,7 @@ namespace App;
 
 use Tracy\Debugger;
 use Nette\Utils\Strings;
+use Nette\Database\Context;
 
 /**
  * Category
@@ -29,7 +30,7 @@ class CategoryModel extends BaseModel
 	/**
 	 * @param Nette\Database\Context $database
 	 */
-	public function __construct($database)
+	public function __construct(Context $database)
 	{
 		$this->setDatabase($database);
 	}
@@ -57,35 +58,29 @@ class CategoryModel extends BaseModel
 	 * @param	array	Data to DB
 	 * @return	boolean
 	 */
-	public function create(array $dbData)
+	public function create(array $data)
 	{
-		$style = Strings::toAscii($dbData['name']);
-		$dbData['style'] = $style;
-		$result = $this->getDatabase()
-			->table($this->getTable())
-			->insert($dbData);
+		$data['style'] = $this->getStyleFromName($data['name']);
+		$data['guid'] = $this->generateGuid();
 
-		return $result;
+		return $this->getDatabase()
+			->table($this->getTable())
+			->insert($data);
 	}
 
 	/**
-	 * Modify category details
-	 *
-	 * @param	int		ID of category
-	 * @param	array	Data to DB
+	 * @param	integer $id
+	 * @param	array  $data
 	 * @return	boolean
 	 */
-	public function modify($id, array $dbData)
+	public function modify($id, array $data)
 	{
-		$style = Strings::toAscii($dbData['name']);
-		$style = str_replace(" ", "_", $style);
-		$dbData['style'] = $style;
-		$result = $this->getDatabase()
+		$data['style'] = $this->getStyleFromName($data['name']);
+
+		return $this->getDatabase()
 			->table($this->getTable())
 			->where('id', $id)
-			->update($dbData);
-
-		return $result;
+			->update($data);
 	}
 
 	/**
@@ -116,8 +111,8 @@ class CategoryModel extends BaseModel
 	}
 
 	/**
-	 * @param  int $id
-	 * @return ActiveRow
+	 * @param  integer $id
+	 * @return Nette\Database\Table\ActiveRow
 	 */
 	public function find($id)
 	{
@@ -128,6 +123,9 @@ class CategoryModel extends BaseModel
 			->fetch();
 	}
 
+	/**
+	 * @return Nette\Database\Table\ActiveRow
+	 */
 	public function all()
 	{
 		return $this->getDatabase()
@@ -135,6 +133,18 @@ class CategoryModel extends BaseModel
 			->where('deleted', '0')
 			->order('name')
 			->fetchAll();
+	}
+
+	/**
+	 * @param  string $name
+	 * @return string
+	 */
+	protected function getStyleFromName($name)
+	{
+		$style = Strings::toAscii($name);
+		$style = str_replace(" ", "_", $style);
+
+		return $style;
 	}
 
 }
