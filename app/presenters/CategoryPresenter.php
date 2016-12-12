@@ -3,7 +3,10 @@
 namespace App\Presenters;
 
 use Nette\Database\Context;
-use Nette\DI\Container;
+use Nette\Http\Request;
+use Tracy\Debugger;
+use App\CategoryModel;
+use \Exception;
 
 /**
  * This file handles the retrieval and serving of news articles
@@ -12,18 +15,6 @@ class CategoryPresenter extends BasePresenter
 {
 
 	const PATH = '/srazvs/category';
-
-	/**
-	 * template
-	 * @var string
-	 */
-	protected $template = 'listing';
-
-	/**
-	 * template directory
-	 * @var string
-	 */
-	protected $templateDir = 'category';
 
 	/**
 	 * meeting ID
@@ -46,72 +37,15 @@ class CategoryPresenter extends BasePresenter
 	/**
 	 * Prepare initial values
 	 */
-	public function __construct(Context $database, Container $container)
+	public function __construct(CategoryModel $model, Request $request)
 	{
-		$this->database = $database;
-		$this->setContainer($container);
-		$this->setRouter($container->parameters['router']);
-		$this->setModel($container->getService('category'));
-		$this->setLatte($container->getService('latte'));
+		$this->setModel($model);
+		$this->setRequest($request);
 
-		if($this->meetingId = $this->requested('mid', '')){
+		if($this->meetingId = $request->getQuery('mid', '')){
 			$_SESSION['meetingID'] = $this->meetingId;
 		} else {
 			$this->meetingId = $_SESSION['meetingID'];
-		}
-	}
-
-	/**
-	 * This is the default function that will be called by router.php
-	 *
-	 * @param array $getVars the GET variables posted to index.php
-	 */
-	public function init()
-	{
-		########################## KONTROLA ###############################
-
-		//$mid = $_SESSION['meetingID'];
-		$id = $this->requested('id', $this->categoryId);
-		$this->error = $this->requested('error', '');
-		$this->page = $this->requested('page', $this->page);
-
-		######################### DELETE CATEGORY #########################
-
-		$action = $this->getRouter()->getParameter('action');
-
-		switch($action) {
-			case "delete":
-				$this->actionDelete($id);
-				break;
-			case "new":
-				$this->actionNew();
-				break;
-			case "create":
-				$this->actionCreate();
-				break;
-			case "edit":
-				$this->actionEdit($id);
-				break;
-			case "modify":
-				$this->actionUpdate($id);
-				break;
-		}
-
-		$this->render();
-	}
-
-	/**
-	 * Prepare new item
-	 * @return void
-	 */
-	private function actionNew()
-	{
-		$this->heading = "nová kategorie";
-		$this->todo = "create";
-		$this->template = "form";
-
-		foreach($this->getModel()->dbColumns as $key) {
-			$this->data[$key] = $this->requested($key, '');
 		}
 	}
 
@@ -120,7 +54,7 @@ class CategoryPresenter extends BasePresenter
 	 * @param  int $id of item
 	 * @return void
 	 */
-	private function actionDelete($id)
+	public function actionDelete($id)
 	{
 		if($this->getModel()->delete($id)){
 			redirect(self::PATH . "?page=category&error=del");
@@ -128,91 +62,87 @@ class CategoryPresenter extends BasePresenter
 	}
 
 	/**
-	 * Create new item in DB
 	 * @return void
 	 */
-	private function actionCreate()
+	public function actionCreate()
 	{
 		$model = $this->getModel();
+		$data = $this->getRequest()->getPost();
 
-		foreach($model->dbColumns as $key) {
-			$db_data[$key] = $this->requested($key, '');
+		try {
+			$result = $this->getModel()->create($data);
+
+			Debugger::log('Creation of category successfull, result: ' . json_encode($result), Debugger::INFO);
+
+			$this->flashMessage('Položka byla úspěšně vytvořena', 'ok');
+		} catch(Exception $e) {
+			Debugger::log('Creation of category with data ' . json_encode($data) . ' failed, result: ' . $e->getMessage(), Debugger::ERROR);
+
+			$this->flashMessage('Creation of category failed, result: ' . $e->getMessage(), 'error');
 		}
 
-		if($model->create($db_data)){
-			redirect(self::PATH . "?page=" . $this->page . "&error=ok");
-		}
+		$this->redirect('Category:listing');
 	}
 
 	/**
-	 * Prepare form page
-	 * @param  int $id of item
+	 * @param  integer $id
 	 * @return void
 	 */
-	private function actionEdit($id)
+	public function actionUpdate($id)
 	{
-		$this->heading = "úprava kategorie";
-		$this->todo = "modify";
-		$this->template = "form";
-		$this->categoryId = $id;
+		$data = $this->getRequest()->getPost();
 
-		$model = $this->getModel();
-		$category = $model->find($id);
+		try {
+			$this->getModel()->modify($id, $data);
 
-		foreach($model->dbColumns as $key) {
-			$this->data[$key] = $this->requested($key, $category[$key]);
+			Debugger::log('Creation of category successfull, result: ' . json_encode($result), Debugger::INFO);
+
+			$this->flashMessage('Položka byla úspěšně upravena', 'ok');
+		} catch(Exception $e) {
+			Debugger::log('Modification of category id ' . $id . ' failed, result: ' . $e->getMessage(), Debugger::ERROR);
+
+			$this->flashMessage('Modification of category id ' . $id . ' failed, result: ' . $e->getMessage(), 'error');
 		}
+
+		$this->redirect('Category:listing');
 	}
 
 	/**
-	 * Update item in DB
-	 * @param  int $id of item
 	 * @return void
 	 */
-	private function actionUpdate($id)
+	public function renderListing()
 	{
-		foreach($this->getModel()->dbColumns as $key) {
-			$db_data[$key] = $this->requested($key, '');
-		}
+		$model = $this->getModel();
+		$template = $this->getTemplate();
 
-		$this->getModel()->modify($id, $db_data);
-
-		redirect(self::PATH . "?page=" . $this->page . "&error=ok");
+		$template->categories = $model->all();
+		$template->mid = $this->meetingId;
+		$template->heading = $this->heading;
 	}
 
 	/**
-	 * Render entire page
 	 * @return void
 	 */
-	private function render()
+	public function renderNew()
+	{
+		$template = $this->getTemplate();
+
+		$template->mid = $this->meetingId;
+		$template->heading = 'nová kategorie';
+	}
+
+	/**
+	 * @return void
+	 */
+	public function renderEdit($id)
 	{
 		$model = $this->getModel();
+		$template = $this->getTemplate();
 
-		$parameters = [
-			'cssDir'	=> CSS_DIR,
-			'jsDir'		=> JS_DIR,
-			'imgDir'	=> IMG_DIR,
-			'catDir'	=> CAT_DIR,
-			'style'		=> $this->getStyles(),
-			'user'		=> $this->getSunlightUser($_SESSION[SESSION_PREFIX.'user']),
-			'meeting'	=> $this->getPlaceAndYear($_SESSION['meetingID']),
-			'menu'		=> $this->generateMenu(),
-			'error'		=> printError($this->error),
-			'todo'		=> $this->todo,
-			'cms'		=> $this->cms,
-			'render'	=> $model->getData(),
-			'mid'		=> $this->meetingId,
-			'page'		=> $this->page,
-			'heading'	=> $this->heading,
-		];
-
-		if(!empty($this->data)) {
-			$parameters['id'] = $this->categoryId;
-			$parameters['data'] = $this->data;
-
-		}
-
-		$this->latte->render(__DIR__ . '/../templates/' . $this->templateDir.'/'.$this->template . '.latte', $parameters);
+		$template->heading = 'úprava kategorie';
+		$template->mid = $this->meetingId;
+		$template->id = $id;
+		$template->category = $model->find($id);
 	}
 
 }
