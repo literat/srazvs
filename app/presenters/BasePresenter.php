@@ -287,63 +287,6 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 	}
 
 	/**
-	 *
-	 *
-	 */
-	protected function getSunlightUser($uid)
-	{
-		return $this->database
-			->table('sunlight-users')
-			->where('id', $uid)
-			->fetch();
-	}
-
-	protected function generateMenu()
-	{
-		$menuItems = $this->database->query(
-			'SELECT id AS mid,
-					place,
-					DATE_FORMAT(start_date, "%Y") AS year
-			FROM kk_meetings
-			WHERE deleted = ?
-			ORDER BY id DESC',
-			'0')->fetchAll();
-
-		$menu = "<!-- start of menuCanvas -->\n";
-		$menu .= "<div id='menuCanvas'>\n";
-		$menu .= " <div id='menuContent'>\n";
-
-		$menu .= "  <div class='menuItem'>všechny srazy</div>\n";
-		$menu .= "   <ul>";
-		$menu .= "    <li><a href='".MEET_DIR."/?cms=list-view'>seznam srazů</a></li>\n";
-		$menu .= "   </ul>";
-
-		$menu .= "  <div class='menuItem'>jednotlivé srazy</div>\n";
-		$menu .= "   <ul>";
-
-		foreach($menuItems as $item) {
-			$menu .= "    <li><a href='?mid=".$item['mid']."'>".$item['place']." ".$item['year']."</a></li>\n";
-		}
-
-		$menu .= "   </ul>";
-		$menu .= " </div>\n";
-		$menu .= "</div>\n";
-		$menu .= "<!-- end of menuCanvas -->\n";
-
-		return $menu;
-	}
-
-	protected function getPlaceAndYear($meetingId)
-	{
-		return $this->database->query(
-			'SELECT	place, DATE_FORMAT(start_date, "%Y") AS year
-			FROM kk_meetings
-			WHERE id = ? AND deleted = ?
-			LIMIT 1', $meetingId, '0')
-			->fetch();
-	}
-
-	/**
 	 * @return Model
 	 */
 	protected function getModel()
