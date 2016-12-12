@@ -5,6 +5,8 @@ namespace App\Presenters;
 use Nette,
 	App\Model;
 use Nette\Utils\Strings;
+use Nette\Http\Request;
+use App\SunlightModel;
 
 /**
  * Base presenter for all application presenters.
@@ -32,13 +34,16 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 	/** @var string */
 	protected $action;
 
+	/** @var Nette\Http\Request */
+	protected $request;
+
 	/**
 	 * Startup
 	 */
 	protected function startup()
 	{
 		parent::startup();
-		$this->template->backlink = $this->getParameter("backlink");
+		//$this->template->backlink = $this->getParameter("backlink");
 	}
 
 
@@ -50,8 +55,20 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 	{
 		parent::beforeRender();
 
-		$this->template->production = $this->context->parameters['environment'] === 'production' ? 1 : 0;
-		$this->template->version = $this->context->parameters['site']['version'];
+		$template = $this->getTemplate();
+
+		$template->cssDir = CSS_DIR;
+		$template->jsDir = JS_DIR;
+		$template->imgDir = IMG_DIR;
+		$template->catDir = CAT_DIR;
+
+		$template->categories = $this->getContainer()->getService('category')->all();
+		$template->user = $this->getSunlight()->findUser($_SESSION[SESSION_PREFIX.'user']);
+		$template->meeting = $this->getContainer()->getService('meeting')->getPlaceAndYear($_SESSION['meetingID']);
+		$template->menuItems = $this->getContainer()->getService('meeting')->getMenuItems();
+
+		//$this->template->production = $this->context->parameters['environment'] === 'production' ? 1 : 0;
+		//$this->template->version = $this->context->parameters['site']['version'];
 	}
 
 	/**
@@ -349,7 +366,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 	 */
 	protected function getContainer()
 	{
-		return $this->container;
+		return $this->context;
 	}
 
 	/**
@@ -358,7 +375,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 	 */
 	protected function setContainer($container)
 	{
-		$this->container = $container;
+		$this->context = $container;
 		return $this;
 	}
 
@@ -417,27 +434,43 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 	}
 
 	/**
-	 * Render CSS coding of styles
-	 *
-	 * @return	string	CSS
+	 * @return SunlightModel
 	 */
-	protected function getStyles()
+	public function getSunlight()
 	{
-		$style = '';
-
-		$data = $this->getContainer()->getService('category')->all();
-
-		foreach($data as $id => $category) {
-			$style .= "
-				.cat-" . $category->style . " {
-					border: 2px solid #" . $category->bocolor . ";
-					background-color: #" . $category->bgcolor . ";
-					color: #" . $category->focolor . ";
-				}
-			";
+		if(empty($this->sunlight)) {
+			$this->setSunlight($this->getContainer()->getService('sunlight'));
 		}
 
-		return $style;
+		return $this->sunlight;
+	}
+
+	/**
+	 * @param  SunlightModel $sunlight
+	 * @return $this
+	 */
+	public function setSunlight(SunlightModel $sunlight)
+	{
+		$this->sunlight = $sunlight;
+		return $this;
+	}
+
+	/**
+	 * @return Nette\Http\Request
+	 */
+	public function getRequest()
+	{
+		return $this->request;
+	}
+
+	/**
+	 * @param  Request $request
+	 * @return $this
+	 */
+	public function setRequest(Request $request)
+	{
+		$this->request = $request;
+		return $this;
 	}
 
 }
