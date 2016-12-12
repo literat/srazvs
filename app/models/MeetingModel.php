@@ -2,6 +2,9 @@
 
 namespace App;
 
+use Nette\Database\Context;
+use App\ProgramModel;
+
 /**
  * Meeting
  *
@@ -43,7 +46,7 @@ class MeetingModel
 	private $dbTable;
 
 	/** Constructor */
-	public function __construct($database, $program)
+	public function __construct(Context $database, ProgramModel $program)
 	{
 		$this->weekendDays = array("pátek", "sobota", "neděle");
 		$this->form_names = array(
@@ -528,4 +531,27 @@ class MeetingModel
 			->limit(1)
 			->fetchField('province_name');
 	}
+
+	public function getPlaceAndYear($meetingId)
+	{
+		return $this->database->query(
+			'SELECT	place, DATE_FORMAT(start_date, "%Y") AS year
+			FROM ' . $this->dbTable . '
+			WHERE id = ? AND deleted = ?
+			LIMIT 1', $meetingId, '0')
+			->fetch();
+	}
+
+	public function getMenuItems()
+	{
+		return $this->database->query(
+			'SELECT id AS mid,
+					place,
+					DATE_FORMAT(start_date, "%Y") AS year
+			FROM ' . $this->dbTable . '
+			WHERE deleted = ?
+			ORDER BY id DESC',
+			'0')->fetchAll();
+	}
+
 }
