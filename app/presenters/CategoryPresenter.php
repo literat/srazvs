@@ -93,9 +93,9 @@ class CategoryPresenter extends BasePresenter
 		$data = $this->getRequest()->getPost();
 
 		try {
-			$this->getModel()->modify($id, $data);
+			$result = $this->getModel()->modify($id, $data);
 
-			Debugger::log('Creation of category successfull, result: ' . json_encode($result), Debugger::INFO);
+			Debugger::log('Modification of category id ' . $id . ' with data ' . json_encode($data) . ' successfull, result: ' . json_encode($result), Debugger::INFO);
 
 			$this->flashMessage('Položka byla úspěšně upravena', 'ok');
 		} catch(Exception $e) {
