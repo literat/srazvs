@@ -14,51 +14,35 @@ use \Exception;
 class CategoryPresenter extends BasePresenter
 {
 
-	const PATH = '/srazvs/category';
-
-	/**
-	 * meeting ID
-	 * @var integer
-	 */
-	protected $meetingId = 0;
-
-	/**
-	 * category ID
-	 * @var integer
-	 */
+	/** @var integer */
 	private $categoryId = NULL;
 
 	/**
-	 * page where to return
-	 * @var string
-	 */
-	protected $page = 'category';
-
-	/**
-	 * Prepare initial values
+	 * @param CategoryModel $model
+	 * @param Request       $request
 	 */
 	public function __construct(CategoryModel $model, Request $request)
 	{
 		$this->setModel($model);
 		$this->setRequest($request);
-
-		if($this->meetingId = $request->getQuery('mid', '')){
-			$_SESSION['meetingID'] = $this->meetingId;
-		} else {
-			$this->meetingId = $_SESSION['meetingID'];
-		}
 	}
 
 	/**
-	 * Delete item
-	 * @param  int $id of item
+	 * @param  int  $id
 	 * @return void
 	 */
 	public function actionDelete($id)
 	{
-		if($this->getModel()->delete($id)){
-			redirect(self::PATH . "?page=category&error=del");
+		try {
+			$result = $this->getModel()->delete($id);
+			Debugger::log('Destroying of category successfull, result: ' . json_encode($result), Debugger::INFO);
+			$this->flashMessage('Položka byla úspěšně smazána', 'ok');
+		} catch(Exception $e) {
+			Debugger::log('Destroying of category failed, result: ' .  $e->getMessage(), Debugger::ERROR);
+			$this->flashMessage('Destroying of category failed, result: ' . $e->getMessage(), 'error');
 		}
+
+		$this->redirect('Category:listing');
 	}
 
 	/**

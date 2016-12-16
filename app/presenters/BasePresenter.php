@@ -37,12 +37,23 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 	/** @var Nette\Http\Request */
 	protected $request;
 
+	/** @var integer */
+	protected $meetingId;
+
 	/**
 	 * Startup
 	 */
 	protected function startup()
 	{
 		parent::startup();
+
+		$meetingId = $this->getRequest()->getQuery('mid', '');
+
+		if($meetingId){
+			$_SESSION['meetingID'] = $meetingId;
+		} else {
+			$this->setMeetingId($_SESSION['meetingID']);
+		}
 		//$this->template->backlink = $this->getParameter("backlink");
 	}
 
@@ -82,12 +93,6 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 	 * @var string
 	 */
 	protected $templateDir = '';
-
-	/**
-	 * meeting ID
-	 * @var integer
-	 */
-	protected $meetingId = 0;
 
 	/**
 	 * category ID
@@ -413,6 +418,24 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 	public function setRequest(Request $request)
 	{
 		$this->request = $request;
+		return $this;
+	}
+
+	/**
+	 * @return integer
+	 */
+	protected function getMeetingId()
+	{
+		return $this->meetingId;
+	}
+
+	/**
+	 * @param  integer  $meetingId
+	 * @return $this
+	 */
+	protected function setMeetingId($meetingId)
+	{
+		$this->meetingId = $meetingId;
 		return $this;
 	}
 
