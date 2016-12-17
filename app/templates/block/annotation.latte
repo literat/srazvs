@@ -9,9 +9,12 @@
 		<br />
 		<h2>{$meeting_heading}</h2>
 		<br />
-		{$error|noescape}
 
-		<form action='{$blockDir}/annotation' method='post'>
+		{foreach $flashes as $flash}
+		<div class="flash {$flash->type}">{$flash->message}</div>
+		{/foreach}
+
+		<form action='{$blockDir}/annotation/update' method='post'>
 
 			<div class='button-line'>
 				<button type='submit' onclick=\"this.form.submit()\">
@@ -27,7 +30,7 @@
 			<table class='form'>
 				<tr>
 					<td class='label'><label><span class="required">*</span>Název:</label></td>
-					<td><input type='text' name='name' size='30' value='{$data['name']}' />{$error_name}</td>
+					<td><input type='text' name='name' size='30' value='{$block->name}' />{$error_name}</td>
 				</tr>
 				<tr>
 					<td colspan="2">Doplň, prosím, popis Tvého programu (bude se zobrazovat účastníkům na webu při výběru programu).
@@ -35,15 +38,15 @@
 				</tr>
 				<tr>
 					<td class='label'><label>Popis:</label></td>
-					<td><textarea name='description' rows='10' cols="70">{$data['description']}</textarea>{$error_description}</td>
+					<td><textarea name='description' rows='10' cols="70">{$block->description}</textarea>{$error_description}</td>
 				</tr>
 				<tr>
 					<td class='label'><label>Lektor:</label></td>
-					<td><input type='text' name='tutor' size='30' value='{$data['tutor']}' />{$error_tutor}</td>
+					<td><input type='text' name='tutor' size='30' value='{$block->tutor}' />{$error_tutor}</td>
 				</tr>
 				<tr>
 					<td class='label'><label>E-mail:</label></td>
-					<td><input type='text' name='email' size='30' value='{$data['email']}' />{$error_email}</td>
+					<td><input type='text' name='email' size='30' value='{$block->email}' />{$error_email}</td>
 				</tr>
 				<tr>
 					<td colspan="2">Doplň, prosím, maximální počet účastníků, kteří se mohou Tvého programu zúčastnit.
@@ -51,20 +54,13 @@
 				</tr>
 				<tr>
 					<td class='label'><label>Kapacita:</label></td>
-					<td><input type='text' name='capacity' size='10' value='{$data['capacity']}' /> (omezeno na 255)</td>
+					<td><input type='text' name='capacity' size='10' value='{$block->capacity}' /> (omezeno na 255)</td>
 				</tr>
 			</table>
 
 			<!--input type='hidden' name='cms' value='modify'-->
-			<input type='hidden' name='id' value='{$id}'>
-			<input type='hidden' name='guid' value='{$data['guid']}'>
-			<input type='hidden' name='program' value='{$data['program']}'>
-			<input type='hidden' name='category' value='{$data['category']}'>
-			<input type='hidden' name='start_hour' value='{$data['start_hour']}'>
-			<input type='hidden' name='end_hour' value='{$data['end_hour']}'>
-			<input type='hidden' name='start_minute' value='{$data['start_minute']}'>
-			<input type='hidden' name='end_minute' value='{$data['end_minute']}'>
-			<input type='hidden' name='day' value='{$data['day']}'>
+			<input type='hidden' name='id' value='{$block->id}'>
+			<input type='hidden' name='guid' value='{$block->guid}'>
 			<input type='hidden' name='page' value='annotation'>
 
 			<div class='button-line'>
