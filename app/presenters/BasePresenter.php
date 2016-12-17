@@ -62,7 +62,9 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 		}
 
 		$template = $this->getTemplate();
+		$meeting = $this->getContainer()->getService('meeting');
 
+		$template->wwwDir = HTTP_DIR;
 		$template->cssDir = CSS_DIR;
 		$template->jsDir = JS_DIR;
 		$template->imgDir = IMG_DIR;
@@ -71,8 +73,9 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 
 		$template->categories = $this->getContainer()->getService('category')->all();
 		$template->user = $this->getSunlight()->findUser($_SESSION[SESSION_PREFIX.'user']);
-		$template->meeting = $this->getContainer()->getService('meeting')->getPlaceAndYear($_SESSION['meetingID']);
-		$template->menuItems = $this->getContainer()->getService('meeting')->getMenuItems();
+		$template->meeting = $meeting->getPlaceAndYear($_SESSION['meetingID']);
+		$template->menuItems = $meeting->getMenuItems();
+		$template->meeting_heading	= $meeting->getRegHeading();
 		//$this->template->backlink = $this->getParameter("backlink");
 	}
 
