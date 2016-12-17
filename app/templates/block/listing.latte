@@ -2,7 +2,11 @@
 
 {block content}
 		<div class='siteContentRibbon'>Správa bloků</div>
-		{$error|noescape}
+
+		{foreach $flashes as $flash}
+		<div class="flash {$flash->type}">{$flash->message}</div>
+		{/foreach}
+
 		<div class='pageRibbon'>seznam bloků</div>
 		<div class='link'>
 			<a class='link' href='{$blockDir}/new?page=block'>
@@ -56,14 +60,14 @@
 				</tr>
 			</tfoot>
 			<tbody>
-				{if $render == 0}
+				{if $blocks == 0}
 				<tr class='radek1'>
 					<td><img class='edit' src='{$imgDir}icons/edit2.gif' /></td>
 					<td><img class='edit' src='{$imgDir}icons/delete2.gif' /></td>
 					<td colspan='11' class='emptyTable'>Nejsou k dispozici žádné položky.</td>
 				</tr>
 				{else}
-					{foreach $render as $row}
+					{foreach $blocks as $row}
 				<tr class='radek1'>
 					<td>
 						<a href='{$blockDir}/edit/{$row['id']}?page=block' title='Upravit'>
