@@ -7,8 +7,7 @@ use Nette\Database\Context;
 use Nette\Caching\Storages\FileStorage;
 use Nette\Database\Structure;
 use Nette\Loaders\RobotLoader;
-use Nette\Application\Routers\RouteList;
-use Nette\Application\Routers\Route;
+use App\Routers\RouterFactory;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../inc/errors.inc.php';
@@ -122,11 +121,8 @@ if(!function_exists('appVersion')) {
 /**
  * Connecting to Database
  */
-$connection = $container->getService('connection');
-$database = $container->getService('database');
-
-// Tracy database panel
-Nette\Database\Helpers::createDebugPanel($connection);
+$connection = $container->getService('database.default.connection');
+$database = $container->getService('database.default.context');
 
 if(!isset($_SESSION['meetingID'])) {
 	$_SESSION['meetingID'] = $database
@@ -140,14 +136,7 @@ if(!isset($_SESSION['meetingID'])) {
 /**
  * Routing
  */
-$router = new RouteList;
-$router[] = new Route('/', [
-	'presenter' => 'Meeting',
-    'action' => 'index',
-    'id' => $_SESSION['meetingID'],
-]);
-$router[] = new Route('<presenter>[/<action>]', 'Meeting:index');
-$router[] = new Route('<presenter>/<action>[/<id>]', 'Meeting:index');
+$router = $container->getService('routing.router');
 
 $appRequest = $router->match($httpRequest);
 
@@ -163,8 +152,6 @@ if($appRequest) {
 	die;
 }
 
-
-$container->addService('router', $router);
 $target = $parameters['appDir'] . '/presenters/' . $controllerName . 'Presenter.php';
 $container->parameters['router'] = $appRequest;
 
