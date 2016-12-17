@@ -3,10 +3,12 @@
 namespace App\Presenters;
 
 use Nette\Database\Context;
-use Nette\DI\Container;
+use Nette\Http\Request;
+use Tracy\Debugger;
 use App\Emailer;
-use App\MeetingModel;
-use App\CategoryModel;
+use App\Models\MeetingModel;
+use App\Models\CategoryModel;
+use App\Models\BlockModel;
 
 /**
  * Block controller
@@ -33,51 +35,44 @@ class BlockPresenter extends BasePresenter
 	 */
 	private $blockId = NULL;
 
-	/**
-	 * ID of meeting
-	 * @var integer
-	 */
-	protected $meetingId = 0;
-
 	private $emailer;
-	private $meeting;
-	private $category;
 
 	/** @var string template directory */
 	protected $templateDir = 'blocks';
 
+	public function __construct(BlockModel $model, Request $request)
+	{
+		$this->setModel($model);
+		$this->setRequest($request);
+	}
+
+	public function startup()
+	{
+		parent::startup();
+		$this->getModel()->setMeetingId($this->getMeetingId());
+	}
+
 	/**
 	 * Prepare model classes and get meeting id
 	 */
-	public function __construct(Context $database, Container $container)
-	{
-		$this->database = $database;
-		$this->setContainer($container);
-		$this->setRouter($this->container->parameters['router']);
-		$this->debugMode = $this->container->parameters['debugMode'];
-		$this->setModel($this->container->getService('block'));
-		$this->setEmailer($this->container->getService('emailer'));
-		$this->setMeeting($this->container->getService('meeting'));
-		$this->setCategory($this->container->getService('category'));
-		$this->setLatte($this->container->getService('latte'));
+	// public function __construct(Context $database, Container $container)
+	// {
+	// 	$this->setRouter($this->container->parameters['router']);
+	// 	$this->debugMode = $this->container->parameters['debugMode'];
+	// 	$this->setEmailer($this->container->getService('emailer'));
 
-		if($this->meetingId = $this->requested('mid', '')){
-			$_SESSION['meetingID'] = $this->meetingId;
-		} else {
-			$this->meetingId = $_SESSION['meetingID'];
-		}
 
-		$this->getModel()->setMeetingId($this->meetingId);
-		$this->getMeeting()->setMeetingId($this->meetingId);
-		$this->getMeeting()->setHttpEncoding($this->container->parameters['encoding']);
+	// 	$this->getModel()->setMeetingId($this->meetingId);
+	// 	$this->getMeeting()->setMeetingId($this->meetingId);
+	// 	$this->getMeeting()->setHttpEncoding($this->container->parameters['encoding']);
 
-		if($this->debugMode){
-			$this->getMeeting()->setRegistrationHandlers(1);
-			$this->meetingId = 1;
-		} else {
-			$this->getMeeting()->setRegistrationHandlers();
-		}
-	}
+	// 	if($this->debugMode){
+	// 		$this->getMeeting()->setRegistrationHandlers(1);
+	// 		$this->meetingId = 1;
+	// 	} else {
+	// 		$this->getMeeting()->setRegistrationHandlers();
+	// 	}
+	// }
 
 	/**
 	 * This is the default function that will be called by Router.php
@@ -345,6 +340,19 @@ class BlockPresenter extends BasePresenter
 		];
 
 		$this->getLatte()->render(__DIR__ . '/../templates/' . $this->templateDir.'/'.$this->template . '.latte', $parameters);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function renderListing()
+	{
+		$model = $this->getModel();
+		$template = $this->getTemplate();
+
+		$template->blocks = $model->all();
+		$template->mid = $this->meetingId;
+		$template->heading = $this->heading;
 	}
 
 	/**
