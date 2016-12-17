@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Nette\Database\Context;
 use Nette\Object;

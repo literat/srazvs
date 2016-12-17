@@ -117,6 +117,14 @@ services:
         class: AuthService
     userService:
         class: UserService
+    category:
+        class: App\Models\CategoryModel
+    meeting:
+        class: App\Models\MeetingModel
+    program:
+        class: App\Models\ProgramModel
+    sunlight:
+        class: App\Models\SunlightModel
 
 extensions:
     skautis: Skautis\Nette\SkautisExtension

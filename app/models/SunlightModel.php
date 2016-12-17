@@ -1,6 +1,6 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Tracy\Debugger;
 use Nette\Utils\Strings;

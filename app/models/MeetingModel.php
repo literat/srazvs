@@ -1,9 +1,9 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Nette\Database\Context;
-use App\ProgramModel;
+use App\Models\ProgramModel;
 
 /**
  * Meeting

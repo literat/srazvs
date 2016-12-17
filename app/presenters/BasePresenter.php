@@ -6,7 +6,7 @@ use Nette,
 	App\Model;
 use Nette\Utils\Strings;
 use Nette\Http\Request;
-use App\SunlightModel;
+use App\Models\SunlightModel;
 
 /**
  * Base presenter for all application presenters.
