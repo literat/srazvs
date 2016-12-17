@@ -7,6 +7,7 @@ use Nette\Http\Request;
 use Tracy\Debugger;
 use App\Emailer;
 use App\Models\BlockModel;
+use \Exception;
 
 /**
  * Block controller
@@ -150,78 +151,39 @@ class BlockPresenter extends BasePresenter
 	}
 
 	/**
-	 * Create new item in DB
 	 * @return void
 	 */
 	public function actionCreate()
 	{
-		$postData = $this->getRouter()->getPost();
+		$model = $this->getModel();
+		$data = $this->getRequest()->getPost();
 
-		foreach($this->getModel()->formNames as $key) {
-				if(array_key_exists($key, $postData) && !is_null($postData[$key])) {
-					$$key = $postData[$key];
-				}
-				elseif($key == 'start_hour') $$key = date('H');
-				elseif($key == 'end_hour') $$key = date('H')+1;
-				elseif($key == 'start_minute') $$key = '0';
-				elseif($key == 'end_minute') $$key = '0';
-				elseif($key == 'program') $$key = '0';
-				elseif($key == 'display_progs') $$key = '1';
-				else $$key = '';
+		$page = $data['page'];
+		$data['from'] = date('H:i:s', mktime($data['start_hour'], $data['start_minute'], 0, 0, 0, 0));
+		$data['to'] = date('H:i:s', mktime($data['end_hour'], $data['end_minute'], 0, 0, 0, 0));
+		$data['meeting'] = $this->getMeetingId();
+
+		unset($data['start_hour']);
+		unset($data['end_hour']);
+		unset($data['start_minute']);
+		unset($data['end_minute']);
+		unset($data['page']);
+
+		try {
+			$this->guardToGreaterThanFrom($data['from'], $data['to']);
+			$result = $this->getModel()->create($data);
+
+			Debugger::log('Creation of block successfull, result: ' . json_encode($result), Debugger::INFO);
+
+			$this->flashMessage('Položka byla úspěšně vytvořena', 'ok');
+		} catch(Exception $e) {
+			Debugger::log('Creation of block with data ' . json_encode($data) . ' failed, result: ' . $e->getMessage(), Debugger::ERROR);
+
+			$this->flashMessage('Creation of block failed, result: ' . $e->getMessage(), 'error');
 		}
 
-		//TODO: dodelat osetreni chyb
-		if($from > $to) throw new Exception('From greater than to!');
-		else {
-			foreach($this->getModel()->dbColumns as $key) {
-				$db_data[$key] = $$key;
-			}
-			$from = date("H:i:s",mktime($start_hour,$start_minute,0,0,0,0));
-			$to = date("H:i:s",mktime($end_hour,$end_minute,0,0,0,0));
-			$db_data['from'] = $from;
-			$db_data['to'] = $to;
-			$db_data['capacity'] = 0;
-			$db_data['meeting'] = $this->meetingId;
-		}
-
-		if($this->getModel()->create($db_data)){
-			redirect(PRJ_DIR.$this->page."?error=ok");
-		}
-	}
-
-	/**
-	 * Prepare data for editing
-	 *
-	 * @param  int $id of Block
-	 * @return void
-	 */
-	public function renderEdit($id)
-	{
-		$template = $this->getTemplate();
-
-		$template->heading = 'úprava bloku';
-		$template->page = $this->getRequest()->getQuery('page');
-		$template->error_name = "";
-		$template->error_description = "";
-		$template->error_tutor = "";
-		$template->error_email = "";
-		$template->error_material = "";
-
-		$this->blockId = $id;
-		$block = $this->getModel()->find($id);
-		$template->block = $block;
-		$template->id = $id;
-
-		$template->day_roll = $this->renderHtmlSelectBox('day', $this->days, $block->day, 'width:172px;');
-		$template->hour_roll = $this->renderHtmlSelectBox('start_hour', $this->hours, $block->from->format('%H'));
-		$template->minute_roll = $this->renderHtmlSelectBox('start_minute', $this->minutes, $block->from->format('%I'));
-		$template->end_hour_roll = $this->renderHtmlSelectBox('end_hour', $this->hours, $block->to->format('%H'));
-		$template->end_minute_roll = $this->renderHtmlSelectBox('end_minute', $this->minutes, $block->to->format('%I'));
-		// is program block check box
-		$template->program_checkbox = $this->renderHtmlCheckBox('program', 1, $block->program);
-		// display programs in block check box
-		$template->display_progs_checkbox = $this->renderHtmlCheckBox('display_progs', 0, $block->display_progs);
-		$template->selectedCategory	= $block->category;
+		// TODO: redirect using page
+		$this->redirect('Block:listing');
 	}
 
 	/**
@@ -287,6 +249,41 @@ class BlockPresenter extends BasePresenter
 	}
 
 	/**
+	 * Prepare data for editing
+	 *
+	 * @param  int $id of Block
+	 * @return void
+	 */
+	public function renderEdit($id)
+	{
+		$template = $this->getTemplate();
+
+		$template->heading = 'úprava bloku';
+		$template->page = $this->getRequest()->getQuery('page');
+		$template->error_name = "";
+		$template->error_description = "";
+		$template->error_tutor = "";
+		$template->error_email = "";
+		$template->error_material = "";
+
+		$this->blockId = $id;
+		$block = $this->getModel()->find($id);
+		$template->block = $block;
+		$template->id = $id;
+
+		$template->day_roll = $this->renderHtmlSelectBox('day', $this->days, $block->day, 'width:172px;');
+		$template->hour_roll = $this->renderHtmlSelectBox('start_hour', $this->hours, $block->from->format('%H'));
+		$template->minute_roll = $this->renderHtmlSelectBox('start_minute', $this->minutes, $block->from->format('%I'));
+		$template->end_hour_roll = $this->renderHtmlSelectBox('end_hour', $this->hours, $block->to->format('%H'));
+		$template->end_minute_roll = $this->renderHtmlSelectBox('end_minute', $this->minutes, $block->to->format('%I'));
+		// is program block check box
+		$template->program_checkbox = $this->renderHtmlCheckBox('program', 1, $block->program);
+		// display programs in block check box
+		$template->display_progs_checkbox = $this->renderHtmlCheckBox('display_progs', 0, $block->display_progs);
+		$template->selectedCategory	= $block->category;
+	}
+
+	/**
 	 * Send mail to tutor
 	 *
 	 * @return void
@@ -309,49 +306,22 @@ class BlockPresenter extends BasePresenter
 	 * @param  int $id of item
 	 * @return void
 	 */
-	public function renderAnnotation($guid)
+	public function renderAnnotation($id)
 	{
-		$this->template = 'annotation';
+		$template = $this->getTemplate();
 
-		$this->heading = "úprava bloku";
-		$this->todo = "modify";
+		$template->page_title = 'Registrace programů pro lektory';
+		$template->page = $this->getRequest()->getQuery('page');
+		$template->error_name = "";
+		$template->error_description = "";
+		$template->error_tutor = "";
+		$template->error_email = "";
+		$template->error_material = "";
 
-		$data = $this->getModel()->annotation($guid);
-
-		$this->getMeeting()->setRegistrationHandlers();
-
-		$this->blockId = $data['id'];
-
-		$error_name = "";
-		$error_description = "";
-		$error_tutor = "";
-		$error_email = "";
-		$error_material = "";
-
-		$parameters = [
-			'cssDir'	=> CSS_DIR,
-			'jsDir'		=> JS_DIR,
-			'imgDir'	=> IMG_DIR,
-			'blockDir'	=> BLOCK_DIR,
-			'wwwDir'	=> HTTP_DIR,
-			'error'		=> printError($this->error),
-			'todo'		=> $this->todo,
-			'cms'		=> $this->cms,
-			'data'		=> $data,
-			'mid'		=> $this->meetingId,
-			'id'		=> $this->blockId,
-			'page'		=> $this->page,
-			'heading'	=> $this->heading,
-			'page_title'=> 'Registrace programů pro lektory',
-			'meeting_heading'	=> $this->getMeeting()->getRegHeading(),
-			'error_name'		=> printError($error_name),
-			'error_description'	=> printError($error_description),
-			'error_tutor'		=> printError($error_tutor),
-			'error_email'		=> printError($error_email),
-			'error_material'	=> printError($error_material),
-		];
-
-		$this->getLatte()->render(__DIR__ . '/../templates/' . $this->templateDir.'/'.$this->template . '.latte', $parameters);
+		$block = $this->getModel()->findBy('guid', $id);
+		$this->blockId = $block->id;
+		$template->block = $block;
+		$template->id = $id;
 	}
 
 	/**
@@ -499,4 +469,17 @@ class BlockPresenter extends BasePresenter
 
 		return $html_select;
 	}
+
+	/**
+	 * @param  date $from
+	 * @param  date $to
+	 * @return Exception
+	 */
+	private function guardToGreaterThanFrom($from, $to)
+	{
+		if($from > $to) {
+			throw new Exception('Starting time is greater then finishing time.');
+		}
+	}
+
 }
