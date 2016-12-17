@@ -81,7 +81,7 @@ abstract class BaseModel extends Object
 	public function delete($ids)
 	{
 		$data = array('deleted' => '1');
-		$result = $this->database->table($this->dbTable)->where('id', $ids)->update($data);
+		$result = $this->database->table($this->getTable())->where('id', $ids)->update($data);
 
 		return $result;
 	}
