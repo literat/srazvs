@@ -54,6 +54,19 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 		} else {
 			$this->setMeetingId($_SESSION['meetingID']);
 		}
+
+		$template = $this->getTemplate();
+
+		$template->cssDir = CSS_DIR;
+		$template->jsDir = JS_DIR;
+		$template->imgDir = IMG_DIR;
+		$template->catDir = CAT_DIR;
+		$template->blockDir = BLOCK_DIR;
+
+		$template->categories = $this->getContainer()->getService('category')->all();
+		$template->user = $this->getSunlight()->findUser($_SESSION[SESSION_PREFIX.'user']);
+		$template->meeting = $this->getContainer()->getService('meeting')->getPlaceAndYear($_SESSION['meetingID']);
+		$template->menuItems = $this->getContainer()->getService('meeting')->getMenuItems();
 		//$this->template->backlink = $this->getParameter("backlink");
 	}
 
@@ -65,18 +78,6 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 	public function beforeRender()
 	{
 		parent::beforeRender();
-
-		$template = $this->getTemplate();
-
-		$template->cssDir = CSS_DIR;
-		$template->jsDir = JS_DIR;
-		$template->imgDir = IMG_DIR;
-		$template->catDir = CAT_DIR;
-
-		$template->categories = $this->getContainer()->getService('category')->all();
-		$template->user = $this->getSunlight()->findUser($_SESSION[SESSION_PREFIX.'user']);
-		$template->meeting = $this->getContainer()->getService('meeting')->getPlaceAndYear($_SESSION['meetingID']);
-		$template->menuItems = $this->getContainer()->getService('meeting')->getMenuItems();
 
 		//$this->template->production = $this->context->parameters['environment'] === 'production' ? 1 : 0;
 		//$this->template->version = $this->context->parameters['site']['version'];
