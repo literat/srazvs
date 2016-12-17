@@ -1,0 +1,9 @@
+{default $selected = ''}
+<select style='width: 225px; font-size: 10px' class='field' name='category'>
+		{foreach $categories as $category}
+			{if $category->id == $selectedCategory}
+				{$selected = 'selected'}
+			{/if}
+			<option {$selected} class='category cat-{$category->style}' value='{$category->id}'>{$category->name}</option>
+		{/foreach}
+</select>

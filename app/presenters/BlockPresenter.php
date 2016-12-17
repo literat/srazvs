@@ -366,8 +366,6 @@ class BlockPresenter extends BasePresenter
 			$hours_array = array (0 => "00","01","02","03","04","05","06","07","08","09","10","11","12","13","14","15","16","17","18","19","20","21","22","23");
 			$minutes_array = array (00 => "00", 05 => "05", 10 => "10",15 => "15", 20 => "20",25 => "25", 30 => "30",35 => "35", 40 => "40", 45 => "45", 50 => "50", 55 => "55");
 
-			// category select box
-			$cat_roll = $this->getCategory()->renderHtmlSelect($this->data['category'], $this->database);
 			// time select boxes
 			$day_roll = $this->renderHtmlSelectBox('day', array('pátek'=>'pátek', 'sobota'=>'sobota', 'neděle'=>'neděle'), $this->data['day'], 'width:172px;');
 			$hour_roll = $this->renderHtmlSelectBox('start_hour', $hours_array, $this->data['start_hour']);
@@ -413,7 +411,8 @@ class BlockPresenter extends BasePresenter
 				'error_description'	=> printError($error_description),
 				'error_tutor'		=> printError($error_tutor),
 				'error_email'		=> printError($error_email),
-				'cat_roll'			=> $cat_roll,
+				'categories'		=> $this->getCategory()->all(),
+				'selectedCategory'	=> $this->data['category'],
 				'day_roll'			=> $day_roll,
 				'hour_roll'			=> $hour_roll,
 				'minute_roll'		=> $minute_roll,

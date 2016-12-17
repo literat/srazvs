@@ -5,12 +5,9 @@ namespace App\Presenters;
 use Nette\Database\Context;
 use Nette\Http\Request;
 use Tracy\Debugger;
-use App\CategoryModel;
+use App\Models\CategoryModel;
 use \Exception;
 
-/**
- * This file handles the retrieval and serving of news articles
- */
 class CategoryPresenter extends BasePresenter
 {
 

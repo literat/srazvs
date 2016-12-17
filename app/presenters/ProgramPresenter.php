@@ -460,8 +460,6 @@ class ProgramPresenter extends BasePresenter
 			$error_email = "";
 			$error_material = "";
 
-			// category select box
-			$cat_roll = $this->getCategory()->renderHtmlSelect($this->data['category']);
 			// blocks select box
 			$block_select = $this->getBlock()->renderHtmlSelect($this->data['block']);
 			// display in registration check box
@@ -503,7 +501,8 @@ class ProgramPresenter extends BasePresenter
 				'error_tutor'		=> printError($error_tutor),
 				'error_email'		=> printError($error_email),
 				'error_material'	=> printError($error_material),
-				'cat_roll'			=> $cat_roll,
+				'categories'		=> $this->getCategory()->all(),
+				'selectedCategory'	=> $this->data['category'],
 				'block_select'		=> $block_select,
 				'program_visitors'	=> $this->getModel()->getProgramVisitors($this->programId),
 				'display_in_reg_checkbox'	=> $display_in_reg_checkbox,
