@@ -6,8 +6,6 @@ use Nette\Database\Context;
 use Nette\Http\Request;
 use Tracy\Debugger;
 use App\Emailer;
-use App\Models\MeetingModel;
-use App\Models\CategoryModel;
 use App\Models\BlockModel;
 
 /**
@@ -125,34 +123,37 @@ class BlockPresenter extends BasePresenter
 	}
 
 	/**
-	 * Prepare page for new item
-	 *
 	 * @return void
 	 */
-	private function actionNew()
+	public function renderNew()
 	{
-		$this->template = 'form';
+		$template = $this->getTemplate();
 
-		$this->heading = "nový blok";
-		$this->todo = "create";
+		$template->heading = 'nový blok';
+		$template->page = $this->getRequest()->getQuery('page');
+		$template->error_name = "";
+		$template->error_description = "";
+		$template->error_tutor = "";
+		$template->error_email = "";
+		$template->error_material = "";
 
-		foreach($this->getModel()->formNames as $key) {
-				if($key == 'start_hour') $value = date("H");
-				elseif($key == 'end_hour') $value = date("H")+1;
-				elseif($key == 'start_minute') $value = date("i");
-				elseif($key == 'end_minute') $value = date("i");
-				elseif($key == 'program') $value = '0';
-				elseif($key == 'display_progs') $value = '1';
-				else $value = "";
-				$this->data[$key] = $this->requested($key, $value);
-		}
+		$template->day_roll = $this->renderHtmlSelectBox('day', $this->days, null, 'width:172px;');
+		$template->hour_roll = $this->renderHtmlSelectBox('start_hour', $this->hours, date('H'));
+		$template->minute_roll = $this->renderHtmlSelectBox('start_minute', $this->minutes, date('i'));
+		$template->end_hour_roll = $this->renderHtmlSelectBox('end_hour', $this->hours, date('H')+1);
+		$template->end_minute_roll = $this->renderHtmlSelectBox('end_minute', $this->minutes, date('i'));
+		// is program block check box
+		$template->program_checkbox = $this->renderHtmlCheckBox('program', 1, 0);
+		// display programs in block check box
+		$template->display_progs_checkbox = $this->renderHtmlCheckBox('display_progs', 0, null);
+		$template->selectedCategory	= null;
 	}
 
 	/**
 	 * Create new item in DB
 	 * @return void
 	 */
-	private function actionCreate()
+	public function actionCreate()
 	{
 		$postData = $this->getRouter()->getPost();
 
@@ -170,7 +171,7 @@ class BlockPresenter extends BasePresenter
 		}
 
 		//TODO: dodelat osetreni chyb
-		if($from > $to) new Exception('From greater than to!');
+		if($from > $to) throw new Exception('From greater than to!');
 		else {
 			foreach($this->getModel()->dbColumns as $key) {
 				$db_data[$key] = $$key;
@@ -194,22 +195,33 @@ class BlockPresenter extends BasePresenter
 	 * @param  int $id of Block
 	 * @return void
 	 */
-	private function actionEdit($id)
+	public function renderEdit($id)
 	{
-		$this->template = 'form';
+		$template = $this->getTemplate();
 
-		$this->heading = "úprava bloku";
-		$this->todo = "modify";
+		$template->heading = 'úprava bloku';
+		$template->page = $this->getRequest()->getQuery('page');
+		$template->error_name = "";
+		$template->error_description = "";
+		$template->error_tutor = "";
+		$template->error_email = "";
+		$template->error_material = "";
 
 		$this->blockId = $id;
+		$block = $this->getModel()->find($id);
+		$template->block = $block;
+		$template->id = $id;
 
-		$dbData = $this->getModel()->getData($id);
-
-		foreach($this->getModel()->formNames as $key) {
-			if($key == 'from' || $key == 'to') $value = $dbData[$key]->format('%H:%I:%S');
-			else $value = $dbData[$key];
-			$this->data[$key] = $this->requested($key, $value);
-		}
+		$template->day_roll = $this->renderHtmlSelectBox('day', $this->days, $block->day, 'width:172px;');
+		$template->hour_roll = $this->renderHtmlSelectBox('start_hour', $this->hours, $block->from->format('%H'));
+		$template->minute_roll = $this->renderHtmlSelectBox('start_minute', $this->minutes, $block->from->format('%I'));
+		$template->end_hour_roll = $this->renderHtmlSelectBox('end_hour', $this->hours, $block->to->format('%H'));
+		$template->end_minute_roll = $this->renderHtmlSelectBox('end_minute', $this->minutes, $block->to->format('%I'));
+		// is program block check box
+		$template->program_checkbox = $this->renderHtmlCheckBox('program', 1, $block->program);
+		// display programs in block check box
+		$template->display_progs_checkbox = $this->renderHtmlCheckBox('display_progs', 0, $block->display_progs);
+		$template->selectedCategory	= $block->category;
 	}
 
 	/**
@@ -218,7 +230,7 @@ class BlockPresenter extends BasePresenter
 	 * @param  int 	$id 	of Block
 	 * @return void
 	 */
-	private function actionUpdate($id)
+	public function actionUpdate($id)
 	{
 		$postData = $this->getRouter()->getPost();
 
@@ -267,7 +279,7 @@ class BlockPresenter extends BasePresenter
 	 * @param  int $id of Block
 	 * @return void
 	 */
-	private function actionDelete($id)
+	public function actionDelete($id)
 	{
 		if($this->getModel()->delete($id)) {
 				redirect(self::PAGE . "?error=del");
@@ -297,7 +309,7 @@ class BlockPresenter extends BasePresenter
 	 * @param  int $id of item
 	 * @return void
 	 */
-	private function annotationRender($guid)
+	public function renderAnnotation($guid)
 	{
 		$this->template = 'annotation';
 
@@ -455,42 +467,6 @@ class BlockPresenter extends BasePresenter
 	protected function setEmailer(Emailer $emailer)
 	{
 		$this->emailer = $emailer;
-		return $this;
-	}
-
-	/**
-	 * @return Meeting
-	 */
-	protected function getMeeting()
-	{
-		return $this->meeting;
-	}
-
-	/**
-	 * @param  MeetingModel $meeting
-	 * @return $this
-	 */
-	protected function setMeeting(MeetingModel $meeting)
-	{
-		$this->meeting = $meeting;
-		return $this;
-	}
-
-	/**
-	 * @return Category
-	 */
-	protected function getCategory()
-	{
-		return $this->category;
-	}
-
-	/**
-	 * @param  CategoryModel $Category
-	 * @return $this
-	 */
-	protected function setCategory(CategoryModel $category)
-	{
-		$this->category = $category;
 		return $this;
 	}
 

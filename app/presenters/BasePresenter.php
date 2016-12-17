@@ -40,6 +40,12 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 	/** @var integer */
 	protected $meetingId;
 
+	protected $days = ['pátek'=>'pátek', 'sobota'=>'sobota', 'neděle'=>'neděle'];
+
+	protected $hours = [0 => "00","01","02","03","04","05","06","07","08","09","10","11","12","13","14","15","16","17","18","19","20","21","22","23"];
+
+	protected $minutes = [00 => "00", 05 => "05", 10 => "10",15 => "15", 20 => "20",25 => "25", 30 => "30",35 => "35", 40 => "40", 45 => "45", 50 => "50", 55 => "55"];
+
 	/**
 	 * Startup
 	 */
