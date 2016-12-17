@@ -14,8 +14,6 @@ use Nette\Database\Context;
  */
 class ProgramModel extends BaseModel
 {
-	/** @var int meeting ID */
-	private $meetingId;
 
 	/**
 	 * Array of database programs table columns

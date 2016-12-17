@@ -24,6 +24,9 @@ abstract class BaseModel extends Object
 	/** @var Nette\Database\Context */
 	protected $database;
 
+	/** @var integer */
+	protected $meetingId;
+
 	/** Constructor */
 	public function __construct($dbTable = NULL, $database = NULL)
 	{
@@ -94,6 +97,24 @@ abstract class BaseModel extends Object
 	public function renderData()
 	{
 
+	}
+
+	/**
+	 * @param  integer $meetingId
+	 * @return $this
+	 */
+	public function setMeetingId($meetingId)
+	{
+		$this->meetingId = $meetingId;
+		return $this;
+	}
+
+	/**
+	 * @return integer
+	 */
+	protected function getMeetingId()
+	{
+		return $this->meetingId;
 	}
 
 	/**
