@@ -187,65 +187,81 @@ class BlockPresenter extends BasePresenter
 	}
 
 	/**
-	 * Process data from editing
-	 *
-	 * @param  int 	$id 	of Block
+	 * @param  integer $id
 	 * @return void
 	 */
 	public function actionUpdate($id)
 	{
-		$postData = $this->getRouter()->getPost();
+		$model = $this->getModel();
+		$data = $this->getRequest()->getPost();
 
-		foreach($this->getModel()->formNames as $key) {
-				if(array_key_exists($key, $postData) && !is_null($postData[$key])) {
-					$$key = $postData[$key];
-				}
-				elseif($key == 'start_hour') $$key = date('H');
-				elseif($key == 'end_hour') $$key = date('H')+1;
-				elseif($key == 'start_minute') $$key = '0';
-				elseif($key == 'end_minute') $$key = '0';
-				elseif($key == 'program') $$key = '0';
-				elseif($key == 'display_progs') $$key = '1';
-				else $$key = '';
+		$page = $data['page'];
+		$data['from'] = date('H:i:s', mktime($data['start_hour'], $data['start_minute'], 0, 0, 0, 0));
+		$data['to'] = date('H:i:s', mktime($data['end_hour'], $data['end_minute'], 0, 0, 0, 0));
+		$data['meeting'] = $this->getMeetingId();
+
+		unset($data['start_hour']);
+		unset($data['end_hour']);
+		unset($data['start_minute']);
+		unset($data['end_minute']);
+		unset($data['page']);
+
+		try {
+			$this->guardToGreaterThanFrom($data['from'], $data['to']);
+			$result = $this->getModel()->update($id, $data);
+
+			Debugger::log('Modification of block id ' . $id . ' with data ' . json_encode($data) . ' successfull, result: ' . json_encode($result), Debugger::INFO);
+
+			$this->flashMessage('Položka byla úspěšně upravena.', 'ok');
+		} catch(Exception $e) {
+			Debugger::log('Modification of block id ' . $id . ' failed, result: ' . $e->getMessage(), Debugger::ERROR);
+
+			$this->flashMessage('Modification of block id ' . $id . ' failed, result: ' . $e->getMessage(), 'error');
 		}
 
-		//TODO: dodelat osetreni chyb
-		if($from > $to) echo "chyba";
-		else {
-			foreach($this->getModel()->dbColumns as $key) {
-				$DB_data[$key] = $$key;
-			}
+		// TODO: redirect using page
+		$this->redirect('Block:listing');
+	}
 
-			$from = date("H:i:s",mktime($start_hour, $start_minute,0,0,0,0));
-			$to = date("H:i:s",mktime($end_hour, $end_minute,0,0,0,0));
-			$DB_data['from'] = $from;
-			$DB_data['to'] = $to;
-			$DB_data['program'] = $this->requested('program');
+/**
+	 * @param  integer $id
+	 * @return void
+	 */
+	public function actionAnnotationupdate($id)
+	{
+		$data = $this->getRequest()->getPost();
+
+		try {
+			$result = $this->updateByGuid($id, $data);
+
+			Debugger::log('Modification of block annotation id ' . $id . ' with data ' . json_encode($data) . ' successfull, result: ' . json_encode($result), Debugger::INFO);
+
+			$this->flashMessage('Položka byla úspěšně upravena.', 'ok');
+		} catch(Exception $e) {
+			Debugger::log('Modification of block annotation guid ' . $id . ' failed, result: ' . $e->getMessage(), Debugger::ERROR);
+
+			$this->flashMessage('Modification of block annotation guid ' . $id . ' failed, result: ' . $e->getMessage(), 'error');
 		}
 
-		$this->getModel()->update($id, $DB_data);
-
-		if($this->page == 'annotation') {
-			$queryString = '/' . $DB_data['guid'] . '?error=ok';
-		} else {
-			$queryString = "?error=ok";
-			$this->page = '';
-		}
-
-		redirect(self::PAGE . '/' . $this->page . $queryString);
+		$this->redirect('Block:annotation', $id);
 	}
 
 	/**
-	 * Delete block by id
-	 *
-	 * @param  int $id of Block
+	 * @param  int  $id
 	 * @return void
 	 */
 	public function actionDelete($id)
 	{
-		if($this->getModel()->delete($id)) {
-				redirect(self::PAGE . "?error=del");
+		try {
+			$result = $this->getModel()->delete($id);
+			Debugger::log('Destroying of block successfull, result: ' . json_encode($result), Debugger::INFO);
+			$this->flashMessage('Položka byla úspěšně smazána.', 'ok');
+		} catch(Exception $e) {
+			Debugger::log('Destroying of block failed, result: ' .  $e->getMessage(), Debugger::ERROR);
+			$this->flashMessage('Destroying of block failed, result: ' . $e->getMessage(), 'error');
 		}
+
+		$this->redirect('Block:listing');
 	}
 
 	/**

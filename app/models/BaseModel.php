@@ -116,6 +116,22 @@ abstract class BaseModel extends Object
 	}
 
 	/**
+	 * @param	string         $column
+	 * @param   string|integer $value
+	 * @param	array          $data
+	 * @return	bool
+	 */
+	public function updateBy($column, $value, array $data)
+	{
+		$result = $this->getDatabase()
+			->table($this->getTable())
+			->where($column, $value)
+			->update($data);
+
+		return $result;
+	}
+
+	/**
 	 * @param	int		ID/s of record
 	 * @return	boolean
 	 */

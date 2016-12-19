@@ -449,4 +449,14 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 		return $this;
 	}
 
+	/**
+	 * @param  string $guid
+	 * @param  array  $data
+	 * @return ActiveRow
+	 */
+	protected function updateByGuid($guid, array $data)
+	{
+		return $this->getModel()->updateBy('guid', $guid, $data);
+	}
+
 }

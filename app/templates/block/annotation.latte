@@ -14,7 +14,7 @@
 		<div class="flash {$flash->type}">{$flash->message}</div>
 		{/foreach}
 
-		<form action='{$blockDir}/annotation/update' method='post'>
+		<form action='{$blockDir}/annotationupdate/{$id}' method='post'>
 
 			<div class='button-line'>
 				<button type='submit' onclick=\"this.form.submit()\">
@@ -61,7 +61,6 @@
 			<!--input type='hidden' name='cms' value='modify'-->
 			<input type='hidden' name='id' value='{$block->id}'>
 			<input type='hidden' name='guid' value='{$block->guid}'>
-			<input type='hidden' name='page' value='annotation'>
 
 			<div class='button-line'>
 				<button type='submit' onclick=\"this.form.submit()\">
