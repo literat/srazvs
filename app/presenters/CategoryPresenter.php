@@ -74,7 +74,7 @@ class CategoryPresenter extends BasePresenter
 		$data = $this->getRequest()->getPost();
 
 		try {
-			$result = $this->getModel()->modify($id, $data);
+			$result = $this->getModel()->update($id, $data);
 
 			Debugger::log('Modification of category id ' . $id . ' with data ' . json_encode($data) . ' successfull, result: ' . json_encode($result), Debugger::INFO);
 

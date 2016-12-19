@@ -42,11 +42,8 @@ class CategoryModel extends BaseModel
 	public function create(array $data)
 	{
 		$data['style'] = $this->getStyleFromName($data['name']);
-		$data['guid'] = $this->generateGuid();
 
-		return $this->getDatabase()
-			->table($this->getTable())
-			->insert($data);
+		return parent::create($data);
 	}
 
 	/**
@@ -54,14 +51,11 @@ class CategoryModel extends BaseModel
 	 * @param	array  $data
 	 * @return	boolean
 	 */
-	public function modify($id, array $data)
+	public function update($id, array $data)
 	{
 		$data['style'] = $this->getStyleFromName($data['name']);
 
-		return $this->getDatabase()
-			->table($this->getTable())
-			->where('id', $id)
-			->update($data);
+		return parent::update($id, $data);
 	}
 
 	/**
