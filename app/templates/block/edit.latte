@@ -16,7 +16,7 @@
 		<img src='{$imgDir}icons/save.png' /> Uložit</button>
 	<button type='button' onclick="window.location.replace({$page})">
 		<img src='{$imgDir}icons/storno.png'  /> Storno</button>
-	<button type='button' onclick="window.location.replace('{$blockDir}/mail/' + {$id})">
+	<button type='button' onclick="window.location.replace('{$blockDir|noescape}/mail/' + {$id})">
 		<img src='{$imgDir}icons/mail.png'  /> Odeslat lektorovi</button>
   <a class='link' tarkget='_blank' href='{$blockDir}/annotation/{$block->guid}'>
       <img src='{$imgDir}icons/search.png' />Náhled anotace

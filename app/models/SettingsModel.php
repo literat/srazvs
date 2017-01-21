@@ -1,7 +1,8 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
+use App\Models\BaseModel;
 use Nette\Utils\Json;
 use Nette\Database\Context;
 use Tracy\Debugger;

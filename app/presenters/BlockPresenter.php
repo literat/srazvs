@@ -5,7 +5,7 @@ namespace App\Presenters;
 use Nette\Database\Context;
 use Nette\Http\Request;
 use Tracy\Debugger;
-use App\Emailer;
+use App\Services\Emailer;
 use App\Models\BlockModel;
 use \Exception;
 
@@ -20,107 +20,35 @@ use \Exception;
 class BlockPresenter extends BasePresenter
 {
 
-	const PAGE = '/srazvs/block';
-
 	/**
-	 * This template variable will hold the 'this->View' portion of our MVC for this
-	 * controller
-	 */
-	protected $template = 'listing';
-
-	/**
-	 * ID of item
 	 * @var integer
 	 */
 	private $blockId = NULL;
 
+	/**
+	 * @var Emailer
+	 */
 	private $emailer;
 
-	/** @var string template directory */
-	protected $templateDir = 'blocks';
-
-	public function __construct(BlockModel $model, Request $request)
+	/**
+	 * @param BlockModel $model
+	 * @param Request    $request
+	 * @param Emailer    $emailer
+	 */
+	public function __construct(BlockModel $model, Request $request, Emailer $emailer)
 	{
 		$this->setModel($model);
 		$this->setRequest($request);
+		$this->setEmailer($emailer);
 	}
 
+	/**
+	 * @return void
+	 */
 	public function startup()
 	{
 		parent::startup();
 		$this->getModel()->setMeetingId($this->getMeetingId());
-	}
-
-	/**
-	 * Prepare model classes and get meeting id
-	 */
-	// public function __construct(Context $database, Container $container)
-	// {
-	// 	$this->setRouter($this->container->parameters['router']);
-	// 	$this->debugMode = $this->container->parameters['debugMode'];
-	// 	$this->setEmailer($this->container->getService('emailer'));
-
-
-	// 	$this->getModel()->setMeetingId($this->meetingId);
-	// 	$this->getMeeting()->setMeetingId($this->meetingId);
-	// 	$this->getMeeting()->setHttpEncoding($this->container->parameters['encoding']);
-
-	// 	if($this->debugMode){
-	// 		$this->getMeeting()->setRegistrationHandlers(1);
-	// 		$this->meetingId = 1;
-	// 	} else {
-	// 		$this->getMeeting()->setRegistrationHandlers();
-	// 	}
-	// }
-
-	/**
-	 * This is the default function that will be called by Router.php
-	 *
-	 * @param array $getVars the GET variables posted to index.php
-	 */
-	public function init()
-	{
-		$parameters = $this->getRouter()->getParameters();
-		$id = $this->requested('id', $this->blockId);
-		$this->error = $this->requested('error', '');
-		$this->page = $this->requested('page', '');
-
-		$this->setAction($parameters['action']);
-
-		switch($parameters['action']) {
-			case "delete":
-				$this->actionDelete($id);
-				$this->render();
-				break;
-			case "new":
-				$this->actionNew();
-				$this->render();
-				break;
-			case "create":
-				$this->actionCreate();
-				$this->render();
-				break;
-			case "edit":
-				$this->actionEdit($id);
-				$this->render();
-				break;
-			case "modify":
-				$this->actionUpdate($id);
-				$this->render();
-				break;
-			case "mail":
-				$this->mailRender($id);
-				break;
-			case "annotation":
-				if(is_numeric($id)) {
-					$this->update($id);
-				}
-				$this->annotationRender($id);
-				break;
-			default:
-				$this->render();
-				break;
-		}
 	}
 
 	/**
@@ -223,15 +151,14 @@ class BlockPresenter extends BasePresenter
 		$this->redirect('Block:listing');
 	}
 
-/**
+	/**
 	 * @param  integer $id
 	 * @return void
 	 */
 	public function actionAnnotationupdate($id)
 	{
-		$data = $this->getRequest()->getPost();
-
 		try {
+			$data = $this->getRequest()->getPost();
 			$result = $this->updateByGuid($id, $data);
 
 			Debugger::log('Modification of block annotation id ' . $id . ' with data ' . json_encode($data) . ' successfull, result: ' . json_encode($result), Debugger::INFO);
@@ -262,6 +189,29 @@ class BlockPresenter extends BasePresenter
 		}
 
 		$this->redirect('Block:listing');
+	}
+
+	/**
+	 * Send mail to tutor
+	 *
+	 * @return void
+	 */
+	public function actionMail($id)
+	{
+		try {
+			$tutors = $this->getModel()->getTutor($id);
+			$recipients = $this->parseTutorEmail($tutors);
+
+			$this->getEmailer()->tutor($recipients, $tutors->guid, 'block');
+
+			Debugger::log('Sending email to block tutor successfull, result: ' . json_encode($recipients) . ', ' . $tutors->guid, Debugger::INFO);
+			$this->flashMessage('Email lektorovi byl odeslán..', 'ok');
+		} catch(Exception $e) {
+			Debugger::log('Sending email to block tutor failed, result: ' .  $e->getMessage(), Debugger::ERROR);
+			$this->flashMessage('Email lektorovi nebyl odeslán, result: ' . $e->getMessage(), 'error');
+		}
+
+		$this->redirect('Block:edit', $id);
 	}
 
 	/**
@@ -300,23 +250,6 @@ class BlockPresenter extends BasePresenter
 	}
 
 	/**
-	 * Send mail to tutor
-	 *
-	 * @return void
-	 */
-	private function mailRender($id)
-	{
-		$tutors = $this->getModel()->getTutor($id);
-		$recipients = $this->parseTutorEmail($tutors);
-
-		if($this->getEmailer()->tutor($recipients, $tutors->guid, 'block')) {
-			redirect(self::PAGE . '?error=mail_send');
-		} else {
-			redirect(self::PAGE . '/edit/' . $id . '?error=email');
-		}
-	}
-
-	/**
 	 * Prepare data for annotation
 	 *
 	 * @param  int $id of item
@@ -351,91 +284,6 @@ class BlockPresenter extends BasePresenter
 		$template->blocks = $model->all();
 		$template->mid = $this->meetingId;
 		$template->heading = $this->heading;
-	}
-
-	/**
-	 * Render all page
-	 *
-	 * @return void
-	 */
-	public function render()
-	{
-		$error = "";
-		if(!empty($this->data)) {
-			$error_name = "";
-			$error_description = "";
-			$error_tutor = "";
-			$error_email = "";
-			$error_material = "";
-
-
-			$hours_array = array (0 => "00","01","02","03","04","05","06","07","08","09","10","11","12","13","14","15","16","17","18","19","20","21","22","23");
-			$minutes_array = array (00 => "00", 05 => "05", 10 => "10",15 => "15", 20 => "20",25 => "25", 30 => "30",35 => "35", 40 => "40", 45 => "45", 50 => "50", 55 => "55");
-
-			// time select boxes
-			$day_roll = $this->renderHtmlSelectBox('day', array('pátek'=>'pátek', 'sobota'=>'sobota', 'neděle'=>'neděle'), $this->data['day'], 'width:172px;');
-			$hour_roll = $this->renderHtmlSelectBox('start_hour', $hours_array, $this->data['start_hour']);
-			$minute_roll = $this->renderHtmlSelectBox('start_minute', $minutes_array, $this->data['start_minute']);
-			$end_hour_roll = $this->renderHtmlSelectBox('end_hour', $hours_array, $this->data['end_hour']);
-			$end_minute_roll = $this->renderHtmlSelectBox('end_minute', $minutes_array, $this->data['end_minute']);
-			// is program block check box
-			$program_checkbox = $this->renderHtmlCheckBox('program', 1, $this->data['program']);
-			// display programs in block check box
-			$display_progs_checkbox = $this->renderHtmlCheckBox('display_progs', 0, $this->data['display_progs']);
-		}
-
-		$parameters = [
-			'cssDir'	=> CSS_DIR,
-			'jsDir'		=> JS_DIR,
-			'imgDir'	=> IMG_DIR,
-			'blockDir'	=> BLOCK_DIR,
-			'wwwDir'	=> HTTP_DIR,
-			'error'		=> printError($this->error),
-			'todo'		=> $this->todo,
-			'action'	=> $this->getAction(),
-			'render'	=> $this->getModel()->getData(),
-			'mid'		=> $this->meetingId,
-			'page'		=> $this->page,
-			'heading'	=> $this->heading,
-		];
-
-		if($this->cms != 'annotation') {
-			$parameters = array_merge($parameters, [
-				'style'		=> $this->getStyles(),
-				'user'		=> $this->getSunlightUser($_SESSION[SESSION_PREFIX.'user']),
-				'meeting'	=> $this->getPlaceAndYear($_SESSION['meetingID']),
-				'menu'		=> $this->generateMenu(),
-			]);
-		}
-
-		if(!empty($this->data)) {
-
-			$parameters = array_merge($parameters, [
-				'id'				=> $this->blockId,
-				'data'				=> $this->data,
-				'error_name'		=> printError($error_name),
-				'error_description'	=> printError($error_description),
-				'error_tutor'		=> printError($error_tutor),
-				'error_email'		=> printError($error_email),
-				'categories'		=> $this->getCategory()->all(),
-				'selectedCategory'	=> $this->data['category'],
-				'day_roll'			=> $day_roll,
-				'hour_roll'			=> $hour_roll,
-				'minute_roll'		=> $minute_roll,
-				'end_hour_roll'		=> $end_hour_roll,
-				'end_minute_roll'	=> $end_minute_roll,
-				'program_checkbox'	=> $program_checkbox,
-				'display_progs_checkbox'	=> $display_progs_checkbox,
-				'formkey'			=> ((int)$this->blockId.$this->meetingId) * 116 + 39147,
-				'meeting_heading'	=> $this->getMeeting()->getRegHeading(),
-				'block'				=> $this->itemId,
-				'error_material'	=> printError($error_material),
-				'type'				=> isset($this->data['type']) ? $this->data['type'] : NULL,
-				'hash'				=> isset($this->data['formkey']) ? $this->data['formkey'] : NULL,
-			]);
-		}
-
-		$this->getLatte()->render(__DIR__ . '/../templates/' . $this->templateDir.'/'.$this->template . '.latte', $parameters);
 	}
 
 	/**

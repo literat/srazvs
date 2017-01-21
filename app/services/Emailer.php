@@ -1,7 +1,8 @@
 <?php
 
-namespace App;
+namespace App\Services;
 
+use App\Models\SettingsModel;
 use Nette\Mail\IMailer;
 use Nette\Mail\Message;
 use Tracy\Debugger;
