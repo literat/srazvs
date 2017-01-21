@@ -47,10 +47,9 @@ class CategoryPresenter extends BasePresenter
 	 */
 	public function actionCreate()
 	{
-		$model = $this->getModel();
-		$data = $this->getRequest()->getPost();
-
 		try {
+			$model = $this->getModel();
+			$data = $this->getRequest()->getPost();
 			$result = $this->getModel()->create($data);
 
 			Debugger::log('Creation of category successfull, result: ' . json_encode($result), Debugger::INFO);
@@ -71,9 +70,8 @@ class CategoryPresenter extends BasePresenter
 	 */
 	public function actionUpdate($id)
 	{
-		$data = $this->getRequest()->getPost();
-
 		try {
+			$data = $this->getRequest()->getPost();
 			$result = $this->getModel()->update($id, $data);
 
 			Debugger::log('Modification of category id ' . $id . ' with data ' . json_encode($data) . ' successfull, result: ' . json_encode($result), Debugger::INFO);

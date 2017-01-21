@@ -16,11 +16,20 @@ class ProgramModel extends BaseModel
 {
 
 	/**
-	 * Array of database programs table columns
-	 *
-	 * @var array	DB_columns[]
+	 * @var array
 	 */
-	public $dbColumns = array();
+	public $columns = [
+		'guid',
+		'name',
+		'block',
+		'display_in_reg',
+		'description',
+		'tutor',
+		'email',
+		'category',
+		'material',
+		'capacity',
+	];
 
 	/**
 	 * Array of form names
@@ -29,15 +38,13 @@ class ProgramModel extends BaseModel
 	 */
 	public $formNames = array();
 
-	private $dbTable;
+	protected $table = 'kk_programs';
 
 	/** Constructor */
 	public function __construct(Context $database)
 	{
-		$this->dbColumns = array('guid', "name", "block", "display_in_reg", "description", "tutor", "email", "category", "material", "capacity");
 		$this->formNames = array('guid', "name", "description", "material", "tutor", "email", "capacity", "display_in_reg", "block", "category");
-		$this->dbTable = "kk_programs";
-		$this->database = $database;
+		$this->setDatabase($database);
 	}
 
 	public function setMeetingId($id)
@@ -55,7 +62,7 @@ class ProgramModel extends BaseModel
 	public function getPrograms($blockId, $vid)
 	{
 		$blocks = $this->database
-			->table($this->dbTable)
+			->table($this->getTable())
 			->where('block ? AND deleted ?', $blockId, '0')
 			->limit(10)
 			->fetchAll();
@@ -244,10 +251,37 @@ class ProgramModel extends BaseModel
 		return $data;
 	}
 
+	/**
+	 * @return Nette\Database\Table\ActiveRow
+	 */
+	public function all()
+	{
+		return $this->getDatabase()
+				->query('SELECT programs.id AS id,
+						programs.name AS name,
+						programs.description AS description,
+						programs.tutor AS tutor,
+						programs.email AS email,
+						blocks.name AS block,
+						programs.capacity AS capacity,
+						style,
+						cat.name AS cat_name
+				FROM kk_programs AS programs
+				LEFT JOIN kk_blocks AS blocks ON blocks.id = programs.block
+				LEFT JOIN kk_categories AS cat ON cat.id = programs.category
+				WHERE blocks.meeting = ? AND programs.deleted = ? AND blocks.deleted = ?
+				ORDER BY programs.id ASC',
+				$this->getMeetingId(), '0', '0')->fetchAll();
+	}
+
+	/**
+	 * @param  string $guid
+	 * @return Nette\Database\Table\ActiveRow
+	 */
 	public function annotation($guid)
 	{
-		return $this->database
-				->table($this->dbTable)
+		return $this->getDatabase()
+				->table($this->getTable())
 				->where('guid ? AND deleted ?', $guid, '0')
 				->limit(1)
 				->fetch();
@@ -263,7 +297,7 @@ class ProgramModel extends BaseModel
 	public function getProgramsRegistration ($id, $disabled)
 	{
 		$result = $this->database
-			->table($this->dbTable)
+			->table($this->getTable())
 			->where('block ? AND deleted ?', $id, '0')
 			->limit(10)
 			->fetchAll();
@@ -474,7 +508,7 @@ class ProgramModel extends BaseModel
 	public function getTutor($id)
 	{
 		return $this->database
-			->table($this->dbTable)
+			->table($this->getTable())
 			->select('guid, email, tutor')
 			->where('id ? AND deleted ?', $id, '0')
 			->limit(1)

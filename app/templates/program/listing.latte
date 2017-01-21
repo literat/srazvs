@@ -2,7 +2,11 @@
 
 {block content}
 		<div class='siteContentRibbon'>Správa programů</div>
-		{$error|noescape}
+
+		{foreach $flashes as $flash}
+		<div class="flash {$flash->type}">{$flash->message}</div>
+		{/foreach}
+
 		<div class='pageRibbon'>seznam programů</div>
 		<div class='link'>
 			<a class='link' href='{$progDir}/new?page=program'>
@@ -57,7 +61,7 @@
 				</tr>
 			</tfoot>
 			<tbody>
-				{if $render == 0}
+				{if $programs == 0}
 				<tr class='radek1'>
 					<td><img class='edit' src='{$imgDir}icons/edit2.gif' /></td>
 					<td><img class='edit' src='{$imgDir}icons/pdf2.gif' /></td>
@@ -65,7 +69,7 @@
 					<td colspan='11' class='emptyTable'>Nejsou k dispozici žádné položky.</td>
 				</tr>
 				{else}
-					{foreach $render as $row}
+					{foreach $programs as $row}
 				<tr class='radek1'>
 					<td>
 						<a href='{$progDir}/edit/{$row['id']}?page=program' title='Upravit'>

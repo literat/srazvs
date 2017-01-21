@@ -87,6 +87,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 		$template->imgDir = IMG_DIR;
 		$template->catDir = CAT_DIR;
 		$template->blockDir = BLOCK_DIR;
+		$template->progDir = PROG_DIR;
 
 		$template->categories = $this->getContainer()->getService('category')->all();
 		$template->user = $this->getSunlight()->findUser($_SESSION[SESSION_PREFIX.'user']);
