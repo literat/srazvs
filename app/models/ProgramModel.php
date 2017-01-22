@@ -131,7 +131,7 @@ class ProgramModel extends BaseModel
 	public function getExportPrograms($blockId)
 	{
 		$exportPrograms = $this->database
-			->table($this->dbTable)
+			->table($this->getTable())
 			->where('block ? AND deleted ?', $blockId, '0')
 			->limit(10)
 			->fetchAll();
@@ -225,7 +225,7 @@ class ProgramModel extends BaseModel
 	{
 		if(isset($program_id)) {
 			$data = $this->database
-				->table($this->dbTable)
+				->table($this->getTable())
 				->where('id ? AND deleted ?', $program_id, '0')
 				->limit(1)
 				->fetch();

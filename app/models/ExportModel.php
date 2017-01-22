@@ -1,9 +1,9 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Nette\Database\Context;
-use App\CategoryModel;
+use App\Models\CategoryModel;
 
 /**
  * Export Model
@@ -27,14 +27,11 @@ class ExportModel
 	/** @var CategoryModel categories */
 	private $category;
 
-	private $debugMode;
-
 	/** Constructor */
-	public function __construct(Context $database, CategoryModel $category, $debug)
+	public function __construct(Context $database, CategoryModel $category)
 	{
 		$this->database = $database;
 		$this->category = $category;
-		$this->debugMode = $debug;
 	}
 
 	public function setGraphHeight($height)

@@ -2,9 +2,12 @@
 
 namespace App\Presenters;
 
-use Nette\Database\Context;
-use Nette\DI\Container;
+use App\Models\ExportModel;
+use App\Models\ProgramModel;
+use App\Factories\ExcelFactory;
+use App\Factories\PdfFactory;
 use Nette\Utils\Strings;
+use Nette\Http\Request;
 
 /**
  * Export Controller
@@ -13,31 +16,46 @@ use Nette\Utils\Strings;
  */
 class ExportPresenter extends BasePresenter
 {
+
 	/**
-	 * This template variable will hold the 'view' portion of our MVC for this
-	 * controller
+	 * @var ProgramModel
 	 */
-	protected $templateName = 'exports';
+	protected $programModel;
 
-	private $export;
-	private $program;
-	private $pdf;
-	private $excel;
-	private $filename;
-	private $parameters;
+	/**
+	 * @var mPDF
+	 */
+	protected $pdf;
 
-	public function __construct(Context $database, Container $container)
+	/**
+	 * @var PHPExcel
+	 */
+	protected $excel;
+
+	/**
+	 * @param ExportModel  $export
+	 * @param ProgramModel $program
+	 * @param ExcelFactory $excel
+	 * @param PdfFactory   $pdf
+	 * @param Request      $request
+	 */
+	public function __construct(ExportModel $export, ProgramModel $program, ExcelFactory $excel, PdfFactory $pdf, Request $request)
 	{
-		$this->database = $database;
-		$this->container = $container;
-		$this->router = $this->container->parameters['router'];
-		$this->model = $this->container->createServiceExports();
-		$this->program = $this->container->createServiceProgram();
-		$this->latte = $this->container->getService('latte');
-		$this->templateDir = 'exports';
-		$this->pdf = $this->container->createServicePdffactory()->create();
-		$this->debugMode = $this->container->parameters['debugMode'];
-		$this->excel = $this->container->createServiceExcelfactory()->create();
+		$this->setModel($export);
+		$this->setProgramModel($program);
+		$this->setExcel($excel->create());
+		$this->setPdf($pdf->create());
+		$this->setRequest($request);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function startup()
+	{
+		parent::startup();
+
+		$this->getProgramModel()->setMeetingId($this->getMeetingId());
 	}
 
 	/**
@@ -102,27 +120,24 @@ class ExportPresenter extends BasePresenter
 				$this->renderProgramVisitors($id);
 				break;
 		}
+	}
 
-		$parameters = [
-			'cssDir'	=> CSS_DIR,
-			'jsDir'		=> JS_DIR,
-			'imgDir'	=> IMG_DIR,
-			'wwwDir'	=> HTTP_DIR,
-			'user'		=> $this->getSunlightUser($_SESSION[SESSION_PREFIX.'user']),
-			'meeting'	=> $this->getPlaceAndYear($_SESSION['meetingID']),
-			'menu'		=> $this->generateMenu(),
-			'graph'		=> $this->model->renderGraph(),
-			'graphHeight'	=> $this->model->getGraphHeight(),
-			'account'	=> $this->model->getMoney('account'),
-			'balance'	=> $this->model->getMoney('balance'),
-			'suma'		=> $this->model->getMoney('suma'),
-			'programs'	=> $this->program->renderExportPrograms(),
-			'materials'	=> $this->model->getMaterial(),
-			'meals'		=> $this->model->renderMealCount(),
-			'error'		=> printError($this->error),
-		];
+	/**
+	 * @return void
+	 */
+	public function renderListing()
+	{
+		$settingsModel = $this->getModel();
+		$template = $this->getTemplate();
 
-		$this->latte->render(__DIR__ . '/../templates/' . $this->templateDir.'/'.$this->templateName . '.latte', $parameters);
+		$template->graph = $settingsModel->renderGraph();
+		$template->graphHeight = $settingsModel->getGraphHeight();
+		$template->account = $settingsModel->getMoney('account');
+		$template->balance = $settingsModel->getMoney('balance');
+		$template->suma = $settingsModel->getMoney('suma');
+		$template->programs = $this->getProgramModel()->renderExportPrograms();
+		$template->materials = $settingsModel->getMaterial();
+		$template->meals = $settingsModel->renderMealCount();
 	}
 
 	public function renderEvidence($type, $visitorId = null)
@@ -568,6 +583,61 @@ class ExportPresenter extends BasePresenter
 			// download
 			$this->pdf->Output($filename, "D");
 		}
+	}
+
+	/**
+	 * @return ProgramModel
+	 */
+	protected function getProgramModel()
+	{
+		return $this->programModel;
+	}
+
+	/**
+	 * @param  ProgramModel $model
+	 * @return $this
+	 */
+	protected function setProgramModel(ProgramModel $model)
+	{
+		$this->programModel = $model;
+		return $this;
+	}
+
+
+	/**
+	 * @return PHPExcel
+	 */
+	protected function getExcel()
+	{
+		return $this->excel;
+	}
+
+	/**
+	 * @param  PHPExcel $excel
+	 * @return $this
+	 */
+	protected function setExcel(\PHPExcel $excel)
+	{
+		$this->excel = $excel;
+		return $this;
+	}
+
+	/**
+	 * @return mPDF
+	 */
+	protected function getPdf()
+	{
+		return $this->pdf;
+	}
+
+	/**
+	 * @param  mPDF $pdf
+	 * @return self
+	 */
+	protected function setPdf(\mPDF $pdf)
+	{
+		$this->pdf = $pdf;
+		return $this;
 	}
 
 }
