@@ -2,7 +2,11 @@
 
 {block content}
 <div class='siteContentRibbon'>Nastavení systému</div>
-{$error|noescape}
+
+{foreach $flashes as $flash}
+<div class="flash {$flash->type}">{$flash->message}</div>
+{/foreach}
+
 <div class='pageRibbon'>E-maily</div>
 <div class='pageContentRibbon'>Zaplacení poplatku</div>
 <div>
@@ -13,7 +17,7 @@
 		<div style="height:135px;">
 			{$payment_html_message|noescape}
 		</div>
-		<form action='/srazvs/settings/mail' method='post'>
+		<form action='/srazvs/settings/mail/cost' method='post'>
 			<label>E-mail:</label><br />
 			<input type="text" name="test-mail" size="50" /><br />
 			<input type="hidden" name="cms" value="mail" />
@@ -23,7 +27,7 @@
 		</form>
 	</div>
 
-	<form action='/srazvs/settings/update' method='post'>
+	<form action='/srazvs/settings/update/cost' method='post'>
 		<label>Předmět:</label><br />
 		<input type="text" name="subject" value="{$payment_subject}" size="50" /><br /><br />
 		<label>Obsah:</label>
@@ -48,7 +52,7 @@
 		<div style="height:135px;">
 			{$advance_html_message|noescape}
 		</div>
-		<form action='/srazvs/settings/mail' method='post'>
+		<form action='/srazvs/settings/mail/advance' method='post'>
 			<label>E-mail:</label><br />
 			<input type="text" name="test-mail" size="50" /><br />
 			<input type="hidden" name="cms" value="mail" />
@@ -58,7 +62,7 @@
 		</form>
 	</div>
 
-	<form action='/srazvs/settings/update' method='post'>
+	<form action='/srazvs/settings/update/advance' method='post'>
 		<label>Předmět:</label><br />
 		<input type="text" name="subject" value="{$advance_subject}" size="50" /><br /><br />
 		<label>Obsah:</label>
@@ -83,7 +87,7 @@
 		<div>
 			{$tutor_html_message|noescape}
 		</div>
-		<form action='/srazvs/settings/mail' method='post'>
+		<form action='/srazvs/settings/mail/tutor' method='post'>
 			<label>E-mail:</label><br />
 			<input type="text" name="test-mail" size="50" /><br />
 			<input type="hidden" name="cms" value="mail" />
@@ -92,7 +96,7 @@
 				<img src='{$imgDir}icons/mail.png'  /> Odeslat náhled</button>
 		</form>
 	</div>
-	<form action='/srazvs/settings/update' method='post'>
+	<form action='/srazvs/settings/update/tutor' method='post'>
 		<label>Předmět:</label><br />
 		<input type="text" name="subject" value="{$tutor_subject}" size="50" /><br /><br />
 		<label>Obsah:</label>
@@ -117,7 +121,7 @@
 		<div>
 			{$reg_html_message|noescape}
 		</div>
-		<form action='/srazvs/settings/mail' method='post'>
+		<form action='/srazvs/settings/mail/post_reg' method='post'>
 			<label>E-mail:</label><br />
 			<input type="text" name="test-mail" size="50" /><br />
 			<input type="hidden" name="cms" value="mail" />
@@ -126,7 +130,7 @@
 				<img src='{$imgDir}icons/mail.png'  /> Odeslat náhled</button>
 		</form>
 	</div>
-	<form action='/srazvs/settings/update' method='post'>
+	<form action='/srazvs/settings/update/post_reg' method='post'>
 		<label>Předmět:</label><br />
 		<input type="text" name="subject" value="{$reg_subject}" size="50" /><br /><br />
 		<label>Obsah:</label>

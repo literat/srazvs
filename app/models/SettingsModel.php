@@ -31,17 +31,14 @@ class SettingsModel extends BaseModel
 	}
 
 	/**
-	 * Get all settings
-	 *
-	 * @return	string	html table
+	 * @return	Nette\Database\Table\ActiveRow
 	 */
-	public function getData()
+	public function allOrFail()
 	{
 		$data = $this->all();
 
 		if(!$data) {
-			Debugger::log('Settings: no data found!', Debugger::ERROR);
-			return NULL;
+			throw new Exception('Settings: no data found!');
 		} else {
 			return $data;
 		}
@@ -68,13 +65,10 @@ class SettingsModel extends BaseModel
 		$result = $this->updateByName($data, 'mail_' . $type);
 
 		if(!$result) {
-			Debugger::log('Settings: mail type ' . $type . ' modification failed!', Debugger::ERROR);
 			throw new Exception('Mail modification failed!');
+		} else {
+			return $result;
 		}
-
-		Debugger::log('Settings: mail type ' . $type . ' successfully modified!', Debugger::INFO);
-
-		return $result;
 	}
 
 	/**
@@ -93,9 +87,8 @@ class SettingsModel extends BaseModel
 	 */
 	public function all()
 	{
-		return $this->database
+		return $this->getDatabase()
 			->table($this->getTable())
-			->where('deleted', 0)
 			->order('name')
 			->fetchAll();
 	}
@@ -106,7 +99,7 @@ class SettingsModel extends BaseModel
 	 */
 	public function findByName($name)
 	{
-		return $this->database
+		return $this->getDatabase()
 			->table($this->getTable())
 			->where('name', $name)
 			->fetch();
@@ -119,7 +112,7 @@ class SettingsModel extends BaseModel
 	 */
 	public function updateByName(array $data, $name)
 	{
-		return $this->database
+		return $this->getDatabase()
 			->table($this->getTable())
 			->where('name', $name)
 			->update($data);
