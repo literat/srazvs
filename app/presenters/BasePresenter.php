@@ -80,9 +80,14 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 			$this->setMeetingId($_SESSION['meetingID']);
 		}
 
+		$this->getModel()->setMeetingId($this->getMeetingId());
+
+		$this->debugMode = $this->getContainer()->getParameters()['debugMode'];
+
 		$template = $this->getTemplate();
 		$meeting = $this->getContainer()->getService('meeting');
 
+		$template->baseDir = ROOT_DIR;
 		$template->wwwDir = HTTP_DIR;
 		$template->cssDir = CSS_DIR;
 		$template->jsDir = JS_DIR;

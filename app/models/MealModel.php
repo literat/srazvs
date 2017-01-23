@@ -1,6 +1,8 @@
 <?php
 
-namespace App;
+namespace App\Models;
+
+use Nette\Database\Context;
 
 /**
  * Meal
@@ -17,7 +19,7 @@ class MealModel extends BaseModel
 	public $day_meal = array();
 
 	/** Constructor */
-	public function __construct($database)
+	public function __construct(Context $database)
 	{
 		$this->dbColumns = array(
 			"visitor",

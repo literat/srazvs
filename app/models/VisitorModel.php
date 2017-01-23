@@ -1,7 +1,8 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
+use Nette\Database\Context;
 use Nette\Utils\Strings;
 use Tracy\Debugger;
 use \Exception;
@@ -63,7 +64,7 @@ class VisitorModel
 		MealModel $Meals,
 		ProgramModel $Program,
 		BlockModel $Blocks,
-		$database
+		Context $database
 	) {
 		$this->Meeting = $Meeting;
 		$this->meeting_price = $this->Meeting->getPrice('cost');

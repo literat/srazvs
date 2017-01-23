@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Nette\Database\Context;
 use App\Models\CategoryModel;
+use App\Models\BaseModel;
 
 /**
  * Export Model
@@ -13,16 +14,11 @@ use App\Models\CategoryModel;
  * @created 2012-09-21
  * @author Tomas Litera <tomaslitera@hotmail.com>
  */
-class ExportModel
+class ExportModel extends BaseModel
 {
-	/** @var int meeting ID */
-	private $meetingId;
 
 	/** @var int graph height */
 	private $graphHeight;
-
-	/** @var Connection database */
-	private $database;
 
 	/** @var CategoryModel categories */
 	private $category;
@@ -30,7 +26,7 @@ class ExportModel
 	/** Constructor */
 	public function __construct(Context $database, CategoryModel $category)
 	{
-		$this->database = $database;
+		$this->setDatabase($database);
 		$this->category = $category;
 	}
 
@@ -42,16 +38,6 @@ class ExportModel
 	public function getGraphHeight()
 	{
 		return $this->graphHeight;
-	}
-
-	public function setMeetingId($id)
-	{
-		$this->meetingId = $id;
-	}
-
-	public function getMeetingId()
-	{
-		return $this->meetingId;
 	}
 
 	/**
@@ -168,7 +154,7 @@ class ExportModel
 			$specificVisitor = "vis.id='" . $visitorId . "' AND";
 		}
 
-		return $this->database->query('SELECT	vis.id AS id,
+		return $this->getDatabase()->query('SELECT	vis.id AS id,
 					name,
 					surname,
 					street,
@@ -187,7 +173,7 @@ class ExportModel
 			LEFT JOIN kk_meetings AS meets ON meets.id = vis.meeting
 			WHERE ' . $specificVisitor . ' meeting = ? AND vis.deleted = ?
 			ORDER BY surname, name
-			' . $evidenceLimit, $this->meetingId, '0')->fetchAll();
+			' . $evidenceLimit, $this->getMeetingId(), '0')->fetchAll();
 	}
 
 	public static function getPdfBlocks($vid, $database)

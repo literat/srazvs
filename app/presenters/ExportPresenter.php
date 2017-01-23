@@ -8,6 +8,7 @@ use App\Factories\ExcelFactory;
 use App\Factories\PdfFactory;
 use Nette\Utils\Strings;
 use Nette\Http\Request;
+use Tracy\Debugger;
 
 /**
  * Export Controller
@@ -16,6 +17,9 @@ use Nette\Http\Request;
  */
 class ExportPresenter extends BasePresenter
 {
+
+	const TEMPLATE_DIR = __DIR__ . '/../templates/export/';
+	const TEMPLATE_EXT = 'latte';
 
 	/**
 	 * @var ProgramModel
@@ -31,6 +35,8 @@ class ExportPresenter extends BasePresenter
 	 * @var PHPExcel
 	 */
 	protected $excel;
+
+	protected $filename;
 
 	/**
 	 * @param ExportModel  $export
@@ -140,8 +146,9 @@ class ExportPresenter extends BasePresenter
 		$template->meals = $settingsModel->renderMealCount();
 	}
 
-	public function renderEvidence($type, $visitorId = null)
+	public function renderEvidence($id, $visitorId = null)
 	{
+		$template = $this->getTemplate();
 		$this->filename = 'faktura.pdf';
 
 		// summary header
@@ -149,32 +156,41 @@ class ExportPresenter extends BasePresenter
 		$hkvsHeader .= "Senovážné náměstí 977/24, Praha 1, 110 00 | ";
 		$hkvsHeader .= "IČ: 65991753, ČÚ: 2300183549/2010";
 
-		$data = $this->model->evidence($visitorId);
+		$data = $this->getModel()->evidence($visitorId);
 
 		if(!$data) {
-			redirect('/srazvs/export/?error=no_data');
+			Debugger::log('No data for evidence export.', Debugger::ERROR);
+			$this->flashMessage('No data.');
+			$this->redirect('Export:listing');
 		}
 
 		switch($type){
 			case "summary":
-				$this->templateName = 'evidence_summary';
+				$templateName = 'evidence_summary';
 				// specific mPDF settings
-				$this->pdf->defaultfooterfontsize = 16;
-				$this->pdf->defaultfooterfontstyle = 'B';
-				$this->pdf->SetHeader($hkvsHeader);
+				$this->getPdf()->defaultfooterfontsize = 16;
+				$this->getPdf()->defaultfooterfontstyle = 'B';
+				$this->getPdf()->SetHeader($hkvsHeader);
 				break;
 			case "confirm":
-				$this->templateName = 'evidence_confirm';
+				$templateName = 'evidence_confirm';
 				break;
 			default:
-				$this->templateName = 'evidence';
+				$templateName = 'evidence';
 				break;
 		}
 
-		$this->parameters = [
-			'imgDir'	=> IMG_DIR,
-			'result'	=> $data,
-		];
+		$this->setView($templateName);
+		$template->setFile(
+			sprintf(
+				'%s%s.%s',
+				self::TEMPLATE_DIR,
+				$templateName,
+				self::TEMPLATE_EXT
+			)
+		);
+
+		$template->result = $data;
 
 		$this->publish();
 	}
@@ -571,7 +587,7 @@ class ExportPresenter extends BasePresenter
 
 	protected function publish()
 	{
-		$template = $this->latte->renderToString(__DIR__ . '/../templates/' . $this->templateDir . '/' . $this->templateName . '.latte', $this->parameters);
+		$template = $this->getTemplate();
 
 		/* debugging */
 		if($this->debugMode){
@@ -579,9 +595,10 @@ class ExportPresenter extends BasePresenter
 			exit('DEBUG_MODE');
 		} else {
 			// write html
-			$this->pdf->WriteHTML($template, 0);
+			$this->getPdf()->WriteHTML((string) $template, 0);
 			// download
-			$this->pdf->Output($filename, "D");
+			$this->getPdf()->Output($this->filename, "D");
+		exit;
 		}
 	}
 

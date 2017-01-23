@@ -45,15 +45,6 @@ class BlockPresenter extends BasePresenter
 	/**
 	 * @return void
 	 */
-	public function startup()
-	{
-		parent::startup();
-		$this->getModel()->setMeetingId($this->getMeetingId());
-	}
-
-	/**
-	 * @return void
-	 */
 	public function renderNew()
 	{
 		$template = $this->getTemplate();
