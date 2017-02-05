@@ -23,11 +23,14 @@ class ExportModel extends BaseModel
 	/** @var CategoryModel categories */
 	private $category;
 
+	private static $connection;
+
 	/** Constructor */
 	public function __construct(Context $database, CategoryModel $category)
 	{
 		$this->setDatabase($database);
 		$this->category = $category;
+		self::$connection = $this->getDatabase();
 	}
 
 	public function setGraphHeight($height)
@@ -181,7 +184,7 @@ class ExportModel extends BaseModel
 		$programs = "<tr>";
 		$programs .= " <td class='progPart'>";
 
-		$data = $database->query('SELECT 	id,
+		$data = self::$connection->query('SELECT 	id,
 							day,
 							DATE_FORMAT(`from`, "%H:%i") AS `from`,
 							DATE_FORMAT(`to`, "%H:%i") AS `to`,
@@ -200,7 +203,7 @@ class ExportModel extends BaseModel
 				else {
 					$programs .= "<div class='block'>".$progData['day'].", ".$progData['from']." - ".$progData['to']." : ".$progData['name']."</div>\n";
 
-					if($progData['program'] == 1) $programs .= "<div>".ProgramModel::getPdfPrograms($progData['id'], $vid, $database)."</div>";
+					if($progData['program'] == 1) $programs .= "<div>".ProgramModel::getPdfPrograms($progData['id'], $vid, self::$connection)."</div>";
 				}
 			}
 		}
@@ -219,7 +222,7 @@ class ExportModel extends BaseModel
 	 */
 	public function programCards()
 	{
-		return $this->database->query('SELECT	vis.id AS id,
+		return $this->getDatabase()->query('SELECT	vis.id AS id,
 						name,
 						surname,
 						nick,

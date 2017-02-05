@@ -40,11 +40,14 @@ class ProgramModel extends BaseModel
 
 	protected $table = 'kk_programs';
 
+	private static $connection;
+
 	/** Constructor */
 	public function __construct(Context $database)
 	{
 		$this->formNames = array('guid', "name", "description", "material", "tutor", "email", "capacity", "display_in_reg", "block", "category");
 		$this->setDatabase($database);
+		self::$connection = $this->getDatabase();
 	}
 
 	public function setMeetingId($id)
@@ -444,9 +447,9 @@ class ProgramModel extends BaseModel
 		return $html;
 	}
 
-	public static function getProgramNames($block_id, $database)
+	public static function getProgramNames($block_id)
 	{
-		$result = $database
+		$result = self::$connection
 			->table('kk_programs')
 			->select('name')
 			->where('block ? AND deleted ?', $block_id, '0')

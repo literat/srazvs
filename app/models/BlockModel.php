@@ -36,12 +36,15 @@ class BlockModel extends BaseModel
 		//"meeting",
 	];
 
+	private static $connection;
+
 	/**
 	 * @param Context  $database
 	 */
 	public function __construct(Context $database)
 	{
 		$this->setDatabase($database);
+		self::$connection = $this->getDatabase();
 	}
 
 	/**
@@ -126,7 +129,7 @@ class BlockModel extends BaseModel
 			->fetchAll();
 	}
 
-	public static function getExportBlocks($meetingId, $dayVal, $database)
+	public function getExportBlocks($meetingId, $dayVal)
 	{
 		$result = $this->getDatabase()
 			->query('SELECT blocks.id AS id,

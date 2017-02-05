@@ -33,8 +33,6 @@
 </head>
 <body>
 
-{var $days = array("PÁTEK", "SOBOTA", "NEDĚLE")}
-
 {foreach $result as $unused}
 	{if $iterator->counter % 2 == 1}
 	<table>
@@ -47,11 +45,11 @@
 		<tr>
 			<td>
 				<table>
-				{foreach $days as $day_key => $day_val}
+				{foreach $days as $day}
 					<tr>
-						<td class='day'>{$day_val}</td>
+						<td class='day'>{$day}</td>
 					</tr>
-		{var $result = App\BlockModel::getExportBlocks($meeting_id, $day_val, $database)}
+		{var $result = $exportBlocks[$day]}
 
 		{if !$result}
 			<td class='emptyTable' style='width:400px;'>Nejsou žádná aktuální data.</td>
@@ -70,7 +68,7 @@
 
 				{* kdyz je programovy blok, tak zobrazim jenom jeho obsah*}
 				{if $row['program']}
-					{php echo App\ProgramModel::getProgramNames($row['id'], $database)}
+					{php echo App\Models\ProgramModel::getProgramNames($row['id'])}
 					</td>
 				{else}
 					{if $row['category'] == 7}

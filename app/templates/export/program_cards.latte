@@ -49,7 +49,7 @@
 		<tr>
 
 		</tr>
-			{php echo \App\ExportModel::getPdfBlocks($row['id'], $database)}
+			{php echo \App\Models\ExportModel::getPdfBlocks($row['id'], $database)}
 		<tr>
 			<td class='meeting'>
 				SRAZ VS - {$row['place']} {$row['start_date']} {$row['end_date']}

@@ -4,6 +4,7 @@ namespace App\Presenters;
 
 use App\Models\ExportModel;
 use App\Models\ProgramModel;
+use App\Models\BlockModel;
 use App\Factories\ExcelFactory;
 use App\Factories\PdfFactory;
 use Nette\Utils\Strings;
@@ -26,6 +27,8 @@ class ExportPresenter extends BasePresenter
 	 */
 	protected $programModel;
 
+	protected $blockModel;
+
 	/**
 	 * @var mPDF
 	 */
@@ -45,10 +48,17 @@ class ExportPresenter extends BasePresenter
 	 * @param PdfFactory   $pdf
 	 * @param Request      $request
 	 */
-	public function __construct(ExportModel $export, ProgramModel $program, ExcelFactory $excel, PdfFactory $pdf, Request $request)
-	{
+	public function __construct(
+		ExportModel $export,
+		ProgramModel $program,
+		BlockModel $block,
+		ExcelFactory $excel,
+		PdfFactory $pdf,
+		Request $request
+	) {
 		$this->setModel($export);
 		$this->setProgramModel($program);
+		$this->setBlockModel($block);
 		$this->setExcel($excel->create());
 		$this->setPdf($pdf->create());
 		$this->setRequest($request);
@@ -82,9 +92,6 @@ class ExportPresenter extends BasePresenter
 		$this->program->setMeetingId($this->meetingId);
 
 		switch($this->router->getParameter('action')){
-			case 'attendance':
-				$this->renderAttendance();
-				break;
 			case 'evidence':
 				$type = $this->requested('id');
 				if($this->requested('vid')) {
@@ -93,33 +100,9 @@ class ExportPresenter extends BasePresenter
 					$this->renderEvidence($type);
 				}
 				break;
-			case 'visitorExcel':
-				$this->renderVisitorsExcel();
-				break;
-			case 'mealTicket':
-				$this->renderMealTicket();
-				break;
 			case 'nameBadges':
 				$names =$this->requested('names', '');
 				$this->renderNameBadges($names);
-				break;
-			case 'programDetails':
-				$this->renderProgramDetails();
-				break;
-			case 'programCards':
-				$this->renderProgramCards();
-				break;
-			case 'programLarge':
-				$this->renderLargeProgram();
-				break;
-			case 'programBadge':
-				$this->renderProgramBadges();
-				break;
-			case 'programPublic':
-				$this->renderPublicProgram();
-				break;
-			case 'nameList':
-				$this->renderNameList();
 				break;
 			case 'programVisitors':
 				$id = $this->requested('id');
@@ -148,7 +131,6 @@ class ExportPresenter extends BasePresenter
 
 	public function renderEvidence($id, $visitorId = null)
 	{
-		$template = $this->getTemplate();
 		$this->filename = 'faktura.pdf';
 
 		// summary header
@@ -156,15 +138,15 @@ class ExportPresenter extends BasePresenter
 		$hkvsHeader .= "Senovážné náměstí 977/24, Praha 1, 110 00 | ";
 		$hkvsHeader .= "IČ: 65991753, ČÚ: 2300183549/2010";
 
-		$data = $this->getModel()->evidence($visitorId);
+		$evidences = $this->getModel()->evidence($visitorId);
 
-		if(!$data) {
+		if(!$evidences) {
 			Debugger::log('No data for evidence export.', Debugger::ERROR);
 			$this->flashMessage('No data.');
 			$this->redirect('Export:listing');
 		}
 
-		switch($type){
+		switch($id){
 			case "summary":
 				$templateName = 'evidence_summary';
 				// specific mPDF settings
@@ -180,18 +162,11 @@ class ExportPresenter extends BasePresenter
 				break;
 		}
 
-		$this->setView($templateName);
-		$template->setFile(
-			sprintf(
-				'%s%s.%s',
-				self::TEMPLATE_DIR,
-				$templateName,
-				self::TEMPLATE_EXT
-			)
-		);
+		$parameters = [
+			'result' => $evidences,
+		];
 
-		$template->result = $data;
-
+		$this->forgeView($templateName, $parameters);
 		$this->publish();
 	}
 
@@ -205,20 +180,21 @@ class ExportPresenter extends BasePresenter
 	{
 		// output file name
 		$this->filename = "attendance_list.pdf";
-		$this->templateName = 'attendance';
+		$templateName = 'attendance';
 
-		$data = $this->model->attendance();
+		$attendances = $this->getModel()->attendance();
 
 		// prepare header
-		$attendanceHeader = $data[0]['place'] . ' ' . $data[0]['year'];
+		$attendanceHeader = $attendances[0]['place'] . ' ' . $attendances[0]['year'];
 
 		// set header
-		$this->pdf->SetHeader($attendanceHeader.'|sraz VS|Prezenční listina');
+		$this->getPdf()->SetHeader($attendanceHeader.'|sraz VS|Prezenční listina');
 
-		$this->parameters = [
-			'result' => $data,
+		$parameters = [
+			'result' => $attendances,
 		];
 
+		$this->forgeView($templateName, $parameters);
 		$this->publish();
 	}
 
@@ -232,15 +208,15 @@ class ExportPresenter extends BasePresenter
 	{
 		// output file name
 		$this->filename= 'vlastni_stravenky.pdf';
-		$this->templateName = 'meal_ticket';
+		$templateName = 'meal_ticket';
 
-		$data = $this->model->mealTicket();
+		$mealTickets = $this->getModel()->mealTicket();
 
-		$this->parameters = [
-			'imgDir'	=> IMG_DIR,
-			'result'	=> $data,
+		$parameters = [
+			'result' => $mealTickets,
 		];
 
+		$this->forgeView($templateName, $parameters);
 		$this->publish();
 	}
 
@@ -254,21 +230,33 @@ class ExportPresenter extends BasePresenter
 	{
 		// output file name
 		$this->filename = 'name_list.pdf';
-		$this->templateName = 'name_list';
+		$templateName = 'name_list';
 
-		$data = $this->model->nameList();
+		$nameList = $this->getModel()->nameList();
 
 		// prepare header
-		$namelistHeader = $data[0]['place'] . " " . $data[0]['year'];
+		$namelistHeader = $nameList[0]['place'] . " " . $nameList[0]['year'];
 
 		// set header
-		$this->pdf->SetHeader($namelistHeader.'|sraz VS|Jméno, Příjmení, Přezdívka');
+		$this->getPdf()->SetHeader($namelistHeader.'|sraz VS|Jméno, Příjmení, Přezdívka');
 
-		$this->parameters = [
-			'result'	=> $data,
+		$parameters = [
+			'result' => $nameList,
 		];
 
+		$this->forgeView($templateName, $parameters);
 		$this->publish();
+	}
+
+	/**
+	 * @param  string $id
+	 * @return void
+	 */
+	public function renderProgram($id)
+	{
+		$programMethod = 'renderProgram' . Strings::firstUpper($id);
+
+		call_user_func([$this, $programMethod]);
 	}
 
 	/**
@@ -277,24 +265,19 @@ class ExportPresenter extends BasePresenter
 	 * @param	void
 	 * @return	file	PDF file
 	 */
-	public function renderProgramCards()
+	protected function renderProgramCards()
 	{
 		$this->filename = 'vlastni_programy.pdf';
-		$this->templateName = 'program_cards';
+		$templateName = 'program_cards';
 
-		$data = $this->model->programCards();
+		$this->getPdf()->SetWatermarkImage(IMG_DIR . 'logos/watermark.jpg', 0.1, '');
+		$this->getPdf()->showWatermarkImage = true;
 
-		// prepare header
-		$attendanceHeader = $data[0]['place']." ".$data[0]['year'];
-
-		$this->pdf->SetWatermarkImage(IMG_DIR . 'logos/watermark.jpg', 0.1, '');
-		$this->pdf->showWatermarkImage = true;
-
-		$this->parameters = [
-			'result'	=> $data,
-			'database'	=> $this->database,
+		$parameters = [
+			'result' => $this->getModel()->programCards(),
 		];
 
+		$this->forgeView($templateName, $parameters);
 		$this->publish();
 	}
 
@@ -304,24 +287,24 @@ class ExportPresenter extends BasePresenter
 	 * @param	voide
 	 * @return	file	PDF file
 	 */
-	public function renderLargeProgram()
+	protected function renderProgramLarge()
 	{
-		$this->filename = Strings::toAscii($data['place'] . $data['year'] . '-program') . '.pdf';
-		$this->templateName = 'program_large';
+		$largeProgram = $this->getModel()->largeProgram();
 
-		// prepare header
-		$data = $this->model->largeProgram();
+		$this->filename = Strings::toAscii($largeProgram['place'] . $largeProgram['year'] . '-program') . '.pdf';
+		$templateName = 'program_large';
 
-		$meetingHeader = $data['place']." ".$data['year'];
+		$meetingHeader = $largeProgram['place']." ".$largeProgram['year'];
 
-		$this->pdf->paperFormat = 'B1';
+		$this->getPdf()->paperFormat = 'B1';
 
-		$this->parameters = [
-			'header'		=> $meetingHeader,
-			'export'		=> $this->model,
-			'program'		=> $this->program,
+		$parameters = [
+			'header'	=> $meetingHeader,
+			'export'	=> $this->getModel(),
+			'program'	=> $this->getProgramModel(),
 		];
 
+		$this->forgeView($templateName, $parameters);
 		$this->publish();
 
 	}
@@ -332,22 +315,21 @@ class ExportPresenter extends BasePresenter
 	 * @param	void
 	 * @return	file	PDF file
 	 */
-	public function renderPublicProgram()
+	protected function renderProgramPublic()
 	{
-		$this->templateName = 'program_public';
-		$this->filename = Strings::toAscii($data['place'] . $data['year'] . '-program' . '.pdf');
+		$templateName = 'program_public';
+		$publicProgram = $this->getModel()->publicProgram();
+		$this->filename = Strings::toAscii($publicProgram['place'] . $publicProgram['year'] . '-program' . '.pdf');
 
-		$data = $this->model->publicProgram();
+		$meetingHeader = $publicProgram['place'] . ' ' . $publicProgram['year'];
 
-		$meetingHeader = $data['place'] . ' ' . $data['year'];
-
-		$this->parameters = [
+		$parameters = [
 			'header'		=> $meetingHeader,
-			'styles'		=> $this->getStyles(),
-			'export'		=> $this->model,
-			'program'		=> $this->program,
+			'export'		=> $this->getModel(),
+			'program'		=> $this->getProgramModel(),
 		];
 
+		$this->forgeView($templateName, $parameters);
 		$this->publish();
 	}
 
@@ -357,21 +339,82 @@ class ExportPresenter extends BasePresenter
 	 * @param	void
 	 * @return	file	PDF file
 	 */
-	public function renderProgramBadges()
+	protected function renderProgramBadges()
 	{
 		$this->filename = 'program-badge.pdf';
-		$this->templateName = 'program_badge';
+		$templateName = 'program_badge';
 
-		$data = $this->model->programBadges();
+		$programBadges = $this->getModel()->programBadges();
 
-		$this->pdf->setMargins(5, 5, 9, 5);
+		$this->getPdf()->setMargins(5, 5, 9, 5);
 
-		$this->parameters = [
-			'meeting_id'	=> $this->meetingId,
-			'result'		=> $data,
-			'database'		=> $this->database,
+		$days = [
+			'PÁTEK',
+			'SOBOTA',
+			'NEDĚLE',
 		];
 
+		$exportBlocks = [];
+		foreach ($days as $day) {
+			$exportBlocks[$day] = $this->getBlockModel()->getExportBlocks($this->meetingId, $day);
+		}
+
+		$parameters = [
+			'meeting_id'	=> $this->meetingId,
+			'result'		=> $programBadges,
+			'days'			=> $days,
+			'exportBlocks'	=> $exportBlocks,
+		];
+
+		$this->forgeView($templateName, $parameters);
+		$this->publish();
+	}
+
+	/**
+	 * Print visitors on program into PDF file
+	 *
+	 * @param	int		program id
+	 * @return	file	PDF file
+	 */
+	protected function renderProgramVisitors($programId)
+	{
+		$this->filename = 'ucastnici-programu.pdf';
+		$templateName = 'program_visitors';
+
+		$programs = $this->getModel()->programVisitors($programId);
+
+		$programHeader = $programs[0]['program'];
+
+		$this->getPdf()->SetHeader($programHeader.'|sraz VS|Účastnící programu');
+
+		$parameters = [
+			'result' => $programs,
+		];
+
+		$this->forgeView($templateName, $parameters);
+		$this->publish();
+	}
+
+	/**
+	 * Print details of program into PDF file
+	 *
+	 * @param	void
+	 * @return	file	PDF file
+	 */
+	protected function renderProgramDetails()
+	{
+		$this->filename = 'vypis-programu.pdf';
+		$templateName = 'program_details';
+
+		$programDetails = $this->getModel()->programDetails();
+
+		$this->getPdf()->SetHeader('Výpis programů|sraz VS');
+
+		$parameters = [
+			'result' => $programDetails,
+		];
+
+		$this->forgeView($templateName, $parameters);
 		$this->publish();
 	}
 
@@ -384,82 +427,35 @@ class ExportPresenter extends BasePresenter
 	public function renderNameBadges($names = null)
 	{
 		$this->filename = 'jmenovky.pdf';
-		$this->templateName = 'name_badge';
+		$templateName = 'name_badge';
 
-		$badges = array();
+		$badges = [];
 
-		if(empty($names)) {
-			$data = $this->model->nameBadges();
+		if(!$names) {
+			$nameBadges = $this->getModel()->nameBadges();
 
-			foreach($data as $row) {
-				array_push($badges, $row);
+			foreach($nameBadges as $badge) {
+				array_push($badges, $badge);
 			}
 		} else {
 			$names = preg_replace('/\s+/','',$names);
 
 			$values = explode(',',$names);
 			foreach($values as $value) {
-				$row['nick'] = $value;
-				array_push($badges, $row);
+				$badge['nick'] = $value;
+				array_push($badges, $badge);
 			}
 		}
 
-		$this->pdf->setMargins(15, 15, 10, 5);
+		$this->getPdf()->setMargins(15, 15, 10, 5);
+		$this->getPdf()->SetWatermarkImage(IMG_DIR . 'logos/watermark-waves.jpg', 0.1, '');
+		$this->getPdf()->showWatermarkImage = TRUE;
 
-		// set watermark
-		$this->pdf->SetWatermarkImage(IMG_DIR . 'logos/watermark-waves.jpg', 0.1, '');
-		$this->pdf->showWatermarkImage = TRUE;
-
-		$this->parameters = [
+		$parameters = [
 			'result' => $badges,
 		];
 
-		$this->publish();
-	}
-
-/**
-	 * Print visitors on program into PDF file
-	 *
-	 * @param	int		program id
-	 * @return	file	PDF file
-	 */
-	public function renderProgramVisitors($programId)
-	{
-		$this->filename = 'ucastnici-programu.pdf';
-		$this->templateName = 'program_visitors';
-
-		$data = $this->model->programVisitors($programId);
-
-		$programHeader = $data[0]['program'];
-
-		$this->pdf->SetHeader($programHeader.'|sraz VS|Účastnící programu');
-
-		$this->parameters = [
-			'result' => $data,
-		];
-
-		$this->publish();
-	}
-
-	/**
-	 * Print details of program into PDF file
-	 *
-	 * @param	void
-	 * @return	file	PDF file
-	 */
-	public function renderProgramDetails()
-	{
-		$this->filename = 'vypis-programu.pdf';
-		$this->templateName = 'program_details';
-
-		$data = $this->model->programDetails();
-
-		$this->pdf->SetHeader('Výpis programů|sraz VS');
-
-		$this->parameters = [
-			'result' => $data,
-		];
-
+		$this->forgeView($templateName, $parameters);
 		$this->publish();
 	}
 
@@ -470,7 +466,7 @@ class ExportPresenter extends BasePresenter
 	 */
 	public function renderVisitorsExcel()
 	{
-		$excel = $this->excel;
+		$excel = $this->getExcel();
 
 		$excel->getProperties()->setCreator("HKVS Srazy K + K")->setTitle("Návštěvníci");
 
@@ -525,7 +521,7 @@ class ExportPresenter extends BasePresenter
 			$excel->getActiveSheet()->getColumnDimension($key)->setWidth($value);
 		}
 
-		$visitors = $this->model->visitorsExcel();
+		$visitors = $this->getModel()->visitorsExcel();
 
 		$cellValues = [
 			'A' => 'id',
@@ -585,6 +581,32 @@ class ExportPresenter extends BasePresenter
 		exit;
 	}
 
+	/**
+	 * @param  string $name
+	 * @param  array  $parameters
+	 * @return self
+	 */
+	protected function forgeView($name = '', array $parameters = [])
+	{
+		$template = $this->getTemplate();
+
+		foreach ($parameters as $parameter => $value) {
+			$template->{$parameter} = $value;
+		}
+
+		$this->setView($name);
+		$template->setFile(
+			sprintf(
+				'%s%s.%s',
+				self::TEMPLATE_DIR,
+				$name,
+				self::TEMPLATE_EXT
+			)
+		);
+
+		return $this;
+	}
+
 	protected function publish()
 	{
 		$template = $this->getTemplate();
@@ -608,6 +630,24 @@ class ExportPresenter extends BasePresenter
 	protected function getProgramModel()
 	{
 		return $this->programModel;
+	}
+
+	/**
+	 * @param  BlockModel $model
+	 * @return $this
+	 */
+	protected function setBlockModel(BlockModel $model)
+	{
+		$this->blockModel = $model;
+		return $this;
+	}
+
+	/**
+	 * @return BlockModel
+	 */
+	protected function getBlockModel()
+	{
+		return $this->blockModel;
 	}
 
 	/**
