@@ -19,6 +19,7 @@
     "require-dev": {
         "nette/tester": "^1.7",
         "mockery/mockery": "^0.9.4",
-        "codeception/codeception": "^2.2"
+        "codeception/codeception": "^2.2",
+        "webchemistry/custom-bar": "^1.2"
     }
 }
