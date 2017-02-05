@@ -100,10 +100,6 @@ class ExportPresenter extends BasePresenter
 					$this->renderEvidence($type);
 				}
 				break;
-			case 'nameBadges':
-				$names =$this->requested('names', '');
-				$this->renderNameBadges($names);
-				break;
 			case 'programVisitors':
 				$id = $this->requested('id');
 				$this->renderProgramVisitors($id);
@@ -419,31 +415,35 @@ class ExportPresenter extends BasePresenter
 	}
 
 	/**
+	 * @return void
+	 */
+	public function actionNameBadges()
+	{
+		$names = $this->getRequest()->getPost()['names'];
+		$this->renderNameBadges($names);
+	}
+
+	/**
 	 * Print name badges into PDF file
 	 *
 	 * @param	string 	comma separated values
 	 * @return	file	PDF file
 	 */
-	public function renderNameBadges($names = null)
+	public function renderNameBadges($namesStringified)
 	{
 		$this->filename = 'jmenovky.pdf';
 		$templateName = 'name_badge';
 
 		$badges = [];
-
-		if(!$names) {
-			$nameBadges = $this->getModel()->nameBadges();
-
-			foreach($nameBadges as $badge) {
-				array_push($badges, $badge);
-			}
+		if(!$namesStringified) {
+			$badges = $this->getModel()->nameBadges();
 		} else {
-			$names = preg_replace('/\s+/','',$names);
+			$namesStringified = preg_replace('/\s+/','',$namesStringified);
 
-			$values = explode(',',$names);
-			foreach($values as $value) {
-				$badge['nick'] = $value;
-				array_push($badges, $badge);
+			$names = explode(',',$namesStringified);
+			foreach($names as $name) {
+				$badge['nick'] = $name;
+				$badges[] = $badge;
 			}
 		}
 

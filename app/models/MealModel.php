@@ -15,49 +15,55 @@ use Nette\Database\Context;
 class MealModel extends BaseModel
 {
 
-	/** @var array	meals */
-	public $day_meal = array();
+	/**
+	 * @var array
+	 */
+	protected $dayMeal = [
+		"páteční večeře"	=>	"fry_dinner",
+		"sobotní snídaně"	=>	"sat_breakfast",
+		"sobotní oběd"		=>	"sat_lunch",
+		"sobotní večeře"	=>	"sat_dinner",
+		"nedělní snídaně"	=>	"sun_breakfast",
+		"nedělní oběd"		=>	"sun_lunch"
+	];
 
-	/** Constructor */
+	/**
+	 * @var string
+	 */
+	protected $table = 'kk_meals';
+
+	/**
+	 * @var array
+	 */
+	protected $columns = [
+		"visitor",
+		"fry_dinner",
+		"sat_breakfast",
+		"sat_lunch",
+		"sat_dinner",
+		"sun_breakfast",
+		"sun_lunch"
+	];
+
+	/**
+	 * @param Context $database
+	 */
 	public function __construct(Context $database)
 	{
-		$this->dbColumns = array(
-			"visitor",
-			"fry_dinner",
-			"sat_breakfast",
-			"sat_lunch",
-			"sat_dinner",
-			"sun_breakfast",
-			"sun_lunch"
-		);
-
-		$this->dayMeal = array(
-			"páteční večeře"	=>	"fry_dinner",
-			"sobotní snídaně"	=>	"sat_breakfast",
-			"sobotní oběd"		=>	"sat_lunch",
-			"sobotní večeře"	=>	"sat_dinner",
-			"nedělní snídaně"	=>	"sun_breakfast",
-			"nedělní oběd"		=>	"sun_lunch"
-		);
-		$this->dbTable = "kk_meals";
-		$this->database = $database;
+		$this->setDatabase($database);
 	}
 
 	/**
-	 * Modify record
-	 *
-	 * @param	int		$id			Id of record
-	 * @param	array	$db_data	Array of data
-	 * @return	bool
+	 * @param  integer $visitorId
+	 * @param  array   $data
+	 * @return ActiveRow
 	 */
-	public function modify($id, array $dbData)
+	public function update($visitorId, array $data)
 	{
-		$result = $this->database
-			->table($this->dbTable)
-			->where('visitor', $id)
-			->update($dbData);
-
-		return $result;
+		return $this->getDatabase()
+			->table($this->getTable())
+			->where('visitor', $visitorId)
+			->update($data);
 	}
 
 	function getMeals($visitorId)
@@ -67,7 +73,7 @@ class MealModel extends BaseModel
 
 		$result = $this->database
 			->table($this->dbTable)
-			->where('vsitor', $visitorId)
+			->where('visitor', $visitorId)
 			->fetchAll();
 
 		if(!$result){
