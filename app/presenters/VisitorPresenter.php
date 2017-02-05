@@ -2,8 +2,13 @@
 
 namespace App\Presenters;
 
-use Nette\Database\Context;
-use Nette\DI\Container;
+use App\Models\MeetingModel;
+use App\Models\VisitorModel;
+use App\Models\ExportModel;
+use App\Models\BlockModel;
+use App\Models\MealModel;
+use App\Services\Emailer;
+use Nette\Http\Request;
 use Tracy\Debugger;
 
 /**
@@ -24,10 +29,9 @@ class VisitorPresenter extends BasePresenter
 	private $emailer;
 
 	/**
-	 * Export class
-	 * @var Export
+	 * @var ExportModel
 	 */
-	private $Export;
+	private $exportModel;
 
 	/**
 	 * Meeting class
@@ -36,10 +40,9 @@ class VisitorPresenter extends BasePresenter
 	private $Meeting;
 
 	/**
-	 * Meal class
-	 * @var Meal
+	 * @var MealModel
 	 */
-	private $Meal;
+	private $mealModel;
 
 	/**
 	 * Recipients
@@ -50,38 +53,43 @@ class VisitorPresenter extends BasePresenter
 	private $disabled;
 	private $mealData;
 
-	/** @var Block */
-	protected $block;
+	/**
+	 * @var BlockModel
+	 */
+	protected $blockModel;
 
 	/**
-	 * Prepare model classes and get meeting id
+	 * @var MeetingModel
 	 */
-	public function __construct(Context $database, Container $container)
-	{
+	protected $meetingModel;
+
+	/**
+	 * @param VisitorModel $visitors
+	 * @param MealModel    $meals
+	 * @param BlockModel   $blocks
+	 * @param ExportModel  $exports
+	 * @param Emailer      $emailer
+	 */
+	public function __construct(
+		VisitorModel $visitors,
+		MealModel $meals,
+		BlockModel $blocks,
+		ExportModel $exports,
+		MeetingModel $meetings,
+		Emailer $emailer,
+		Request $request
+	) {
+		$this->setModel($visitors);
+		$this->setMealModel($meals);
+		$this->setBlockModel($blocks);
+		$this->setExportModel($exports);
+		$this->setMeetingModel($meetings);
+		$this->setEmailer($emailer);
+		$this->setRequest($request);
+
 		$this->templateDir = 'visitor';
 		$this->template = "listing";
 		$this->page = 'visitor';
-
-		$this->container = $container;
-		$this->database = $database;
-		$this->router = $this->container->parameters['router'];
-		$this->setModel($this->container->getService('visitor'));
-		$this->setEmailer($this->container->getService('emailer'));
-		$this->Export = $this->container->getService('exports');
-		$this->Meeting = $this->container->getService('meeting');
-		$this->Meal = $this->container->getService('meal');
-		$this->setBlock($this->container->getService('block'));
-		$this->latte = $this->container->getService('latte');
-
-		if($this->meetingId = $this->requested('mid', '')) {
-			$_SESSION['meetingID'] = $this->meetingId;
-		} else {
-			$this->meetingId = $_SESSION['meetingID'];
-		}
-
-		$this->getModel()->setMeetingId($this->meetingId);
-		$this->Meeting->setMeetingId($this->meetingId);
-		$this->Meeting->setHttpEncoding($this->container->parameters['encoding']);
 	}
 
 	/**
@@ -440,12 +448,12 @@ class VisitorPresenter extends BasePresenter
 	}
 
 	/**
-	 * Render all page
-	 *
 	 * @return void
 	 */
-	public function render()
+	public function renderListing()
 	{
+		$template = $this->getTemplate();
+
 		$error = "";
 		$disabled = NULL;
 		if(!empty($this->data)) {
@@ -459,27 +467,27 @@ class VisitorPresenter extends BasePresenter
 			$error_cost = "";
 		}
 
-		$parameters = [
-			'cssDir'			=> CSS_DIR,
-			'jsDir'				=> JS_DIR,
-			'imgDir'			=> IMG_DIR,
-			'visitDir'			=> VISIT_DIR,
-			'expDir'			=> EXP_DIR,
-			'style'				=> $this->getStyles(),
-			'user'				=> $this->getSunlightUser($_SESSION[SESSION_PREFIX.'user']),
-			'meeting'			=> $this->getPlaceAndYear($_SESSION['meetingID']),
-			'menu'				=> $this->generateMenu(),
-			'error'				=> printError($this->error),
-			'todo'				=> $this->todo,
-			'render'			=> $this->getModel()->getData(),
-			'mid'				=> $this->meetingId,
-			'page'				=> $this->page,
-			'heading'			=> $this->heading,
-			'visitorCount'		=> $this->getModel()->getCount(),
-			'meetingPrice'		=> $this->Meeting->getPrice('cost'),
-			'search'			=> $this->getModel()->search,
-			'recipient_mails'	=> $this->recipients,
-		];
+//		$parameters = [
+//			'cssDir'			=> CSS_DIR,
+//			'jsDir'				=> JS_DIR,
+//			'imgDir'			=> IMG_DIR,
+			$template->visitDir	= VISIT_DIR;
+			$template->expDir = EXP_DIR;
+//			'style'				=> $this->getStyles(),
+//			'user'				=> $this->getSunlightUser($_SESSION[SESSION_PREFIX.'user']),
+//			'meeting'			=> $this->getPlaceAndYear($_SESSION['meetingID']),
+//			'menu'				=> $this->generateMenu(),
+//			'error'				=> printError($this->error),
+//			'todo'				=> $this->todo,
+			$template->render = $this->getModel()->getData();
+//			'mid'				=> $this->meetingId,
+//			'page'				=> $this->page,
+//			'heading'			=> $this->heading,
+			$template->visitorCount = $this->getModel()->getCount();
+			$template->meetingPrice	= $this->getMeetingModel()->getPrice('cost');
+			$template->search = $this->getModel()->search;
+//			'recipient_mails'	=> $this->recipients,
+//		];
 
 		if(!empty($this->data)) {
 			$parameters['id'] = $this->itemId;
@@ -503,42 +511,78 @@ class VisitorPresenter extends BasePresenter
 
 		}
 
-		$this->latte->render(__DIR__ . '/../templates/' . $this->templateDir.'/'.$this->template . '.latte', $parameters);
+		//$this->latte->render(__DIR__ . '/../templates/' . $this->templateDir.'/'.$this->template . '.latte', $parameters);
 	}
 
 	/**
-	 * @return Block
+	 * @return BlockModel
 	 */
-	protected function getBlock()
+	protected function getBlockModel()
 	{
-		return $this->block;
+		return $this->blockModel;
 	}
 
 	/**
-	 * @param  Blocks $block
+	 * @param  BlockModel $model
 	 * @return $this
 	 */
-	protected function setBlock($block)
+	protected function setBlockModel(BlockModel $model)
 	{
-		$this->block = $block;
+		$this->blockModel = $model;
 		return $this;
 	}
 
 	/**
-	 * @return Visitor
+	 * @return MealModel
 	 */
-	protected function getModel()
+	protected function getMealModel()
 	{
-		return $this->model;
+		return $this->mealModel;
 	}
 
 	/**
-	 * @param  Visitor $model
+	 * @param  MealModel $model
 	 * @return $this
 	 */
-	protected function setModel($model)
+	protected function setMealModel(MealModel $model)
 	{
-		$this->model = $model;
+		$this->mealModel = $model;
+		return $this;
+	}
+
+	/**
+	 * @return ExportModel
+	 */
+	protected function getExportModel()
+	{
+		return $this->exportModel;
+	}
+
+	/**
+	 * @param  ExportModel $model
+	 * @return $this
+	 */
+	protected function setExportModel(ExportModel $model)
+	{
+		$this->exportModel = $model;
+		return $this;
+	}
+
+	/**
+	 * @return MeetingModel
+	 */
+	protected function getMeetingModel()
+	{
+		return $this->meetingModel;
+	}
+
+	/**
+	 * @param  MeetingModel $model
+	 * @return $this
+	 */
+	protected function setMeetingModel(MeetingModel $model)
+	{
+		$this->meetingModel = $model;
 		return $this;
 	}
 

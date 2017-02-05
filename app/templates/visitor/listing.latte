@@ -2,7 +2,11 @@
 
 {block content}
 <div class='siteContentRibbon'>Správa účastníků</div>
-{$error|noescape}
+
+{foreach $flashes as $flash}
+<div class="flash {$flash->type}">{$flash->message}</div>
+{/foreach}
+
 <div class='pageRibbon'>informace a exporty</div>
 <div>
 	počet účastníků: <span style="font-size:12px; font-weight:bold;">{$visitorCount}</span>
