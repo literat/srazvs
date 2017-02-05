@@ -2,11 +2,19 @@ parameters:
     database:
         driver: mysql
         host: localhost
-        dbname: vodni
+        name: vodni
         user: root
         password: root
     cacheDir: D:\home\literat\web\wwwroot\skauting\vodni\srazvs/temp/cache
 
 services:
-    imailer:
+    mail.mailer:
         class: Nette\Mail\SendmailMailer
+
+skautis:
+    applicationId : f6b25658-2944-463c-ae99-22íec56a0326
+    testMode : true #using http://test-is.skautis.cz/
+    profiler : true
+
+extensions:
+    bar: WebChemistry\Bar\DI\Extension
