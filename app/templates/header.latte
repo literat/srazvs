@@ -51,9 +51,11 @@
 					</ul>
 					<div class='menuItem'>jednotlivé srazy</div>
 					<ul>
+					{cache "meetings/all", expire => '10 minutes', tags => ["meetings/all", "menu"]}
 					{foreach $menuItems as $item}
 						<li><a href='?mid={$item->mid}'>{$item->place} {$item->year}</a></li>
 					{/foreach}
+					{/cache}
 					</ul>
 				</div>
 			</div>

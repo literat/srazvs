@@ -21,6 +21,7 @@
 	<meta name='author' content='LITERA Tomáš(slunda); tomaslitera(zavinac)outlook(tecka)com' />
 	<meta name='copyright' content="(C) 2001 - {php date('Y')}, Litera Tomáš, Praha" />
 	<style type="text/css">
+	{cache 'categories:all', expire => '10 minutes', tags => ['categories:all']}
 	{foreach $categories as $id => $category}
 		.cat-{$category->style} {
 			border: 2px solid #{$category->bocolor};
@@ -28,5 +29,6 @@
 			color: #{$category->focolor};
 		}
 	{/foreach}
+	{/cache}
 	</style>
 </head>

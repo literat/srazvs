@@ -7,6 +7,7 @@ use Nette,
 use Nette\Utils\Strings;
 use Nette\Http\Request;
 use App\Models\SunlightModel;
+use Nette\Caching\Cache;
 
 /**
  * Base presenter for all application presenters.
@@ -83,6 +84,16 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 		$this->getModel()->setMeetingId($this->getMeetingId());
 
 		$this->debugMode = $this->getContainer()->getParameters()['debugMode'];
+	}
+
+
+	/**
+	 * Before render
+	 * Prepare variables for template
+	 */
+	public function beforeRender()
+	{
+		parent::beforeRender();
 
 		$template = $this->getTemplate();
 		$meeting = $this->getContainer()->getService('meeting');
@@ -95,23 +106,18 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 		$template->catDir = CAT_DIR;
 		$template->blockDir = BLOCK_DIR;
 		$template->progDir = PROG_DIR;
+		$template->visitDir = VISIT_DIR;
+		$template->expDir = EXP_DIR;
 
-		$template->categories = $this->getContainer()->getService('category')->all();
+		$template->categories = $this->remember('categories:all', 10, function () {
+			return $this->getContainer()->getService('category')->all();
+		});
+
 		$template->user = $this->getSunlight()->findUser($_SESSION[SESSION_PREFIX.'user']);
 		$template->meeting = $meeting->getPlaceAndYear($_SESSION['meetingID']);
 		$template->menuItems = $meeting->getMenuItems();
 		$template->meeting_heading	= $meeting->getRegHeading();
 		//$this->template->backlink = $this->getParameter("backlink");
-	}
-
-
-	/**
-	 * Before render
-	 * Prepare variables for template
-	 */
-	public function beforeRender()
-	{
-		parent::beforeRender();
 
 		//$this->template->production = $this->context->parameters['environment'] === 'production' ? 1 : 0;
 		//$this->template->version = $this->context->parameters['site']['version'];
@@ -482,6 +488,47 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 	protected function updateByGuid($guid, array $data)
 	{
 		return $this->getModel()->updateBy('guid', $guid, $data);
+	}
+
+	public function remember($key, $minutes, \Closure $callback)
+	{
+		// If the item exists in the cache we will just return this immediately
+		// otherwise we will execute the given Closure and cache the result
+		// of that execution for the given number of minutes in storage.
+		if (! is_null($data = $this->getCache()->load($key))) {
+			$items = [];
+
+			foreach($data as $item) {
+				$object = new \stdClass();
+				foreach ($item as $key => $value) {
+					$object->$key = $value;
+				}
+				$items[] = $object;
+			}
+
+			return $items;
+		}
+
+		$data = $callback();
+		$serialized = [];
+		foreach ($data as $item) {
+			$serialized[] = $item->toArray();
+		}
+
+		$this->getCache()->save(
+			$key,
+			$serialized,
+			[
+				Cache::EXPIRE => $minutes . ' minutes',
+			]
+		);
+
+		return $data;
+	}
+
+	protected function getCache()
+	{
+		return $this->getContainer()->getService('cache');
 	}
 
 }

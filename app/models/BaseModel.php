@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Nette\Database\Context;
 use Nette\Object;
+use Nette\Caching\Cache;
 
 /**
  * BaseModel
@@ -26,6 +27,11 @@ abstract class BaseModel extends Object
 
 	/** @var integer */
 	protected $meetingId;
+
+	/**
+	 * @var Cache
+	 */
+	protected $cache;
 
 	/** Constructor */
 	public function __construct($table = null, $database = null)
@@ -208,6 +214,25 @@ abstract class BaseModel extends Object
 	protected function generateGuid()
 	{
 		return md5(uniqid());
+	}
+
+	/**
+	 * @return Cache
+	 */
+	protected function getCache()
+	{
+		return $this->cache;
+	}
+
+	/**
+	 * @param  Cache $cache
+	 * @return $this
+	 */
+	protected function setCache(Cache $cache)
+	{
+		$this->cache = $cache;
+
+		return $this;
 	}
 
 }
