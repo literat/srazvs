@@ -4,12 +4,12 @@ namespace App\Presenters;
 
 use App\Models\MeetingModel;
 use App\Models\VisitorModel;
-use App\Models\ExportModel;
 use App\Models\BlockModel;
 use App\Models\MealModel;
 use App\Services\Emailer;
 use Nette\Http\Request;
 use Tracy\Debugger;
+use Exception;
 
 /**
  * Visitor controller
@@ -27,11 +27,6 @@ class VisitorPresenter extends BasePresenter
 
 	/** @var Emailer */
 	private $emailer;
-
-	/**
-	 * @var ExportModel
-	 */
-	private $exportModel;
 
 	/**
 	 * Meeting class
@@ -67,14 +62,12 @@ class VisitorPresenter extends BasePresenter
 	 * @param VisitorModel $visitors
 	 * @param MealModel    $meals
 	 * @param BlockModel   $blocks
-	 * @param ExportModel  $exports
 	 * @param Emailer      $emailer
 	 */
 	public function __construct(
 		VisitorModel $visitors,
 		MealModel $meals,
 		BlockModel $blocks,
-		ExportModel $exports,
 		MeetingModel $meetings,
 		Emailer $emailer,
 		Request $request
@@ -82,12 +75,10 @@ class VisitorPresenter extends BasePresenter
 		$this->setModel($visitors);
 		$this->setMealModel($meals);
 		$this->setBlockModel($blocks);
-		$this->setExportModel($exports);
 		$this->setMeetingModel($meetings);
 		$this->setEmailer($emailer);
 		$this->setRequest($request);
 
-		$this->templateDir = 'visitor';
 		$this->template = "listing";
 		$this->page = 'visitor';
 	}
@@ -124,12 +115,6 @@ class VisitorPresenter extends BasePresenter
 		$action = $this->requested('action', '');
 
 		switch($action) {
-			case "delete":
-				$this->actionDelete($query_id);
-				break;
-			case "new":
-				$this->actionNew();
-				break;
 			case "create":
 				$this->actionCreate();
 				break;
@@ -144,54 +129,9 @@ class VisitorPresenter extends BasePresenter
 				break;
 			case "send":
 				$this->actionSend($this->requested('recipients', ''));
-			// pay full charge
-			case "pay":
-				$this->actionPay($query_id);
-				break;
-			// pay advance
-			case "advance":
-				$this->actionAdvance($query_id);
-				break;
-			// export all visitors to excel
-			case "export":
-				$this->Export->printVisitorsExcel();
-				break;
-			case "checked":
-				$this->actionChecked($id);
-				break;
-			case "unchecked":
-				$this->actionUnchecked($id);
-				break;
 		}
 
 		$this->render();
-	}
-
-	/**
-	 * Prepare page for new item
-	 *
-	 * @return void
-	 */
-	private function actionNew()
-	{
-		$this->template = 'form';
-
-		$this->heading = "nový účastník";
-		$this->todo = "create";
-
-		// requested for meals
-		foreach($this->Meal->dbColumns as $var_name) {
-			$$var_name = $this->requested($var_name, 'ne');
-			$this->mealData[$var_name] = $$var_name;
-		}
-
-		// requested for visitors fields
-		foreach($this->getModel()->dbColumns as $key) {
-			if($key == 'bill') $value = 0;
-			elseif($key == 'cost') $value = $this->Meeting->getPrice('cost');
-			else $value = "";
-			$this->data[$key] = $this->requested($key, $value);
-		}
 	}
 
 	/**
@@ -324,16 +264,21 @@ class VisitorPresenter extends BasePresenter
 	}
 
 	/**
-	 * Delete item by id
-	 *
-	 * @param  int $id of item
+	 * @param  int  $id
 	 * @return void
 	 */
-	private function actionDelete($id)
+	public function actionDelete($id)
 	{
-		if($this->getModel()->delete($id)) {
-			  redirect(self::PATH . "?error=del");
+		try {
+			$result = $this->getModel()->delete($id);
+			Debugger::log('Destroying of visitor('. $id .') successfull, result: ' . json_encode($result), Debugger::INFO);
+			$this->flashMessage('Položka byla úspěšně smazána', 'ok');
+		} catch(Exception $e) {
+			Debugger::log('Destroying of visitor('. $id .') failed, result: ' .  $e->getMessage(), Debugger::ERROR);
+			$this->flashMessage('Destroying of visitor failed, result: ' . $e->getMessage(), 'error');
 		}
+
+		$this->redirect('Visitor:listing');
 	}
 
 	/**
@@ -383,69 +328,113 @@ class VisitorPresenter extends BasePresenter
 	}
 
 	/**
-	 * Pay charge
-	 *
-	 * @param  int 		$query_id     of visitors
-	 * @param  string 	$payment_type cost|advance
+	 * @param  integer|string $ids
 	 * @return void
 	 */
-	private function actionPay($ids)
+	public function actionPay($ids)
 	{
-		$visitor = $this->getModel();
-
 		try {
+			$visitor = $this->getModel();
 			$visitor->payCharge($ids, 'cost');
-		} catch(\Exception $e) {
+			$recipients = $visitor->getRecipients($ids);
+			$this->getEmailer()->sendPaymentInfo($recipients, 'advance');
+
+			Debugger::log('Visitor: Action pay for id ' . $ids . ' successfull, result: ' . $e->getMessage(), Debugger::INFO);
+			$this->flashMessage('Platba byla zaplacena.', 'ok');
+		} catch(Exception $e) {
 			Debugger::log('Visitor: Action pay for id ' . $ids . ' failed, result: ' . $e->getMessage(), Debugger::ERROR);
-			redirect(self::PATH . "?".$this->page."&error=already_paid");
+			$this->flashMessage('Visitor: Action pay for id ' . $ids . ' failed, result: ' . $e->getMessage(), 'error');
 		}
 
-		$recipients = $visitor->getRecipients($ids);
-		$this->getEmailer()->sendPaymentInfo($recipients, 'cost');
-		redirect(self::PATH . "?".$this->page."&error=mail_send");
+		$this->redirect('Visitor:listing');
 	}
 
-	protected function actionAdvance($ids)
+	/**
+	 * @param  string|interger $ids
+	 * @return void
+	 */
+	public function actionAdvance($ids)
 	{
-		$visitor = $this->getModel();
-
 		try {
-			$this->Visitor->payCharge($ids, 'advance');
-		} catch(\Exception $e) {
+			$visitor = $this->getModel();
+			$visitor->payCharge($ids, 'advance');
+			$recipients = $visitor->getRecipients($ids);
+			$this->getEmailer()->sendPaymentInfo($recipients, 'advance');
+
+			Debugger::log('Visitor: Action advance for id ' . $ids . ' successfull, result: ' . $e->getMessage(), Debugger::INFO);
+			$this->flashMessage('Záloha byla zaplacena.', 'ok');
+		} catch(Exception $e) {
 			Debugger::log('Visitor: Action advance for id ' . $ids . ' failed, result: ' . $e->getMessage(), Debugger::ERROR);
-			redirect(self::PATH . "?".$this->page."&error=already_paid");
+			$this->flashMessage('Visitor: Action advance for id ' . $ids . ' failed, result: ' . $e->getMessage(), 'error');
 		}
 
-		$recipients = $visitor->getRecipients($ids);
-		$this->getEmailer()->sendPaymentInfo($recipients, 'advance');
-		redirect(self::PATH . "?".$this->page."&error=mail_send");
+		$this->redirect('Visitor:listing');
 	}
 
 	/**
 	 * Set item as checked by id
 	 *
-	 * @param  int $id of item
+	 * @param  integer $id
 	 * @return void
 	 */
-	private function actionChecked($id)
+	public function actionChecked($id)
 	{
-		if($this->getModel()->checked($id, '1')) {
-			  redirect(self::PATH . "?error=checked");
+		try {
+			$result = $this->getModel()->checked($id, '1');
+			Debugger::log('Check of visitor('. $id .') successfull, result: ' . json_encode($result), Debugger::INFO);
+			$this->flashMessage('Položka byla úspěšně zkontrolována', 'ok');
+		} catch(Exception $e) {
+			Debugger::log('Check of visitor('. $id .') failed, result: ' .  $e->getMessage(), Debugger::ERROR);
+			$this->flashMessage('Check of visitor failed, result: ' . $e->getMessage(), 'error');
 		}
+
+		$this->redirect('Visitor:listing');
 	}
 
 	/**
 	 * Set item as unchecked by id
 	 *
-	 * @param  int $id of item
+	 * @param  integer $id
 	 * @return void
 	 */
-	private function actionUnchecked($id)
+	public function actionUnchecked($id)
 	{
-		if($this->getModel()->checked($id, 0)) {
-			  redirect(self::PATH . "?error=unchecked");
+		try {
+			$result = $this->getModel()->checked($id, 0);
+			Debugger::log('Uncheck of visitor('. $id .') successfull, result: ' . json_encode($result), Debugger::INFO);
+			$this->flashMessage('Položka byla nastavena jako nekontrolována', 'ok');
+		} catch(Exception $e) {
+			Debugger::log('Uncheck of visitor('. $id .') failed, result: ' .  $e->getMessage(), Debugger::ERROR);
+			$this->flashMessage('Uncheck of visitor failed, result: ' . $e->getMessage(), 'error');
 		}
+
+		$this->redirect('Visitor:listing');
 	}
+
+	/**
+	 * Prepare page for new item
+	 *
+	 * @return void
+	 */
+	public function renderNew()
+	{
+		$template = $this->getTemplate();
+
+		$template->heading = 'nový účastník';
+		$template->error_name = '';
+		$template->error_surname = '';
+		$template->error_nick = '';
+		$template->error_email = '';
+		$template->error_postal_code = '';
+		$template->error_group_num = '';
+		$template->error_bill = '';
+		$template->error_cost = '';
+		$template->province = $this->getMeetingModel()->renderHtmlProvinceSelect(null);
+		$template->meals = $this->getMealModel()->renderHtmlMealsSelect($this->mealData, $this->disabled);
+		$template->cost = $this->getMeetingModel()->getPrice('cost');
+		$template->programSwitcher = $this->getModel()->renderProgramSwitcher($this->meetingId, $this->itemId);
+	}
+
 
 	/**
 	 * @return void
@@ -471,8 +460,8 @@ class VisitorPresenter extends BasePresenter
 //			'cssDir'			=> CSS_DIR,
 //			'jsDir'				=> JS_DIR,
 //			'imgDir'			=> IMG_DIR,
-			$template->visitDir	= VISIT_DIR;
-			$template->expDir = EXP_DIR;
+			//$template->visitDir	= VISIT_DIR;
+			//$template->expDir = EXP_DIR;
 //			'style'				=> $this->getStyles(),
 //			'user'				=> $this->getSunlightUser($_SESSION[SESSION_PREFIX.'user']),
 //			'meeting'			=> $this->getPlaceAndYear($_SESSION['meetingID']),
@@ -510,8 +499,6 @@ class VisitorPresenter extends BasePresenter
 			$parameters['guid'] = isset($this->data['guid']) ? $this->data['guid'] : '';
 
 		}
-
-		//$this->latte->render(__DIR__ . '/../templates/' . $this->templateDir.'/'.$this->template . '.latte', $parameters);
 	}
 
 	/**
@@ -547,24 +534,6 @@ class VisitorPresenter extends BasePresenter
 	protected function setMealModel(MealModel $model)
 	{
 		$this->mealModel = $model;
-		return $this;
-	}
-
-	/**
-	 * @return ExportModel
-	 */
-	protected function getExportModel()
-	{
-		return $this->exportModel;
-	}
-
-	/**
-	 * @param  ExportModel $model
-	 * @return $this
-	 */
-	protected function setExportModel(ExportModel $model)
-	{
-		$this->exportModel = $model;
 		return $this;
 	}
 
