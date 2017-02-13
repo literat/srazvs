@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Nette\Database\Context;
 use App\Models\ProgramModel;
+use App\Models\BaseModel;
 
 /**
  * Meeting
@@ -13,13 +14,8 @@ use App\Models\ProgramModel;
  * @created 2012-11-09
  * @author Tomas Litera <tomaslitera@hotmail.com>
  */
-class MeetingModel
+class MeetingModel extends BaseModel
 {
-	/**
-	 * Meeting ID
-	 * @var int
-	 */
-	private $meetingId;
 
 	/** @var array days of weekend */
 	private $weekendDays = array();
@@ -42,8 +38,9 @@ class MeetingModel
 	private $configuration;
 	private $program;
 	private $httpEncoding;
-	private $database;
 	private $dbTable;
+
+	protected $table = 'kk_meetings';
 
 	/** Constructor */
 	public function __construct(Context $database, ProgramModel $program)
@@ -78,11 +75,6 @@ class MeetingModel
 		$this->dbTable = "kk_meetings";
 		$this->database = $database;
 		$this->program = $program;
-	}
-
-	public function setMeetingId($id)
-	{
-		$this->meetingId = $id;
 	}
 
 	public function setHttpEncoding($encoding)
@@ -172,22 +164,17 @@ class MeetingModel
 	}
 
 	/**
-	 * Get meeting price
-	 *
-	 * @var		string	type of charge
-	 * @return	int		return cost or false
+	 * @param  string $priceType cost|advance
+	 * @return integer
 	 */
-	public function getPrice($type)
+	public function getPrice($priceType)
 	{
-		$data = $this->database
-			->table($this->dbTable)
-			->where('id', $this->meetingId)
+		return $this->getDatabase()
+			->table($this->getTable())
+			->select($priceType)
+			->where('id', $this->getMeetingId())
 			->limit(1)
-			->fetch();
-
-		if($type == 'cost') return $data['cost'];
-		elseif($type == 'advance') return $data['advance'];
-		else return -1;
+			->fetchField();
 	}
 
 	/**
@@ -534,9 +521,9 @@ class MeetingModel
 
 	public function getPlaceAndYear($meetingId)
 	{
-		return $this->database->query(
+		return $this->getDatabase()->query(
 			'SELECT	place, DATE_FORMAT(start_date, "%Y") AS year
-			FROM ' . $this->dbTable . '
+			FROM ' . $this->getTable() . '
 			WHERE id = ? AND deleted = ?
 			LIMIT 1', $meetingId, '0')
 			->fetch();

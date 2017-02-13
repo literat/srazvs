@@ -45,9 +45,6 @@ class VisitorPresenter extends BasePresenter
 	 */
 	private $recipients = NULL;
 
-	private $disabled;
-	private $mealData;
-
 	/**
 	 * @var BlockModel
 	 */
@@ -62,7 +59,9 @@ class VisitorPresenter extends BasePresenter
 	 * @param VisitorModel $visitors
 	 * @param MealModel    $meals
 	 * @param BlockModel   $blocks
+	 * @param MeetingModel $meetings
 	 * @param Emailer      $emailer
+	 * @param Request      $request
 	 */
 	public function __construct(
 		VisitorModel $visitors,
@@ -78,9 +77,16 @@ class VisitorPresenter extends BasePresenter
 		$this->setMeetingModel($meetings);
 		$this->setEmailer($emailer);
 		$this->setRequest($request);
+	}
 
-		$this->template = "listing";
-		$this->page = 'visitor';
+	/**
+	 * @return void
+	 */
+	public function startup()
+	{
+		parent::startup();
+
+		$this->getMeetingModel()->setMeetingId($this->getMeetingId());
 	}
 
 	/**
@@ -90,10 +96,6 @@ class VisitorPresenter extends BasePresenter
 	 */
 	public function init()
 	{
-		$id = $this->requested('id', $this->itemId);
-		$this->error = $this->requested('error', '');
-		$this->page = $this->requested('page', '');
-
 		$search = $this->requested('search', '');
 		if(isset($search)){
 			$this->getModel()->setSearch($search);
@@ -117,9 +119,6 @@ class VisitorPresenter extends BasePresenter
 		switch($action) {
 			case "create":
 				$this->actionCreate();
-				break;
-			case "edit":
-				$this->actionEdit($id);
 				break;
 			case "modify":
 				$this->actionUpdate($id);
@@ -231,35 +230,6 @@ class VisitorPresenter extends BasePresenter
 			redirect(self::PATH . "?page=".$this->page."&error=ok");
 		} else {
 			redirect(self::PATH . "?page=".$this->page."&error=error");
-		}
-	}
-
-	/**
-	 * Prepare data for editing
-	 *
-	 * @param  int $id of item
-	 * @return void
-	 */
-	private function actionEdit($id)
-	{
-		$this->template = 'form';
-
-		$this->heading = "úprava účastníka";
-		$this->todo = "modify";
-
-		$this->itemId = $id;
-
-		$dbData = $this->getModel()->getData($id);
-
-		foreach($this->getModel()->dbColumns as $key) {
-			$this->data[$key] = $this->requested($key, $dbData[$key]);
-		}
-
-		$data = $this->Meal->findByVisitorId($this->itemId);
-
-		foreach($this->Meal->dbColumns as $var_name) {
-			$$var_name = $this->requested($var_name, $data[$var_name]);
-			$this->mealData[$var_name] = $$var_name;
 		}
 	}
 
@@ -430,11 +400,37 @@ class VisitorPresenter extends BasePresenter
 		$template->error_bill = '';
 		$template->error_cost = '';
 		$template->province = $this->getMeetingModel()->renderHtmlProvinceSelect(null);
-		$template->meals = $this->getMealModel()->renderHtmlMealsSelect($this->mealData, $this->disabled);
+		$template->meals = $this->getMealModel()->renderHtmlMealsSelect(null, null);
 		$template->cost = $this->getMeetingModel()->getPrice('cost');
-		$template->programSwitcher = $this->getModel()->renderProgramSwitcher($this->meetingId, $this->itemId);
+		$template->programSwitcher = $this->getModel()->renderProgramSwitcher($this->getMeetingId(), null);
 	}
 
+	/**
+	 * @param  integer $id
+	 * @return void
+	 */
+	public function renderEdit($id)
+	{
+		$visitor = $this->getModel()->getData($id);
+		$meals = $this->getMealModel()->findByVisitorId($id);
+
+		$template = $this->getTemplate();
+
+		$template->heading = 'úprava účastníka';
+		$template->error_name = '';
+		$template->error_surname = '';
+		$template->error_nick = '';
+		$template->error_email = '';
+		$template->error_postal_code = '';
+		$template->error_group_num = '';
+		$template->error_bill = '';
+		$template->error_cost = '';
+		$template->province = $this->getMeetingModel()->renderHtmlProvinceSelect($visitor->province);
+		$template->meals = $this->getMealModel()->renderHtmlMealsSelect($meals, null);
+		$template->cost = $this->getMeetingModel()->getPrice('cost');
+		$template->programSwitcher = $this->getModel()->renderProgramSwitcher($this->getMeetingId(), $id);
+		$template->data = $visitor;
+	}
 
 	/**
 	 * @return void
@@ -443,62 +439,10 @@ class VisitorPresenter extends BasePresenter
 	{
 		$template = $this->getTemplate();
 
-		$error = "";
-		$disabled = NULL;
-		if(!empty($this->data)) {
-			$error_name = "";
-			$error_surname = "";
-			$error_nick = "";
-			$error_email = "";
-			$error_postal_code = "";
-			$error_group_num = "";
-			$error_bill = "";
-			$error_cost = "";
-		}
-
-//		$parameters = [
-//			'cssDir'			=> CSS_DIR,
-//			'jsDir'				=> JS_DIR,
-//			'imgDir'			=> IMG_DIR,
-			//$template->visitDir	= VISIT_DIR;
-			//$template->expDir = EXP_DIR;
-//			'style'				=> $this->getStyles(),
-//			'user'				=> $this->getSunlightUser($_SESSION[SESSION_PREFIX.'user']),
-//			'meeting'			=> $this->getPlaceAndYear($_SESSION['meetingID']),
-//			'menu'				=> $this->generateMenu(),
-//			'error'				=> printError($this->error),
-//			'todo'				=> $this->todo,
-			$template->render = $this->getModel()->getData();
-//			'mid'				=> $this->meetingId,
-//			'page'				=> $this->page,
-//			'heading'			=> $this->heading,
-			$template->visitorCount = $this->getModel()->getCount();
-			$template->meetingPrice	= $this->getMeetingModel()->getPrice('cost');
-			$template->search = $this->getModel()->search;
-//			'recipient_mails'	=> $this->recipients,
-//		];
-
-		if(!empty($this->data)) {
-			$parameters['id'] = $this->itemId;
-			$parameters['data'] = $this->data;
-			$parameters['birthday'] = (empty($this->data['birthday'])) ? '' : $this->data['birthday']->format('Y-m-d');
-			$parameters['province'] = $this->Meeting->renderHtmlProvinceSelect($this->data['province']);
-			$parameters['meals'] = $this->Meal->renderHtmlMealsSelect($this->mealData, $this->disabled);
-			$parameters['program_switcher'] = $this->getModel()->renderProgramSwitcher($this->meetingId, $this->itemId);
-			$parameters['error_name'] = printError($error_name);
-			$parameters['error_surname'] = printError($error_surname);
-			$parameters['error_nick'] = printError($error_nick);
-			$parameters['error_email'] = printError($error_email);
-			$parameters['error_postal_code'] = printError($error_postal_code);
-			$parameters['error_surname'] = printError($error_surname);
-			$parameters['error_group_num'] = printError($error_group_num);
-			$parameters['error_bill'] = printError($error_bill);
-			$parameters['error_cost'] = printError($error_cost);
-			$parameters['checked'] = empty($this->data['checked']) ? '0' : $this->data['checked'];
-			$parameters['cost']	= $this->Meeting->getPrice('cost');
-			$parameters['guid'] = isset($this->data['guid']) ? $this->data['guid'] : '';
-
-		}
+		$template->render = $this->getModel()->getData();
+		$template->visitorCount = $this->getModel()->getCount();
+		$template->meetingPrice	= $this->getMeetingModel()->getPrice('cost');
+		$template->search = $this->getModel()->search;
 	}
 
 	/**

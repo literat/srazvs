@@ -4,10 +4,14 @@
 <link href="{$cssDir}default.css" rel="stylesheet" type="text/css" />
 
 <div class='siteContentRibbon'>Správa účastníků</div>
-{$error}
+
+{foreach $flashes as $flash}
+<div class="flash {$flash->type}">{$flash->message}</div>
+{/foreach}
+
 <div class='pageRibbon'>{$heading}</div>
 
-<form action='{$visitDir}/{$todo}' method='post'>
+<form action='{$visitDir}/update/{$data->id}' method='post'>
 
 	<div class='button-line'>
 		<button type='submit' onclick=\"this.form.submit()\">
@@ -40,49 +44,49 @@
 	<table class='form'>
 		<tr>
 			<td class='label'><label class="required">Jméno:</label></td>
-			<td><input type='text' name='name' size='30' value='{$data['name']}' />{$error_name}</td>
+			<td><input type='text' name='name' size='30' value='{$data->name}' />{$error_name}</td>
 		</tr>
 		<tr>
 			<td class='label'><label class="required">Příjmení:</label></td>
-			<td><input type="text" name='surname' size="30" value='{$data['surname']}' />{$error_surname}</td>
+			<td><input type="text" name='surname' size="30" value='{$data->surname}' />{$error_surname}</td>
 		</tr>
 		<tr>
 			<td class='label'><label class="required">Přezdívka:</label></td>
-			<td><input type='text' name='nick' size='30' value='{$data['nick']}' />{$error_nick}</td>
+			<td><input type='text' name='nick' size='30' value='{$data->nick}' />{$error_nick}</td>
 		</tr>
 		<tr>
 			<td class='label'><label class="required">E-mail:</label></td>
-			<td><input type='text' name='email' size='30' value='{$data['email']}' />{$error_email}</td>
+			<td><input type='text' name='email' size='30' value='{$data->email}' />{$error_email}</td>
 		</tr>
 		<tr>
 			<td class='label'><label class="required">Datum narození:</label></td>
-			<td><div class="picker"><input id="birthday" class="datePicker" type='text' name='birthday' size='30' value='{$data['birthday']}' /></div> (datum ve formátu rrrr-mm-dd)</td>
+			<td><div class="picker"><input id="birthday" class="datePicker" type='text' name='birthday' size='30' value='{$data->birthday->format('Y-m-d')}' /></div> (datum ve formátu rrrr-mm-dd)</td>
 		</tr>
 		<tr>
 			<td class='label'><label class="required">Ulice:</label></td>
-			<td><input type='text' name='street' size='30' value='{$data['street']}' /></td>
+			<td><input type='text' name='street' size='30' value='{$data->street}' /></td>
 		</tr>
 		<tr>
 			<td class='label'><label class="required">Město:</label></td>
-			<td><input type='text' name='city' size='30' value='{$data['city']}' /></td>
+			<td><input type='text' name='city' size='30' value='{$data->city}' /></td>
 		</tr>
 		<tr>
 			<td class='label'><label class="required">PSČ:</label></td>
-			<td><input type='text' name='postal_code' size='10' value='{$data['postal_code']}' /> (formát: 12345){$error_postal_code}</td>
+			<td><input type='text' name='postal_code' size='10' value='{$data->postal_code}' /> (formát: 12345){$error_postal_code}</td>
 		</tr>
 		<tr>
 			<td class='label'><label class="required">Číslo střediska/přístavu:</label></td>
-			<td><input type='text' name='group_num' size='10' value='{$data['group_num']}' /> (formát: 214[tečka]02){$error_group_num}</td>
+			<td><input type='text' name='group_num' size='10' value='{$data->group_num}' /> (formát: 214[tečka]02){$error_group_num}</td>
 		</tr>
 		<tr>
 			<td class='label'><label class="required">Název střediska/přístavu:</label></td>
 			<td><div style="margin:2px 0px 2px 0px; font-weight:bold;">Junák - český skaut, z. s.</div>
-			<input type='text' name='group_name' size='30' value='{$data['group_name']|noescape}' /> (2. přístav Poutníci Kolín)
+			<input type='text' name='group_name' size='30' value='{$data->group_name|noescape}' /> (2. přístav Poutníci Kolín)
 			</td>
 		</tr>
 		<tr>
 			<td class='label'><label>Název oddílu:</label></td>
-			<td><input type='text' name='troop_name' size='30' value='{$data['troop_name']}' /> (22. oddíl Galeje)</td>
+			<td><input type='text' name='troop_name' size='30' value='{$data->troop_name}' /> (22. oddíl Galeje)</td>
 		</tr>
 		<tr>
 			<td class='label'><label>Kraj:</label></td>
@@ -94,42 +98,40 @@
 		</tr>
 		<tr>
 			<td class='label'><label>Informace o příjezdu:</label></td>
-			<td><textarea name='arrival' cols="50" rows="3" >{$data['arrival']}</textarea></td>
+			<td><textarea name='arrival' cols="50" rows="3" >{$data->arrival}</textarea></td>
 		</tr>
 		<tr>
 			<td class='label'><label>Informace o odjezdu:</label></td>
-			<td><textarea name='departure' cols="50" rows="3" >{$data['departure']}</textarea></td>
+			<td><textarea name='departure' cols="50" rows="3" >{$data->departure}</textarea></td>
 		</tr>
 		<tr>
 			<td class='label'><label>Dotazy, přání, připomínky, stížnosti:</label></td>
-			<td><textarea name='comment' cols="50" rows="8" >{$data['comment']}</textarea></td>
+			<td><textarea name='comment' cols="50" rows="8" >{$data->comment}</textarea></td>
 		</tr>
 		<tr>
 			<td class='label'><label>Vaše otázka:</label></td>
-			<td><textarea name='question' cols="50" rows="8" >{$data['question']}</textarea></td>
+			<td><textarea name='question' cols="50" rows="8" >{$data->question}</textarea></td>
 		</tr>
 		<tr>
 			<td class='label'><label>Počet a typy lodí:</label></td>
-			<td><textarea name='question2' cols="50" rows="8" >{$data['question2']}</textarea></td>
+			<td><textarea name='question2' cols="50" rows="8" >{$data->question2}</textarea></td>
 		</tr>
 		<tr>
 			<td class='label'><label>Zaplaceno:</label></td>
-			<td><input type='text' name='bill' size='15' value='{$data['bill']}' /> ,- Kč {$error_bill}</td>
+			<td><input type='text' name='bill' size='15' value='{$data->bill}' /> ,- Kč {$error_bill}</td>
 		</tr>
 		<tr>
 			<td class='label'><label>Poplatek:</label></td>
-			<td><input type='text' name='cost' size='15' value='{$data['cost']}' /> ,- Kč {$error_cost}</td>
+			<td><input type='text' name='cost' size='15' value='{$data->cost}' /> ,- Kč {$error_cost}</td>
 		</tr>
 	</table>
 
 	<div style='border-bottom:1px solid black;text-align:right;'>výběr programů</div>
 
-		{$program_switcher|noescape}
+		{$programSwitcher|noescape}
 
-		<input type='hidden' name='id' value='{$id}'>
-		<input type='hidden' name='page' value='{$page}'>
-		<input type='hidden' name='checked' value='{$checked}'>
-		<input type='hidden' name='guid' value='{$guid}' />
+		<input type='hidden' name='checked' value='{$data->checked}'>
+		<input type='hidden' name='guid' value='{$data->guid}' />
 
 		<div class='button-line'>
 		<button type='submit' onclick=\"this.form.submit()\">

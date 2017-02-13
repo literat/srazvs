@@ -136,8 +136,8 @@ class MealModel extends BaseModel
 	 */
 	public function findByVisitorId($visitorId)
 	{
-		return $this->database
-			->table($this->dbTable)
+		return $this->getDatabase()
+			->table($this->getTable())
 			->where('visitor', $visitorId)
 			->limit(1)
 			->fetch();

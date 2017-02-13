@@ -22,7 +22,7 @@ abstract class BaseModel extends Object
 	/** @var array */
 	protected $columns = [];
 
-	/** @var Nette\Database\Context */
+	/** @var Context */
 	protected $database;
 
 	/** @var integer */
