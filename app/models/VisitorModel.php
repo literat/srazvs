@@ -15,10 +15,8 @@ use \Exception;
  * @created 2012-11-07
  * @author Tomas Litera <tomaslitera@hotmail.com>
  */
-class VisitorModel
+class VisitorModel extends BaseModel
 {
-	/** @var int meeting ID */
-	private $meetingId;
 
 	/** @var string	search pattern */
 	public $search;
@@ -41,9 +39,6 @@ class VisitorModel
 	/** @var int meeting advance */
 	private $meeting_advance;
 
-	/** @var Connection database */
-	private $database;
-
 	/**
 	 * Array of database programs table columns
 	 *
@@ -57,6 +52,8 @@ class VisitorModel
 	 * @var array	formNames[]
 	 */
 	public $formNames = array();
+
+	protected $table = 'kk_visitors';
 
 	/** konstruktor */
 	public function __construct(
@@ -98,13 +95,7 @@ class VisitorModel
 								"hash"
 							);
 		$this->formNames = array("name", "description", "material", "tutor", "email", "capacity", "display_in_reg", "block", "category");
-		$this->dbTable = "kk_visitors";
 		$this->database = $database;
-	}
-
-	public function setMeetingId($id)
-	{
-		$this->meetingId = $id;
 	}
 
 	/**
@@ -112,7 +103,7 @@ class VisitorModel
 	 *
 	 * @return	boolean
 	 */
-	public function create(array $DB_data, $meals_data, $programs_data, $returnGuid = false)
+	public function create(array $DB_data/*, $meals_data, $programs_data, $returnGuid = false*/)
 	{
 		$return = true;
 
@@ -126,7 +117,7 @@ class VisitorModel
 		$DB_data['guid'] = md5(uniqid());
 
 		$ID_visitor = $this->database
-			->table($this->dbTable)
+			->table($this->getTable())
 			->insert($DB_data)->id;
 
 		// visitor's id is empty and i must add one
@@ -193,7 +184,7 @@ class VisitorModel
 		$DB_data['birthday'] = new \DateTime($DB_data['birthday']);
 
 		$result = $this->database
-			->table($this->dbTable)
+			->table($this->getTable())
 			->where('id', $ID_visitor)
 			->update($DB_data);
 
@@ -244,7 +235,7 @@ class VisitorModel
 		$DB_data['birthday'] = new \DateTime($DB_data['birthday']);
 
 		$result = $this->database
-			->table($this->dbTable)
+			->table($this->getTable())
 			->where('guid', $guid)
 			->update($DB_data);
 
@@ -286,7 +277,7 @@ class VisitorModel
 		$deleted = array('deleted' => '1');
 
 		return $this->database
-			->table($this->dbTable)
+			->table($this->getTable())
 			->where('id', $id)
 			->update($deleted);
 	}
@@ -303,7 +294,7 @@ class VisitorModel
 		$checked = ['checked' => $value];
 
 		return $this->database
-			->table($this->dbTable)
+			->table($this->getTable())
 			->where('id', $id)
 			->update($checked);
 	}
@@ -315,9 +306,9 @@ class VisitorModel
 	 */
 	public function getCount()
 	{
-		$visitorsCount = $this->database
-			->table($this->dbTable)
-			->where('meeting ? AND deleted ?', $this->meetingId, '0')
+		$visitorsCount = $this->getDatabase()
+			->table($this->getTable())
+			->where('meeting ? AND deleted ?', $this->getMeetingId(), '0')
 			->count('id');
 
 		return $visitorsCount;
@@ -449,13 +440,13 @@ class VisitorModel
 	public function getData($visitor_id = NULL)
 	{
 		if(isset($visitor_id)) {
-			$data = $this->database
-				->table($this->dbTable)
+			$data = $this->getDatabase()
+				->table($this->getTable())
 				->where('id ? AND deleted ?', $visitor_id, '0')
 				->limit(1)
 				->fetch();
 		} else {
-			$data = $this->database->query('SELECT 	vis.id AS id,
+			$data = $this->getDatabase()->query('SELECT 	vis.id AS id,
 								vis.guid AS guid,
 								code,
 								name,
@@ -475,7 +466,7 @@ class VisitorModel
 						LEFT JOIN kk_provinces AS provs ON vis.province = provs.id
 						WHERE meeting = ? AND deleted = ? ' . $this->getSearch($this->search) . '
 						ORDER BY vis.id ASC',
-						$this->meetingId, '0')->fetchAll();
+						$this->getMeetingId(), '0')->fetchAll();
 		}
 
 		if(!$data) {

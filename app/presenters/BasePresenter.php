@@ -77,11 +77,11 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 
 		if($meetingId){
 			$_SESSION['meetingID'] = $meetingId;
-		} else {
-			$this->setMeetingId($_SESSION['meetingID']);
 		}
 
-		$this->getModel()->setMeetingId($this->getMeetingId());
+		$this->setMeetingId($_SESSION['meetingID']);
+
+		$this->getModel()->setMeetingId($_SESSION['meetingID']);
 
 		$this->debugMode = $this->getContainer()->getParameters()['debugMode'];
 	}
