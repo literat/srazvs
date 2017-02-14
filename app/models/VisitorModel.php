@@ -55,6 +55,29 @@ class VisitorModel extends BaseModel
 
 	protected $table = 'kk_visitors';
 
+	protected $columns = [
+		'name',
+		'surname',
+		'nick',
+		'email',
+		'birthday',
+		'street',
+		'city',
+		'postal_code',
+		'group_num',
+		'group_name',
+		'troop_name',
+		'province',
+		'arrival',
+		'departure',
+		'comment',
+		'question',
+		'question2',
+		'bill',
+		'cost',
+		'meeting',
+	];
+
 	/** konstruktor */
 	public function __construct(
 		MeetingModel $Meeting,
@@ -99,11 +122,19 @@ class VisitorModel extends BaseModel
 	}
 
 	/**
+	 * @return array
+	 */
+	public function getColumns()
+	{
+		return $this->columns;
+	}
+
+	/**
 	 * Create a new visitor
 	 *
 	 * @return	boolean
 	 */
-	public function create(array $DB_data/*, $meals_data, $programs_data, $returnGuid = false*/)
+	public function assemble(array $DB_data, $meals_data, $programs_data, $returnGuid = false)
 	{
 		$return = true;
 
@@ -189,7 +220,7 @@ class VisitorModel extends BaseModel
 			->update($DB_data);
 
 		// change meals
-		$result = $this->Meals->modify($ID_visitor, $meals_data);
+		$result = $this->Meals->update($ID_visitor, $meals_data);
 		$error['meal'] = $result;
 
 		// gets data from database
@@ -365,8 +396,8 @@ class VisitorModel extends BaseModel
 
 		if($billData['bill'] < $this->Meeting->getPrice('cost')){
 			$bill = array('bill' => $this->Meeting->getPrice($type));
-			$payResult = $this->database
-				->table($this->dbTable)
+			$payResult = $this->getDatabase()
+				->table($this->getTable())
 				->where('id', $query_id)
 				->update($bill);
 
@@ -387,7 +418,8 @@ class VisitorModel extends BaseModel
 		return $this->getDatabase()
 			->table($this->getTable())
 			->select('email', 'name', 'surname')
-			->where('id ? AND deleted ?', $ids, 0)
+			->where('id', $ids)
+			->where('deleted', '0')
 			->fetchAll();
 	}
 

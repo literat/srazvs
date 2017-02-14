@@ -25,7 +25,6 @@ class VisitorPresenter extends BasePresenter
 
 	const TEMPLATE_DIR = __DIR__ . '/../templates/visitor/';
 	const TEMPLATE_EXT = 'latte';
-	const PATH = '/srazvs/visitor';
 
 	/**
 	 * @var Emailer
@@ -82,142 +81,77 @@ class VisitorPresenter extends BasePresenter
 	}
 
 	/**
-	 * This is the default function that will be called by Router.php
-	 *
-	 * @param array $getVars the GET variables posted to index.php
-	 */
-	public function init()
-	{
-		$search = $this->requested('search', '');
-		if(isset($search)){
-			$this->getModel()->setSearch($search);
-		}
-
-		$this->disabled = $this->requested('disabled', '');
-
-		if($ids = $this->requested('checker')) {
-			$query_id = array();
-			foreach($ids as $key => $value) {
-				$query_id[] = $value;
-			}
-		} elseif($id) {
-			$query_id = $id;
-		} else {
-			$query_id = $ids;
-		}
-
-		$action = $this->requested('action', '');
-
-		switch($action) {
-			case "create":
-				$this->actionCreate();
-				break;
-			case "modify":
-				$this->actionUpdate($id);
-				break;
-		}
-
-		$this->render();
-	}
-
-	/**
 	 * Process data from form
 	 *
 	 * @return void
 	 */
 	public function actionCreate()
 	{
-		// TODO
-		////ziskani zvolenych programu
-		$blocks = $this->block->findByMeeting($this->meetingId);
+		try {
+			$postData = $this->getRequest()->getPost();
+			$postData['meeting'] = $this->getMeetingId();
 
-		foreach($blocks as $blockData){
-			$$blockData['id'] = $this->requested($blockData['id'], 0);
-			$programs_data[$blockData['id']] = $$blockData['id'];
-			//echo $blockData['id'].":".$$blockData['id']."|";
-		}
+			$visitor = array_intersect_key($postData, array_flip($this->getModel()->getColumns()));
+			$meals = array_intersect_key($postData, array_flip($this->getMealModel()->getColumns()));
 
-		// requested for visitors
-		foreach($this->getModel()->dbColumns as $key) {
-				if($key == 'bill') $$key = $this->requested($key, 0);
-				elseif($key == 'cost') $$key = $this->requested($key, 0);
-				elseif($key == 'checked') $$key = $this->requested($key, 0);
-				else $$key = $this->requested($key, null);
-				$DB_data[$key] = $$key;
-		}
+			$blocks = $this->getBlockModel()->findByMeeting($this->getMeetingId());
+			$programs = [];
+			$programs = array_map(function($block) use ($postData) {
+				return $postData['blck_' . $block['id']];
+			}, $blocks);
 
-		// i must add visitor's ID because it is empty
-		$DB_data['meeting'] = $this->meetingId;
-		$DB_data['hash'] = hash('sha1', microtime());
+			if($guid = $this->getModel()->assemble($visitor, $meals, $programs, true)) {
+				$code4bank = $this->code4Bank($visitor);
 
-		// requested for meals
-		foreach($this->Meal->dbColumns as $var_name) {
-			$$var_name = $this->requested($var_name, null);
-			$meals_data[$var_name] = $$var_name;
-		}
-		// create
-		if($vid = $this->getModel()->create($DB_data, $meals_data, $programs_data)){
-			######################## ODESILAM EMAIL ##########################
+				$recipientMail = $visitor['email'];
+				$recipientName = $visitor['name']." ".$visitor['surname'];
+				$recipient = [$recipientMail => $recipientName];
 
-			// zaheshovane udaje, aby se nedali jen tak ziskat data z databaze
-			$code4bank = $this->code4Bank($DB_data);
-			$hash = ((int)$vid.$this->meetingId) * 147 + 49873;
-
-			$recipient_mail = $DB_data['email'];
-			$recipient_name = $DB_data['name']." ".$DB_data['surname'];
-			$recipient = [$recipient_mail => $recipient_name];
-
-			if($return = $this->getEmailer()->sendRegistrationSummary($recipient, $hash, $code4bank)) {
-				if(is_int($vid)) {
-					$vid = "ok";
-				}
-				redirect(self::PATH . "?page=".$this->page."&error=ok");
-			} else {
-				redirect(self::PATH . "?page=".$this->page."&error=error");
+				$result= $this->getEmailer()->sendRegistrationSummary($recipient, $guid, $code4bank);
 			}
-		} else {
-			redirect(self::PATH . "?page=".$this->page."&error=error");
+
+			Debugger::log('Creation of visitor('. $guid .') successfull, result: ' . json_encode($result), Debugger::INFO);
+			$this->flashMessage('Účastník(' . $guid . ') byl úspěšně upraven.', 'ok');
+		} catch(Exception $e) {
+			Debugger::log('Creation of visitor('. $guid .') failed, result: ' .  $e->getMessage(), Debugger::ERROR);
+			$this->flashMessage('Creation of visitor failed, result: ' . $e->getMessage(), 'error');
 		}
+
+		$this->redirect('Visitor:listing');
 	}
 
 	/**
 	 * Process data from editing
 	 *
-	 * @param  int 	$id 	of item
+	 * @param  integer 	$id
 	 * @return void
 	 */
-	public function actionUpdate($id = NULL)
+	public function actionUpdate($id)
 	{
-		// TODO
-		////ziskani zvolenych programu
-		$blocks = $this->getBlock()->findByMeeting($this->meetingId);
+		try {
+			$postData = $this->getRequest()->getPost();
+			$postData['meeting'] = $this->getMeetingId();
+			$postData['visitor'] = $id;
 
-		foreach($blocks as $blockData){
-			$$blockData['id'] = $this->requested('blck_' . $blockData['id'], 0);
-			$programs_data[$blockData['id']] = $$blockData['id'];
+			$visitor = array_intersect_key($postData, array_flip($this->getModel()->getColumns()));
+			$meals = array_intersect_key($postData, array_flip($this->getMealModel()->getColumns()));
+
+			$blocks = $this->getBlockModel()->findByMeeting($this->getMeetingId());
+			$programs = [];
+			$programs = array_map(function($block) use ($postData) {
+				return $postData['blck_' . $block['id']];
+			}, $blocks);
+
+			$result = $this->getModel()->modify($id, $visitor, $meals, $programs);
+
+			Debugger::log('Modification of visitor('. $id .') successfull, result: ' . json_encode($result), Debugger::INFO);
+			$this->flashMessage('Účastník(' . $id . ') byl úspěšně upraven.', 'ok');
+		} catch(Exception $e) {
+			Debugger::log('Modification of visitor('. $id .') failed, result: ' .  $e->getMessage(), Debugger::ERROR);
+			$this->flashMessage('Modification of visitor failed, result: ' . $e->getMessage(), 'error');
 		}
 
-		foreach($this->getModel()->dbColumns as $key) {
-				if($key == 'bill') $$key = $this->requested($key, 0);
-				else $$key = $this->requested($key, null);
-				$DB_data[$key] = $$key;
-		}
-
-		// i must add visitor's ID because it is empty
-		$DB_data['meeting'] = $this->meetingId;
-
-		foreach($this->Meal->dbColumns as $var_name) {
-			$$var_name = $this->requested($var_name, null);
-			$meals_data[$var_name] = $$var_name;
-		}
-		// i must add visitor's ID because it is empty
-		$meals_data['visitor'] = $id;
-
-		if($this->getModel()->modify($id, $DB_data, $meals_data, $programs_data)){
-			redirect(self::PATH . "?page=".$this->page."&error=ok");
-		} else {
-			redirect(self::PATH . "?page=".$this->page."&error=error");
-		}
+		$this->redirect('Visitor:listing');
 	}
 
 	/**
@@ -278,19 +212,19 @@ class VisitorPresenter extends BasePresenter
 	 * @param  integer|string $ids
 	 * @return void
 	 */
-	public function actionPay($ids)
+	public function actionPay($id)
 	{
 		try {
 			$visitor = $this->getModel();
-			$visitor->payCharge($ids, 'cost');
-			$recipients = $visitor->getRecipients($ids);
+			$visitor->payCharge($id, 'cost');
+			$recipients = $visitor->getRecipients($id);
 			$this->getEmailer()->sendPaymentInfo($recipients, 'advance');
 
-			Debugger::log('Visitor: Action pay for id ' . $ids . ' successfull, result: ' . $e->getMessage(), Debugger::INFO);
+			Debugger::log('Visitor: Action pay for id ' . $id . ' successfull, result: ' . $e->getMessage(), Debugger::INFO);
 			$this->flashMessage('Platba byla zaplacena.', 'ok');
 		} catch(Exception $e) {
-			Debugger::log('Visitor: Action pay for id ' . $ids . ' failed, result: ' . $e->getMessage(), Debugger::ERROR);
-			$this->flashMessage('Visitor: Action pay for id ' . $ids . ' failed, result: ' . $e->getMessage(), 'error');
+			Debugger::log('Visitor: Action pay for id ' . $id . ' failed, result: ' . $e->getMessage(), Debugger::ERROR);
+			$this->flashMessage('Visitor: Action pay for id ' . $id . ' failed, result: ' . $e->getMessage(), 'error');
 		}
 
 		$this->redirect('Visitor:listing');
@@ -300,19 +234,19 @@ class VisitorPresenter extends BasePresenter
 	 * @param  string|interger $ids
 	 * @return void
 	 */
-	public function actionAdvance($ids)
+	public function actionAdvance($id)
 	{
 		try {
 			$visitor = $this->getModel();
-			$visitor->payCharge($ids, 'advance');
-			$recipients = $visitor->getRecipients($ids);
+			$visitor->payCharge($id, 'advance');
+			$recipients = $visitor->getRecipients($id);
 			$this->getEmailer()->sendPaymentInfo($recipients, 'advance');
 
-			Debugger::log('Visitor: Action advance for id ' . $ids . ' successfull, result: ' . $e->getMessage(), Debugger::INFO);
+			Debugger::log('Visitor: Action advance for id ' . $id . ' successfull, result: ' . $e->getMessage(), Debugger::INFO);
 			$this->flashMessage('Záloha byla zaplacena.', 'ok');
 		} catch(Exception $e) {
-			Debugger::log('Visitor: Action advance for id ' . $ids . ' failed, result: ' . $e->getMessage(), Debugger::ERROR);
-			$this->flashMessage('Visitor: Action advance for id ' . $ids . ' failed, result: ' . $e->getMessage(), 'error');
+			Debugger::log('Visitor: Action advance for id ' . $id . ' failed, result: ' . $e->getMessage(), Debugger::ERROR);
+			$this->flashMessage('Visitor: Action advance for id ' . $id . ' failed, result: ' . $e->getMessage(), 'error');
 		}
 
 		$this->redirect('Visitor:listing');

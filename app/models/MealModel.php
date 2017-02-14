@@ -54,6 +54,14 @@ class MealModel extends BaseModel
 	}
 
 	/**
+	 * @return array
+	 */
+	public function getColumns()
+	{
+		return $this->columns;
+	}
+
+	/**
 	 * @param  integer $visitorId
 	 * @param  array   $data
 	 * @return ActiveRow

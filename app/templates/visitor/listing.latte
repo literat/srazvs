@@ -138,22 +138,22 @@ $(document).ready(function() {
 			<tr id='visitor-{$row['id']}' class='radek1{$row['checked'] ? ' checked' : ''}'>
 				<td><input type='checkbox' name='checker[]'  value='{$row['id']}' /></td>
 				<td>
-					<a href='{$visitDir}/edit/{$row['id']}?page=visitor' title='Upravit'>
+					<a href='{$visitDir}/edit/{$row['id']}' title='Upravit'>
 						<img class='edit' src='{$imgDir}icons/edit.gif' />
 					</a>
 				</td>
 				<td>
-					<a class='checker' href='{$visitDir}/{$row['checked'] ? 'un' : ''}checked/{$row['id']}?page=visitor' title='Zkontrolováno'>
+					<a class='checker' href='{$visitDir}/{$row['checked'] ? 'un' : ''}checked/{$row['id']}' title='Zkontrolováno'>
 						<img class='edit' src='{$imgDir}icons/check{$row['checked'] ? '3' : ''}.png' />
 					</a>
 				</td>
 				<td>
-					<a href='{$visitDir}/advance/{$row['id']}?search={$search}&page=visitor' title='Záloha'>
+					<a href='{$visitDir}/advance/{$row['id']}{$search ? '?search=' . $search}' title='Záloha'>
 						<img class='edit' src='{$imgDir}icons/advance.png' />
 					</a>
 				</td>
 				<td>
-					<a href='{$visitDir}/pay/{$row['id']}?search={$search}&page=visitor' title='Zaplatit'>
+					<a href='{$visitDir}/pay/{$row['id']}{$search ? '?search=' . $search}' title='Zaplatit'>
 						<img class='edit' src='{$imgDir}icons/pay.png' />
 					</a>
 				</td>
@@ -163,7 +163,7 @@ $(document).ready(function() {
 					</a>
 				</td>
 				<td>
-					<a href="javascript:confirmation('{$visitDir}/delete/{$row['id']}?search={$search}', 'účastník: {$row['nick']} -> Opravdu SMAZAT tohoto účastníka? Jste si jisti?')" title='Odstranit'>
+					<a href="javascript:confirmation('{$visitDir}/delete/{$row['id']}{$search ? '?search=' . $search}', 'účastník: {$row['nick']} -> Opravdu SMAZAT tohoto účastníka? Jste si jisti?')" title='Odstranit'>
 						<img class='edit' src='{$imgDir}icons/delete.gif' />
 					</a>
 				</td>
