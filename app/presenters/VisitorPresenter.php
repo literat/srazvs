@@ -411,7 +411,7 @@ class VisitorPresenter extends BasePresenter
 	 */
 	public function renderEdit($id)
 	{
-		$visitor = $this->getModel()->getData($id);
+		$visitor = $this->getModel()->findById($id);
 		$meals = $this->getMealModel()->findByVisitorId($id);
 
 		$template = $this->getTemplate();
@@ -437,9 +437,11 @@ class VisitorPresenter extends BasePresenter
 	 */
 	public function renderListing()
 	{
+		$search = $this->getRequest()->getQuery('search');
+
 		$template = $this->getTemplate();
 
-		$template->render = $this->getModel()->getData();
+		$template->render = $this->getModel()->setSearch($search)->all();
 		$template->visitorCount = $this->getModel()->getCount();
 		$template->meetingPrice	= $this->getMeetingModel()->getPrice('cost');
 		$template->search = $this->getModel()->search;

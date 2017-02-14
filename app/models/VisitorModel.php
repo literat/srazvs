@@ -257,7 +257,7 @@ class VisitorModel extends BaseModel
 			// read first value from array and shift it to the end
 			$oldProgram = array_shift($oldPrograms);
 
-			$result = $this->database
+			$result = $this->getDatabase()
 				->table('kk_visitor-program')
 				->where('visitor ? AND id ?', $visitor->id, (empty($oldProgram)) ? $oldProgram : $oldProgram->id)
 				->update($data);
@@ -274,12 +274,12 @@ class VisitorModel extends BaseModel
 	 */
 	public function delete($id)
 	{
-		$deleted = array('deleted' => '1');
-
-		return $this->database
+		return $this->getTable()
 			->table($this->getTable())
 			->where('id', $id)
-			->update($deleted);
+			->update([
+				'deleted' => '1'
+			]);
 	}
 
 	/**
@@ -293,7 +293,7 @@ class VisitorModel extends BaseModel
 	{
 		$checked = ['checked' => $value];
 
-		return $this->database
+		return $this->getDatabase()
 			->table($this->getTable())
 			->where('id', $id)
 			->update($checked);
@@ -302,47 +302,54 @@ class VisitorModel extends BaseModel
 	/**
 	 * Get count of visitors
 	 *
-	 * @return	int	count of visitors
+	 * @return  integer
 	 */
 	public function getCount()
 	{
-		$visitorsCount = $this->getDatabase()
+		return $this->getDatabase()
 			->table($this->getTable())
 			->where('meeting ? AND deleted ?', $this->getMeetingId(), '0')
 			->count('id');
-
-		return $visitorsCount;
 	}
 
 	/**
-	 * Set search variable
-	 *
-	 * @param	string	what we want to find
+	 * @param  string $search
+	 * @return $this
 	 */
 	public function setSearch($search)
 	{
 		$this->search = $search;
+
+		return $this;
 	}
 
 	/**
-	 * Prepare search patter for database query
-	 *
-	 * @param	string	what we want to find
-	 * @return	string	search query for database
+	 * @return string
 	 */
-	public function getSearch($search)
+	protected function getSearch()
 	{
-		if($search != ""){
-			$search_query = "AND (`code` REGEXP '".$search."'
-							OR `group_num` REGEXP '".$search."'
-							OR `name` REGEXP '".$search."'
-							OR `surname` REGEXP '".$search."'
-							OR `nick` REGEXP '".$search."'
-							OR `city` REGEXP '".$search."'
-							OR `group_name` REGEXP '".$search."')";
-		} else $search_query = "";
+		return $this->search;
+	}
 
-		return $search_query;
+	/**
+	 * @return string
+	 */
+	protected function buildSearchQuery()
+	{
+		$search = $this->getSearch();
+
+		$query = '';
+		if($search){
+			$query = "AND (`code` REGEXP '" . $search . "'
+							OR `group_num` REGEXP '" . $search . "'
+							OR `name` REGEXP '" . $search . "'
+							OR `surname` REGEXP '" . $search . "'
+							OR `nick` REGEXP '" . $search . "'
+							OR `city` REGEXP '" . $search . "'
+							OR `group_name` REGEXP '" . $search . "')";
+		}
+
+		return $query;
 	}
 
 	/**
@@ -377,8 +384,8 @@ class VisitorModel extends BaseModel
 	 */
 	public function getRecipients($ids)
 	{
-		return $this->database
-			->table($this->dbTable)
+		return $this->getDatabase()
+			->table($this->getTable())
 			->select('email', 'name', 'surname')
 			->where('id ? AND deleted ?', $ids, 0)
 			->fetchAll();
@@ -392,13 +399,11 @@ class VisitorModel extends BaseModel
 	 */
 	public function getVisitorPrograms($visitorId)
 	{
-		$result = $this->database
+		return $this->getDatabase()
 			->table('kk_visitor-program')
 			->select('id, program')
 			->where('visitor', $visitorId)
 			->fetchAll();
-
-		return $result;
 	}
 
 	/**
@@ -433,20 +438,11 @@ class VisitorModel extends BaseModel
 	}
 
 	/**
-	 * Render data in a table
-	 *
-	 * @return	string	html of a table
+	 * @return Row
 	 */
-	public function getData($visitor_id = NULL)
+	public function all()
 	{
-		if(isset($visitor_id)) {
-			$data = $this->getDatabase()
-				->table($this->getTable())
-				->where('id ? AND deleted ?', $visitor_id, '0')
-				->limit(1)
-				->fetch();
-		} else {
-			$data = $this->getDatabase()->query('SELECT 	vis.id AS id,
+		return $this->getDatabase()->query('SELECT 	vis.id AS id,
 								vis.guid AS guid,
 								code,
 								name,
@@ -460,50 +456,34 @@ class VisitorModel extends BaseModel
 								bill,
 								cost,
 								birthday,
-								/*CONCAT(LEFT(name,1),LEFT(surname,1),SUBSTRING(birthday,3,2)) AS code*/
 								checked
 						FROM kk_visitors AS vis
 						LEFT JOIN kk_provinces AS provs ON vis.province = provs.id
-						WHERE meeting = ? AND deleted = ? ' . $this->getSearch($this->search) . '
+						WHERE meeting = ? AND deleted = ? ' . $this->buildSearchQuery() . '
 						ORDER BY vis.id ASC',
 						$this->getMeetingId(), '0')->fetchAll();
-		}
-
-		if(!$data) {
-			return 0;
-		} else {
-			return $data;
-		}
 	}
 
 	/**
 	 * Return visitor by id
 	 *
 	 * @param  int    $id
-	 * @return mixed
+	 * @return ActiveRow
 	 */
 	public function findById($id)
 	{
-		return $this->database
-				->table($this->dbTable)
-				->where('id ? AND deleted ?', $id, '0')
-				->limit(1)
-				->fetch();
+		return $this->find($id);
 	}
 
 	/**
 	 * Return visitor by guid
 	 *
 	 * @param  string  $guid
-	 * @return mixed
+	 * @return ActiveRow
 	 */
 	public function findByGuid($guid)
 	{
-		return $this->database
-				->table($this->dbTable)
-				->where('guid ? AND deleted ?', $guid, '0')
-				->limit(1)
-				->fetch();
+		return $this->findBy('guid', $guid);
 	}
 
 	/**
@@ -535,8 +515,8 @@ class VisitorModel extends BaseModel
 	 */
 	public function getBill($id)
 	{
-		return $this->database
-			->table($this->dbTable)
+		return $this->getDatabase()
+			->table($this->getTable())
 			->select('bill')
 			->where('id', $id)
 			->fetch();
