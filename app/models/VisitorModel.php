@@ -487,26 +487,26 @@ class VisitorModel extends BaseModel
 	}
 
 	/**
-	 * Get visitors mail
-	 *
-	 * @param 	int|string 	$query_id 	id/s of visitors seperated by comma
-	 * @return 	string 					e-mail addresses
+	 * @param  array  $queryId
+	 * @return string
 	 */
-	public function getMail($query_id) {
-		$recipient_mails = '';
+	public function getSerializedMailAddress(array $queryId = []) {
+		$recipientMailAddresses = '';
 
-		$result = $this->database
-			->table($this->dbTable)
+		$emails = $this->getDatabase()
+			->table($this->getTable())
 			->select('email')
-			->where('id', $query_id)
+			->where('id', $queryId)
 			->group('email')
 			->fetchAll();
 
-		foreach($result as $data){
-			$recipient_mails .= $data['email'].",\n";
+		foreach($emails as $item){
+			$recipientMailAddresses .= $item['email'] . ",\n";
 		}
 
-		return $recipient_mails;
+		$recipientMailAddresses = rtrim($recipientMailAddresses, "\n,");
+
+		return $recipientMailAddresses;
 	}
 
 	/**

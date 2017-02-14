@@ -2,7 +2,11 @@
 
 {block content}
 <div class='siteContentRibbon'>Správa účastníků</div>
-{$error}
+
+{foreach $flashes as $flash}
+<div class="flash {$flash->type}">{$flash->message}</div>
+{/foreach}
+
 <div class='pageRibbon'>hromadný e-mail</div>
 <div>
 
@@ -12,7 +16,7 @@
 			<img src='{$imgDir}icons/mail.png' /> Odeslat</button>
 	</div>
 	<label>Příjemci:</label><br />
-	<textarea name="recipients" cols="40" rows="30">{$recipient_mails}</textarea><br /><br />
+	<textarea name="recipients" cols="40" rows="30">{$recipientMailAddresses}</textarea><br /><br />
 	<label>Předmět:</label><br />
 	<input type="text" name="subject" size="100" /><br /><br />
 	<label>Obsah:</label><br />

@@ -23,27 +23,19 @@ use Exception;
 class VisitorPresenter extends BasePresenter
 {
 
+	const TEMPLATE_DIR = __DIR__ . '/../templates/visitor/';
+	const TEMPLATE_EXT = 'latte';
 	const PATH = '/srazvs/visitor';
 
-	/** @var Emailer */
-	private $emailer;
-
 	/**
-	 * Meeting class
-	 * @var Meeting
+	 * @var Emailer
 	 */
-	private $Meeting;
+	protected $emailer;
 
 	/**
 	 * @var MealModel
 	 */
-	private $mealModel;
-
-	/**
-	 * Recipients
-	 * @var recipients
-	 */
-	private $recipients = NULL;
+	protected $mealModel;
 
 	/**
 	 * @var BlockModel
@@ -123,11 +115,6 @@ class VisitorPresenter extends BasePresenter
 			case "modify":
 				$this->actionUpdate($id);
 				break;
-			case "massmail":
-				$this->actionMassmail($query_id);
-				break;
-			case "send":
-				$this->actionSend($this->requested('recipients', ''));
 		}
 
 		$this->render();
@@ -138,7 +125,7 @@ class VisitorPresenter extends BasePresenter
 	 *
 	 * @return void
 	 */
-	private function actionCreate()
+	public function actionCreate()
 	{
 		// TODO
 		////ziskani zvolenych programu
@@ -199,7 +186,7 @@ class VisitorPresenter extends BasePresenter
 	 * @param  int 	$id 	of item
 	 * @return void
 	 */
-	private function actionUpdate($id = NULL)
+	public function actionUpdate($id = NULL)
 	{
 		// TODO
 		////ziskani zvolenych programu
@@ -256,45 +243,35 @@ class VisitorPresenter extends BasePresenter
 	 *
 	 * @return void
 	 */
-	private function actionMassmail($query_id)
+	public function actionSend()
 	{
-		$this->template = 'mail';
+		try {
+			$request = $this->getRequest();
+			$subject = $request->getPost('subject', '');
+			$message = $request->getPost('message', '');
+			$bcc = explode(',', preg_replace("/\s+/", "", $request->getPost('recipients', '')));
+			// fill bcc name and address
+			$bcc = array_combine($bcc, $bcc);
 
-		$recipient_mails = $this->getModel()->getMail($query_id);
-		$this->recipients = rtrim($recipient_mails, "\n,");
-	}
+			$mailParameters = $this->getContainer()->parameters['mail'];
+			$recipient = [
+				$mailParameters['senderAddress'] => $mailParameters['senderName'],
+			];
 
-	/**
-	 * Prepare mass mail form
-	 *
-	 * @return void
-	 */
-	private function actionSend($recipients)
-	{
-		$bcc_mail = preg_replace("/\n/", "", $this->requested('recipients', ''));
+			$template = $this->createMailTemplate();
+			$template->subject = $subject;
+			$template->message = $message;
 
-		$recipient_name = $this->getModel()->configuration['mail-sender-name'];
-		$recipient_mail = $this->getModel()->configuration['mail-sender-address'];
+			$result = $this->getEmailer()->sendMail($recipient, $subject, (string) $template, $bcc);
 
-		$subject = $this->requested('subject', '');
-
-		// space to &nbsp;
-		$message = str_replace(" ","&nbsp;", $this->requested('message', ''));
-		// new line to <br> and tags stripping
-		$message = nl2br(strip_tags($message));
-
-		$message = "<html><head><title>".$subject."</title></head><body>\n".$message."\n</body>\n</html>";
-
-		$return = $this->getEmailer()->sendMail($recipient_mail, $recipient_name, $subject, $message, $bcc_mail);
-
-		if($return){
-			$error = 'E_MAIL_NOTICE';
-			$error = 'mail_send';
-			redirect(self::PATH . "?error=".$error);
+			Debugger::log('E-mail was send successfully, result: ' . json_encode($result), Debugger::INFO);
+			$this->flashMessage('E-mail byl úspěšně odeslán', 'ok');
+		} catch(Exception $e) {
+			Debugger::log('Sending of e-mail failed, result: ' .  $e->getMessage(), Debugger::ERROR);
+			$this->flashMessage('Sending of e-mail failed, result: ' . $e->getMessage(), 'error');
 		}
-		else {
-			$error = 'E_MAIL_ERROR';
-		}
+
+		$this->redirect('Visitor:listing');
 	}
 
 	/**
@@ -433,18 +410,51 @@ class VisitorPresenter extends BasePresenter
 	}
 
 	/**
+	 * Prepare mass mail form
+	 *
+	 * @return void
+	 */
+	public function renderMail()
+	{
+		$ids = $this->getRequest()->getPost('checker');
+
+		$template = $this->getTemplate();
+		$template->recipientMailAddresses = $this->getModel()->getSerializedMailAddress($ids);
+	}
+
+
+	/**
 	 * @return void
 	 */
 	public function renderListing()
 	{
 		$search = $this->getRequest()->getQuery('search');
 
-		$template = $this->getTemplate();
+		$model = $this->getModel();
 
-		$template->render = $this->getModel()->setSearch($search)->all();
-		$template->visitorCount = $this->getModel()->getCount();
+		$template = $this->getTemplate();
+		$template->render = $model->setSearch($search)->all();
+		$template->visitorCount = $model->getCount();
 		$template->meetingPrice	= $this->getMeetingModel()->getPrice('cost');
-		$template->search = $this->getModel()->search;
+		$template->search = $search;
+	}
+
+	/**
+	 * @return Latte
+	 */
+	protected function createMailTemplate()
+	{
+		$template = $this->createTemplate();
+		$template->setFile(
+			sprintf(
+				'%s%s.%s',
+				self::TEMPLATE_DIR,
+				'mail_body',
+				self::TEMPLATE_EXT
+			)
+		);
+
+		return $template;
 	}
 
 	/**
@@ -462,6 +472,7 @@ class VisitorPresenter extends BasePresenter
 	protected function setBlockModel(BlockModel $model)
 	{
 		$this->blockModel = $model;
+
 		return $this;
 	}
 
@@ -480,6 +491,7 @@ class VisitorPresenter extends BasePresenter
 	protected function setMealModel(MealModel $model)
 	{
 		$this->mealModel = $model;
+
 		return $this;
 	}
 
@@ -498,6 +510,7 @@ class VisitorPresenter extends BasePresenter
 	protected function setMeetingModel(MeetingModel $model)
 	{
 		$this->meetingModel = $model;
+
 		return $this;
 	}
 
@@ -516,6 +529,7 @@ class VisitorPresenter extends BasePresenter
 	protected function setEmailer($emailer)
 	{
 		$this->emailer = $emailer;
+
 		return $this;
 	}
 
