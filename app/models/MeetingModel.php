@@ -228,7 +228,7 @@ class MeetingModel extends BaseModel
 			$html .= " <tr>\n";
 			foreach($result as $data){
 				$html .= "<td class='category cat-".$data['style']."' style='text-align:center;'>\n";
-				$html .= "<a class='program' href='".PROG_DIR."/?id=".$data['id']."&cms=edit&page=meeting' title='".$data['name']."'>".$data['name']."</a>\n";
+				$html .= "<a class='program' href='".PROG_DIR."/edit/".$data['id']."?page=meeting' title='".$data['name']."'>".$data['name']."</a>\n";
 				$html .= "</td>\n";
 			}
 			$html .= " </tr>\n";
@@ -304,13 +304,13 @@ class MeetingModel extends BaseModel
 					if($data['program'] == 1){
 						$html .= "<td class='category cat-".$data['style']."'>\n";
 						$html .= "<div>\n";
-						$html .= "<a class='block' href='".BLOCK_DIR."/?id=".$data['id']."&cms=edit&page=meeting' title='".$data['name']."'>".$data['name']."</a>\n";
+						$html .= "<a class='block' href='".BLOCK_DIR."/edit/".$data['id']."?page=meeting' title='".$data['name']."'>".$data['name']."</a>\n";
 						$html .= "</div>\n";
 						$html .= $this->getPrograms($data['id']);
 						$html .= "</td>\n";
 					} else {
 						$html .= "<td class='category cat-".$data['style']."'>";
-						$html .= "<a class='block' href='".BLOCK_DIR."/?id=".$data['id']."&cms=edit&page=meeting' title='".$data['name']."'>".$data['name']."</a>\n";
+						$html .= "<a class='block' href='".BLOCK_DIR."/edit/".$data['id']."?page=meeting' title='".$data['name']."'>".$data['name']."</a>\n";
 						$html .= "</td>\n";
 					}
 					$html .= "</tr>\n";

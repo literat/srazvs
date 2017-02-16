@@ -2,14 +2,18 @@
 
 {block content}
 <div class='siteContentRibbon'>Správa srazů</div>
-{$error|noescape}
+
+{foreach $flashes as $flash}
+<div class="flash {$flash->type}">{$flash->message}</div>
+{/foreach}
+
 <div class='pageRibbon'>Aktuální sraz</div>
 
 {$render|noescape}
 
 <div class='pageRibbon'>nastavení</div>
 
-<form action='?meeting' method='post'>
+<form action='meeting/update/{$meetingId}' method='post'>
 
 <div class='button-line'>
  <button type='submit' onclick=\"this.form.submit()\">
@@ -114,7 +118,4 @@ $(function() {
  </tr>
 </table>
 
- <input type='hidden' name='cms' value='modify'>
- <input type='hidden' name='mid' value='{$mid}'>
- <input type='hidden' name='page' value='{$page}'>
 </form>

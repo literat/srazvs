@@ -21,6 +21,8 @@ class RouterFactory
 	{
 		$router = new RouteList();
 		$router[] = new Route('index.php', 'Dashboard:default', Route::ONE_WAY);
+		$router[] = new Route('', 'Dashboard:default', Route::ONE_WAY);
+		$router[] = new Route('dashboard', 'Dashboard:default');
 		$router[] = new Route('<presenter>/<action>[/<id>][/<actionId>]', 'Meeting:listing');
 
 		return $router;
