@@ -2,8 +2,6 @@
 
 namespace App\Presenters;
 
-use Nette\Database\Context;
-use Nette\DI\Container;
 use Tracy\Debugger;
 use Skautis;
 use SkautisAuth;
@@ -16,78 +14,72 @@ use UserService;
 class AuthPresenter extends BasePresenter
 {
 
-	private $service;
-	private $user;
+	/**
+	 * @var AuthService
+	 */
+	protected $authSservice;
 
-	public function __construct(Context $database, Container $container)
+	/**
+	 * @var UserService
+	 */
+	protected $userService;
+
+	/**
+	 * @param AuthService $authService
+	 * @param UserService $userService
+	 */
+	public function __construct(AuthService $authService, UserService $userService)
 	{
-		$this->database = $database;
-		$this->container = $container;
-		$this->router = $this->container->parameters['router'];
-		$this->service = $this->container->getService('authService');
-		$this->user = $this->container->getService('security.user');
+		$this->setAuthService($authService);
+		$this->setUserService($userService);
+		//$this->service = $this->container->getService('authService');
+		//$this->user = $this->container->getService('security.user');
 	}
 
 	/**
-	 * This is the default function that will be called by router.php
-	 *
-	 * @param 	array 	$getVars 	the GET variables posted to index.php
+	 * @return void
 	 */
-	public function init()
-	{
-		if($this->meetingId = $this->requested('mid', '')){
-			$_SESSION['meetingID'] = $this->meetingId;
-		} else {
-			$this->meetingId = $_SESSION['meetingID'];
-		}
-
-		switch($this->router->getParameter('action')){
-			case 'skautis':
-				$method = $this->router->getParameter('id');
-				$this->actionSkautis($method);
-				break;
-			case 'login':
-				$to = $this->router->getParameter('id');
-				$this->actionLogin($to);
-				break;
-			case 'logout':
-				$from = $this->router->getParameter('id');
-				$this->actionLogout($from);
-				break;
-		}
-	}
-
 	protected function startup()
 	{
 		parent::startup();
 	}
 
-	public function actionLogin($to)
+	/**
+	 * @param  string $id
+	 * @return void
+	 */
+	public function actionLogin($id)
 	{
-		$this->{$to . 'Login'}();
-	}
-
-	public function actionLogout($from)
-	{
-		$this->{$from . 'Logout'}();
-	}
-
-	public function actionSkautis($method)
-	{
-		$this->{'handleSkautis' . $method}();
+		$this->{$id . 'Login'}();
 	}
 
 	/**
-	 * přesměruje na stránku s přihlášením
+	 * @param  string $id
+	 * @return void
+	 */
+	public function actionLogout($id)
+	{
+		$this->{$id . 'Logout'}();
+	}
+
+	/**
+	 * @param  string $id
+	 * @return void
+	 */
+	public function actionSkautis($id)
+	{
+		$this->{'handleSkautis' . $id}();
+	}
+
+	/**
 	 * Redirects to login page
 	 *
 	 * @param  	string  $backlink
 	 * @return  void
 	 */
-	protected function skautisLogin($backlink = NULL)
+	protected function skautisLogin($backlink = null)
 	{
-		//$this->redirectUrl($this->service->getLoginUrl($backlink));
-		redirect($this->service->getLoginUrl($backlink));
+		$this->redirectUrl($this->authService->getLoginUrl($backlink));
 	}
 
 	/**
@@ -99,8 +91,7 @@ class AuthPresenter extends BasePresenter
 	 */
 	protected function skautisLogout()
 	{
-		//$this->redirectUrl($this->context->authService->getLogoutUrl());
-		redirect($this->context->authService->getLogoutUrl());
+		$this->redirectUrl($this->context->authService->getLogoutUrl());
 	}
 
 	/**
@@ -111,23 +102,23 @@ class AuthPresenter extends BasePresenter
 	 */
 	protected function handleSkautisLogin($ReturnUrl = NULL)
 	{
-		//$post = $this->request->post;
-		$post = $this->router->getPost();
+		$post = $this->request->post;
+		//$post = $this->router->getPost();
 		// if token is not set - get out from here - must log in
 		if (!isset($post['skautIS_Token'])) {
 			$this->redirect(":Login:");
 		}
 		//Debugger::log("AuthP: ".$post['skautIS_Token']." / ". $post['skautIS_IDRole'] . " / " . $post['skautIS_IDUnit'], "auth");
 		try {
-			//$this->context->authService->setInit($post);
-			$this->container->getService('authService')->setInit($post);
+			$this->context->authService->setInit($post);
+			//$this->container->getService('authService')->setInit($post);
 
-			//if (!$this->context->userService->isLoggedIn()) {
-			if (!$this->container->getService('userService')->isLoggedIn()) {
+			if (!$this->context->userService->isLoggedIn()) {
+			//if (!$this->container->getService('userService')->isLoggedIn()) {
 				throw new \Skautis\Wsdl\AuthenticationException("Nemáte platné přihlášení do skautISu");
 			}
-			//$me = $this->context->userService->getPersonalDetail();
-			$me = $this->container->getService('userService')->getPersonalDetail();
+			$me = $this->context->userService->getPersonalDetail();
+			//$me = $this->container->getService('userService')->getPersonalDetail();
 
 			$this->user->setExpiration('+ 29 minutes'); // nastavíme expiraci
 			$this->user->setAuthenticator(new SkautisAuth\SkautisAuthenticator());
@@ -140,8 +131,7 @@ class AuthPresenter extends BasePresenter
 			$this->flashMessage($e->getMessage(), "danger");
 			$this->redirect(":Auth:Login");
 		}
-		//$this->presenter->redirect(':Dashboard:');
-		redirect('/srazvs/registration');
+		$this->presenter->redirect(':Registration:');
 	}
 
 	/**
@@ -152,7 +142,7 @@ class AuthPresenter extends BasePresenter
 	 */
 	protected function handleSkautisLogout()
 	{
-		$this->user->logout(TRUE);
+		$this->userService->logout(TRUE);
 		$this->context->userService->resetLoginData();
 		$this->presenter->flashMessage("Byl jsi úspěšně odhlášen ze SkautISu.");
 		/*
