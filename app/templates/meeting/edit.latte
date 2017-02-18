@@ -2,15 +2,19 @@
 
 {block content}
 <div class='siteContentRibbon'>Správa srazů</div>
-{$error}
+
+{foreach $flashes as $flash}
+<div class="flash {$flash->type}">{$flash->message}</div>
+{/foreach}
+
 <div class='pageRibbon'>úprava srazu</div>
 
-<form action='?meeting' method='post'>
+<form action='/srazvs/meeting/update/{$meetingId}' method='post'>
 
 <div class='button-line'>
  <button type='submit' onClick=\"this.form.submit()\">
   <img src='{$imgDir}icons/save.png' /> Uložit</button>
- <button type='button' onclick="window.location.replace('?cms=list-view')">
+ <button type='button' onclick="window.location.replace('/srazvs/meeting')">
   <img src='{$imgDir}icons/storno.png'  /> Storno</button>
 </div>
 
@@ -19,11 +23,12 @@
 <script src='{$jsDir}jquery/jquery-ui-slideraccess-addon.js' type='text/javascript'></script>
 <script type="text/javascript">
 $(function() {
+	var imgDir = {$imgDir};
 	$.datepicker.setDefaults($.datepicker.regional['cs']);
 	$.timepicker.setDefaults($.timepicker.regional['cs']);
 	$( ".dateTimePicker" ).datetimepicker({
 		showOn: "button",
-		buttonImage: "../www/images/calendar_button.png",
+		buttonImage: imgDir + "calendar_button.png",
 		buttonImageOnly: true,
 		showWeek: true,
         firstDay: 1,
@@ -42,10 +47,11 @@ $(function() {
 });
 
 $(function() {
+	var imgDir = {$imgDir};
 	$.datepicker.setDefaults($.datepicker.regional['cs']);
 	$( ".datePicker" ).datepicker({
 		showOn: "button",
-		buttonImage: "../www/images/calendar_button.png",
+		buttonImage: imgDir + "calendar_button.png",
 		buttonImageOnly: true,
 		showWeek: true,
         firstDay: 1,
@@ -106,7 +112,4 @@ $(function() {
  </tr>
 </table>
 
- <input type='hidden' name='cms' value='{$todo}'>
- <input type='hidden' name='page' value='{$page}'>
- <input type='hidden' name='mid' value='{$mid}'>
 </form>

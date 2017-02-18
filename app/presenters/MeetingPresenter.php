@@ -2,124 +2,64 @@
 
 namespace App\Presenters;
 
-use Nette\Database\Context;
-use Nette\DI\Container;
+use App\Models\MeetingModel;
+use Nette\Http\Request;
+use Tracy\Debugger;
+use Exception;
 
 /**
  * This file handles the retrieval and serving of news articles
  */
 class MeetingPresenter extends BasePresenter
 {
-	/**
-	 * This template variable will hold the 'view' portion of our MVC for this
-	 * controller
-	 */
-	protected $template = 'view';
-
-	/**
-	 * template directory
-	 * @var string
-	 */
-	protected $templateDir = 'meeting';
-
-	/**
-	 * page where to return
-	 * @var string
-	 */
-	protected $page = 'meeting';
-
-	private $render = NULL;
-
-	/**
-	 * meeting ID
-	 * @var integer
-	 */
-	protected $meetingId = 0;
-
-	/**
-	 * Container class
-	 * @var [type]
-	 */
-	private $Container;
-
-	private $Meeting;
 
 	/**
 	 * Prepare initial values
 	 */
-	public function __construct(Context $database, Container $container)
+	public function __construct(MeetingModel $model, Request $request)
 	{
-		$this->database = $database;
-		$this->container = $container;
-		$this->router = $this->container->parameters['router'];
-		$this->Meeting = $this->container->createServiceMeeting();
-		$this->latte = $this->container->getService('latte');
-
-		if($this->meetingId = $this->requested('mid', '')){
-			$_SESSION['meetingID'] = $this->meetingId;
-		} else {
-			$this->meetingId = $_SESSION['meetingID'];
-		}
-
-		$this->Meeting->setMeetingId($this->meetingId);
-		$this->Meeting->setHttpEncoding($this->container->parameters['encoding']);
+		$this->setModel($model);
+		$this->setRequest($request);
 	}
 
 	/**
-	 * This is the default function that will be called by router.php
-	 *
-	 * @param array $getVars the GET variables posted to index.php
-	 */
-	public function init()
-	{
-		$id = $this->requested('id', $this->meetingId);
-		$this->cms = $this->requested('cms', '');
-		$this->error = $this->requested('error', '');
-
-		switch($this->cms) {
-			case "delete":
-				$this->delete($id);
-				break;
-			case "new":
-				$this->__new();
-				break;
-			case "create":
-				$this->create();
-				break;
-			case "edit":
-				$this->edit($id);
-				break;
-			case "modify":
-				$this->update($id);
-				break;
-			case "list-view":
-				$this->template = 'listing';
-				$this->render = $this->Meeting->getData();
-				$this->data = $this->Meeting->getData($this->meetingId);
-				break;
-			default:
-				$this->render = $this->Meeting->renderProgramOverview();
-				$this->data = $this->Meeting->getData($this->meetingId);
-				break;
-		}
-
-		$this->render();
-	}
-
-
-	/**
-	 * Prepare new item
 	 * @return void
 	 */
-	private function __new()
+	public function actionCreate()
 	{
-		$this->heading = "nová kategorie";
-		$this->todo = "create";
-		$this->template = "form";
+		try {
+			$model = $this->getModel();
+			$data = $this->getRequest()->getPost();
+			$result = $this->getModel()->create($data);
 
-		foreach($this->Meeting->dbColumns as $key) {
-			$this->data[$key] = $this->requested($key, "");
+			Debugger::log('Creation of meeting successfull, result: ' . json_encode($result), Debugger::INFO);
+			$this->flashMessage('Položka byla úspěšně vytvořena', 'ok');
+		} catch(Exception $e) {
+			Debugger::log('Creation of meeting with data ' . json_encode($data) . ' failed, result: ' . $e->getMessage(), Debugger::ERROR);
+			$this->flashMessage('Creation of meeting failed, result: ' . $e->getMessage(), 'error');
 		}
+
+		$this->redirect('Meeting:listing');
+	}
+
+	/**
+	 * @param  integer $id
+	 * @return void
+	 */
+	public function actionUpdate($id)
+	{
+		try {
+			$data = $this->getRequest()->getPost();
+			$result = $this->getModel()->update($id, $data);
+
+			Debugger::log('Modification of meeting id ' . $id . ' with data ' . json_encode($data) . ' successfull, result: ' . json_encode($result), Debugger::INFO);
+			$this->flashMessage('Položka byla úspěšně upravena', 'ok');
+		} catch(Exception $e) {
+			Debugger::log('Modification of meeting id ' . $id . ' failed, result: ' . $e->getMessage(), Debugger::ERROR);
+			$this->flashMessage('Modification of meeting id ' . $id . ' failed, result: ' . $e->getMessage(), 'error');
+		}
+
+		$this->redirect('Meeting:listing');
 	}
 
 	/**
@@ -127,102 +67,68 @@ class MeetingPresenter extends BasePresenter
 	 * @param  int $id of item
 	 * @return void
 	 */
-	private function delete($id)
+	public function actionDelete($id)
 	{
-		if($this->Meeting->delete($id)){
-	  		redirect("?error=del");
+		try {
+			$result = $this->getModel()->delete($id);
+			Debugger::log('Destroying of meeting('. $id .') successfull, result: ' . json_encode($result), Debugger::INFO);
+			$this->flashMessage('Položka byla úspěšně smazána', 'ok');
+		} catch(Exception $e) {
+			Debugger::log('Destroying of meeting('. $id .') failed, result: ' .  $e->getMessage(), Debugger::ERROR);
+			$this->flashMessage('Destroying of meeting failed, result: ' . $e->getMessage(), 'error');
 		}
+
+		$this->redirect('Meeting:listing');
 	}
 
 	/**
-	 * Create new item in DB
 	 * @return void
 	 */
-	private function create()
+	public function renderNew()
 	{
-		foreach($this->Meeting->dbColumns as $key) {
-			$db_data[$key] = $this->requested($key, "");
-		}
-
-		if($this->Meeting->create($db_data)){
-			redirect(PRJ_DIR.$this->page."?error=ok");
-		}
+		$template = $this->getTemplate();
+		////inicializace promenych
+		$template->error_start = "";
+		$template->error_end = "";
+		$template->error_open_reg = "";
+		$template->error_close_reg = "";
+		$template->error_login = "";
 	}
 
 	/**
-	 * Prepare form page
-	 * @param  int $id of item
 	 * @return void
 	 */
-	private function edit($id)
+	public function renderEdit($id)
 	{
-		$this->template = 'form';
+		$template = $this->getTemplate();
+		////inicializace promenych
+		$template->error_start = "";
+		$template->error_end = "";
+		$template->error_open_reg = "";
+		$template->error_close_reg = "";
+		$template->error_login = "";
 
-		$this->todo = "modify";
-		// get meeting's data
-		$this->data = $this->Meeting->getData($id);
-
-		foreach($this->Meeting->dbColumns as $key) {
-			$$key = $this->requested($key, $this->data[$key]);
-		}
-	}
-
-	/**
-	 * Update item in DB
-	 * @param  int $id of item
-	 * @return void
-	 */
-	private function update($id)
-	{
-		foreach($this->Meeting->dbColumns as $key) {
-			$db_data[$key] = $this->requested($key, "");
-		}
-
-		if($this->Meeting->update($this->meetingId, $db_data)){
-			redirect(PRJ_DIR.$this->page."?error=ok");
-		}
+		$template->meetingId = $id;
+		$template->data = $this->getModel()->find($id);
 	}
 
 	/**
 	 * Render entire page
 	 * @return void
 	 */
-	private function render()
+	public function renderListing()
 	{
+		$template = $this->getTemplate();
 		////inicializace promenych
-		$error_start = "";
-		$error_end = "";
-		$error_open_reg = "";
-		$error_close_reg = "";
-		$error_login = "";
+		$template->error_start = "";
+		$template->error_end = "";
+		$template->error_open_reg = "";
+		$template->error_close_reg = "";
+		$template->error_login = "";
 
-		/* HTTP Header */
-		$parameters = [
-			'cssDir'			=> CSS_DIR,
-			'jsDir'				=> JS_DIR,
-			'imgDir'			=> IMG_DIR,
-			'style'				=> $this->getStyles(),
-			'user'				=> $this->getSunlightUser($_SESSION[SESSION_PREFIX.'user']),
-			'meeting'			=> $this->getPlaceAndYear($_SESSION['meetingID']),
-			'menu'				=> $this->generateMenu(),
-			'error'				=> printError($this->error),
-			'cms'				=> $this->cms,
-			'render'			=> $this->render,
-			'mid'				=> $this->meetingId,
-			'error_start'		=> printError($error_start),
-			'error_end'			=> printError($error_end),
-			'error_open_reg'	=> printError($error_open_reg),
-			'error_close_reg'	=> printError($error_close_reg),
-			'error_login'		=> printError($error_login),
-			'page'				=> $this->page,
-		];
-
-		if(!empty($this->data)) {
-			$parameters['data'] = $this->data;
-			$parameters['todo'] = $this->todo;
-		}
-
-		$this->latte->render(__DIR__ . '/../templates/' . $this->templateDir.'/'.$this->template . '.latte', $parameters);
+		$template->meetingId = $this->getMeetingId();
+		$template->render = $this->getModel()->all();
+		$template->data = $this->getModel()->find($this->getMeetingId());
 	}
 
 }

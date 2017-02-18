@@ -1,0 +1,115 @@
+{layout '../@layout.latte'}
+
+{block content}
+<div class='siteContentRibbon'>Správa srazů</div>
+
+{foreach $flashes as $flash}
+<div class="flash {$flash->type}">{$flash->message}</div>
+{/foreach}
+
+<div class='pageRibbon'>nový sraz</div>
+
+<form action='/srazvs/meeting/create' method='post'>
+
+<div class='button-line'>
+ <button type='submit' onClick=\"this.form.submit()\">
+  <img src='{$imgDir}icons/save.png' /> Uložit</button>
+ <button type='button' onclick="window.location.replace('?cms=list-view')">
+  <img src='{$imgDir}icons/storno.png'  /> Storno</button>
+</div>
+
+<script src='{$jsDir}jquery/jquery-ui.min.js' type='text/javascript'></script>
+<script src='{$jsDir}jquery/jquery-ui-timepicker-addon.js' type='text/javascript'></script>
+<script src='{$jsDir}jquery/jquery-ui-slideraccess-addon.js' type='text/javascript'></script>
+<script type="text/javascript">
+$(function() {
+	var imgDir = {$imgDir};
+	$.datepicker.setDefaults($.datepicker.regional['cs']);
+	$.timepicker.setDefaults($.timepicker.regional['cs']);
+	$( ".dateTimePicker" ).datetimepicker({
+		showOn: "button",
+		buttonImage: imgDir + "calendar_button.png",
+		buttonImageOnly: true,
+		showWeek: true,
+        firstDay: 1,
+		showOtherMonths: true,
+        selectOtherMonths: true,
+		showButtonPanel: true,
+		changeMonth: true,
+		changeYear: true,
+		showSecond: true,
+		dateFormat: 'yy-mm-dd',
+		timeFormat: 'HH:mm:ss',
+		addSliderAccess: true,
+		sliderAccessArgs: { touchonly: false }
+
+	});
+});
+
+$(function() {
+	var imgDir = {$imgDir};
+	$.datepicker.setDefaults($.datepicker.regional['cs']);
+	$( ".datePicker" ).datepicker({
+		showOn: "button",
+		buttonImage: imgDir + "calendar_button.png",
+		buttonImageOnly: true,
+		showWeek: true,
+        firstDay: 1,
+		showOtherMonths: true,
+        selectOtherMonths: true,
+		showButtonPanel: true,
+		changeMonth: true,
+		changeYear: true,
+		dateFormat: 'yy-mm-dd',
+	});
+});
+</script>
+
+<table class='form'>
+ <tr>
+  <td class='label'><label class="required">Místo:</label></td>
+  <td><input type='text' name='place' size='30' value='' /></td>
+ </tr>
+ <tr>
+  <td class='label'><label class="required">Začátek</label></td>
+  <td><div class="picker"><input id='start_date' class='datePicker' type='text' size='20' name='start_date' value="" /></div>{$error_start}(rrrr-mm-dd)</td>
+ </tr>
+ <tr>
+  <td class='label'><label class="required">Konec:</label></td>
+  <td><div class="picker"><input id='end_date' class='datePicker' type='text' size='20' name='end_date' value="" /></div>{$error_end}(rrrr-mm-dd)</td>
+ </tr>
+ <tr>
+  <td class='label'><label class="required">Otevřít přihlašování:</label></td>
+  <td><div class="picker"><input id='open_reg' class='dateTimePicker' type='text' size='30' name='open_reg' value="" /></div>{$error_open_reg}(rrrr-mm-dd hh:mm:ss)</td>
+ </tr>
+ <tr>
+  <td class='label'><label class="required">Zavřít přihlašování:</label></td>
+  <td><div class="picker"><input id='close_reg' class='dateTimePicker' type='text' size='30' name='close_reg' value="" /></div>{$error_close_reg}(rrrr-mm-dd hh:mm:ss)</td>
+ </tr>
+ <tr>
+  <td class='label'><label>Cena srazu:</label></td>
+  <td><input type='text' size='30' name='cost' value="" /> ,- Kč</td>
+ </tr>
+ <tr>
+  <td class='label'><label>Záloha:</label></td>
+  <td><input type='text' size='30' name='advance' value="" /> ,- Kč</td>
+ </tr>
+ <tr>
+  <td class='label'><label>Číslování dokladů:</label></td>
+  <td><input type='text' size='30' name='numbering' value="" /></td>
+ </tr>
+ <tr>
+  <td class='label'><label>Kontaktní osoba:</label></td>
+  <td><input type='text' size='30' name='contact' value="" />{$error_close_reg}</td>
+ </tr>
+ <tr>
+  <td class='label'><label>E-mail:</label></td>
+  <td><input type='text' size='30' name='email' value="" />{$error_close_reg}</td>
+ </tr>
+ <tr>
+  <td class='label'><label>Telefon (mobil):</label></td>
+  <td><input type='text' size='30' name='gsm' value="" />{$error_close_reg} (123456789)</td>
+ </tr>
+</table>
+
+</form>

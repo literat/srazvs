@@ -2,10 +2,14 @@
 
 {block content}
 <div class='siteContentRibbon'>Správa srazů</div>
-{$error|noescape}
+
+{foreach $flashes as $flash}
+<div class="flash {$flash->type}">{$flash->message}</div>
+{/foreach}
+
 <div class='pageRibbon'>Seznam srazů</div>
 
-<div class='link'><a class='link' href='?cms=new&page=meetings'><img src='{$imgDir}icons/new.png' />NOVÝ SRAZ</a></div>
+<div class='link'><a class='link' href='new?page=meetings'><img src='{$imgDir}icons/new.png' />NOVÝ SRAZ</a></div>
 
 <script src='{$jsDir}jquery/jquery.tablesorter.min.js' type='text/javascript'></script>
 <script>
@@ -65,8 +69,8 @@ $(document).ready(function() {
 		{else}
 				{foreach $render as $row}
 		<tr class='radek1'>
-			<td><a href='?id={$row['id']}&cms=edit&page=meetings' title='Upravit'><img class='edit' src='{$imgDir}icons/edit.gif' /></a></td>
-			<td><a href="javascript:confirmation('?id={$row['id']}&amp;cms=delete', 'sraz: {$row['place']} {$row['start_date']} -> Opravdu SMAZAT tento sraz? Jste si jisti?')" title='Odstranit'><img class='edit' src='{$imgDir}icons/delete.gif' /></a></td>
+			<td><a href='edit/{$row['id']}?page=meetings' title='Upravit'><img class='edit' src='{$imgDir}icons/edit.gif' /></a></td>
+			<td><a href="javascript:confirmation('delete/{$row['id']}&amp;', 'sraz: {$row['place']} {$row['start_date']} -> Opravdu SMAZAT tento sraz? Jste si jisti?')" title='Odstranit'><img class='edit' src='{$imgDir}icons/delete.gif' /></a></td>
 			<td class='text'>{$row['id']}</td>
 			<td class='text'>{$row['place']}</td>
 			<td class='text'>{$row['start_date']}</td>
@@ -85,7 +89,7 @@ $(document).ready(function() {
 
 <div class='pageRibbon'>nastavení</div>
 
-<form action='?meeting' method='post'>
+<form action='meeting/update/{$meetingId}' method='post'>
 
 <div class='button-line'>
  <button type='submit' onclick=\"this.form.submit()\">
@@ -188,7 +192,4 @@ $(function() {
  </tr>
 </table>
 
- <input type='hidden' name='cms' value='modify'>
- <input type='hidden' name='mid' value='{$mid}'>
- <input type='hidden' name='page' value='meeting/?cms=list-view'>
 </form>
