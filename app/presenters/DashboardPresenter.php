@@ -12,7 +12,8 @@ class DashboardPresenter extends BasePresenter
 {
 
 	/**
-	 * Prepare initial values
+	 * @param MeetingModel $model
+	 * @param Request      $request
 	 */
 	public function __construct(MeetingModel $model, Request $request)
 	{
