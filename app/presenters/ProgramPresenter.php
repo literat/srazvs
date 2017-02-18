@@ -4,6 +4,7 @@ namespace App\Presenters;
 
 use App\Models\ProgramModel;
 use App\Models\BlockModel;
+use App\Models\MeetingModel;
 use App\Services\Emailer;
 use Nette\Http\Request;
 use Tracy\Debugger;
@@ -35,14 +36,25 @@ class ProgramPresenter extends BasePresenter
 	private $blockModel;
 
 	/**
+	 * @var MeetingModel
+	 */
+	private $meetingModel;
+
+	/**
 	 * Prepare model classes and get meeting id
 	 */
-	public function __construct(ProgramModel $model, Request $request, Emailer $emailer, BlockModel $blockModel)
-	{
+	public function __construct(
+		ProgramModel $model,
+		Request $request,
+		Emailer $emailer,
+		BlockModel $blockModel,
+		MeetingModel $meetingModel
+	) {
 		$this->setModel($model);
 		$this->setRequest($request);
 		$this->setEmailer($emailer);
 		$this->setBlockModel($blockModel);
+		$this->setMeetingModel($meetingModel);
 	}
 
 	/**
@@ -52,28 +64,6 @@ class ProgramPresenter extends BasePresenter
 	{
 		parent::startup();
 		$this->getModel()->setMeetingId($this->getMeetingId());
-	}
-
-	/**
-	 * This is the default function that will be called by Router.php
-	 *
-	 * @param array $getVars the GET variables posted to index.php
-	 */
-	public function init()
-	{
-		$parameters = $this->getRouter()->getParameters();
-		$this->setAction($parameters['action']);
-		$id = $this->requested('id', $this->programId);
-		$this->cms = $this->requested('cms', '');
-		$this->error = $this->requested('error', '');
-		$this->page = $this->requested('page', '');
-
-		switch($parameters['action']) {
-			case "public":
-				$this->publicView();
-				$this->render();
-				break;
-		}
 	}
 
 	/**
@@ -204,9 +194,23 @@ class ProgramPresenter extends BasePresenter
 	 *
 	 * @return void
 	 */
-	private function publicView()
+	public function renderPublic()
 	{
-		$this->template = 'view';
+		$template = $this->getTemplate();
+
+		$template->meeting_heading = $this->getMeetingModel()->getRegHeading();
+			////otevirani a uzavirani prihlasovani
+		if(($this->getMeetingModel()->getRegOpening() < time()) || $this->getDebugMode()) {
+			$template->display_program = true;
+		} else {
+			$template->display_program = false;
+		}
+		$template->public_program = $this->getMeetingModel()->renderPublicProgramOverview();
+		$template->page_title = 'Srazy VS - veřejný program';
+		$template->style = 'table { border-collapse:separate; width:100%; }
+				td { .width:100%; text-align:center; padding:0px; }
+				td.day { border:1px solid black; background-color:#777777; width:80px; }
+				td.time { background-color:#cccccc; width:80px; }';
 	}
 
 	/**
@@ -325,101 +329,21 @@ class ProgramPresenter extends BasePresenter
 	}
 
 	/**
-	 * Render all page
-	 *
-	 * @return void
+	 * @return MeetingModel
 	 */
-	public function render()
+	protected function getMeetingModel()
 	{
-		$error = "";
-		if(!empty($this->data)) {
-			$error_name = "";
-			$error_description = "";
-			$error_tutor = "";
-			$error_email = "";
-			$error_material = "";
-
-			// blocks select box
-			$block_select = $this->getBlock()->renderHtmlSelect($this->data['block']);
-			// display in registration check box
-			$display_in_reg_checkbox = $this->renderHtmlCheckBox('display_in_reg', 0, $this->data['display_in_reg']);
-			// time select boxes
-		}
-
-		$parameters = [
-			'cssDir'	=> CSS_DIR,
-			'jsDir'		=> JS_DIR,
-			'imgDir'	=> IMG_DIR,
-			'wwwDir'	=> HTTP_DIR,
-			'expDir'	=> EXP_DIR,
-			'progDir'	=> PROG_DIR,
-			'error'		=> printError($this->error),
-			'todo'		=> $this->todo,
-			'action'		=> $this->getAction(),
-			'render'	=> $this->getModel()->getData(),
-			'mid'		=> $this->meetingId,
-			'page'		=> $this->page,
-			'heading'	=> $this->heading,
-		];
-
-		if($this->action != 'public' && $this->action != 'annotation') {
-			$parameters = array_merge($parameters, [
-				'style'		=> $this->getStyles(),
-				'user'		=> $this->getSunlightUser($_SESSION[SESSION_PREFIX.'user']),
-				'meeting'	=> $this->getPlaceAndYear($_SESSION['meetingID']),
-				'menu'		=> $this->generateMenu(),
-			]);
-		}
-
-		if(!empty($this->data)) {
-			$parameters = array_merge($parameters, [
-				'id'				=> $this->programId,
-				'data'				=> $this->data,
-				'error_name'		=> printError($error_name),
-				'error_description'	=> printError($error_description),
-				'error_tutor'		=> printError($error_tutor),
-				'error_email'		=> printError($error_email),
-				'error_material'	=> printError($error_material),
-				'categories'		=> $this->getCategory()->all(),
-				'selectedCategory'	=> $this->data['category'],
-				'block_select'		=> $block_select,
-				'program_visitors'	=> $this->getModel()->getProgramVisitors($this->programId),
-				'display_in_reg_checkbox'	=> $display_in_reg_checkbox,
-				'formkey'			=> ((int)$this->programId.$this->meetingId) * 116 + 39147,
-				'meeting_heading'	=> $this->getMeeting()->getRegHeading(),
-				'block'				=> $this->itemId,
-				'page_title'		=> 'Registrace programů pro lektory',
-				'type'				=> isset($this->data['type']) ? $this->data['type'] : NULL,
-				'hash'				=> isset($this->data['formkey']) ? $this->data['formkey'] : NULL,
-			]);
-		}
-
-		if($this->action == 'public') {
-			$parameters['meeting_heading'] = $this->getMeeting()->getRegHeading();
-			////otevirani a uzavirani prihlasovani
-			if(($this->getMeeting()->getRegOpening() < time()) || $this->debugMode) {
-				$parameters['display_program'] = true;
-			} else {
-				$parameters['display_program'] = false;
-			}
-			$parameters['public_program'] = $this->getMeeting()->renderPublicProgramOverview();
-			$parameters['page_title'] = 'Srazy VS - veřejný program';
-			$parameters['style'] = 'table { border-collapse:separate; width:100%; }
-				td { .width:100%; text-align:center; padding:0px; }
-				td.day { border:1px solid black; background-color:#777777; width:80px; }
-				td.time { background-color:#cccccc; width:80px; }';
-		} elseif($this->cms == 'annotation') {
-			$parameters['meeting_heading'] = $this->getMeeting()->getRegHeading();
-			////otevirani a uzavirani prihlasovani
-			if(($this->getMeeting()->getRegOpening() < time()) || $this->debugMode) {
-				$parameters['display_program'] = true;
-			} else {
-				$parameters['display_program'] = false;
-			}
-			$parameters['type'] = $this->data['type'];
-			$parameters['formkey'] = $this->data['formkey'];
-		}
-
-		$this->latte->render(__DIR__ . '/../templates/' . $this->templateDir.'/'.$this->template . '.latte', $parameters);
+		return $this->meetingModel;
 	}
+
+	/**
+	 * @param  MeetingModel $model
+	 * @return $this
+	 */
+	protected function setMeetingModel(MeetingModel $model)
+	{
+		$this->meetingModel = $model;
+		return $this;
+	}
+
 }
