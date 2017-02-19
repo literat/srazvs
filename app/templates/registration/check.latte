@@ -6,7 +6,10 @@
 <h1>Registrace na srazy K + K</h1>
 <h2>{$meeting_heading}</h2>
 <br />
-{$error|noescape}
+
+{foreach $flashes as $flash}
+<div class="flash {$flash->type}">{$flash->message}</div>
+{/foreach}
 
 <!-- REGISTRACNI FORMULAR SRAZU -->
 

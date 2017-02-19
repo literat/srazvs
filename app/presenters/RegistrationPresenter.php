@@ -2,8 +2,12 @@
 
 namespace App\Presenters;
 
-use Nette\Database\Context;
-use Nette\DI\Container;
+use App\Models\MeetingModel;
+use App\Models\VisitorModel;
+use App\Models\ProgramModel;
+use App\Models\MealModel;
+use App\Services\UserService;
+use Nette\Http\Request;
 use Tracy\Debugger;
 
 /**
@@ -24,10 +28,9 @@ class RegistrationPresenter extends BasePresenter
 	protected $template = 'form';
 
 	/**
-	 * Visitor model
 	 * @var VisitorModel
 	 */
-	private $Visitor;
+	private $visitorModel;
 
 	/**
 	 * Emailer class
@@ -42,22 +45,19 @@ class RegistrationPresenter extends BasePresenter
 	private $Export;
 
 	/**
-	 * Meeting class
-	 * @var Meeting
+	 * @var MeetingModel
 	 */
-	private $Meeting;
+	private $meetingModel;
 
 	/**
-	 * Meal class
-	 * @var Meal
+	 * @var MealModel
 	 */
-	private $Meal;
+	private $mealModel;
 
 	/**
-	 * Program class
-	 * @var Program
+	 * @var ProgramModel
 	 */
-	private $Program;
+	private $programModel;
 
 	/**
 	 * Block class
@@ -75,52 +75,51 @@ class RegistrationPresenter extends BasePresenter
 	private $item;
 	private $disabled;
 	private $mealData;
-	private $user;
 
 	/**
-	 * Prepare model classes and get meeting id
+	 * @var UserService
 	 */
-	public function __construct(Context $database, Container $container)
+	private $userService;
+
+	/**
+	 * @param Request      $request
+	 * @param MeetingModel $meetingModel
+	 * @param UserService  $userService
+	 * @param VisitorModel $visitorModel
+	 * @param MealModel    $mealModel
+	 * @param ProgramModel $programModel
+	 */
+	public function __construct(
+		Request $request,
+		MeetingModel $meetingModel,
+		UserService $userService,
+		VisitorModel $visitorModel,
+		MealModel $mealModel,
+		ProgramModel $programModel
+	) {
+		$this->setRequest($request);
+		$this->setMeetingModel($meetingModel);
+		$this->setUserService($userService);
+		$this->setVisitorModel($visitorModel);
+		$this->setMealModel($mealModel);
+		$this->setProgramModel($programModel);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function startup()
 	{
-		$this->item = '';
+		parent::startup();
 
-		$this->templateDir = 'registration';
-		$this->page = 'registration';
+		$this->getMeetingModel()->setMeetingId($this->getMeetingId());
 
-		$this->database = $database;
-		$this->container = $container;
-		$this->router = $this->container->parameters['router'];
-		$this->Visitor = $this->container->createServiceVisitor();
-		$this->Emailer = $this->container->createServiceEmailer();
-		$this->Export = $this->container->createServiceExports();
-		$this->Meeting = $this->container->createServiceMeeting();
-		$this->Meal = $this->container->createServiceMeal();
-		$this->Program = $this->container->createServiceProgram();
-		$this->block = $this->container->createServiceBlock();
-		$this->latte = $this->container->getService('latte');
-
-		$this->debugMode = $this->container->parameters['debugMode'];
-
-		if($this->meetingId = $this->requested('mid', '')){
-			$_SESSION['meetingID'] = $this->meetingId;
-		} elseif($this->debugMode) {
-			$this->meetingId = 1;
+		if($this->getDebugMode()) {
+			$this->getMeetingModel()->setRegistrationHandlers(1);
+			$this->setMeetingId(1);
 		} else {
-			$this->meetingId = $_SESSION['meetingID'];
+			$this->getMeetingModel()->setRegistrationHandlers();
 		}
-
-		$this->Program->setMeetingId($this->meetingId);
-		$this->Meeting->setMeetingId($this->meetingId);
-		$this->Meeting->setHttpEncoding($this->container->parameters['encoding']);
-
-		if($this->debugMode) {
-			$this->Meeting->setRegistrationHandlers(1);
-			$this->meetingId = 1;
-		} else {
-			$this->Meeting->setRegistrationHandlers();
-		}
-
-		$this->user = $this->container->getService('userService');
 	}
 
 	/**
@@ -151,23 +150,11 @@ class RegistrationPresenter extends BasePresenter
 		$this->action = $this->router->getParameter('action') ? $this->router->getParameter('action') : $this->cms;
 
 		switch($this->action) {
-			case "new":
-				$this->__new();
-				break;
 			case "create":
 				$this->create();
 				break;
-			case "edit":
-				$this->edit($this->router->getParameter('id'));
-				break;
 			case "update":
 				$this->update($this->router->getParameter('id'));
-				break;
-			case "check":
-				$this->check($this->router->getParameter('id'));
-				break;
-			default:
-				$this->__new();
 				break;
 		}
 
@@ -175,37 +162,11 @@ class RegistrationPresenter extends BasePresenter
 	}
 
 	/**
-	 * Prepare page for new item
-	 *
-	 * @return void
-	 */
-	private function __new()
-	{
-		$this->template = 'form';
-
-		$this->heading = "nový program";
-		$this->todo = "create";
-
-		// requested for meals
-		foreach($this->Meal->dbColumns as $var_name) {
-			$$var_name = $this->requested($var_name, 'ne');
-			$this->mealData[$var_name] = $$var_name;
-		}
-
-		// requested for visitors fields
-		foreach($this->Visitor->dbColumns as $key) {
-			if($key == 'bill') $value = 0;
-			else $value = "";
-			$this->data[$key] = $this->requested($key, $value);
-		}
-	}
-
-	/**
 	 * Process data from form
 	 *
 	 * @return void
 	 */
-	private function create()
+	public function actionCreate()
 	{
 		// TODO
 		////ziskani zvolenych programu
@@ -268,7 +229,7 @@ class RegistrationPresenter extends BasePresenter
 	 * @param  int 	$id 	of item
 	 * @return void
 	 */
-	private function update($guid)
+	public function actionUpdate($guid)
 	{
 		// TODO
 		////ziskani zvolenych programu
@@ -326,62 +287,105 @@ class RegistrationPresenter extends BasePresenter
 	}
 
 	/**
-	 * Prepare data for editing
-	 *
-	 * @param  string  $guid
 	 * @return void
 	 */
-	private function edit($guid)
+	public function renderDefault()
 	{
-		$this->template = 'form';
+		$template = $this->getTemplate();
 
-		$this->heading = "úprava programu";
-		$this->todo = "update";
+		$template->page_title = "Registrace srazu VS";
+		$template->meeting_heading = $this->getMeetingModel()->getRegHeading();
+		////otevirani a uzavirani prihlasovani
+		$template->disabled = $this->getMeetingModel()->isRegOpen($this->getDebugMode()) ? "" : "disabled";
+		$template->loggedIn = $this->getUserService()->isLoggedIn();
+		$template->isRegistrationOpen = $this->getMeetingModel()->isRegOpen($this->getDebugMode());
 
-		$this->data = $this->Visitor->findByGuid($guid);
-		$this->itemId = $this->data->id;
-		$this->meetingId = $this->data->meeting;
-		$this->Meeting->setRegistrationHandlers($this->data->meeting);
-		$this->mealData = $this->Meal->findByVisitorId($this->data->id);
+		// requested for visitors fields
+		foreach($this->getVisitorModel()->columns as $column) {
+			$data[$column] = '';
+		}
+		$template->data = $data;
+
+		$template->meals = $this->getMealModel()->renderHtmlMealsSelect($this->mealData, $this->disabled);
+		$template->province = $this->getMeetingModel()->renderHtmlProvinceSelect(null);
+		$template->programs = $this->getVisitorModel()->renderProgramSwitcher($this->meetingId, $this->itemId);
+		$template->meetingId = $this->getMeetingId();
+		$template->cost	= $this->getMeetingModel()->getPrice('cost');
+
+
+		if($this->getUserservice()->isLoggedIn()) {
+			$userDetail = $this->getUserModel()->getUserDetail();
+			$skautisUser = $this->getUserModel()->getPersonalDetail($userDetail->ID_Person);
+			$membership = $this->getUserModel()->getPersonUnitDetail($userDetail->ID_Person);
+
+			if(!preg_match('/^[1-9]{1}[0-9a-zA-Z]{2}\.[0-9a-zA-Z]{1}[0-9a-zA-Z]{1}$/', $membership->RegistrationNumber)) {
+				$skautisUserUnit = $this->getUserModel()->getParentUnitDetail($membership->ID_Unit)[0];
+			} else {
+				$skautisUserUnit = $this->getUserModel()->getUnitDetail($membership->ID_Unit);
+			}
+
+			$template->data['name'] = $skautisUser->FirstName;
+			$template->data['surname'] = $skautisUser->LastName;
+			$template->data['nick'] = $skautisUser->NickName;
+			$template->data['email'] = $skautisUser->Email;
+			$template->data['street'] = $skautisUser->Street;
+			$template->data['city'] = $skautisUser->City;
+			$template->data['postal_code'] = preg_replace('/\s+/','',$skautisUser->Postcode);
+			$template->data['birthday'] = $skautisUser->Birthday;
+			$template->data['group_name'] = $skautisUserUnit->DisplayName;
+			$template->data['group_num'] = $skautisUserUnit->RegistrationNumber;
+			if(isset($membership->Unit)) {
+				$template->data['troop_name'] = $membership->Unit;
+			}
+		}
 	}
 
 	/**
-	 * Prepare data for check
-	 *
 	 * @param  string  $guid
 	 * @return void
 	 */
-	private function check($guid)
+	public function renderCheck($guid)
 	{
-		$this->template = 'check';
+		$template = $this->getTemplate();
 
 		$this->heading = "kontrola přihlášky";
-		$this->todo = NULL;
 
-		$this->data = $this->Visitor->findByGuid($guid);
-		$this->itemId = $this->data->id;
-		$this->meetingId = $this->data->meeting;
-		$this->Meeting->setRegistrationHandlers($this->data->meeting);
-		$this->mealData = $this->Meal->findByVisitorId($this->data->id);
+		$data = $this->getVisitorModel()->findByGuid($guid);
+		$template->meals = $this->getMealModel()->findByVisitorId($data->id);
+
+		$template->data = $data;
+		$this->itemId = $data->id;
+		$this->meetingId = $data->meeting;
+		$this->getMeetingModel()->setRegistrationHandlers($data->meeting);
+		$this->mealData = $this->getMealModel()->findByVisitorId($data->id);
+		$template->page_title = "Registrace srazu VS";
+		$template->isRegistrationOpen = $this->getMeetingModel()->isRegOpen($this->getDebugMode());
+		$template->guid = $guid;
+		$template->province = $this->getMeetingModel()->getProvinceNameById($data->province);
+		$template->programs = $this->getProgramModel()->getSelectedPrograms($data->id);
 	}
 
-	private function cleardate2DB ($inputDate, $formatDate)
+	public function renderEdit($guid)
 	{
-				//list($d, $m, $r) = split("[/.-]", $input_datum);
-				list($d, $m, $r) = preg_split("[/|\.|-]", $inputDate);
-				// beru prvni znak a delam z nej integer
-				$rtest = $r{0};
-				$rtest += 0;
-				$mtest = $m{0};
-				$mtest += 0;
+		$template = $this->getTemplate();
 
-				// pokud je to nula, musim odstranit prvni znak
-				if(($rtest) == 0) $r = substr($r, 1);
-				if(($mtest) == 0) $m = substr($m, 1);
+		$template->heading = 'úprava programu';
 
-				$d += 0; $m += 0; $r += 0;
-				$date = date("$formatDate",mktime(0,0,0,$m,$d,$r));
-				return $date;
+		$data = $this->getVisitorModel()->findByGuid($guid);
+		$template->data = $data;
+		$template->meetingId = $data->meeting;
+		$this->getMeetingModel()->setRegistrationHandlers($data->meeting);
+		$mealData = $this->getMealModel()->findByVisitorId($data->id);
+		$template->mealData = $mealData;
+		$template->page_title = "Registrace srazu VS";
+		$template->isRegistrationOpen = $this->getMeetingModel()->isRegOpen($this->getDebugMode());
+		$template->loggedIn = $this->getUserService()->isLoggedIn();
+		$template->disabled = $this->getMeetingModel()->isRegOpen($this->getDebugMode()) ? "" : "disabled";
+		$template->meals = $this->getMealModel()->renderHtmlMealsSelect($mealData, $this->disabled);
+		$template->province = $this->getMeetingModel()->renderHtmlProvinceSelect($data->province);
+		$template->programs = $this->getVisitorModel()->renderProgramSwitcher($this->getMeetingId(), $data->id);
+		$template->guid = $guid;
+		$template->cost	= $this->getMeetingModel()->getPrice('cost');
 	}
 
 	/**
@@ -480,4 +484,157 @@ class RegistrationPresenter extends BasePresenter
 
 		$this->latte->render(__DIR__ . '/../templates/' . $this->templateDir.'/'.$this->template . '.latte', $parameters);
 	}
+
+	private function cleardate2DB ($inputDate, $formatDate)
+	{
+				//list($d, $m, $r) = split("[/.-]", $input_datum);
+				list($d, $m, $r) = preg_split("[/|\.|-]", $inputDate);
+				// beru prvni znak a delam z nej integer
+				$rtest = $r{0};
+				$rtest += 0;
+				$mtest = $m{0};
+				$mtest += 0;
+
+				// pokud je to nula, musim odstranit prvni znak
+				if(($rtest) == 0) $r = substr($r, 1);
+				if(($mtest) == 0) $m = substr($m, 1);
+
+				$d += 0; $m += 0; $r += 0;
+				$date = date("$formatDate",mktime(0,0,0,$m,$d,$r));
+				return $date;
+	}
+
+	/**
+	 * @return BlockModel
+	 */
+	protected function getBlockModel()
+	{
+		return $this->blockModel;
+	}
+
+	/**
+	 * @param  BlockModel $model
+	 * @return $this
+	 */
+	protected function setBlockModel(BlockModel $model)
+	{
+		$this->blockModel = $model;
+
+		return $this;
+	}
+
+	/**
+	 * @return MealModel
+	 */
+	protected function getMealModel()
+	{
+		return $this->mealModel;
+	}
+
+	/**
+	 * @param  MealModel $model
+	 * @return $this
+	 */
+	protected function setMealModel(MealModel $model)
+	{
+		$this->mealModel = $model;
+
+		return $this;
+	}
+
+	/**
+	 * @return MeetingModel
+	 */
+	protected function getMeetingModel()
+	{
+		return $this->meetingModel;
+	}
+
+	/**
+	 * @param  MeetingModel $model
+	 * @return $this
+	 */
+	protected function setMeetingModel(MeetingModel $model)
+	{
+		$this->meetingModel = $model;
+
+		return $this;
+	}
+
+	/**
+	 * @return VisitorModel
+	 */
+	protected function getVisitorModel()
+	{
+		return $this->visitorModel;
+	}
+
+	/**
+	 * @param  VisitorModel $model
+	 * @return $this
+	 */
+	protected function setVisitorModel(VisitorModel $model)
+	{
+		$this->visitorModel = $model;
+
+		return $this;
+	}
+
+	/**
+	 * @return ProgramModel
+	 */
+	protected function getProgramModel()
+	{
+		return $this->programModel;
+	}
+
+	/**
+	 * @param  ProgramModel $model
+	 * @return $this
+	 */
+	protected function setProgramModel(ProgramModel $model)
+	{
+		$this->programModel = $model;
+
+		return $this;
+	}
+
+	/**
+	 * @return Emailer
+	 */
+	protected function getEmailer()
+	{
+		return $this->emailer;
+	}
+
+	/**
+	 * @param  Emailer $emailer
+	 * @return $this
+	 */
+	protected function setEmailer(Emailer $emailer)
+	{
+		$this->emailer = $emailer;
+
+		return $this;
+	}
+
+	/**
+	 * @return UserService
+	 */
+	protected function getUserService()
+	{
+		return $this->userService;
+	}
+
+	/**
+	 * @param  UserService $service
+	 * @return $this
+	 */
+	protected function setUserService(UserService $service)
+	{
+		$this->userService = $service;
+
+		return $this;
+	}
+
 }

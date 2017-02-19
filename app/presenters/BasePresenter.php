@@ -81,7 +81,10 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 
 		$this->setMeetingId($_SESSION['meetingID']);
 
-		$this->getModel()->setMeetingId($_SESSION['meetingID']);
+		$model = $this->getModel();
+		if($model) {
+			$model->setMeetingId($_SESSION['meetingID']);
+		}
 
 		$this->debugMode = $this->getContainer()->getParameters()['debugMode'];
 	}
@@ -529,6 +532,14 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 	protected function getCache()
 	{
 		return $this->getContainer()->getService('cache');
+	}
+
+	/**
+	 * @return string
+	 */
+	protected function getDebugMode()
+	{
+		return $this->debugMode;
 	}
 
 }

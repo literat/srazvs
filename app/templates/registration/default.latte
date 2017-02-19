@@ -7,7 +7,10 @@
 <h1>Registrace na Srazy VS</h1>
 <h2>{$meeting_heading}</h2>
 <br />
-{$error|noescape}
+
+{foreach $flashes as $flash}
+<div class="flash {$flash->type}">{$flash->message}</div>
+{/foreach}
 
 {if $isRegistrationOpen}
 
@@ -145,7 +148,7 @@ $(function() {
 
 <hr />
 
-<form id="registration" action='/srazvs/registration/{$todo}/{$guid ? $guid}' method='post'>
+<form id="registration" action='/srazvs/registration/create' method='post'>
 	<div class='button-line'>
 		<button {$disabled} type='submit'>
 			<img src='{$imgDir}icons/save.png' /> Uložit</button>
@@ -251,11 +254,9 @@ $(function() {
 		</tr>
 	</table>
 
-	<input {$disabled} type='hidden' name='mid' value='{$mid}' />
-	<input {$disabled} type='hidden' name='guid' value='{$guid}' />
+	<input {$disabled} type='hidden' name='mid' value='{$meetingId}' />
 	<input {$disabled} type="hidden" name="bill" value="0" />
 	<input {$disabled} type="hidden" name="cost" value='{$cost}' />
-	<input {$disabled} type='hidden' name='checked' value='{$checked}'>
 
 	{$programs|noescape}
 
