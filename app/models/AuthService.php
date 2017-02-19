@@ -1,9 +1,11 @@
 <?php
 
+namespace App\Services;
+
 /**
  * Authentication service
  */
-class AuthService extends \BaseService
+class AuthService extends BaseService
 {
 
 	/**

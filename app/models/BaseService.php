@@ -1,9 +1,14 @@
 <?php
 
+namespace App\Services;
+
+use Nette\Object;
+use Skautis\Skautis;
+
 /**
  * Base service
  */
-abstract class BaseService extends Nette\Object
+abstract class BaseService extends Object
 {
 
 	/**
@@ -37,7 +42,7 @@ abstract class BaseService extends Nette\Object
 	/**
 	 * Construct
 	 */
-	public function __construct(Skautis\Skautis $skautIS = NULL)
+	public function __construct(Skautis $skautIS = NULL)
 	{
 		$this->skautis = $skautIS;
 		self::$storage = array();
