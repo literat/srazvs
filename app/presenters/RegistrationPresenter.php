@@ -5,6 +5,7 @@ namespace App\Presenters;
 use App\Models\MeetingModel;
 use App\Models\VisitorModel;
 use App\Models\ProgramModel;
+use App\Models\BlockModel;
 use App\Models\MealModel;
 use App\Services\UserService;
 use Nette\Http\Request;
@@ -21,11 +22,6 @@ use Tracy\Debugger;
  */
 class RegistrationPresenter extends BasePresenter
 {
-	/**
-	 * template
-	 * @var string
-	 */
-	protected $template = 'form';
 
 	/**
 	 * @var VisitorModel
@@ -33,16 +29,9 @@ class RegistrationPresenter extends BasePresenter
 	private $visitorModel;
 
 	/**
-	 * Emailer class
 	 * @var Emailer
 	 */
 	private $Emailer;
-
-	/**
-	 * Export class
-	 * @var Export
-	 */
-	private $Export;
 
 	/**
 	 * @var MeetingModel
@@ -60,21 +49,9 @@ class RegistrationPresenter extends BasePresenter
 	private $programModel;
 
 	/**
-	 * Block class
-	 * @var Block
+	 * @var BlockModel
 	 */
-	private $block;
-
-	/**
-	 * Error
-	 * @var array
-	 */
-	protected $error = FALSE;
-
-	protected $hash = NULL;
-	private $item;
-	private $disabled;
-	private $mealData;
+	private $blockModel;
 
 	/**
 	 * @var UserService
@@ -120,45 +97,12 @@ class RegistrationPresenter extends BasePresenter
 		} else {
 			$this->getMeetingModel()->setRegistrationHandlers();
 		}
-	}
 
-	/**
-	 * This is the default function that will be called by Router.php
-	 *
-	 * @param array $getVars the GET variables posted to index.php
-	 */
-	public function init()
-	{
-		$id = $this->requested('id', (isset($this->itemId)) ? $this->itemId : '');
-		$this->cms = $this->requested('cms', '');
-		$this->error = $this->requested('error', '');
-		$this->page = $this->requested('page', '');
-		$search = $this->requested('search', '');
-		$this->disabled = $this->requested('disabled', '');
+		$template = $this->getTemplate();
 
-		if($ids = $this->requested('checker')){
-			$query_id = NULL;
-			foreach($ids as $key => $value) {
-				$query_id .= $value.',';
-			}
-			$query_id = rtrim($query_id, ',');
-		}
-		else {
-			$query_id = $ids;
-		}
-
-		$this->action = $this->router->getParameter('action') ? $this->router->getParameter('action') : $this->cms;
-
-		switch($this->action) {
-			case "create":
-				$this->create();
-				break;
-			case "update":
-				$this->update($this->router->getParameter('id'));
-				break;
-		}
-
-		$this->render();
+		$template->page_title = "Registrace srazu VS";
+		$template->meeting_heading = $this->getMeetingModel()->getRegHeading();
+		$template->isRegistrationOpen = $this->getMeetingModel()->isRegOpen($this->getDebugMode());
 	}
 
 	/**
@@ -224,12 +168,51 @@ class RegistrationPresenter extends BasePresenter
 	}
 
 	/**
+	 * @param  integer 	$id
+	 * @return void
+	 */
+	public function actionUpdate($guid)
+	{
+		try {
+			$postData = $this->getRequest()->getPost();
+
+			$visitor = array_intersect_key($postData, array_flip($this->getModel()->getColumns()));
+			$meals = array_intersect_key($postData, array_flip($this->getMealModel()->getColumns()));
+
+			$blocks = $this->getBlockModel()->idsFromCurrentMeeting($postData['meeting']);
+			$programs = [];
+			$programs = array_map(function($block) use ($postData) {
+				return $postData['blck_' . $block['id']];
+			}, $blocks);
+
+			$result = $this->getVisitorModel()->modifyByGuid($guid, $visitor, $meals, $programs);
+
+			$code4bank = substr($postData['name'], 0, 1).substr($postData['surname'], 0, 1).substr($postData['birthday'], 2, 2);
+			//$code4bank = $this->calculateCode4Bank($postData);
+
+			$recipient_mail = $postData['email'];
+			$recipient_name = $postData['name']." ".$postData['surname'];
+			$recipient = [$recipient_mail => $recipient_name];
+
+			$return = $this->getEmailer()->sendRegistrationSummary($recipient, $guid, $code4bank);
+
+			Debugger::log('Modification of registration('. $guid .') successfull, result: ' . json_encode($result), Debugger::INFO);
+			$this->flashMessage('Registrace(' . $guid . ') byla úspěšně upravena.', 'ok');
+		} catch(Exception $e) {
+			Debugger::log('Modification of registration('. $guid .') failed, result: ' .  $e->getMessage(), Debugger::ERROR);
+			$this->flashMessage('Modification of registration(' . $guid . ') failed, result: ' . $e->getMessage(), 'error');
+		}
+
+		$this->redirect('Registration:check', $guid);
+	}
+
+	/**
 	 * Process data from editing
 	 *
 	 * @param  int 	$id 	of item
 	 * @return void
 	 */
-	public function actionUpdate($guid)
+	public function actionUpdateBackup($guid)
 	{
 		// TODO
 		////ziskani zvolenych programu
@@ -293,12 +276,10 @@ class RegistrationPresenter extends BasePresenter
 	{
 		$template = $this->getTemplate();
 
-		$template->page_title = "Registrace srazu VS";
-		$template->meeting_heading = $this->getMeetingModel()->getRegHeading();
 		////otevirani a uzavirani prihlasovani
-		$template->disabled = $this->getMeetingModel()->isRegOpen($this->getDebugMode()) ? "" : "disabled";
+		$disabled = $this->getMeetingModel()->isRegOpen($this->getDebugMode()) ? "" : "disabled";
+		$template->disabled = $disabled;
 		$template->loggedIn = $this->getUserService()->isLoggedIn();
-		$template->isRegistrationOpen = $this->getMeetingModel()->isRegOpen($this->getDebugMode());
 
 		// requested for visitors fields
 		foreach($this->getVisitorModel()->columns as $column) {
@@ -306,12 +287,11 @@ class RegistrationPresenter extends BasePresenter
 		}
 		$template->data = $data;
 
-		$template->meals = $this->getMealModel()->renderHtmlMealsSelect($this->mealData, $this->disabled);
+		$template->meals = $this->getMealModel()->renderHtmlMealsSelect(null, $disabled);
 		$template->province = $this->getMeetingModel()->renderHtmlProvinceSelect(null);
-		$template->programs = $this->getVisitorModel()->renderProgramSwitcher($this->meetingId, $this->itemId);
+		$template->programs = $this->getVisitorModel()->renderProgramSwitcher($this->getMeetingId(), null);
 		$template->meetingId = $this->getMeetingId();
 		$template->cost	= $this->getMeetingModel()->getPrice('cost');
-
 
 		if($this->getUserservice()->isLoggedIn()) {
 			$userDetail = $this->getUserModel()->getUserDetail();
@@ -346,45 +326,40 @@ class RegistrationPresenter extends BasePresenter
 	 */
 	public function renderCheck($guid)
 	{
-		$template = $this->getTemplate();
-
-		$this->heading = "kontrola přihlášky";
-
 		$data = $this->getVisitorModel()->findByGuid($guid);
-		$template->meals = $this->getMealModel()->findByVisitorId($data->id);
 
-		$template->data = $data;
-		$this->itemId = $data->id;
-		$this->meetingId = $data->meeting;
 		$this->getMeetingModel()->setRegistrationHandlers($data->meeting);
-		$this->mealData = $this->getMealModel()->findByVisitorId($data->id);
-		$template->page_title = "Registrace srazu VS";
-		$template->isRegistrationOpen = $this->getMeetingModel()->isRegOpen($this->getDebugMode());
+
+		$template = $this->getTemplate();
 		$template->guid = $guid;
+		$template->data = $data;
+		$template->meetingId = $data->meeting;
+		$template->meals = $this->getMealModel()->findByVisitorId($data->id);
 		$template->province = $this->getMeetingModel()->getProvinceNameById($data->province);
 		$template->programs = $this->getProgramModel()->getSelectedPrograms($data->id);
 	}
 
+	/**
+	 * @param  string $guid
+	 * @return void
+	 */
 	public function renderEdit($guid)
 	{
-		$template = $this->getTemplate();
-
-		$template->heading = 'úprava programu';
-
 		$data = $this->getVisitorModel()->findByGuid($guid);
+		$mealData = $this->getMealModel()->findByVisitorId($data->id);
+
+		$this->getMeetingModel()->setRegistrationHandlers($data->meeting);
+
+		$template = $this->getTemplate();
+		$template->guid = $guid;
 		$template->data = $data;
 		$template->meetingId = $data->meeting;
-		$this->getMeetingModel()->setRegistrationHandlers($data->meeting);
-		$mealData = $this->getMealModel()->findByVisitorId($data->id);
 		$template->mealData = $mealData;
-		$template->page_title = "Registrace srazu VS";
-		$template->isRegistrationOpen = $this->getMeetingModel()->isRegOpen($this->getDebugMode());
 		$template->loggedIn = $this->getUserService()->isLoggedIn();
 		$template->disabled = $this->getMeetingModel()->isRegOpen($this->getDebugMode()) ? "" : "disabled";
 		$template->meals = $this->getMealModel()->renderHtmlMealsSelect($mealData, $this->disabled);
 		$template->province = $this->getMeetingModel()->renderHtmlProvinceSelect($data->province);
-		$template->programs = $this->getVisitorModel()->renderProgramSwitcher($this->getMeetingId(), $data->id);
-		$template->guid = $guid;
+		$template->programs = $this->getVisitorModel()->renderProgramSwitcher($data->meeting, $data->id);
 		$template->cost	= $this->getMeetingModel()->getPrice('cost');
 	}
 

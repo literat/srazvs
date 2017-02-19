@@ -254,7 +254,8 @@ $(function() {
 		</tr>
 	</table>
 
-	<input {$disabled} type='hidden' name='mid' value='{$meetingId}' />
+	<input {$disabled} type='hidden' name='meeting' value='{$data->meeting}' />
+	<input {$disabled} type='hidden' name='guid' value='{$data->guid}' />
 	<input {$disabled} type="hidden" name="bill" value="0" />
 	<input {$disabled} type="hidden" name="cost" value='{$cost}' />
 
