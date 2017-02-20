@@ -5,6 +5,7 @@ namespace App\Models;
 use Tracy\Debugger;
 use Nette\Utils\Strings;
 use Nette\Database\Context;
+use Nette\Caching\Cache;
 
 /**
  * Category
@@ -30,9 +31,10 @@ class CategoryModel extends BaseModel
 	/**
 	 * @param Nette\Database\Context $database
 	 */
-	public function __construct(Context $database)
+	public function __construct(Context $database, Cache $cache)
 	{
 		$this->setDatabase($database);
+		$this->setCache($cache);
 	}
 
 	/**
