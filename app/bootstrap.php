@@ -10,14 +10,12 @@ use Nette\Loaders\RobotLoader;
 use App\Routers\RouterFactory;
 
 require_once __DIR__ . '/../vendor/autoload.php';
-require_once __DIR__ . '/../inc/errors.inc.php';
 
 define('SESSION_PREFIX', md5('localhost'.'vodni'.'vodni'.'sunlight')."-");
 
 //nastartovani session
 session_name(SESSION_PREFIX . 'session');
 
-//$httpRequest = $container->getByType('Nette\Http\Request');
 $requestFatory = new Nette\Http\RequestFactory;
 $httpRequest = $requestFatory->createHttpRequest();
 $httpResponse = new Nette\Http\Response;
@@ -155,14 +153,6 @@ if($appRequest) {
 $target = $parameters['appDir'] . '/presenters/' . $controllerName . 'Presenter.php';
 $container->parameters['router'] = $appRequest;
 
-/**
- * Templating
- */
-$latte = new \Latte\Engine;
-$latte->setTempDirectory(__DIR__ . '/../temp');
-$latte->addFilter(NULL, 'Filters::common');
-$container->addService('latte', $latte);
-
 $publicPages = [
 	'Block.annotation',
 	'Program.annotation',
@@ -178,30 +168,14 @@ $publicPages = [
 	'Auth.skautis',
 ];
 
-//get target
+/**
+ * Including access control
+ */
 if(file_exists($target)) {
-
 	// access control
 	if(array_search($controllerName.'.'.$action, $publicPages) === false) {
 		include_once(INC_DIR . 'access.inc.php');
 	}
-
-	require_once($target);
-
-	//modify page to fit naming convention
-	$class = 'App\Presenters\\' . $controllerName . 'Presenter';
-
-	//instantiate the appropriate class
-	if(class_exists($class)) {
-		$controller = new $class($database, $container);
-	} else {
-		//did we name our class correctly?
-		die('class does not exist!');
-	}
-} else {
-	//can't find the file in 'controllers'!
-	die('page does not exist!');
 }
 
-//once we have the controller instantiated, execute the default function
-$controller->init();
+return $container;
