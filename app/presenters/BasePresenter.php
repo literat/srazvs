@@ -233,7 +233,11 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 		$this->render();
 	}
 
-	protected function code4Bank($data)
+	/**
+	 * @param  array $data
+	 * @return string
+	 */
+	protected function calculateCode4Bank(array $data)
 	{
 		return Strings::toAscii(
 			mb_substr($data['name'], 0, 1, 'utf-8')

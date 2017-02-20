@@ -101,7 +101,7 @@ class VisitorPresenter extends BasePresenter
 			}, $blocks);
 
 			if($guid = $this->getModel()->assemble($visitor, $meals, $programs, true)) {
-				$code4bank = $this->code4Bank($visitor);
+				$code4bank = $this->calculateCode4Bank($visitor);
 
 				$recipientMail = $visitor['email'];
 				$recipientName = $visitor['name']." ".$visitor['surname'];

@@ -8,6 +8,7 @@ use App\Models\ProgramModel;
 use App\Models\BlockModel;
 use App\Models\MealModel;
 use App\Services\UserService;
+use App\Services\Emailer;
 use Nette\Http\Request;
 use Tracy\Debugger;
 
@@ -31,7 +32,7 @@ class RegistrationPresenter extends BasePresenter
 	/**
 	 * @var Emailer
 	 */
-	private $Emailer;
+	private $emailer;
 
 	/**
 	 * @var MeetingModel
@@ -59,12 +60,18 @@ class RegistrationPresenter extends BasePresenter
 	private $userService;
 
 	/**
+	 * @var boolean
+	 */
+	private $disabled = false;
+
+	/**
 	 * @param Request      $request
 	 * @param MeetingModel $meetingModel
 	 * @param UserService  $userService
 	 * @param VisitorModel $visitorModel
 	 * @param MealModel    $mealModel
 	 * @param ProgramModel $programModel
+	 * @param BlockModel   $blockModel
 	 */
 	public function __construct(
 		Request $request,
@@ -72,7 +79,9 @@ class RegistrationPresenter extends BasePresenter
 		UserService $userService,
 		VisitorModel $visitorModel,
 		MealModel $mealModel,
-		ProgramModel $programModel
+		ProgramModel $programModel,
+		BlockModel $blockModel,
+		Emailer $emailer
 	) {
 		$this->setRequest($request);
 		$this->setMeetingModel($meetingModel);
@@ -80,6 +89,8 @@ class RegistrationPresenter extends BasePresenter
 		$this->setVisitorModel($visitorModel);
 		$this->setMealModel($mealModel);
 		$this->setProgramModel($programModel);
+		$this->setBlockModel($blockModel);
+		$this->setEmailer($emailer);
 	}
 
 	/**
@@ -112,59 +123,41 @@ class RegistrationPresenter extends BasePresenter
 	 */
 	public function actionCreate()
 	{
-		// TODO
-		////ziskani zvolenych programu
-		$blocks = $this->block->idsFromCurrentMeeting($this->meetingId);
+		try {
+			$postData = $this->getRequest()->getPost();
+			$postData['meeting'] = $this->getMeetingId();
 
-		foreach($blocks as $block){
-			$$block['id'] = $this->requested('blck_' . $block->id, 0);
-			$programs_data[$block->id] = $$block['id'];
-			//echo $block->id.":".$$block->id."|";
-		}
+			$visitor = array_intersect_key($postData, array_flip($this->getVisitorModel()->getColumns()));
+			$meals = array_intersect_key($postData, array_flip($this->getMealModel()->getColumns()));
 
-		// requested for visitors
-		foreach($this->Visitor->dbColumns as $column) {
-				if($column == 'bill') $$column = $this->requested($column, 0);
-				elseif($column == 'birthday') {
-					$$column = $this->cleardate2DB($this->requested($column, 0), 'Y-m-d');
+			$blocks = $this->getBlockModel()->findByMeeting($this->getMeetingId());
+			$programs = [];
+			$programs = array_map(function($block) use ($postData) {
+				if(!array_key_exists('blck_' . $block['id'], $postData)) {
+					return 0;
 				}
-				else $$column = $this->requested($column, '');
-				$newVisitor[$column] = $$column;
-		}
 
-		// i must add visitor's ID because it is empty
-		$newVisitor['meeting'] = $this->meetingId;
+				return $postData['blck_' . $block['id']];
+			}, $blocks);
 
-		// requested for meals
-		foreach($this->Meal->dbColumns as $var_name) {
-			$$var_name = $this->requested($var_name, null);
-			$meals_data[$var_name] = $$var_name;
-		}
+			if($guid = $this->getVisitorModel()->assemble($visitor, $meals, $programs, true)) {
+				$code4bank = $this->calculateCode4Bank($visitor);
 
-		// create
-		if($guid = $this->Visitor->create($newVisitor, $meals_data, $programs_data, true)) {
-			######################## ODESILAM EMAIL ##########################
-			Debugger::log('Creating Visitor ' . $guid, 'info');
-			// zaheshovane udaje, aby se nedali jen tak ziskat data z databaze
-			$code4bank = $this->code4Bank($newVisitor);
+				$recipientMail = $visitor['email'];
+				$recipientName = $visitor['name']." ".$visitor['surname'];
+				$recipient = [$recipientMail => $recipientName];
 
-			$recipient_mail = $newVisitor['email'];
-			$recipient_name = $newVisitor['name']." ".$newVisitor['surname'];
-			$recipient = [$recipient_mail => $recipient_name];
-
-			$return = $this->Emailer->sendRegistrationSummary($recipient, $guid, $code4bank);
-
-			if($return === TRUE) {
-				Debugger::log('Mail send to ' . $recipient_mail, 'info');
-				redirect('/srazvs/registration/check/' . $guid . '?error=ok');
-			} else {
-				Debugger::log('Mail not send to ' . $recipient_mail, 'error');
-				redirect('/srazvs/registration/check/' . $guid . '?error=email');
+				$result= $this->getEmailer()->sendRegistrationSummary($recipient, $guid, $code4bank);
 			}
-		} else {
-			Debugger::log('Visitor not created', 'error');
-			redirect("?error=error");
+
+			Debugger::log('Creation of registration('. $guid .') successfull, result: ' . json_encode($result), Debugger::INFO);
+			$this->flashMessage('Registrace(' . $guid . ') byla úspěšně založena.', 'ok');
+		} catch(Exception $e) {
+			Debugger::log('Creation of registration('. $guid .') failed, result: ' .  $e->getMessage(), Debugger::ERROR);
+			$this->flashMessage('Creation of registration failed, result: ' . $e->getMessage(), 'error');
 		}
+
+		$this->redirect('Registration:check', $guid);
 	}
 
 	/**
@@ -176,19 +169,22 @@ class RegistrationPresenter extends BasePresenter
 		try {
 			$postData = $this->getRequest()->getPost();
 
-			$visitor = array_intersect_key($postData, array_flip($this->getModel()->getColumns()));
+			$visitor = array_intersect_key($postData, array_flip($this->getVisitorModel()->getColumns()));
 			$meals = array_intersect_key($postData, array_flip($this->getMealModel()->getColumns()));
 
 			$blocks = $this->getBlockModel()->idsFromCurrentMeeting($postData['meeting']);
+
 			$programs = [];
 			$programs = array_map(function($block) use ($postData) {
+				if(!array_key_exists('blck_' . $block['id'], $postData)) {
+					return 0;
+				}
+
 				return $postData['blck_' . $block['id']];
 			}, $blocks);
 
 			$result = $this->getVisitorModel()->modifyByGuid($guid, $visitor, $meals, $programs);
-
-			$code4bank = substr($postData['name'], 0, 1).substr($postData['surname'], 0, 1).substr($postData['birthday'], 2, 2);
-			//$code4bank = $this->calculateCode4Bank($postData);
+			$code4bank = $this->calculateCode4Bank($postData);
 
 			$recipient_mail = $postData['email'];
 			$recipient_name = $postData['name']." ".$postData['surname'];
@@ -204,69 +200,6 @@ class RegistrationPresenter extends BasePresenter
 		}
 
 		$this->redirect('Registration:check', $guid);
-	}
-
-	/**
-	 * Process data from editing
-	 *
-	 * @param  int 	$id 	of item
-	 * @return void
-	 */
-	public function actionUpdateBackup($guid)
-	{
-		// TODO
-		////ziskani zvolenych programu
-		$blocks = $this->block->idsFromCurrentMeeting($this->meetingId);
-
-		foreach($blocks as $block){
-			$$block['id'] = $this->requested('blck_' . $block->id, 0);
-			$programs_data[$block->id] = $$block['id'];
-			//echo $block->id.":".$$block->id."|";
-		}
-
-		foreach($this->Visitor->dbColumns as $column) {
-			if($column == 'bill') $$column = $this->requested($column, 0);
-			elseif($column == 'birthday') {
-				$$column = $this->cleardate2DB($this->requested($column, 0), 'Y-m-d');
-			}
-			else $$column = $this->requested($column, null);
-			$db_data[$column] = $$column;
-		}
-
-		// I must add meeting's ID because it is empty
-		$db_data['meeting'] = $this->meetingId;
-
-		foreach($this->Meal->dbColumns as $var_name) {
-			$$var_name = $this->requested($var_name, null);
-			$meals_data[$var_name] = $$var_name;
-		}
-
-		// I must add visitor's ID because it is empty
-		$meals_data['visitor'] = $this->router->getpost('id');
-
-		if($guid = $this->Visitor->modifyByGuid($guid, $db_data, $meals_data, $programs_data)){
-			######################## ODESILAM EMAIL ##########################
-			Debugger::log('Visitor ' . $guid . ' was modified', 'info');
-			// zaheshovane udaje, aby se nedali jen tak ziskat data z databaze
-			$code4bank = substr($db_data['name'], 0, 1).substr($db_data['surname'], 0, 1).substr($db_data['birthday'], 2, 2);
-
-			$recipient_mail = $db_data['email'];
-			$recipient_name = $db_data['name']." ".$db_data['surname'];
-			$recipient = [$recipient_mail => $recipient_name];
-
-			$return = $this->Emailer->sendRegistrationSummary($recipient, $guid, $code4bank);
-
-			if($return === TRUE) {
-				Debugger::log('Mail send to ' . $recipient_mail, 'info');
-				redirect('/srazvs/registration/check/' . $guid . '?error=ok');
-			} else {
-				Debugger::log('Mail not send to ' . $recipient_mail, 'error');
-				redirect('/srazvs/registration/check/' . $guid . '?error=email');
-			}
-		} else {
-			Debugger::log('Visitor modification failed!', 'error');
-			redirect("?error=error");
-		}
 	}
 
 	/**
@@ -361,122 +294,6 @@ class RegistrationPresenter extends BasePresenter
 		$template->province = $this->getMeetingModel()->renderHtmlProvinceSelect($data->province);
 		$template->programs = $this->getVisitorModel()->renderProgramSwitcher($data->meeting, $data->id);
 		$template->cost	= $this->getMeetingModel()->getPrice('cost');
-	}
-
-	/**
-	 * Render all page
-	 *
-	 * @return void
-	 */
-	public function render()
-	{
-		$error = "";
-		$disabled = NULL;
-		if(!empty($this->data)) {
-			$error_name = "";
-			$error_surname = "";
-			$error_nick = "";
-			$error_email = "";
-			$error_postal_code = "";
-			$error_group_num = "";
-			$error_bill = "";
-			$error_birthday = "";
-			$error_street = "";
-			$error_city = "";
-			$error_group_name = "";
-
-			if($this->action == 'check') {
-				$meals_select = $this->mealData;
-				$province_select = $this->Meeting->getProvinceNameById($this->data['province']);
-				$program_switcher = $this->Program->getSelectedPrograms($this->itemId);
-			} else {
-				$meals_select = $this->Meal->renderHtmlMealsSelect($this->mealData, $this->disabled);
-				$province_select = $this->Meeting->renderHtmlProvinceSelect($this->data['province']);
-				$program_switcher = $this->Visitor->renderProgramSwitcher($this->meetingId, $this->itemId);
-			}
-
-		}
-
-		$parameters = [
-			'cssDir'	=> CSS_DIR,
-			'jsDir'		=> JS_DIR,
-			'imgDir'	=> IMG_DIR,
-			'wwwDir'	=> HTTP_DIR,
-			'error'		=> printError($this->error),
-			'todo'		=> $this->todo,
-			'cms'		=> $this->cms,
-			'render'	=> $this->Visitor->getData(),
-			'mid'		=> $this->meetingId,
-			'page'		=> $this->page,
-			'heading'	=> $this->heading,
-			'page_title'=> "Registrace srazu VS",
-			'meeting_heading'	=> $this->Meeting->getRegHeading(),
-			////otevirani a uzavirani prihlasovani
-			'disabled'	=> $this->Meeting->isRegOpen($this->debugMode) ? "" : "disabled",
-			'loggedIn'	=> $this->user->isLoggedIn(),
-		];
-
-		if($this->user->isLoggedIn()) {
-			$userDetail = $this->user->getUserDetail();
-			$skautisUser = $this->user->getPersonalDetail($userDetail->ID_Person);
-			$membership = $this->user->getPersonUnitDetail($userDetail->ID_Person);
-
-			if(!preg_match('/^[1-9]{1}[0-9a-zA-Z]{2}\.[0-9a-zA-Z]{1}[0-9a-zA-Z]{1}$/', $membership->RegistrationNumber)) {
-				$skautisUserUnit = $this->user->getParentUnitDetail($membership->ID_Unit)[0];
-			} else {
-				$skautisUserUnit = $this->user->getUnitDetail($membership->ID_Unit);
-			}
-
-			$this->data['name'] = $skautisUser->FirstName;
-			$this->data['surname'] = $skautisUser->LastName;
-			$this->data['nick'] = $skautisUser->NickName;
-			$this->data['email'] = $skautisUser->Email;
-			$this->data['street'] = $skautisUser->Street;
-			$this->data['city'] = $skautisUser->City;
-			$this->data['postal_code'] = preg_replace('/\s+/','',$skautisUser->Postcode);
-			$this->data['birthday'] = $skautisUser->Birthday;
-			$this->data['group_name'] = $skautisUserUnit->DisplayName;
-			$this->data['group_num'] = $skautisUserUnit->RegistrationNumber;
-			if(isset($membership->Unit)) {
-				$this->data['troop_name'] = $membership->Unit;
-			}
-		}
-
-		if(!empty($this->data)) {
-			$parameters = array_merge($parameters, [
-				'id'				=> isset($this->itemId) ? $this->itemId : '',
-				'data'				=> $this->data,
-				'birthday'			=> date_format(date_create($this->data['birthday']),"d.m.Y"),
-				'province'			=> $province_select,
-				'meals'				=> $meals_select,
-				'cost'				=> $this->Meeting->getPrice('cost'),
-				'checked'			=> empty($this->data['checked']) ? '0' : $this->data['checked'],
-				'programs'			=> $program_switcher,
-				'guid'				=> isset($this->data->guid) ? $this->data->guid : '',
-				'isRegistrationOpen'		=> $this->Meeting->isRegOpen($this->debugMode),
-			]);
-		}
-
-		$this->latte->render(__DIR__ . '/../templates/' . $this->templateDir.'/'.$this->template . '.latte', $parameters);
-	}
-
-	private function cleardate2DB ($inputDate, $formatDate)
-	{
-				//list($d, $m, $r) = split("[/.-]", $input_datum);
-				list($d, $m, $r) = preg_split("[/|\.|-]", $inputDate);
-				// beru prvni znak a delam z nej integer
-				$rtest = $r{0};
-				$rtest += 0;
-				$mtest = $m{0};
-				$mtest += 0;
-
-				// pokud je to nula, musim odstranit prvni znak
-				if(($rtest) == 0) $r = substr($r, 1);
-				if(($mtest) == 0) $m = substr($m, 1);
-
-				$d += 0; $m += 0; $r += 0;
-				$date = date("$formatDate",mktime(0,0,0,$m,$d,$r));
-				return $date;
 	}
 
 	/**
