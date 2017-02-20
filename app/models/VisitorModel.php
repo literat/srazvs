@@ -457,10 +457,10 @@ class VisitorModel extends BaseModel
 			$html .= "<div class='emptyTable' style='width:400px;'>Nejsou žádná aktuální data.</div>\n";
 		} else {
 			foreach($programBlocks as $block){
-				$html .= "<div class='block-" . $block->id .  " ".\Tools::toCoolUrl($block['day'])."'>".$block['day'].", ".$block['from']." - ".$block['to']." : ".$block['name']."</div>\n";
+				$html .= "<div class='block-" . $block->id .  " ".Strings::webalize($block['day'])."'>".$block['day'].", ".$block['from']." - ".$block['to']." : ".$block['name']."</div>\n";
 				// rendering programs in block
 				if($block['program'] == 1){
-					$html .= "<div class='block-" . $block->id .  " programs ".\Tools::toCoolUrl($block['day'])." ".\Tools::toCoolUrl($block['name'])."'>".$this->Programs->getPrograms($block['id'], $visitorId)."</div>";
+					$html .= "<div class='block-" . $block->id .  " programs ".Strings::webalize($block['day'])." ".Strings::webalize($block['name'])."'>".$this->Programs->getPrograms($block['id'], $visitorId)."</div>";
 				}
 				$html .= "<br />";
 			}
