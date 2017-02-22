@@ -64,6 +64,7 @@ class ProgramPresenter extends BasePresenter
 	{
 		parent::startup();
 		$this->getModel()->setMeetingId($this->getMeetingId());
+		$this->getMeetingModel()->setMeetingId($this->getMeetingId());
 	}
 
 	/**
@@ -196,8 +197,9 @@ class ProgramPresenter extends BasePresenter
 	 */
 	public function renderPublic()
 	{
-		$template = $this->getTemplate();
+		$this->getMeetingModel()->setRegistrationHandlers($this->getMeetingId());
 
+		$template = $this->getTemplate();
 		$template->meeting_heading = $this->getMeetingModel()->getRegHeading();
 			////otevirani a uzavirani prihlasovani
 		if(($this->getMeetingModel()->getRegOpening() < time()) || $this->getDebugMode()) {

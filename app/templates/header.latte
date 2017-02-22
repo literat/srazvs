@@ -28,8 +28,10 @@
 				<h1>Srazy VS :::: {$meeting['place']} {$meeting['year']}</h1>
 			</div>
 			<div id="siteNavbar">
+				<a href="<?php echo PRJ_DIR."?mid=".$_SESSION['meetingID']; ?>" title="nástěnka">
+					<img src="<?php echo IMG_DIR; ?>home.png" alt="dashboard" /> nástěnka</a> |
 				<a href="<?php echo MEET_DIR."/?mid=".$_SESSION['meetingID']; ?>" title="sraz">
-					<img src="<?php echo IMG_DIR; ?>home.png" alt="home" /> sraz</a> |
+					<img src="<?php echo IMG_DIR; ?>home.png" alt="home" /> srazy</a> |
 				<a href="<?php echo BLOCK_DIR; ?>" title="bloky">
 					<img src="<?php echo IMG_DIR; ?>blocks.png" alt="blok" /> bloky</a> |
 				<a href="<?php echo PROG_DIR; ?>" title="programy">
@@ -45,10 +47,6 @@
 			<!-- start of menuCanvas -->
 			<div id='menuCanvas'>
 				<div id='menuContent'>
-					<div class='menuItem'>všechny srazy</div>
-					<ul>
-						<li><a href='".MEET_DIR."/?cms=list-view'>seznam srazů</a></li>
-					</ul>
 					<div class='menuItem'>jednotlivé srazy</div>
 					<ul>
 					{cache "meetings/all", expire => '10 minutes', tags => ["meetings/all", "menu"]}

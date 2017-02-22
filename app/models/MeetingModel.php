@@ -73,7 +73,7 @@ class MeetingModel extends BaseModel
 			"numbering"
 		);
 		$this->dbTable = "kk_meetings";
-		$this->database = $database;
+		$this->setDatabase($database);
 		$this->program = $program;
 	}
 
@@ -104,7 +104,7 @@ class MeetingModel extends BaseModel
 	public function create(array $data)
 	{
 		$data['guid'] = md5(uniqid());
-		$result = $this->database->query('INSERT INTO ' . $this->dbTable, $data);
+		$result = $this->getDatabase()->query('INSERT INTO ' . $this->getTable(), $data);
 
 		return $result;
 	}
@@ -118,7 +118,7 @@ class MeetingModel extends BaseModel
 	 */
 	public function update($id, array $data)
 	{
-		$result = $this->database->table($this->dbTable)->where('id', $id)->update($data);
+		$result = $this->getDatabase()->table($this->getTable())->where('id', $id)->update($data);
 
 		return $result;
 	}
@@ -132,7 +132,7 @@ class MeetingModel extends BaseModel
 	public function delete($ids)
 	{
 		$data = array('deleted' => '1');
-		$result = $this->database->table($this->dbTable)->where('id', $ids)->update($data);
+		$result = $this->getDatabase()->table($this->getTable())->where('id', $ids)->update($data);
 
 		return $result;
 	}
@@ -145,13 +145,13 @@ class MeetingModel extends BaseModel
 	public function getData($meeting_id = NULL)
 	{
 		if(isset($meeting_id)) {
-			$data = $this->database
-				->table($this->dbTable)
+			$data = $this->getDatabase()
+				->table($this->getTable())
 				->where('deleted ? AND id ?',  '0', $meeting_id)
 				->fetch();
 		} else {
-			$data = $this->database
-				->table($this->dbTable)
+			$data = $this->getDatabase()
+				->table($this->getTable())
 				->where('deleted',  '0')
 				->fetchAll();
 		}
@@ -187,7 +187,7 @@ class MeetingModel extends BaseModel
 	{
 		$html_select = "<select style='width: 195px; font-size: 10px' name='province'>\n";
 
-		$result = $this->database
+		$result = $this->getDatabase()
 			->table('kk_provinces')
 			->fetchAll();
 
@@ -211,7 +211,7 @@ class MeetingModel extends BaseModel
 	 */
 	public function getPrograms($blockId)
 	{
-		$result = $this->database
+		$result = $this->getDatabase()
 			->query('SELECT	progs.id AS id,
 						progs.name AS name,
 						style
@@ -239,7 +239,7 @@ class MeetingModel extends BaseModel
 
 	/** Public program same as getPrograms*/
 	public function getPublicPrograms($block_id){
-		$result = $this->database
+		$result = $this->getDatabase()
 			->query('SELECT progs.id AS id,
 						progs.name AS name,
 						style
@@ -280,7 +280,7 @@ class MeetingModel extends BaseModel
 			$html .= "  <td class='day' colspan='2' >".$value."</td>\n";
 			$html .= " </tr>\n";
 
-			$result = $this->database
+			$result = $this->getDatabase()
 				->query('SELECT	blocks.id AS id,
 							day,
 							DATE_FORMAT(`from`, "%H:%i") AS `from`,
@@ -463,8 +463,8 @@ class MeetingModel extends BaseModel
 	}
 
 	public function setRegistrationHandlers($meeting_id = NULL) {
-		$data = $this->database
-			->table($this->dbTable)
+		$data = $this->getDatabase()
+			->table($this->getTable())
 			->select('id,
 				place,
 				DATE_FORMAT(start_date, "%Y") AS year,
