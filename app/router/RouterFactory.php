@@ -24,7 +24,8 @@ class RouterFactory
 		$router[] = new Route('index.php', 'Dashboard:default', Route::ONE_WAY);
 		$router[] = new Route('dashboard/', 'Dashboard:default');
 		$router[] = new Route('registration/[<action>/[<guid>/]]', 'Registration:default');
-		$router[] = new Route('<presenter>/[<action>/[<id>/][<actionId>]]', 'Dashboard:listing');
+		$router[] = new Route('export/[<action>/[<type>/[<id>/]]]', 'Export:default');
+		$router[] = new Route('<presenter>/[<action>/[<id>/]]', 'Dashboard:listing');
 
 		return $router;
 	}

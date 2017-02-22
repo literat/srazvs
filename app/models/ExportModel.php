@@ -154,8 +154,10 @@ class ExportModel extends BaseModel
 
 		if(isset($visitorId) && $visitorId != NULL){
 			$evidenceLimit = 'LIMIT 1';
-			$specificVisitor = "vis.id='" . $visitorId . "' AND";
+			$specificVisitor = "vis.id IN (" . $visitorId . ") AND";
 		}
+
+
 
 		return $this->getDatabase()->query('SELECT	vis.id AS id,
 					name,

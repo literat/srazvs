@@ -75,42 +75,9 @@ class ExportPresenter extends BasePresenter
 	}
 
 	/**
-	 * This is the default function that will be called by router.php
-	 *
-	 * @param 	array 	$getVars 	the GET variables posted to index.php
-	 */
-	public function init()
-	{
-		if($this->meetingId = $this->requested('mid', '')){
-			$_SESSION['meetingID'] = $this->meetingId;
-		} else {
-			$this->meetingId = $_SESSION['meetingID'];
-		}
-
-		$this->error = $this->requested('error', '');
-		$this->model->setMeetingId($this->meetingId);
-		$this->program->setMeetingId($this->meetingId);
-
-		switch($this->router->getParameter('action')){
-			case 'evidence':
-				$type = $this->requested('id');
-				if($this->requested('vid')) {
-					$this->renderEvidence($type, intval($this->requested('vid')));
-				} else {
-					$this->renderEvidence($type);
-				}
-				break;
-			case 'programVisitors':
-				$id = $this->requested('id');
-				$this->renderProgramVisitors($id);
-				break;
-		}
-	}
-
-	/**
 	 * @return void
 	 */
-	public function renderListing()
+	public function renderDefault()
 	{
 		$settingsModel = $this->getModel();
 		$template = $this->getTemplate();
@@ -125,7 +92,7 @@ class ExportPresenter extends BasePresenter
 		$template->meals = $settingsModel->renderMealCount();
 	}
 
-	public function renderEvidence($id, $visitorId = null)
+	public function renderEvidence($type, $id = null)
 	{
 		$this->filename = 'faktura.pdf';
 
@@ -134,7 +101,7 @@ class ExportPresenter extends BasePresenter
 		$hkvsHeader .= "Senovážné náměstí 977/24, Praha 1, 110 00 | ";
 		$hkvsHeader .= "IČ: 65991753, ČÚ: 2300183549/2010";
 
-		$evidences = $this->getModel()->evidence($visitorId);
+		$evidences = $this->getModel()->evidence($id);
 
 		if(!$evidences) {
 			Debugger::log('No data for evidence export.', Debugger::ERROR);
@@ -142,7 +109,7 @@ class ExportPresenter extends BasePresenter
 			$this->redirect('Export:listing');
 		}
 
-		switch($id){
+		switch($type){
 			case "summary":
 				$templateName = 'evidence_summary';
 				// specific mPDF settings
@@ -245,14 +212,15 @@ class ExportPresenter extends BasePresenter
 	}
 
 	/**
-	 * @param  string $id
+	 * @param  string  $type
+	 * @param  integer $id
 	 * @return void
 	 */
-	public function renderProgram($id)
+	public function renderProgram($type, $id)
 	{
-		$programMethod = 'renderProgram' . Strings::firstUpper($id);
+		$programMethod = 'renderProgram' . Strings::firstUpper($type);
 
-		call_user_func([$this, $programMethod]);
+		call_user_func([$this, $programMethod], $id);
 	}
 
 	/**
@@ -372,12 +340,12 @@ class ExportPresenter extends BasePresenter
 	 * @param	int		program id
 	 * @return	file	PDF file
 	 */
-	protected function renderProgramVisitors($programId)
+	protected function renderProgramVisitors($id)
 	{
 		$this->filename = 'ucastnici-programu.pdf';
 		$templateName = 'program_visitors';
 
-		$programs = $this->getModel()->programVisitors($programId);
+		$programs = $this->getModel()->programVisitors($id);
 
 		$programHeader = $programs[0]['program'];
 
