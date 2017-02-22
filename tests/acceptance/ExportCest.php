@@ -34,7 +34,7 @@ class ExportCest extends CestCase
 		$I->amOnPage('/srazvs/export/?mid=1');
 		$I->seeInCurrentUrl('/srazvs/export/');
 		$I->click('příjmový pokladní doklad');
-		$I->seeInCurrentUrl('/srazvs/export/evidence/evidence');
+		$I->seeInCurrentUrl('/srazvs/export/evidence/');
 		$I->see('PŘÍJMOVÝ POKLADNÍ DOKLAD');
 		$I->see('Přijato od:');
 		$I->see('Účel platby:');
@@ -67,7 +67,7 @@ class ExportCest extends CestCase
 		$I->amOnPage('/srazvs/export/?mid=1');
 		$I->seeInCurrentUrl('/srazvs/export/');
 		$I->click('veřejný program');
-		$I->seeInCurrentUrl('/srazvs/export/program-public');
+		$I->seeInCurrentUrl('/srazvs/export/program/public');
 		$I->see('program srazu vodních skautů');
 		$I->see('pátek');
 		$I->see('sobota');
@@ -80,8 +80,8 @@ class ExportCest extends CestCase
 		$I->wantTo('Export publically public program');
 		$I->amOnPage('/srazvs/program/public');
 		$I->seeInCurrentUrl('/srazvs/program/public');
-		$I->click('Stáhněte si program srazu ve formátu PDF', '#content-pad-program');
-		$I->seeInCurrentUrl('/srazvs/export/program-public');
+		$I->click('Stáhněte si program srazu ve formátu PDF');
+		$I->seeInCurrentUrl('/srazvs/export/program/public/');
 		$I->see('program srazu vodních skautů');
 		$I->see('pátek');
 		$I->see('sobota');
@@ -96,7 +96,7 @@ class ExportCest extends CestCase
 		$I->amOnPage('/srazvs/export/?mid=1');
 		$I->seeInCurrentUrl('/srazvs/export/');
 		$I->click('osobní program');
-		$I->seeInCurrentUrl('/srazvs/export/program-cards');
+		$I->seeInCurrentUrl('/srazvs/export/program/cards');
 		$I->see('SRAZ VS');
 		$I->see('pátek');
 		$I->see('sobota');
@@ -111,7 +111,7 @@ class ExportCest extends CestCase
 		$I->amOnPage('/srazvs/export/?mid=1');
 		$I->seeInCurrentUrl('/srazvs/export/');
 		$I->click('program srazu - velký formát');
-		$I->seeInCurrentUrl('/srazvs/export/program-large');
+		$I->seeInCurrentUrl('/srazvs/export/program/large');
 		$I->see('program srazu vodních skautů');
 		$I->see('pátek');
 		$I->see('sobota');
@@ -126,7 +126,7 @@ class ExportCest extends CestCase
 		$I->amOnPage('/srazvs/export/?mid=1');
 		$I->seeInCurrentUrl('/srazvs/export/');
 		$I->click('program srazu - do visačky');
-		$I->seeInCurrentUrl('/srazvs/export/program-badge');
+		$I->seeInCurrentUrl('/srazvs/export/program/badge');
 		$I->see('pátek');
 		$I->see('sobota');
 		$I->see('neděle');
@@ -199,7 +199,7 @@ class ExportCest extends CestCase
 		$I->amOnPage('/srazvs/export/?mid=1');
 		$I->seeInCurrentUrl('/srazvs/export/');
 		$I->click('detaily programů');
-		$I->seeInCurrentUrl('/srazvs/export/program-details');
+		$I->seeInCurrentUrl('/srazvs/export/program/details');
 		$I->see('Program:');
 		$I->see('Popis:');
 		$I->see('Lektor:');
@@ -213,7 +213,7 @@ class ExportCest extends CestCase
 		$I->amOnPage('/srazvs/program/public?mid=1');
 		$I->seeInCurrentUrl('/srazvs/program/public');
 		$I->click('Stáhněte si detaily programů srazu ve formátu PDF', '#content-pad-program');
-		$I->seeInCurrentUrl('/srazvs/export/program-details');
+		$I->seeInCurrentUrl('/srazvs/export/program/details/');
 		$I->see('Program:');
 		$I->see('Popis:');
 		$I->see('Lektor:');

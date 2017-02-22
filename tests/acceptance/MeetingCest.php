@@ -59,8 +59,7 @@ class MeetingCest extends CestCase
 		$I->wantTo('ensure that meeting listing works');
 		$I->amOnPage('/srazvs/meeting/');
 		$I->see('Správa srazů');
-		$I->click('seznam srazů');
-		$I->seeInCurrentUrl('/srazvs/meeting/?cms=list-view');
+		$I->seeInCurrentUrl('/srazvs/meeting/');
 		$I->see('Seznam srazů');
 	}
 
@@ -68,37 +67,34 @@ class MeetingCest extends CestCase
 	{
 		$I->wantTo('ensure that meeting creating works');
 		$I->amOnPage('/srazvs/meeting/');
-		$I->see('Správa srazů');
-		$I->click('seznam srazů');
-		$I->seeInCurrentUrl('/srazvs/meeting/?cms=list-view');
 		$I->see('Seznam srazů');
 		$I->click('NOVÝ SRAZ', '#content');
-		$I->seeInCurrentUrl('/srazvs/meeting/?cms=new&page=meeting');
-		$I->see('úprava srazu');
+		$I->seeInCurrentUrl('/srazvs/meeting/new/?page=meetings');
+		$I->see('nový sraz');
 	}
 
 	public function it_should_create_simple_meeting(\AcceptanceTester $I)
 	{
-		$I->amOnPage('/srazvs/meeting/?cms=list-view');
+		$I->amOnPage('/srazvs/meeting/');
 		$I->see('Správa srazů');
 		$I->wantTo('Create new meeting with basic data');
 		$I->click('NOVÝ SRAZ', '#content');
-		$I->seeInCurrentUrl('/srazvs/meeting/?cms=new&page=meeting');
+		$I->seeInCurrentUrl('/srazvs/meeting/new/?page=meetings');
 		$this->fillForm($I, $this->simpleMeeting);
 		$I->click('Uložit', '#content');
-		$I->seeInCurrentUrl('/srazvs/meeting?error=ok');
+		$I->seeInCurrentUrl('/srazvs/meeting');
 	}
 
 	public function it_should_create_full_meeting(\AcceptanceTester $I)
 	{
-		$I->amOnPage('/srazvs/meeting/?cms=list-view');
+		$I->amOnPage('/srazvs/meeting/');
 		$I->see('Správa srazů');
 		$I->wantTo('Create new meeting with all data');
 		$I->click('NOVÝ SRAZ', '#content');
-		$I->seeInCurrentUrl('/srazvs/meeting/?cms=new&page=meeting');
+		$I->seeInCurrentUrl('/srazvs/meeting/new/?page=meetings');
 		$this->fillForm($I, $this->fullMeeting);
 		$I->click('Uložit', '#content');
-		$I->seeInCurrentUrl('/srazvs/meeting?error=ok');
+		$I->seeInCurrentUrl('/srazvs/meeting');
 	}
 
 }

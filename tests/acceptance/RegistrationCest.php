@@ -38,7 +38,7 @@ class RegistrationCest extends CestCase
 	];
 
 	private $successRegistrationUri;
-	private $succeededRegistrationUrl = '~/srazvs/registration/check/[a-z0-9]*?error=\d+|ok~';
+	private $succeededRegistrationUrl = '~/srazvs/registration/check/[a-z0-9]*~';
 	private $updatedRegistrationUrl = '~/srazvs/registration/update/[a-z0-9]*~';
 
 	public function _before(AcceptanceTester $I)
@@ -84,7 +84,7 @@ class RegistrationCest extends CestCase
 		$I->click('Uložit', '#registration');
 		$this->successRegistrationUri = $I->grabFromCurrentUrl();
 		$I->seeCurrentUrlMatches($this->succeededRegistrationUrl);
-		$I->see('Údaje byly úspěšně nahrány!');
+		$I->see('úspěšně založena');
 		$I->see('Registrace na srazy K + K');
 		foreach ($this->successVisitor['fields'] as $field => $value) {
 			$I->see($value);
@@ -102,7 +102,7 @@ class RegistrationCest extends CestCase
 		$I->click('Uložit', '#registration');
 		$this->successRegistrationUri = $I->grabFromCurrentUrl();
 		$I->seeCurrentUrlMatches($this->succeededRegistrationUrl);
-		$I->see('Údaje byly úspěšně nahrány!');
+		$I->see('úspěšně upravena');
 		$I->see('Registrace na srazy K + K');
 		$I->see('Metro');
 		$I->dontSee('robo', '#name');
@@ -119,7 +119,7 @@ class RegistrationCest extends CestCase
 		$I->selectOption('blck_6', '1');
 		$I->click('Uložit', '#registration');
 		$I->seeCurrentUrlMatches($this->succeededRegistrationUrl);
-		$I->see('Údaje byly úspěšně nahrány!');
+		$I->see('úspěšně upravena');
 		$I->see('Registrace na srazy K + K');
 		$I->see('- Hry a hříčky');
 	}

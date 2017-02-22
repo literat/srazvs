@@ -116,7 +116,9 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 			return $this->getContainer()->getService('category')->all();
 		});
 
-		$template->user = $this->getSunlight()->findUser($_SESSION[SESSION_PREFIX.'user']);
+		if(isset($_SESSION[SESSION_PREFIX.'user'])) {
+			$template->user = $this->getSunlight()->findUser($_SESSION[SESSION_PREFIX.'user']);
+		}
 		$template->meeting = $meeting->getPlaceAndYear($_SESSION['meetingID']);
 		$template->menuItems = $meeting->getMenuItems();
 		$template->meeting_heading	= $meeting->getRegHeading();
