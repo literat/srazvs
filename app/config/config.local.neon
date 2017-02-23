@@ -48,6 +48,8 @@ session:
 
 services:
     database: @Nette\Database\Connection
+    mail.mailer:
+        class: Nette\Mail\SendmailMailer
     - App\Routers\RouterFactory
     router: @App\Routers\RouterFactory::createRouter
     nette.latteFactory:

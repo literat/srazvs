@@ -33,10 +33,10 @@ module.exports = function (grunt) {
 				command: 'php -f vendor/codeception/codeception/codecept run acceptance',
 			},
 			ftpDeployment: {
-				command: 'php -f vendor/bin/deployment deployment.ini',
+				command: 'php -f vendor/dg/ftp-deployment/deployment deployment.ini',
 			},
 			ftpDeploymentTest: {
-				command: 'php -f vendor/bin/deployment deployment.ini --test',
+				command: 'php -f vendor/dg/ftp-deployment/deployment deployment.ini --test',
 			}
 		},
 
