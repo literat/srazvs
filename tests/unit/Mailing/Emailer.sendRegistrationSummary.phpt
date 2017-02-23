@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Test: App\Emailer snenRegistrationSummary.
+ * Test: App\Services\Emailer sendRegistrationSummary.
  */
 
 use Mockery\MockInterface;
@@ -11,7 +11,7 @@ use App\Emailer;
 
 require_once __DIR__ . '/../bootstrap.php';
 require_once __DIR__ . '/TestMailer.php';
-require_once __DIR__ . '/../../../app/models/EmailerModel.php';
+require_once __DIR__ . '/../../../app/services/Emailer.php';
 
 class EmailerRegistrationSummaryTest extends Tester\TestCase
 {
@@ -144,11 +144,11 @@ Pokud budete platit za víc osob najednou, uveďte kódy za VŠECHNY, za které 
 </html>"
 );
 
-$mockedSettings = Mockery::mock(App\SettingsModel::class);
+$mockedSettings = Mockery::mock(App\Models\SettingsModel::class);
 
 $testMailer = new TestMailer();
 
-$mockedEmailer = Mockery::mock('App\Emailer[getTemplate]', array($mockedSettings, $testMailer));
+$mockedEmailer = Mockery::mock('App\Services\Emailer[getTemplate]', [$mockedSettings, $testMailer]);
 $mockedEmailer->shouldReceive('getTemplate')->with('post_reg')->andReturn($template);
 
 $EmailerRegistrationSummaryTest = new EmailerRegistrationSummaryTest($mockedEmailer);

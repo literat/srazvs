@@ -3,8 +3,6 @@
 namespace App\Models;
 
 use Nette\Database\Context;
-use App\Models\CategoryModel;
-use App\Models\BaseModel;
 
 /**
  * Export Model
@@ -25,7 +23,10 @@ class ExportModel extends BaseModel
 
 	private static $connection;
 
-	/** Constructor */
+	/**
+	 * @param Context       $database
+	 * @param CategoryModel $category
+	 */
 	public function __construct(Context $database, CategoryModel $category)
 	{
 		$this->setDatabase($database);

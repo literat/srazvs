@@ -7,11 +7,11 @@
 use Mockery\MockInterface;
 use Nette\Mail\Message;
 use Tester\Assert;
-use App\Emailer;
+use App\Services\Emailer;
 
 require_once __DIR__ . '/../bootstrap.php';
 require_once __DIR__ . '/TestMailer.php';
-require_once __DIR__ . '/../../../app/models/EmailerModel.php';
+require_once __DIR__ . '/../../../app/services/Emailer.php';
 
 class EmailerPaymentInfoTest extends Tester\TestCase
 {
@@ -107,11 +107,11 @@ $template = array(
 </html>"
 );
 
-$mockedSettings = Mockery::mock(App\SettingsModel::class);
+$mockedSettings = Mockery::mock(App\Models\SettingsModel::class);
 
 $testMailer = new TestMailer();
 
-$mockedEmailer = Mockery::mock('App\Emailer[getTemplate]', array($mockedSettings, $testMailer));
+$mockedEmailer = Mockery::mock('App\Services\Emailer[getTemplate]', array($mockedSettings, $testMailer));
 $mockedEmailer->shouldReceive('getTemplate')->with('advance')->andReturn($template);
 
 $EmailerPaymentInfoTest = new EmailerPaymentInfoTest($mockedEmailer);

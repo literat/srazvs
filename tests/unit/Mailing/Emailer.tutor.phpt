@@ -7,12 +7,12 @@
 use Mockery\MockInterface;
 use Nette\Mail\Message;
 use Tester\Assert;
-use App\Emailer;
+use App\Services\Emailer;
 
 //require_once __DIR__ . '/../../inc/define.inc.php';
 require_once __DIR__ . '/../bootstrap.php';
 require_once __DIR__ . '/TestMailer.php';
-require_once __DIR__ . '/../../../app/models/EmailerModel.php';
+require_once __DIR__ . '/../../../app/services/Emailer.php';
 
 define('PRJ_DIR', 'http://vodni.skauting.cz/srazvs/');
 
@@ -276,11 +276,11 @@ $template = array(
 </html>"
 );
 
-$mockedSettings = Mockery::mock(App\SettingsModel::class);
+$mockedSettings = Mockery::mock(App\Models\SettingsModel::class);
 
 $testMailer = new TestMailer();
 
-$mockedEmailer = Mockery::mock('App\Emailer[getTemplate]', array($mockedSettings, $testMailer));
+$mockedEmailer = Mockery::mock('App\Services\Emailer[getTemplate]', array($mockedSettings, $testMailer));
 $mockedEmailer->shouldReceive('getTemplate')->with('tutor')->andReturn($template);
 
 $EmailerTutorTest = new EmailerTutorTest($mockedEmailer);

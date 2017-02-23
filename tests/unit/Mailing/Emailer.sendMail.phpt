@@ -7,11 +7,11 @@
 use Mockery\MockInterface;
 use Nette\Mail\Message;
 use Tester\Assert;
-use App\Emailer;
+use App\Services\Emailer;
 
 require_once __DIR__ . '/../bootstrap.php';
 require_once __DIR__ . '/TestMailer.php';
-require_once __DIR__ . '/../../../app/models/EmailerModel.php';
+require_once __DIR__ . '/../../../app/services/Emailer.php';
 
 class EmailerModelTest extends Tester\TestCase
 {
@@ -218,7 +218,7 @@ EOD
 
 }
 
-$mockedSettings = Mockery::mock(App\SettingsModel::class);
+$mockedSettings = Mockery::mock(App\Models\SettingsModel::class);
 $testMailer = new TestMailer();
 $emailer = new Emailer($mockedSettings, $testMailer);
 
