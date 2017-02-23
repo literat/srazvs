@@ -1,3 +1,35 @@
+<a name="2.6.0"></a>
+# [2.6.0](https://github.com/literat/srazvs/compare/v2.5.0...v2.6.0) (2017-02-23)
+
+
+### Bug Fixes
+
+* **Cool urls:** Return by storno (refs #55) ([e05372d](https://github.com/literat/srazvs/commit/e05372d))
+* **Migration to presenters:** Category modification logging (refs #79) ([4031b50](https://github.com/literat/srazvs/commit/4031b50))
+* **Payment of visitor:** Bad property (refs #77) ([3dc942d](https://github.com/literat/srazvs/commit/3dc942d))
+* **Program cards:** See programs in program cards (refs #72) ([084a4e5](https://github.com/literat/srazvs/commit/084a4e5))
+
+### Features
+
+* **Cool urls:** Blocks cool urls (refs #55) ([5af2493](https://github.com/literat/srazvs/commit/5af2493))
+* **Cool urls:** Program use cool urls (refs #55) ([c87e7d6](https://github.com/literat/srazvs/commit/c87e7d6))
+* **Cool urls:** Settings use cool urls (refs #55) ([dc7d8f8](https://github.com/literat/srazvs/commit/dc7d8f8))
+* **Cool urls:** Submit forms to actions and use them (refs #55) ([020f964](https://github.com/literat/srazvs/commit/020f964))
+* **Migration to presenters:** Convert category select box to latte (refs #79) ([24ea6b9](https://github.com/literat/srazvs/commit/24ea6b9))
+* **Migration to presenters:** Generating guid method in base model (refs #79) ([ab70678](https://github.com/literat/srazvs/commit/ab70678))
+* **Migration to presenters:** Model for sunlight part of database (refs #79) ([b96974b](https://github.com/literat/srazvs/commit/b96974b))
+* **Migration to presenters:** Rename category templates by actions (refs #79) ([f78766f](https://github.com/literat/srazvs/commit/f78766f))
+* **Migration to presenters:** Setting template variables before render for all (refs #79) ([92ec7f1](https://github.com/literat/srazvs/commit/92ec7f1))
+* **Migration to presenters:** Using DI for database context (refs #79) ([de3055a](https://github.com/literat/srazvs/commit/de3055a))
+* **Registration guid:** Added guid to visitors columns (refs #63) ([b732887](https://github.com/literat/srazvs/commit/b732887))
+* **Registration guid:** Fetching data from meals and blocks (refs #63) ([7389dbc](https://github.com/literat/srazvs/commit/7389dbc))
+* **Registration guid:** Fix test because they do not follow redirs (refs #63) ([d4a4da1](https://github.com/literat/srazvs/commit/d4a4da1)), closes [#63](https://github.com/literat/srazvs/issues/63)
+* **Registration guid:** Make it public (refs #63) ([46c8995](https://github.com/literat/srazvs/commit/46c8995))
+* **Registration guid:** Refactoring registration to use guid (refs #63) ([94412e9](https://github.com/literat/srazvs/commit/94412e9))
+* **Registration guid:** Using guid instead of hash (refs #63) ([1c0ad3a](https://github.com/literat/srazvs/commit/1c0ad3a))
+
+
+
 <a name="2.5.0"></a>
 # [2.5.0](https://github.com/literat/srazvs/compare/v2.4.0...v2.5.0) (2016-11-12)
 
