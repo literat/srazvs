@@ -58,6 +58,15 @@ class RegistrationCest extends CestCase
 		$I->see('Třebíč - jaro 2010');
 	}
 
+	public function ensure_that_registrace_works(\AcceptanceTester $I)
+	{
+		$I->wantTo('ensure that registrace works');
+		$I->amOnPage('srazvs/registrace/');
+		$I->see('Registrace na srazy VS');
+		$I->see('Třebíč - jaro 2010');
+		$I->seeInCurrentUrl('/srazvs/registration/');
+	}
+
 	/**
 	 * @skipTest
 	 */
