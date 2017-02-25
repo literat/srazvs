@@ -462,42 +462,86 @@ class MeetingModel extends BaseModel
 		return $html_table;
 	}
 
-	public function setRegistrationHandlers($meeting_id = NULL) {
-		$data = $this->getDatabase()
+	/**
+	 * @param  integer $meetingId
+	 * @return $this
+	 */
+	public function setRegistrationHandlers($meetingId = 1)
+	{
+		$meeting = $this->getDatabase()
 			->table($this->getTable())
-			->select('id,
-				place,
-				DATE_FORMAT(start_date, "%Y") AS year,
-				UNIX_TIMESTAMP(open_reg) AS open_reg,
-				UNIX_TIMESTAMP(close_reg) AS close_reg')
-			->where($meeting_id ? 'id = "' . $meeting_id . '"' : '1')
+			->select('id')
+			->select('place')
+			->select('DATE_FORMAT(start_date, "%Y") AS year')
+			->select('UNIX_TIMESTAMP(open_reg) AS open_reg')
+			->select('UNIX_TIMESTAMP(close_reg) AS close_reg')
+			->where('id', $meetingId)
 			->order('id DESC')
 			->limit(1)
 			->fetch();
 
-		$mid = $data['id'];
-		$meetingHeader =
+		$this->setRegHeading($meeting->place . ' ' . $meeting->year);
+		$this->setRegClosing($meeting->close_reg);
+		$this->setRegOpening($meeting->open_reg);
 
-		$this->regHeading = $data['place']." ".$data['year'];
-		$this->regClosing = $data['close_reg'];
-		$this->regOpening = $data['open_reg'];
-
-		return TRUE;
+		return $this;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getRegOpening()
 	{
 		return $this->regOpening;
 	}
 
+	/**
+	 * @param  string $value
+	 * @return $this
+	 */
+	public function setRegOpening($value = '')
+	{
+		$this->regOpening = $value;
+
+		return $this;
+	}
+
+	/**
+	 * @return string
+	 */
 	public function getRegClosing()
 	{
 		return $this->regClosing;
 	}
 
+	/**
+	 * @param  string $value
+	 * @return $this
+	 */
+	public function setRegClosing($value = '')
+	{
+		$this->regClosing = $value;
+
+		return $this;
+	}
+
+	/**
+	 * @return string
+	 */
 	public function getRegHeading()
 	{
 		return $this->regHeading;
+	}
+
+	/**
+	 * @param  string $value
+	 * @return $this
+	 */
+	public function setRegHeading($value = '')
+	{
+		$this->regHeading = $value;
+
+		return $this;
 	}
 
 	/**
@@ -510,8 +554,12 @@ class MeetingModel extends BaseModel
 		return (($this->getRegOpening() < time()) && (time() < $this->getRegClosing()) || $debug);
 	}
 
+	/**
+	 * @param  integer $id
+	 * @return string
+	 */
 	public function getProvinceNameById($id) {
-		return $this->database
+		return $this->getDatabase()
 			->table('kk_provinces')
 			->select('province_name')
 			->where('id', $id)
@@ -519,26 +567,47 @@ class MeetingModel extends BaseModel
 			->fetchField('province_name');
 	}
 
+	/**
+	 * @param  integer|string $meetingId
+	 * @return ActiveRow
+	 */
 	public function getPlaceAndYear($meetingId)
 	{
-		return $this->getDatabase()->query(
-			'SELECT	place, DATE_FORMAT(start_date, "%Y") AS year
-			FROM ' . $this->getTable() . '
-			WHERE id = ? AND deleted = ?
-			LIMIT 1', $meetingId, '0')
+		return $this->getDatabase()
+			->table($this->getTable())
+			->select('place')
+			->select('DATE_FORMAT(start_date, "%Y") AS year')
+			->where('id = ? AND deleted = ?', $meetingId, '0')
+			->limit(1)
 			->fetch();
 	}
 
+	/**
+	 * @return ActiveRow
+	 */
 	public function getMenuItems()
 	{
-		return $this->database->query(
-			'SELECT id AS mid,
-					place,
-					DATE_FORMAT(start_date, "%Y") AS year
-			FROM ' . $this->dbTable . '
-			WHERE deleted = ?
-			ORDER BY id DESC',
-			'0')->fetchAll();
+		return $this->getDatabase()
+			->table($this->getTable())
+			->select('id AS mid')
+			->select('place')
+			->select('DATE_FORMAT(start_date, "%Y") AS year')
+			->where('deleted', '0')
+			->order('id DESC')
+			->fetchAll();
+	}
+
+	/**
+	 * @return integer
+	 */
+	public function getLastMeetingId()
+	{
+		return $this->getDatabase()
+			->table($this->getTable())
+			->select('id')
+			->order('id DESC')
+			->limit(1)
+			->fetchField();
 	}
 
 }

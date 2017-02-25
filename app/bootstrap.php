@@ -90,15 +90,6 @@ define('SET_DIR',		PRJ_DIR.'settings');
 $connection = $container->getService('database.default.connection');
 $database = $container->getService('database.default.context');
 
-if(!isset($_SESSION['meetingID'])) {
-	$_SESSION['meetingID'] = $database
-		->table('kk_meetings')
-		->select('id')
-		->order('id DESC')
-		->limit(1)
-		->fetchField();
-}
-
 /**
  * Routing
  */
