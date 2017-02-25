@@ -84,38 +84,6 @@ define('CAT_DIR',		PRJ_DIR.'category');
 define('EXP_DIR',		PRJ_DIR.'export');
 define('SET_DIR',		PRJ_DIR.'settings');
 
-if(!function_exists('dd')) {
-	/**
-	 * Dump the passed variables and end the script.
-	 *
-	 * @param  mixed
-	 * @return void
-	 */
-	function dd() {
-		array_map(function ($x){
-			(\Tracy\Debugger::dump($x));
-		}, func_get_args());
-
-		die(1);
-	}
-}
-
-if(!function_exists('redirect')) {
-	function redirect($url) {
-		$httpResponse = new Nette\Http\Response;
-		$httpResponse->redirect($url);
-		exit;
-	}
-}
-
-if(!function_exists('appVersion')) {
-	function appVersion() {
-		$packagePath = realpath(__DIR__ . '/../package.json');
-		$package = json_decode(file_get_contents($packagePath));
-		return $package->version;
-	}
-}
-
 /**
  * Connecting to Database
  */

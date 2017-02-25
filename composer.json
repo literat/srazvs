@@ -21,5 +21,10 @@
         "mockery/mockery": "^0.9.4",
         "codeception/codeception": "^2.2",
         "webchemistry/custom-bar": "^1.2"
+    },
+    "autoload": {
+        "files": [
+            "app/helpers.php"
+        ]
     }
 }
