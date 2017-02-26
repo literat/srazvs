@@ -87,6 +87,9 @@ services:
     export: App\Models\ExportModel
     visitor: App\Models\VisitorModel
     meal: App\Models\MealModel
+    - App\Components\ProgramOverviewControl
+    - App\Components\BlocksByDayControl
+    - App\Components\ProgramsControl
 
 extensions:
     skautis: Skautis\Nette\SkautisExtension

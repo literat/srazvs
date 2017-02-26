@@ -180,4 +180,26 @@ class BlockModel extends BaseModel
 			->fetchAll();
 	}
 
+	/**
+	 * @param  string $day
+	 * @return Row
+	 */
+	public function findByDay($day = '')
+	{
+		return $this->getDatabase()
+				->query('SELECT	blocks.id AS id,
+							day,
+							DATE_FORMAT(`from`, "%H:%i") AS `from`,
+							DATE_FORMAT(`to`, "%H:%i") AS `to`,
+							blocks.name AS name,
+							program,
+							style
+					FROM kk_blocks AS blocks
+					LEFT JOIN kk_categories AS cat ON cat.id = blocks.category
+					WHERE blocks.deleted = ? AND day = ? AND blocks.meeting = ?
+					ORDER BY `from` ASC',
+					'0', $day, $this->getMeetingId())
+				->fetchAll();
+	}
+
 }

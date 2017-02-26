@@ -204,39 +204,6 @@ class MeetingModel extends BaseModel
 		return $html_select;
 	}
 
-	/**
-	 * Get Programs for Overview
-	 *
-	 * @return	string	html
-	 */
-	public function getPrograms($blockId)
-	{
-		$result = $this->getDatabase()
-			->query('SELECT	progs.id AS id,
-						progs.name AS name,
-						style
-				FROM kk_programs AS progs
-				LEFT JOIN kk_categories AS cat ON cat.id = progs.category
-				WHERE block = ? AND progs.deleted = ?
-				LIMIT 10',
-				$blockId, '0')->fetchAll();
-
-		if(!$result) {
-			$html = "";
-		} else {
-			$html = "<table class='programs'>\n";
-			$html .= " <tr>\n";
-			foreach($result as $data){
-				$html .= "<td class='category cat-".$data['style']."' style='text-align:center;'>\n";
-				$html .= "<a class='program' href='".PROG_DIR."/edit/".$data['id']."?page=meeting' title='".$data['name']."'>".$data['name']."</a>\n";
-				$html .= "</td>\n";
-			}
-			$html .= " </tr>\n";
-			$html .= "</table>\n";
-		}
-		return $html;
-	}
-
 	/** Public program same as getPrograms*/
 	public function getPublicPrograms($block_id){
 		$result = $this->getDatabase()
@@ -262,63 +229,6 @@ class MeetingModel extends BaseModel
 			$html .= " </tr>\n";
 			$html .= "</table>\n";
 		}
-		return $html;
-	}
-
-	/**
-	 * Render Program Overview
-	 *
-	 * @return	string	html
-	 */
-	public function renderProgramOverview()
-	{
-		$html = "";
-
-		foreach($this->weekendDays as $key => $value){
-			$html .= "<table class='blocks'>\n";
-			$html .= " <tr>\n";
-			$html .= "  <td class='day' colspan='2' >".$value."</td>\n";
-			$html .= " </tr>\n";
-
-			$result = $this->getDatabase()
-				->query('SELECT	blocks.id AS id,
-							day,
-							DATE_FORMAT(`from`, "%H:%i") AS `from`,
-							DATE_FORMAT(`to`, "%H:%i") AS `to`,
-							blocks.name AS name,
-							program,
-							style
-					FROM kk_blocks AS blocks
-					LEFT JOIN kk_categories AS cat ON cat.id = blocks.category
-					WHERE blocks.deleted = ? AND day = ? AND blocks.meeting = ?
-					ORDER BY `from` ASC',
-					'0', $value, $this->meetingId)
-				->fetchAll();
-
-			if(!$result){
-				$html .= "<td class='emptyTable' style='width:400px;'>Nejsou žádná aktuální data.</td>\n";
-			} else {
-				foreach($result as $data){
-					$html .= "<tr>\n";
-					$html .= "<td class='time'>".$data['from']." - ".$data['to']."</td>\n";
-					if($data['program'] == 1){
-						$html .= "<td class='category cat-".$data['style']."'>\n";
-						$html .= "<div>\n";
-						$html .= "<a class='block' href='".BLOCK_DIR."/edit/".$data['id']."?page=meeting' title='".$data['name']."'>".$data['name']."</a>\n";
-						$html .= "</div>\n";
-						$html .= $this->getPrograms($data['id']);
-						$html .= "</td>\n";
-					} else {
-						$html .= "<td class='category cat-".$data['style']."'>";
-						$html .= "<a class='block' href='".BLOCK_DIR."/edit/".$data['id']."?page=meeting' title='".$data['name']."'>".$data['name']."</a>\n";
-						$html .= "</td>\n";
-					}
-					$html .= "</tr>\n";
-				}
-			}
-			$html .= "</table>\n";
-		}
-
 		return $html;
 	}
 

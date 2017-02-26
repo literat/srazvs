@@ -1,0 +1,23 @@
+{if !$blocks}
+<td class='emptyTable' style='width:400px;'>Nejsou žádná aktuální data.</td>
+{else}
+	{foreach $blocks as $block}
+	<tr>
+		<td class='time'>{$block->from} - {$block->to}</td>
+		{if $block->program == 1}
+		<td class='category cat-{$block->style}'>
+			<div>
+				<a class='block' href="{plink Block:edit $block->id}" title='{$block->name}'>{$block->name}</a>
+			</div>
+
+			{control programs $block->id}
+
+		</td>
+		{else}
+		<td class='category cat-{$block->style}'>
+			<a class='block' href="{plink Block:edit $block->id}" title='{$block->name}'>{$block->name}</a>
+		</td>
+		{/if}
+	</tr>
+	{/foreach}
+{/if}

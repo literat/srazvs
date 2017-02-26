@@ -125,6 +125,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 		$template->meeting = $meeting->getPlaceAndYear($_SESSION['meetingID']);
 		$template->menuItems = $meeting->getMenuItems();
 		$template->meeting_heading	= $meeting->getRegHeading();
+		$template->meetingId = $this->getMeetingId();
 		//$this->template->backlink = $this->getParameter("backlink");
 
 		//$this->template->production = $this->context->parameters['environment'] === 'production' ? 1 : 0;

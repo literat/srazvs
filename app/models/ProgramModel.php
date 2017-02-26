@@ -50,11 +50,6 @@ class ProgramModel extends BaseModel
 		self::$connection = $this->getDatabase();
 	}
 
-	public function setMeetingId($id)
-	{
-		$this->meetingId = $id;
-	}
-
 	/**
 	 * Get programs
 	 *
@@ -517,4 +512,23 @@ class ProgramModel extends BaseModel
 			->limit(1)
 			->fetch();
 	}
+
+	/**
+	 * @param  integer $blockId
+	 * @return Row
+	 */
+	public function findByBlockId($blockId = null)
+	{
+		return $this->getDatabase()
+			->query('SELECT	progs.id AS id,
+						progs.name AS name,
+						style
+				FROM kk_programs AS progs
+				LEFT JOIN kk_categories AS cat ON cat.id = progs.category
+				WHERE block = ? AND progs.deleted = ?
+				LIMIT 10',
+				$blockId, '0')
+			->fetchAll();
+	}
+
 }
