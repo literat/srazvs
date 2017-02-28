@@ -48,7 +48,6 @@ class DashboardPresenter extends BasePresenter
 	public function renderDefault()
 	{
 		$template = $this->getTemplate();
-		//$template->render = $this->getModel()->renderProgramOverview();
 		$template->data = $this->getModel()->find($this->getMeetingId());
 
 		$template->error_start = "";
@@ -58,11 +57,18 @@ class DashboardPresenter extends BasePresenter
 		$template->error_login = "";
 	}
 
+	/**
+	 * @return ProgramOverviewControl
+	 */
 	protected function createComponentProgramOverview()
 	{
 		return $this->programOverview->setMeetingId($this->getMeetingId());
 	}
 
+	/**
+	 * @param  ProgramOverviewControl $control
+	 * @return $this
+	 */
 	protected function setProgramOverviewControl(ProgramOverviewControl $control)
 	{
 		$this->programOverview = $control;

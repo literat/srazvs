@@ -77,7 +77,7 @@ class BlockPresenter extends BasePresenter
 		$model = $this->getModel();
 		$data = $this->getRequest()->getPost();
 
-		$page = $data['page'];
+		$this->setBacklink($data['backlink']);
 		$data['from'] = date('H:i:s', mktime($data['start_hour'], $data['start_minute'], 0, 0, 0, 0));
 		$data['to'] = date('H:i:s', mktime($data['end_hour'], $data['end_minute'], 0, 0, 0, 0));
 		$data['meeting'] = $this->getMeetingId();
@@ -86,7 +86,7 @@ class BlockPresenter extends BasePresenter
 		unset($data['end_hour']);
 		unset($data['start_minute']);
 		unset($data['end_minute']);
-		unset($data['page']);
+		unset($data['backlink']);
 
 		try {
 			$this->guardToGreaterThanFrom($data['from'], $data['to']);
@@ -101,8 +101,7 @@ class BlockPresenter extends BasePresenter
 			$this->flashMessage('Creation of block failed, result: ' . $e->getMessage(), 'error');
 		}
 
-		// TODO: redirect using page
-		$this->redirect('Block:listing');
+		$this->redirect($this->getBacklink() ?: 'Block:listing');
 	}
 
 	/**
@@ -114,7 +113,7 @@ class BlockPresenter extends BasePresenter
 		$model = $this->getModel();
 		$data = $this->getRequest()->getPost();
 
-		$page = $data['page'];
+		$this->setBacklink($data['backlink']);
 		$data['from'] = date('H:i:s', mktime($data['start_hour'], $data['start_minute'], 0, 0, 0, 0));
 		$data['to'] = date('H:i:s', mktime($data['end_hour'], $data['end_minute'], 0, 0, 0, 0));
 		$data['meeting'] = $this->getMeetingId();
@@ -123,7 +122,7 @@ class BlockPresenter extends BasePresenter
 		unset($data['end_hour']);
 		unset($data['start_minute']);
 		unset($data['end_minute']);
-		unset($data['page']);
+		unset($data['backlink']);
 
 		try {
 			$this->guardToGreaterThanFrom($data['from'], $data['to']);
@@ -138,8 +137,7 @@ class BlockPresenter extends BasePresenter
 			$this->flashMessage('Modification of block id ' . $id . ' failed, result: ' . $e->getMessage(), 'error');
 		}
 
-		// TODO: redirect using page
-		$this->redirect('Block:listing');
+		$this->redirect($this->getBacklink() ?: 'Block:listing');
 	}
 
 	/**

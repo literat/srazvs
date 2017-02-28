@@ -14,7 +14,7 @@
 	<div class='button-line'>
 		<button type='submit' onclick=\"this.form.submit()\">
 			<img src='{$imgDir}icons/save.png' /> Uložit</button>
-		<button type='button' onclick="window.location.replace('/srazvs/' + {$page})">
+		<button type='button' onclick="window.location.replace('{$backlinkUrl|noescape}')">
 			<img src='{$imgDir}icons/storno.png'  /> Storno</button>
 		<button type='button' onclick="window.location.replace('/srazvs/program/mail/' + {$id})">
 			<img src='{$imgDir}icons/mail.png'  /> Odeslat lektorovi</button>
@@ -64,7 +64,7 @@
 		</tr>
 	</table>
 
-	<input type='hidden' name='page' value='{$page}'>
+	<input type='hidden' name='backlink' value='{$backlink}'>
 	<input type='hidden' name='id' value='{$id}'>
 	<input type='hidden' name='guid' value='{$program->guid}'>
 </form>

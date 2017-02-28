@@ -7,7 +7,7 @@
 		{if $block->program == 1}
 		<td class='category cat-{$block->style}'>
 			<div>
-				<a class='block' href="{plink Block:edit $block->id}" title='{$block->name}'>{$block->name}</a>
+				<a class='block' href="{plink Block:edit $block->id, backlink => 'Dashboard:default'}" title='{$block->name}'>{$block->name}</a>
 			</div>
 
 			{control programs $block->id}
@@ -15,7 +15,7 @@
 		</td>
 		{else}
 		<td class='category cat-{$block->style}'>
-			<a class='block' href="{plink Block:edit $block->id}" title='{$block->name}'>{$block->name}</a>
+			<a class='block' href="{plink Block:edit $block->id, backlink => 'Dashboard:default'}" title='{$block->name}'>{$block->name}</a>
 		</td>
 		{/if}
 	</tr>

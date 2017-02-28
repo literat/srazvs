@@ -16,9 +16,9 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 {
 
 	/**
-	 * backlink
+	 * @var string
 	 */
-	protected $backlink;
+	public $backlink = '';
 
 	/** @var Model */
 	protected $model;
@@ -75,6 +75,11 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 
 		$meetingId = $this->getRequest()->getQuery('mid', '');
 
+		$backlink = $this->getRequest()->getQuery('backlink');
+		if(!empty($backlink)) {
+			$this->setBacklink($backlink);
+		}
+
 		if($meetingId){
 			$_SESSION['meetingID'] = $meetingId;
 		} elseif(!isset($_SESSION['meetingID'])) {
@@ -126,6 +131,8 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 		$template->menuItems = $meeting->getMenuItems();
 		$template->meeting_heading	= $meeting->getRegHeading();
 		$template->meetingId = $this->getMeetingId();
+		$template->backlinkUrl = $this->getBacklinkUrl();
+		$template->backlink = $this->getBacklink();
 		//$this->template->backlink = $this->getParameter("backlink");
 
 		//$this->template->production = $this->context->parameters['environment'] === 'production' ? 1 : 0;
@@ -458,6 +465,40 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 	protected function getDebugMode()
 	{
 		return $this->debugMode;
+	}
+
+	/**
+	 * @return string
+	 */
+	protected function getBacklink()
+	{
+		return $this->backlink;
+	}
+
+	/**
+	 * @param  string $backlink
+	 * @return $this
+	 */
+	protected function setBacklink($backlink)
+	{
+		$this->backlink = $backlink;
+
+		return $this;
+	}
+
+	/**
+	 * @return string
+	 */
+	protected function getBacklinkUrl()
+	{
+		if($this->getBacklink()) {
+			return $this->link(
+				$this->getBacklink(),
+				[
+					'backlink' => null
+				]
+			);
+		}
 	}
 
 }

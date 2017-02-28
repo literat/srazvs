@@ -74,8 +74,9 @@ class ProgramPresenter extends BasePresenter
 	{
 		$model = $this->getModel();
 		$data = $this->getRequest()->getPost();
-		$page = $data['page'];
-		unset($data['page']);
+
+		$this->setBacklink($data['backlink']);
+		unset($data['backlink']);
 
 		if(!array_key_exists('display_in_reg', $data)) {
 			$data['display_in_reg'] = 1;
@@ -93,8 +94,7 @@ class ProgramPresenter extends BasePresenter
 			$this->flashMessage('Záznam se nepodařilo uložit, result: ' . $e->getMessage(), 'error');
 		}
 
-		// TODO: redirect using page
-		$this->redirect('Program:listing');
+		$this->redirect($this->getBacklink() ?: 'Program:listing');
 	}
 
 	/**
@@ -106,8 +106,8 @@ class ProgramPresenter extends BasePresenter
 		$model = $this->getModel();
 		$data = $this->getRequest()->getPost();
 
-		$page = $data['page'];
-		unset($data['page']);
+		$this->setBacklink($data['backlink']);
+		unset($data['backlink']);
 
 		if(!array_key_exists('display_in_reg', $data)) {
 			$data['display_in_reg'] = 1;
@@ -125,8 +125,7 @@ class ProgramPresenter extends BasePresenter
 			$this->flashMessage('Modification of program id ' . $id . ' failed, result: ' . $e->getMessage(), 'error');
 		}
 
-		// TODO: redirect using page
-		$this->redirect('Program:listing');
+		$this->redirect($this->getBacklink() ?: 'Program:listing');
 	}
 
 	/**
@@ -258,7 +257,6 @@ class ProgramPresenter extends BasePresenter
 
 		$template = $this->getTemplate();
 		$template->heading = 'úprava programu';
-		$template->page = $this->getRequest()->getQuery('page');
 		$template->error_name = '';
 		$template->error_description = '';
 		$template->error_tutor = '';
