@@ -19,7 +19,7 @@ use Tracy\Debugger;
 class ExportPresenter extends BasePresenter
 {
 
-	const TEMPLATE_DIR = __DIR__ . '/../templates/export/';
+	const TEMPLATE_DIR = __DIR__ . '/../templates/Export/';
 	const TEMPLATE_EXT = 'latte';
 
 	/**
