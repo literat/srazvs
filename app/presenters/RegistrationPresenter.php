@@ -5,10 +5,10 @@ namespace App\Presenters;
 use App\Models\MeetingModel;
 use App\Models\VisitorModel;
 use App\Models\ProgramModel;
-use App\Models\BlockModel;
 use App\Models\MealModel;
 use App\Services\UserService;
 use App\Services\Emailer;
+use App\Services\VisitorService;
 use Nette\Http\Request;
 use Tracy\Debugger;
 
@@ -21,7 +21,7 @@ use Tracy\Debugger;
  * @copyright 2013-06-12 <tomaslitera@hotmail.com>
  * @package srazvs
  */
-class RegistrationPresenter extends BasePresenter
+class RegistrationPresenter extends VisitorPresenter
 {
 
 	/**
@@ -30,29 +30,9 @@ class RegistrationPresenter extends BasePresenter
 	private $visitorModel;
 
 	/**
-	 * @var Emailer
-	 */
-	private $emailer;
-
-	/**
-	 * @var MeetingModel
-	 */
-	private $meetingModel;
-
-	/**
-	 * @var MealModel
-	 */
-	private $mealModel;
-
-	/**
 	 * @var ProgramModel
 	 */
 	private $programModel;
-
-	/**
-	 * @var BlockModel
-	 */
-	private $blockModel;
 
 	/**
 	 * @var UserService
@@ -65,13 +45,13 @@ class RegistrationPresenter extends BasePresenter
 	private $disabled = false;
 
 	/**
-	 * @param Request      $request
-	 * @param MeetingModel $meetingModel
-	 * @param UserService  $userService
-	 * @param VisitorModel $visitorModel
-	 * @param MealModel    $mealModel
-	 * @param ProgramModel $programModel
-	 * @param BlockModel   $blockModel
+	 * @param Request        $request
+	 * @param MeetingModel   $meetingModel
+	 * @param UserService    $userService
+	 * @param VisitorModel   $visitorModel
+	 * @param MealModel      $mealModel
+	 * @param ProgramModel   $programModel
+	 * @param VisitorService $visitorService
 	 */
 	public function __construct(
 		Request $request,
@@ -80,8 +60,8 @@ class RegistrationPresenter extends BasePresenter
 		VisitorModel $visitorModel,
 		MealModel $mealModel,
 		ProgramModel $programModel,
-		BlockModel $blockModel,
-		Emailer $emailer
+		Emailer $emailer,
+		VisitorService $visitorService
 	) {
 		$this->setRequest($request);
 		$this->setMeetingModel($meetingModel);
@@ -89,8 +69,8 @@ class RegistrationPresenter extends BasePresenter
 		$this->setVisitorModel($visitorModel);
 		$this->setMealModel($mealModel);
 		$this->setProgramModel($programModel);
-		$this->setBlockModel($blockModel);
 		$this->setEmailer($emailer);
+		$this->setVisitorService($visitorService);
 	}
 
 	/**
@@ -127,28 +107,8 @@ class RegistrationPresenter extends BasePresenter
 			$postData = $this->getRequest()->getPost();
 			$postData['meeting'] = $this->getMeetingId();
 
-			$visitor = array_intersect_key($postData, array_flip($this->getVisitorModel()->getColumns()));
-			$meals = array_intersect_key($postData, array_flip($this->getMealModel()->getColumns()));
-
-			$blocks = $this->getBlockModel()->findByMeeting($this->getMeetingId());
-			$programs = [];
-			$programs = array_map(function($block) use ($postData) {
-				if(!array_key_exists('blck_' . $block['id'], $postData)) {
-					return 0;
-				}
-
-				return $postData['blck_' . $block['id']];
-			}, $blocks);
-
-			if($guid = $this->getVisitorModel()->assemble($visitor, $meals, $programs, true)) {
-				$code4bank = $this->calculateCode4Bank($visitor);
-
-				$recipientMail = $visitor['email'];
-				$recipientName = $visitor['name']." ".$visitor['surname'];
-				$recipient = [$recipientMail => $recipientName];
-
-				$result= $this->getEmailer()->sendRegistrationSummary($recipient, $guid, $code4bank);
-			}
+			$guid = $this->getVisitorService()->create($postData);
+			$result = $this->sendRegistrationSummary($postData, $guid);
 
 			Debugger::log('Creation of registration('. $guid .') successfull, result: ' . json_encode($result), Debugger::INFO);
 			$this->flashMessage('Registrace(' . $guid . ') byla úspěšně založena.', 'ok');
@@ -169,28 +129,8 @@ class RegistrationPresenter extends BasePresenter
 		try {
 			$postData = $this->getRequest()->getPost();
 
-			$visitor = array_intersect_key($postData, array_flip($this->getVisitorModel()->getColumns()));
-			$meals = array_intersect_key($postData, array_flip($this->getMealModel()->getColumns()));
-
-			$blocks = $this->getBlockModel()->idsFromCurrentMeeting($postData['meeting']);
-
-			$programs = [];
-			$programs = array_map(function($block) use ($postData) {
-				if(!array_key_exists('blck_' . $block['id'], $postData)) {
-					return 0;
-				}
-
-				return $postData['blck_' . $block['id']];
-			}, $blocks);
-
-			$result = $this->getVisitorModel()->modifyByGuid($guid, $visitor, $meals, $programs);
-			$code4bank = $this->calculateCode4Bank($postData);
-
-			$recipient_mail = $postData['email'];
-			$recipient_name = $postData['name']." ".$postData['surname'];
-			$recipient = [$recipient_mail => $recipient_name];
-
-			$return = $this->getEmailer()->sendRegistrationSummary($recipient, $guid, $code4bank);
+			$result = $this->getVisitorService()->update($guid, $postData);
+			$result = $this->sendRegistrationSummary($postData, $guid);
 
 			Debugger::log('Modification of registration('. $guid .') successfull, result: ' . json_encode($result), Debugger::INFO);
 			$this->flashMessage('Registrace(' . $guid . ') byla úspěšně upravena.', 'ok');
@@ -297,25 +237,6 @@ class RegistrationPresenter extends BasePresenter
 	}
 
 	/**
-	 * @return BlockModel
-	 */
-	protected function getBlockModel()
-	{
-		return $this->blockModel;
-	}
-
-	/**
-	 * @param  BlockModel $model
-	 * @return $this
-	 */
-	protected function setBlockModel(BlockModel $model)
-	{
-		$this->blockModel = $model;
-
-		return $this;
-	}
-
-	/**
 	 * @return MealModel
 	 */
 	protected function getMealModel()
@@ -387,25 +308,6 @@ class RegistrationPresenter extends BasePresenter
 	protected function setProgramModel(ProgramModel $model)
 	{
 		$this->programModel = $model;
-
-		return $this;
-	}
-
-	/**
-	 * @return Emailer
-	 */
-	protected function getEmailer()
-	{
-		return $this->emailer;
-	}
-
-	/**
-	 * @param  Emailer $emailer
-	 * @return $this
-	 */
-	protected function setEmailer(Emailer $emailer)
-	{
-		$this->emailer = $emailer;
 
 		return $this;
 	}

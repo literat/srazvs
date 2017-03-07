@@ -168,9 +168,8 @@ class VisitorModel extends BaseModel
 				$bindingsData['guid'] = md5(uniqid());
 				$result_binding = $this->database->query('INSERT INTO `kk_visitor-program`', $bindingsData);
 
-				if(!$result_binding){
-					$return = "ERROR_BINDING_VISITOR_PROGRAM";
-					break;
+				if(!$result_binding) {
+					throw new Exception('Error while binding visitor`s program');
 				}
 			}
 
@@ -178,11 +177,11 @@ class VisitorModel extends BaseModel
 
 				// create meals for visitor
 				if(!$return = $this->Meals->create($meals_data)){
-					$return = "ERROR_CREATE_MEALS";
+					throw new Exception('Error while creating meals');
 				}
 			}
 		} else {
-			$return = "ERROR_CREATE_VISITOR";
+			throw new Exception('Error while creating visitor');
 		}
 
 		//return $return;

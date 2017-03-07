@@ -90,6 +90,7 @@ services:
     - App\Components\ProgramOverviewControl
     - App\Components\BlocksByDayControl
     - App\Components\ProgramsControl
+    - App\Services\VisitorService
 
 extensions:
     skautis: Skautis\Nette\SkautisExtension
