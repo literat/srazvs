@@ -35,7 +35,6 @@ class MeetingModel extends BaseModel
 	/** @var string registration heading text */
 	public $regHeading = '';
 
-	private $configuration;
 	private $program;
 	private $httpEncoding;
 	private $dbTable;
@@ -142,17 +141,17 @@ class MeetingModel extends BaseModel
 	 *
 	 * @return	string	html table
 	 */
-	public function getData($meeting_id = NULL)
+	public function getData($meetingId = null)
 	{
-		if(isset($meeting_id)) {
+		if(isset($meetingId)) {
 			$data = $this->getDatabase()
 				->table($this->getTable())
-				->where('deleted ? AND id ?',  '0', $meeting_id)
+				->where('deleted ? AND id ?', '0', $meetingId)
 				->fetch();
 		} else {
 			$data = $this->getDatabase()
 				->table($this->getTable())
-				->where('deleted',  '0')
+				->where('deleted', '0')
 				->fetchAll();
 		}
 
@@ -183,7 +182,7 @@ class MeetingModel extends BaseModel
 	 * @param	int	ID of selected province
 	 * @return	string	html <select>
 	 */
-	public function renderHtmlProvinceSelect($selected_province)
+	public function renderHtmlProvinceSelect($selectedProvince)
 	{
 		$html_select = "<select style='width: 195px; font-size: 10px' name='province'>\n";
 
@@ -191,12 +190,12 @@ class MeetingModel extends BaseModel
 			->table('kk_provinces')
 			->fetchAll();
 
-		foreach($result as $data){
-			if($data['id'] == $selected_province){
+		foreach($result as $data) {
+			if($data['id'] == $selectedProvince) {
 				$sel = "selected";
 			}
 			else $sel = "";
-			$html_select .= "<option value='".$data['id']."' ".$sel.">".$data['province_name']."</option>";
+			$html_select .= "<option value='" . $data['id'] . "' " . $sel . ">" . $data['province_name'] . "</option>";
 		}
 
 		$html_select .= "</select>\n";
@@ -205,7 +204,8 @@ class MeetingModel extends BaseModel
 	}
 
 	/** Public program same as getPrograms*/
-	public function getPublicPrograms($block_id){
+	public function getPublicPrograms($blockId)
+	{
 		$result = $this->getDatabase()
 			->query('SELECT progs.id AS id,
 						progs.name AS name,
@@ -214,16 +214,17 @@ class MeetingModel extends BaseModel
 				LEFT JOIN kk_categories AS cat ON cat.id = progs.category
 				WHERE block = ? AND progs.deleted = ?
 				LIMIT 10',
-				$block_id, '0')
+				$blockId, '0')
 			->fetchAll();
 
-		if(!$result) $html = "";
-		else {
+		if(!$result) {
+			$html = '';
+		} else {
 			$html = "<table>\n";
 			$html .= " <tr>\n";
-			foreach($result as $data){
+			foreach($result as $data) {
 				$html .= "<td class='category cat-".$data['style']."' style='text-align:center;'>\n";
-				$html .= "<a class='programLink' rel='programDetail' href='#' rel='programDetail' title='".$this->program->getDetail($data['id'], 'program', $this->httpEncoding)."'>".$data['name']."</a>\n";
+				$html .= "<a class='programLink' rel='programDetail' href='#' rel='programDetail' title='" . $this->program->getDetail($data['id'], 'program', $this->httpEncoding) . "'>" . $data['name'] . "</a>\n";
 				$html .= "</td>\n";
 			}
 			$html .= " </tr>\n";
@@ -237,10 +238,10 @@ class MeetingModel extends BaseModel
 		$days = array("pátek", "sobota", "neděle");
 		$html = "";
 
-		foreach($days as $dayKey => $dayVal){
+		foreach($days as $dayKey => $dayVal) {
 			$html .= "<table>\n";
 			$html .= " <tr>\n";
-			$html .= "  <td class='day' colspan='2' >".$dayVal."</td>\n";
+			$html .= "  <td class='day' colspan='2' >" . $dayVal . "</td>\n";
 			$html .= " </tr>\n";
 
 			$result = $this->database
@@ -259,24 +260,22 @@ class MeetingModel extends BaseModel
 					'0', $dayVal, $this->meetingId)
 				->fetchAll();
 
-			if(!$result){
+			if(!$result) {
 				$html .= "<td class='emptyTable' style='width:400px;'>Nejsou žádná aktuální data.</td>\n";
-			}
-			else{
-				foreach($result as $data){
+			} else {
+				foreach($result as $data) {
 					$html .= "<tr>\n";
-					$html .= "<td class='time'>".$data['from']." - ".$data['to']."</td>\n";
-					if(($data['program'] == 1) && ($data['display_progs'] == 1)){
-						$html .= "<td class='category cat-".$data['style']."' class='daytime'>\n";
+					$html .= "<td class='time'>" . $data['from'] . " - " . $data['to'] . "</td>\n";
+					if(($data['program'] == 1) && ($data['display_progs'] == 1)) {
+						$html .= "<td class='category cat-" . $data['style'] . "' class='daytime'>\n";
 						$html .= "<div>\n";
-						$html .= "<a class='programLink rel='programDetail' href='#' rel='programDetail' title='".$this->program->getDetail($data['id'], 'block', $this->httpEncoding)."'>".$data['name']."</a>\n";
+						$html .= "<a class='programLink rel='programDetail' href='#' rel='programDetail' title='" . $this->program->getDetail($data['id'], 'block', $this->httpEncoding) . "'>" . $data['name'] . "</a>\n";
 						$html .= "</div>\n";
 						$html .= $this->getPublicPrograms($data['id']);
 						$html .= "</td>\n";
-					}
-					else {
-						$html .= "<td class='category cat-".$data['style']."'>";
-						$html .= "<a class='programLink rel='programDetail' href='#' rel='programDetail' title='".$this->program->getDetail($data['id'], 'block', $this->httpEncoding)."'>".$data['name']."</a>\n";
+					} else {
+						$html .= "<td class='category cat-" . $data['style'] . "'>";
+						$html .= "<a class='programLink rel='programDetail' href='#' rel='programDetail' title='" . $this->program->getDetail($data['id'], 'block', $this->httpEncoding) . "'>" . $data['name'] . "</a>\n";
 						$html .= "</td>\n";
 					}
 					$html .= "</tr>\n";
@@ -314,14 +313,14 @@ class MeetingModel extends BaseModel
 
 		$html_row = "";
 
-		if(!$result){
+		if(!$result) {
 			$html_row .= "<tr class='radek1'>";
-			$html_row .= "<td><img class='edit' src='".IMG_DIR."icons/edit2.gif' /></td>\n";
-			$html_row .= "<td><img class='edit' src='".IMG_DIR."icons/delete2.gif' /></td>\n";
+			$html_row .= "<td><img class='edit' src='" . IMG_DIR . "icons/edit2.gif' /></td>\n";
+			$html_row .= "<td><img class='edit' src='" . IMG_DIR . "icons/delete2.gif' /></td>\n";
 			$html_row .= "<td colspan='11' class='emptyTable'>Nejsou k dispozici žádné položky.</td>";
 			$html_row .= "</tr>";
 		} else {
-			foreach($result as $data){
+			foreach($result as $data) {
 				$html_row .= "<tr class='radek1'>";
 				$html_row .= "\t\t\t<td><a href='process.php?id=".$data['id']."&cms=edit&page=meetings' title='Upravit'><img class='edit' src='".IMG_DIR."icons/edit.gif' /></a></td>\n";
 				$html_row .= "\t\t\t<td><a href=\"javascript:confirmation('?id=".$data['id']."&amp;cms=del', 'sraz: ".$data['place']." ".$data['start_date']." -> Opravdu SMAZAT tento sraz? Jste si jisti?')\" title='Odstranit'><img class='edit' src='".IMG_DIR."icons/delete.gif' /></a></td>\n";
@@ -468,7 +467,8 @@ class MeetingModel extends BaseModel
 	 * @param  integer $id
 	 * @return string
 	 */
-	public function getProvinceNameById($id) {
+	public function getProvinceNameById($id)
+	{
 		return $this->getDatabase()
 			->table('kk_provinces')
 			->select('province_name')
