@@ -388,23 +388,10 @@ class VisitorPresenter extends BasePresenter
 			$visitor['email'] => $visitor['name']. ' ' . $visitor['surname'],
 		];
 
-		$code4bank = $this->calculateCode4Bank($visitor);
+		$code4bank = $this->getVisitorService()->calculateCode4Bank($visitor);
 		$result = $this->getEmailer()->sendRegistrationSummary($recipient, $guid, $code4bank);
 
 		return $result;
-	}
-
-	/**
-	 * @param  array $data
-	 * @return string
-	 */
-	protected function calculateCode4Bank(array $data)
-	{
-		return Strings::toAscii(
-			mb_substr($data['name'], 0, 1, 'utf-8')
-			. mb_substr($data['surname'], 0, 1, 'utf-8')
-			. mb_substr($data['birthday'], 2, 2)
-		);
 	}
 
 	/**

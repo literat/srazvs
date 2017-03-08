@@ -137,11 +137,6 @@ class VisitorModel extends BaseModel
 	{
 		$return = true;
 
-		$DB_data['code'] =
-			Strings::substring($DB_data['name'], 0, 1)
-			. Strings::substring($DB_data['surname'], 0, 1)
-			. Strings::substring($DB_data['birthday'], 2, 2);
-
 		$DB_data['birthday'] = new \DateTime($DB_data['birthday']);
 		$DB_data['reg_daytime'] = (new \DateTime())->format('Y-m-d H:i:s');
 		$DB_data['guid'] = md5(uniqid());
@@ -205,11 +200,6 @@ class VisitorModel extends BaseModel
 		// for returning specific error
 		$error = array('visitor' => true, 'meal' => true, 'program' => true);
 
-		$DB_data['code'] =
-			Strings::substring($DB_data['name'], 0, 1)
-			. Strings::substring($DB_data['surname'], 0, 1)
-			. Strings::substring($DB_data['birthday'], 2, 2);
-
 		$DB_data['birthday'] = new \DateTime($DB_data['birthday']);
 
 		$result = $this->database
@@ -255,11 +245,6 @@ class VisitorModel extends BaseModel
 	{
 		// for returning specific error
 		$error = array('visitor' => true, 'meal' => true, 'program' => true);
-
-		$DB_data['code'] =
-			Strings::substring($DB_data['name'], 0, 1)
-			. Strings::substring($DB_data['surname'], 0, 1)
-			. Strings::substring($DB_data['birthday'], 2, 2);
 
 		$DB_data['birthday'] = new \DateTime($DB_data['birthday']);
 
@@ -552,4 +537,5 @@ class VisitorModel extends BaseModel
 			->where('id', $id)
 			->fetch();
 	}
+
 }

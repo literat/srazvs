@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\VisitorModel;
 use App\Models\MealModel;
 use App\Models\BlockModel;
+use Nette\Utils\Strings;
 
 class VisitorService extends BaseService
 {
@@ -47,6 +48,7 @@ class VisitorService extends BaseService
 	public function create(array $data = [])
 	{
 		$visitor = $this->filterFields($data, $this->getVisitorModel()->getColumns());
+		$visitor['code'] = $this->calculateCode4Bank($visitor);
 		$meals = $this->filterFields($data, $this->getMealModel()->getColumns());
 		$programs = $this->filterProgramFields($data);
 
@@ -63,6 +65,7 @@ class VisitorService extends BaseService
 	public function update($id, array $data)
 	{
 		$visitor = $this->filterFields($data, $this->getVisitorModel()->getColumns());
+		$visitor['code'] = $this->calculateCode4Bank($visitor);
 		$meals = $this->filterFields($data, $this->getMealModel()->getColumns());
 		$programs = $this->filterProgramFields($data);
 
@@ -82,6 +85,17 @@ class VisitorService extends BaseService
 	public function delete($id)
 	{
 		return $this->getVisitorModel()->delete($id);
+	}
+
+	/**
+	 * @param  array $data
+	 * @return string
+	 */
+	public function calculateCode4Bank(array $data)
+	{
+		return Strings::substring($data['name'], 0, 1)
+			. Strings::substring($data['surname'], 0, 1)
+			. Strings::substring($data['birthday'], -2);
 	}
 
 	/**
