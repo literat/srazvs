@@ -86,7 +86,7 @@ class RegistrationPresenter extends VisitorPresenter
 			$this->getMeetingModel()->setRegistrationHandlers(1);
 			$this->setMeetingId(1);
 		} else {
-			$this->getMeetingModel()->setRegistrationHandlers();
+			$this->getMeetingModel()->setRegistrationHandlers($this->getMeetingId());
 		}
 
 		$template = $this->getTemplate();
@@ -121,7 +121,7 @@ class RegistrationPresenter extends VisitorPresenter
 	}
 
 	/**
-	 * @param  integer 	$id
+	 * @param  string  $guid
 	 * @return void
 	 */
 	public function actionUpdate($guid)
@@ -167,14 +167,14 @@ class RegistrationPresenter extends VisitorPresenter
 		$template->cost	= $this->getMeetingModel()->getPrice('cost');
 
 		if($this->getUserservice()->isLoggedIn()) {
-			$userDetail = $this->getUserModel()->getUserDetail();
-			$skautisUser = $this->getUserModel()->getPersonalDetail($userDetail->ID_Person);
-			$membership = $this->getUserModel()->getPersonUnitDetail($userDetail->ID_Person);
+			$userDetail = $this->getUserService()->getUserDetail();
+			$skautisUser = $this->getUserService()->getPersonalDetail($userDetail->ID_Person);
+			$membership = $this->getUserService()->getPersonUnitDetail($userDetail->ID_Person);
 
 			if(!preg_match('/^[1-9]{1}[0-9a-zA-Z]{2}\.[0-9a-zA-Z]{1}[0-9a-zA-Z]{1}$/', $membership->RegistrationNumber)) {
-				$skautisUserUnit = $this->getUserModel()->getParentUnitDetail($membership->ID_Unit)[0];
+				$skautisUserUnit = $this->getUserService()->getParentUnitDetail($membership->ID_Unit)[0];
 			} else {
-				$skautisUserUnit = $this->getUserModel()->getUnitDetail($membership->ID_Unit);
+				$skautisUserUnit = $this->getUserService()->getUnitDetail($membership->ID_Unit);
 			}
 
 			$template->data['name'] = $skautisUser->FirstName;
@@ -183,7 +183,7 @@ class RegistrationPresenter extends VisitorPresenter
 			$template->data['email'] = $skautisUser->Email;
 			$template->data['street'] = $skautisUser->Street;
 			$template->data['city'] = $skautisUser->City;
-			$template->data['postal_code'] = preg_replace('/\s+/','',$skautisUser->Postcode);
+			$template->data['postal_code'] = preg_replace('/\s+/', '', $skautisUser->Postcode);
 			$template->data['birthday'] = $skautisUser->Birthday;
 			$template->data['group_name'] = $skautisUserUnit->DisplayName;
 			$template->data['group_num'] = $skautisUserUnit->RegistrationNumber;

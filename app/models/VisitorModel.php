@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Nette\Database\Context;
 use Nette\Utils\Strings;
-use Tracy\Debugger;
 use \Exception;
 
 /**
@@ -158,7 +157,7 @@ class VisitorModel extends BaseModel
 			// gets data from database
 			$program_blocks = $this->Blocks->getProgramBlocks($DB_data['meeting']);
 
-			foreach($program_blocks as $DB_blocks_data){
+			foreach($program_blocks as $DB_blocks_data) {
 				$bindingsData = array(
 					'visitor' => $ID_visitor,
 					'program' => $programs_data[$DB_blocks_data['id']],
@@ -176,7 +175,7 @@ class VisitorModel extends BaseModel
 			if($return) {
 
 				// create meals for visitor
-				if(!$return = $this->Meals->create($meals_data)){
+				if(!$return = $this->Meals->create($meals_data)) {
 					throw new Exception('Error while creating meals');
 				}
 			}
@@ -204,7 +203,7 @@ class VisitorModel extends BaseModel
 	public function modify($ID_visitor, $DB_data, $meals_data, $programs_data)
 	{
 		// for returning specific error
-		$error = array('visitor' => TRUE, 'meal' => TRUE, 'program' => TRUE);
+		$error = array('visitor' => true, 'meal' => true, 'program' => true);
 
 		$DB_data['code'] =
 			Strings::substring($DB_data['name'], 0, 1)
@@ -229,7 +228,7 @@ class VisitorModel extends BaseModel
 		$oldPrograms = $this->getVisitorPrograms($ID_visitor);
 
 		// update old data to new existing
-		foreach($programBlocks as $programBlock){
+		foreach($programBlocks as $programBlock) {
 			$data = array('program' => $programs_data[$programBlock->id]);
 			// read first value from array and shift it to the end
 			$oldProgram = array_shift($oldPrograms);
@@ -243,7 +242,7 @@ class VisitorModel extends BaseModel
 		return $ID_visitor;
 	}
 
-/**
+	/**
 	 * Modify a visitor
 	 *
 	 * @param	int		$visitor_id		ID of a visitor
@@ -255,7 +254,7 @@ class VisitorModel extends BaseModel
 	public function modifyByGuid($guid, $DB_data, $meals_data, $programs_data)
 	{
 		// for returning specific error
-		$error = array('visitor' => TRUE, 'meal' => TRUE, 'program' => TRUE);
+		$error = array('visitor' => true, 'meal' => true, 'program' => true);
 
 		$DB_data['code'] =
 			Strings::substring($DB_data['name'], 0, 1)
@@ -282,7 +281,7 @@ class VisitorModel extends BaseModel
 		$oldPrograms = $this->getVisitorPrograms($visitor->id);
 
 		// update old data to new existing
-		foreach($programBlocks as $programBlock){
+		foreach($programBlocks as $programBlock) {
 			$data = array('program' => $programs_data[$programBlock->id]);
 			// read first value from array and shift it to the end
 			$oldProgram = array_shift($oldPrograms);
@@ -304,7 +303,7 @@ class VisitorModel extends BaseModel
 	 */
 	public function delete($id)
 	{
-		return $this->getTable()
+		return $this->getDatabase()
 			->table($this->getTable())
 			->where('id', $id)
 			->update([
@@ -369,7 +368,7 @@ class VisitorModel extends BaseModel
 		$search = $this->getSearch();
 
 		$query = '';
-		if($search){
+		if($search) {
 			$query = "AND (`code` REGEXP '" . $search . "'
 							OR `group_num` REGEXP '" . $search . "'
 							OR `name` REGEXP '" . $search . "'
@@ -393,7 +392,7 @@ class VisitorModel extends BaseModel
 	{
 		$billData = $this->getBill($query_id);
 
-		if($billData['bill'] < $this->Meeting->getPrice('cost')){
+		if($billData['bill'] < $this->Meeting->getPrice('cost')) {
 			$bill = array('bill' => $this->Meeting->getPrice($type));
 			$payResult = $this->getDatabase()
 				->table($this->getTable())
@@ -455,10 +454,10 @@ class VisitorModel extends BaseModel
 		if(!$programBlocks){
 			$html .= "<div class='emptyTable' style='width:400px;'>Nejsou žádná aktuální data.</div>\n";
 		} else {
-			foreach($programBlocks as $block){
+			foreach($programBlocks as $block) {
 				$html .= "<div class='block-" . $block->id .  " ".Strings::webalize($block['day'])."'>".$block['day'].", ".$block['from']." - ".$block['to']." : ".$block['name']."</div>\n";
 				// rendering programs in block
-				if($block['program'] == 1){
+				if($block['program'] == 1) {
 					$html .= "<div class='block-" . $block->id .  " programs ".Strings::webalize($block['day'])." ".Strings::webalize($block['name'])."'>".$this->Programs->getPrograms($block['id'], $visitorId)."</div>";
 				}
 				$html .= "<br />";
@@ -521,7 +520,8 @@ class VisitorModel extends BaseModel
 	 * @param  array  $queryId
 	 * @return string
 	 */
-	public function getSerializedMailAddress(array $queryId = []) {
+	public function getSerializedMailAddress(array $queryId = [])
+	{
 		$recipientMailAddresses = '';
 
 		$emails = $this->getDatabase()
