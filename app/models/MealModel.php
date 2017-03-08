@@ -110,14 +110,13 @@ class MealModel extends BaseModel
 	{
 		// order must be firtsly NO and then YES
 		// first value is displayed in form as default
-		$mealArray = array("ne" => "ne","ano" => "ano");
-		$yesNoArray = array("ne", "ano");
+		$yesNoArray = array('ne', 'ano');
 
-		$htmlSelect = "";
+		$htmlSelect = '';
 		foreach($this->dayMeal as $title => $varName){
-			if(preg_match("/breakfast/", $varName))	$mealIcon = "breakfast";
-			if(preg_match("/lunch/", $varName))		$mealIcon = "lunch";
-			if(preg_match("/dinner/", $varName))	$mealIcon = "dinner";
+			if(preg_match('/breakfast/', $varName))	$mealIcon = 'breakfast';
+			if(preg_match('/lunch/', $varName))		$mealIcon = 'lunch';
+			if(preg_match('/dinner/', $varName))	$mealIcon = 'dinner';
 
 			$htmlSelect .= "<span style='display:block;font-size:11px;'>".$title.":</span>\n";
 			$htmlSelect .= "<img style='width:18px;' src='".IMG_DIR."icons/".$mealIcon.".png' />\n";
