@@ -119,6 +119,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 		$template->progDir = PROG_DIR;
 		$template->visitDir = VISIT_DIR;
 		$template->expDir = EXP_DIR;
+		$template->meetDir = MEET_DIR;
 
 		$template->categories = $this->remember('categories:all', 10, function () {
 			return $this->getContainer()->getService('category')->all();
