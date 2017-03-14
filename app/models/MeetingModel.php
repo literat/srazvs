@@ -233,7 +233,7 @@ class MeetingModel extends BaseModel
 		return $html;
 	}
 
-	public function renderPublicProgramOverview()
+	public function renderPublicProgramOverview($meetingId)
 	{
 		$days = array("pátek", "sobota", "neděle");
 		$html = "";
@@ -244,7 +244,7 @@ class MeetingModel extends BaseModel
 			$html .= "  <td class='day' colspan='2' >" . $dayVal . "</td>\n";
 			$html .= " </tr>\n";
 
-			$result = $this->database
+			$result = $this->getDatabase()
 				->query('SELECT	blocks.id AS id,
 							day,
 							DATE_FORMAT(`from`, "%H:%i") AS `from`,
@@ -257,7 +257,7 @@ class MeetingModel extends BaseModel
 					LEFT JOIN kk_categories AS cat ON cat.id = blocks.category
 					WHERE blocks.deleted = ? AND day = ? AND meeting = ?
 					ORDER BY `from` ASC',
-					'0', $dayVal, $this->meetingId)
+					'0', $dayVal, $meetingId)
 				->fetchAll();
 
 			if(!$result) {

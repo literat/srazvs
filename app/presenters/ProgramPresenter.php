@@ -206,7 +206,7 @@ class ProgramPresenter extends BasePresenter
 		} else {
 			$template->display_program = false;
 		}
-		$template->public_program = $this->getMeetingModel()->renderPublicProgramOverview();
+		$template->public_program = $this->getMeetingModel()->renderPublicProgramOverview($this->getMeetingId());
 		$template->page_title = 'Srazy VS - veřejný program';
 		$template->style = 'table { border-collapse:separate; width:100%; }
 				td { .width:100%; text-align:center; padding:0px; }
