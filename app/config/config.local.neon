@@ -90,6 +90,9 @@ services:
     - App\Components\ProgramOverviewControl
     - App\Components\BlocksByDayControl
     - App\Components\ProgramsControl
+    - App\Components\RegistrationGraphControl
+    - App\Components\MaterialsControl
+    - App\Components\MealControl
     - App\Services\VisitorService
 
 extensions:

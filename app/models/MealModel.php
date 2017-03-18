@@ -18,7 +18,7 @@ class MealModel extends BaseModel
 	/**
 	 * @var array
 	 */
-	protected $dayMeal = [
+	static public $dayMeal = [
 		"páteční večeře"	=>	"fry_dinner",
 		"sobotní snídaně"	=>	"sat_breakfast",
 		"sobotní oběd"		=>	"sat_lunch",
@@ -113,7 +113,7 @@ class MealModel extends BaseModel
 		$yesNoArray = array('ne', 'ano');
 
 		$htmlSelect = '';
-		foreach($this->dayMeal as $title => $varName){
+		foreach(static::$dayMeal as $title => $varName){
 			if(preg_match('/breakfast/', $varName))	$mealIcon = 'breakfast';
 			if(preg_match('/lunch/', $varName))		$mealIcon = 'lunch';
 			if(preg_match('/dinner/', $varName))	$mealIcon = 'dinner';

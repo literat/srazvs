@@ -87,7 +87,14 @@
 
 	<div style="width:15%;padding-left:0.5%;float:right;">
 		<div class='pageRibbon'>Jídlo</div>
-		{$meals|noescape}
+		<table>
+
+		{foreach $meals as $mealName => $mealColumn}
+			{control meal $mealColumn,$mealName}
+		{/foreach}
+
+		</table>
+		{*$meals|noescape*}
 	</div>
 
 	<div style="padding-left:22.5%;padding-right:60%;margin-top:6px;height:{$graphHeight|noescape}px;">
@@ -105,8 +112,7 @@
 	<div style="width:49.5%;padding-left:50.5%;">
 		<div class='pageRibbon'>Materiál</div>
 		<div>
-			{control material}
-			{$materials|noescape}
+			{control materials}
 		</div>
 	</div>
 	<div class="cleaner"></div>

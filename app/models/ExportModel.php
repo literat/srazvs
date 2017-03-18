@@ -466,33 +466,6 @@ class ExportModel extends BaseModel
 	}
 
 	/**
-	 * Render data from getMealCount
-	 *
-	 * @return	mixed	html
-	 */
-	public function renderMealCount()
-	{
-		$mealsArr = array("fry_dinner" => "páteční večeře",
-						  "sat_breakfast" => "sobotní snídaně",
-						  "sat_lunch" => "sobotní oběd",
-						  "sat_dinner" => "sobotní večeře",
-						  "sun_breakfast" => "nedělní snídaně",
-						  "sun_lunch" => "nedělní oběd");
-
-		$meals = "<table>";
-
-		foreach($mealsArr as $mealsKey => $mealsVal){
-			$mealCount = $this->getMealCount($mealsKey);
-
-			$meals .= "<tr><td>".$mealsVal.":</td><td><span style='font-size:12px; font-weight:bold;'>".$mealCount."</span></td></tr>";
-		}
-
-		$meals .= "</table>";
-
-		return $meals;
-	}
-
-	/**
 	 * Return data for visitors's program
 	 *
 	 * @param	int		program id
