@@ -34,7 +34,7 @@
 <body>
 
 {foreach $result as $unused}
-	{if $iterator->counter % 2 == 1}
+	{if $iterator->odd}
 	<table>
 		<tr>
 			<td class='cutLine'>
@@ -95,7 +95,7 @@
 		</tr>
 	</table>
 
-	{if $iterator->counter % 2 == 1}
+	{if $iterator->odd}
 			</td>
 	{else}
 			</td>
@@ -103,6 +103,6 @@
 	</table>
 	{/if}
 
-	{breakIf $iterator->counter == 10}
+	{breakIf $iterator->counter > 5}
 {/foreach}
 </body>
