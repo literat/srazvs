@@ -117,6 +117,7 @@ class BlockPresenter extends BasePresenter
 		$data['from'] = date('H:i:s', mktime($data['start_hour'], $data['start_minute'], 0, 0, 0, 0));
 		$data['to'] = date('H:i:s', mktime($data['end_hour'], $data['end_minute'], 0, 0, 0, 0));
 		$data['meeting'] = $this->getMeetingId();
+		array_key_exists('display_progs', $data) ?: $data['display_progs'] = '1';
 
 		unset($data['start_hour']);
 		unset($data['end_hour']);
