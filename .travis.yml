@@ -5,8 +5,23 @@ php:
   - '7.1'
   - nightly
 
-env: dependencies="--prefer-lowest --prefer-stable"
-env: coverage=on
+env:
+matrix:
+    include:
+        - php: 7.0
+          env: dependencies="--prefer-lowest --prefer-stable"
+        - php: 7.0
+          env: coverage=on
+        - php: 7.1
+          env: dependencies="--prefer-lowest --prefer-stable"
+        - php: 7.1
+          env: coverage=on
+
+    allow_failures:
+        - php: 7.0
+          env: coverage=on
+        - php: 7.1
+          env: coverage=on
 
 script:
   - vendor/bin/tester tests -s -c tests/php-unix.ini $coverageArgs
