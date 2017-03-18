@@ -7,6 +7,7 @@ use App\Models\ProgramModel;
 use App\Models\BlockModel;
 use App\Factories\ExcelFactory;
 use App\Factories\PdfFactory;
+use App\Components\RegistrationGraphControl;
 use Nette\Utils\Strings;
 use Nette\Http\Request;
 use Tracy\Debugger;
@@ -42,11 +43,17 @@ class ExportPresenter extends BasePresenter
 	protected $filename;
 
 	/**
-	 * @param ExportModel  $export
-	 * @param ProgramModel $program
-	 * @param ExcelFactory $excel
-	 * @param PdfFactory   $pdf
-	 * @param Request      $request
+	 * @var RegistrationGraphControl
+	 */
+	private $registrationGraph;
+
+	/**
+	 * @param ExportModel              $export
+	 * @param ProgramModel             $program
+	 * @param ExcelFactory             $excel
+	 * @param PdfFactory               $pdf
+	 * @param Request                  $request
+	 * @param RegistrationGraphControl $control
 	 */
 	public function __construct(
 		ExportModel $export,
@@ -54,7 +61,8 @@ class ExportPresenter extends BasePresenter
 		BlockModel $block,
 		ExcelFactory $excel,
 		PdfFactory $pdf,
-		Request $request
+		Request $request,
+		RegistrationGraphControl $control
 	) {
 		$this->setModel($export);
 		$this->setProgramModel($program);
@@ -62,6 +70,7 @@ class ExportPresenter extends BasePresenter
 		$this->setExcel($excel->create());
 		$this->setPdf($pdf->create());
 		$this->setRequest($request);
+		$this->setRegistrationGraphControl($control);
 	}
 
 	/**
@@ -82,8 +91,7 @@ class ExportPresenter extends BasePresenter
 		$settingsModel = $this->getModel();
 		$template = $this->getTemplate();
 
-		$template->graph = $settingsModel->renderGraph();
-		$template->graphHeight = $settingsModel->getGraphHeight();
+		$template->graphHeight = $this->calculateGraphHeight();
 		$template->account = $settingsModel->getMoney('account');
 		$template->balance = $settingsModel->getMoney('balance');
 		$template->suma = $settingsModel->getMoney('suma');
@@ -590,6 +598,39 @@ class ExportPresenter extends BasePresenter
 			$this->getPdf()->Output($this->filename, "D");
 		exit;
 		}
+	}
+
+	/**
+	 * @return RegistrationGraphControl
+	 */
+	protected function createComponentRegistrationGraph()
+	{
+		return $this->registrationGraph->setMeetingId($this->getMeetingId());
+	}
+
+	/**
+	 * @param  RegistrationGraphControl $control
+	 * @return $this
+	 */
+	protected function setRegistrationGraphControl(RegistrationGraphControl $control)
+	{
+		$this->registrationGraph = $control;
+
+		return $this;
+	}
+
+	/**
+	 * @return integer
+	 */
+	protected function calculateGraphHeight()
+	{
+		$graphHeight = RegistrationGraphControl::GRAPH_HEIGHT_INIT;
+
+		foreach($this->getModel()->graph() as $graph) {
+			$graphHeight += RegistrationGraphControl::GRAPH_HEIGHT_STEP;
+		}
+
+		return $graphHeight < RegistrationGraphControl::GRAPH_HEIGHT_MIN ? $GRAPH_HEIGHT_MIN : $graphHeight;
 	}
 
 	/**
