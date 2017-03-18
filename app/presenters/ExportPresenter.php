@@ -8,6 +8,7 @@ use App\Models\BlockModel;
 use App\Factories\ExcelFactory;
 use App\Factories\PdfFactory;
 use App\Components\RegistrationGraphControl;
+use App\Components\MaterialsControl;
 use Nette\Utils\Strings;
 use Nette\Http\Request;
 use Tracy\Debugger;
@@ -45,7 +46,12 @@ class ExportPresenter extends BasePresenter
 	/**
 	 * @var RegistrationGraphControl
 	 */
-	private $registrationGraph;
+	private $registrationGraphControl;
+
+	/**
+	 * @var MaterialsControl
+	 */
+	private $materialControl;
 
 	/**
 	 * @param ExportModel              $export
@@ -54,6 +60,7 @@ class ExportPresenter extends BasePresenter
 	 * @param PdfFactory               $pdf
 	 * @param Request                  $request
 	 * @param RegistrationGraphControl $control
+	 * @param MaterialsControl          $materialControl
 	 */
 	public function __construct(
 		ExportModel $export,
@@ -62,7 +69,8 @@ class ExportPresenter extends BasePresenter
 		ExcelFactory $excel,
 		PdfFactory $pdf,
 		Request $request,
-		RegistrationGraphControl $control
+		RegistrationGraphControl $control,
+		MaterialsControl $materialControl
 	) {
 		$this->setModel($export);
 		$this->setProgramModel($program);
@@ -71,6 +79,7 @@ class ExportPresenter extends BasePresenter
 		$this->setPdf($pdf->create());
 		$this->setRequest($request);
 		$this->setRegistrationGraphControl($control);
+		$this->setMaterialControl($materialControl);
 	}
 
 	/**
@@ -96,7 +105,6 @@ class ExportPresenter extends BasePresenter
 		$template->balance = $settingsModel->getMoney('balance');
 		$template->suma = $settingsModel->getMoney('suma');
 		$template->programs = $this->getProgramModel()->renderExportPrograms();
-		$template->materials = $settingsModel->getMaterial();
 		$template->meals = $settingsModel->renderMealCount();
 	}
 
@@ -605,7 +613,7 @@ class ExportPresenter extends BasePresenter
 	 */
 	protected function createComponentRegistrationGraph()
 	{
-		return $this->registrationGraph->setMeetingId($this->getMeetingId());
+		return $this->registrationGraphControl->setMeetingId($this->getMeetingId());
 	}
 
 	/**
@@ -614,7 +622,26 @@ class ExportPresenter extends BasePresenter
 	 */
 	protected function setRegistrationGraphControl(RegistrationGraphControl $control)
 	{
-		$this->registrationGraph = $control;
+		$this->registrationGraphControl = $control;
+
+		return $this;
+	}
+
+	/**
+	 * @return MaterialControl
+	 */
+	protected function createComponentMaterial()
+	{
+		return $this->materialControl->setMeetingId($this->getMeetingId());
+	}
+
+	/**
+	 * @param  MaterialControl $control
+	 * @return $this
+	 */
+	protected function setMaterialControl(MaterialsControl $control)
+	{
+		$this->materialControl = $control;
 
 		return $this;
 	}

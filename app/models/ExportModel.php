@@ -396,13 +396,11 @@ class ExportModel extends BaseModel
 	}
 
 	/**
-	 * Get materials for each program
-	 *
-	 * @return	mixed	html
+	 * @return ActiveRow
 	 */
-	public function getMaterial()
+	public function materials()
 	{
-		$data = $this->getDatabase()
+		return $this->getDatabase()
 			->query('SELECT	progs.id AS id,
 						progs.name AS name,
 						progs.material AS material
@@ -412,16 +410,6 @@ class ExportModel extends BaseModel
 					AND bls.meeting = ?
 					AND bls.deleted = ?',
 					'0', $this->getMeetingId(), '0')->fetchAll();
-
-		$html = "";
-		foreach($data as $item){
-			if($item['material'] == "") $material = "(žádný)";
-			else $material = $item['material'];
-			$html .= "<div><a rel='programDetail' href='".PRJ_DIR."program/?id=".$item['id']."&cms=edit&page=export' title='".$item['name']."'>".$item['name']."</a>:\n</div>";
-			$html .= "<div style='margin-left:10px;font-size:12px;font-weight:bold;'>".$material."</div>";
-		}
-
-		return $html;
 	}
 
 	/**
