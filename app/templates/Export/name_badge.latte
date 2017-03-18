@@ -21,29 +21,41 @@
 		h1 {font-size:70px;color:#555;}
 
 		.cutLine {border: 2px dotted black; vertical-align:top;}
-		.nick {height:205px;vertical-align:middle;text-align:center;}
+		.nick {height:298px;vertical-align:middle;text-align:center;}
 	</style>
 </head>
 <body>
 {foreach $result as $row}
-	{if $iterator->counter % 2 == 1}
+	{if $iterator->isFirst()}
 	<table>
-		<tr>
-		  <td class='cutLine'>
-	{else}
-	<td class='cutLine'>
 	{/if}
-	<table>
+		{if $iterator->isOdd()}
 		<tr>
-			<td class='nick'>
-				<h1>{$row['nick']}</h1>
+		{/if}
+			<td class='cutLine'>
+				<table>
+					<tr>
+						<td class='nick'>
+							<h1>{$row['nick']}</h1>
+						</td>
+					</tr>
+				</table>
 			</td>
+		{if $iterator->isEven()}
 		</tr>
-	</table>
-	{if $iterator->counter % 2 == 1}
-	</td>
-	{else}
+		{/if}
+		{if $iterator->isOdd() && $iterator->isLast()}
+			<td class='cutLine'>
+				<table>
+					<tr>
+						<td class='nick'>
+							<h1></h1>
+						</td>
+					</tr>
+				</table>
 			</td>
+		{/if}
+	{if $iterator->isLast()}
 		</tr>
 	</table>
 	{/if}
