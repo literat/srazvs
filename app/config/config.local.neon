@@ -23,23 +23,22 @@ parameters:
         senderName: 'Srazy VS'
         senderAddress: srazyvs@hkvs.cz
 
-nette:
-    application:
-        errorPresenter: Error
-        mapping:
-            *: App\*Module\Presenters\*Presenter
-        debugger: true
-        catchExceptions: false
+application:
+    errorPresenter: Error
+    mapping:
+        *: App\*Module\Presenters\*Presenter
+    debugger: true
+    catchExceptions: false
 
-    database:
-        dsn: '%database.driver%:host=%database.host%;dbname=%database.name%'
-        user: %database.user%
-        password: %database.password%
-        options:
-            lazy: yes
-        debugger: true
-        explain: true
-        autowired: true
+database:
+    dsn: '%database.driver%:host=%database.host%;dbname=%database.name%'
+    user: %database.user%
+    password: %database.password%
+    options:
+        lazy: yes
+    debugger: true
+    explain: true
+    autowired: true
 
 session:
     autoStart: smart

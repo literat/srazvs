@@ -206,6 +206,8 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 	 */
 	protected $debugMode = false;
 
+	protected $sunlight;
+
 	/**
 	 * Render check box
 	 *
