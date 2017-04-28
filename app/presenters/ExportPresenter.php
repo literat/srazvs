@@ -613,7 +613,7 @@ class ExportPresenter extends BasePresenter
 			$this->getPdf()->WriteHTML((string) $template, 0);
 			// download
 			$this->getPdf()->Output($this->filename, "D");
-		exit;
+			exit;
 		}
 	}
 

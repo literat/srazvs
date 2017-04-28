@@ -14,17 +14,14 @@
 
 {if $isRegistrationOpen}
 
-<script type="text/javascript" src="{$jsDir}jquery/jquery.tinytips.js"></script>
 <script type="text/javascript">
 $(document).ready(function() {
 	$('a.programLink').tinyTips('light', 'title');
 });
 </script>
 
-<script src='{$jsDir}jquery/jquery-ui.min.js' type='text/javascript'></script>
-<script src='{$jsDir}jquery/jquery-ui-datepicker-validation.min.js' type='text/javascript'></script>
 <script type="text/javascript">
-$(function() {
+$(document).ready(function() {
 	$.datepicker.setDefaults($.datepicker.regional['cs']);
 	// deactivated 2013-09-26
 	// is not usefull as well

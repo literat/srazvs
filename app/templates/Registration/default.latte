@@ -14,130 +14,6 @@
 
 {if $isRegistrationOpen}
 
-<script type="text/javascript" src="{$jsDir}jquery/jquery.tinytips.js"></script>
-<script type="text/javascript">
-$(document).ready(function() {
-	$('a.programLink').tinyTips('light', 'title');
-});
-</script>
-
-<script src='{$jsDir}jquery/jquery-ui.min.js' type='text/javascript'></script>
-<script src='{$jsDir}jquery/jquery-ui-datepicker-validation.min.js' type='text/javascript'></script>
-<script type="text/javascript">
-$(function() {
-	$.datepicker.setDefaults($.datepicker.regional['cs']);
-	// deactivated 2013-09-26
-	// is not usefull as well
-	var imgDir = {$imgDir};
-	$( ".datePicker" ).datepicker({
-		showOn: "button",
-		buttonImage: imgDir + "/calendar_button.png",
-		buttonImageOnly: true,
-		showWeek: true,
-		firstDay: 7,
-		showOtherMonths: true,
-		selectOtherMonths: true,
-		showButtonPanel: true,
-		changeMonth: true,
-		changeYear: true,
-		dateFormat: 'dd.mm.yy',
-		maxDate: '0',
-		minDate: '-100Y',
-		yearRange: 'c-70,c+00',
-		monthNamesShort: ['Led','Úno','Bře','Dub','Kvě','Čer','Čec','Srp','Zář','Říj','Lis','Pro'],
-		dayNamesShort: ['Po', 'Út', 'St', 'Čt', 'Pá', 'So', 'Ne'],
-		dayNamesMin: ['Po', 'Út', 'St', 'Čt', 'Pá', 'So', 'Ne'],
-		weekHeader: 'Tý',
-	});
-});
-</script>
-
-<script src='{$jsDir}jquery/validation/messages_cs.js' type='text/javascript'></script>
-<script src='{$jsDir}jquery/validation/methods_de.js' type='text/javascript'></script>
-<script n:syntax="off" type="text/javascript">
-	$.validator.addMethod("groupnumber", function(value, element) {
-		if(value.match(/^[1-9]{1}[0-9a-zA-Z]{2}\.[0-9a-zA-Z]{1}[0-9a-zA-Z]{1}$/)) return true;
-		else return false;
-	}, "Hodnota musí být ve formátu nnn.nn!");
-
-	$.validator.addMethod("postalcode", function(value, element) {
-		if(value.match(/^[1-9]{1}[0-9]{4}$/)) return true;
-		else return false;
-	}, "Hodnota musí být ve formátu nnnnn!");
-
-	$(document).ready(function(){
-		$("#registration").validate({
-			submitHandler: function(form) {
-				form.submit();
-			},
-			rules: {
-				name: {
-					required: true,
-					maxlength: 20
-				},
-				surname: {
-					required: true,
-					maxlength: 30
-				},
-				nick: {
-					required: true,
-					maxlength: 20
-				},
-				email: {
-					required: true,
-					email: true,
-					maxlength: 30
-				},
-				birthday: {
-					required: true,
-					date: true,
-					dpDate: true
-				},
-				street: {
-					required: true,
-					maxlength: 30
-				},
-				city: {
-					required: true,
-					maxlength: 64
-				},
-				postal_code: {
-					required: true,
-					postalcode: true,
-					minlength: 5,
-					maxlength: 5
-				},
-				group_num: {
-					required: true,
-					groupnumber: true,
-					maxlength: 6,
-					minlength: 6
-				},
-				group_name: {
-					required: true,
-					maxlength: 50
-				},
-				troop_name: {
-					maxlength: 50
-				}
-			},
-			messages: {
-				name:         "Jméno musí být vyplněno (max 20 znaků)!",
-				surname:      "Příjmení musí být vyplněno (max 30 znaků)!",
-				nick:         "Přezdívka musí být vyplněna (max 20 znaků)!",
-				email:        "Zadejte validní e-mailovou adresu (max 30 znaků)!",
-				birthday:     "Zadejte datum narození ve správném formátu!",
-				street:       "Ulice musí být vyplněna (max 30 znaků)!",
-				city:         "Město musí být vyplněno (max 64 znaků)!",
-				postal_code:  "Zadejte PSČ ve správném formátu!",
-				group_num:    "Zadejte číslo střediska/přístavu ve správném formátu!",
-				group_name:   "Název střediska/přístavu musí být vyplněno (max 50 znaků)!",
-				troop_name:   "Název oddílu nemůže být delší jak 50 znaků!"
-			}
-		});
-	});
-</script>
-
 <!-- REGISTRACNI FORMULAR SRAZU -->
 
 {if !$loggedIn}
@@ -271,6 +147,120 @@ $(function() {
 
 </form>
 
+<script type="text/javascript">
+$(document).ready(function() {
+	$.datepicker.setDefaults($.datepicker.regional['cs']);
+	// deactivated 2013-09-26
+	// is not usefull as well
+	var imgDir = {$imgDir};
+	$( ".datePicker" ).datepicker({
+		showOn: "button",
+		buttonImage: imgDir + "calendar_button.png",
+		buttonImageOnly: true,
+		showWeek: true,
+		firstDay: 7,
+		showOtherMonths: true,
+		selectOtherMonths: true,
+		showButtonPanel: true,
+		changeMonth: true,
+		changeYear: true,
+		dateFormat: 'dd.mm.yy',
+		maxDate: '0',
+		minDate: '-100Y',
+		yearRange: 'c-70,c+00',
+		monthNamesShort: ['Led','Úno','Bře','Dub','Kvě','Čer','Čec','Srp','Zář','Říj','Lis','Pro'],
+		dayNamesShort: ['Po', 'Út', 'St', 'Čt', 'Pá', 'So', 'Ne'],
+		dayNamesMin: ['Po', 'Út', 'St', 'Čt', 'Pá', 'So', 'Ne'],
+		weekHeader: 'Tý',
+	});
+});
+</script>
+
+<script src='{$jsDir}jquery/validation/messages_cs.js' type='text/javascript'></script>
+<script src='{$jsDir}jquery/validation/methods_de.js' type='text/javascript'></script>
+<script n:syntax="off" type="text/javascript">
+	$.validator.addMethod("groupnumber", function(value, element) {
+		if(value.match(/^[1-9]{1}[0-9a-zA-Z]{2}\.[0-9a-zA-Z]{1}[0-9a-zA-Z]{1}$/)) return true;
+		else return false;
+	}, "Hodnota musí být ve formátu nnn.nn!");
+
+	$.validator.addMethod("postalcode", function(value, element) {
+		if(value.match(/^[1-9]{1}[0-9]{4}$/)) return true;
+		else return false;
+	}, "Hodnota musí být ve formátu nnnnn!");
+
+	$(document).ready(function(){
+		$("#registration").validate({
+			submitHandler: function(form) {
+				form.submit();
+			},
+			rules: {
+				name: {
+					required: true,
+					maxlength: 20
+				},
+				surname: {
+					required: true,
+					maxlength: 30
+				},
+				nick: {
+					required: true,
+					maxlength: 20
+				},
+				email: {
+					required: true,
+					email: true,
+					maxlength: 30
+				},
+				birthday: {
+					required: true,
+					date: true,
+					dpDate: true
+				},
+				street: {
+					required: true,
+					maxlength: 30
+				},
+				city: {
+					required: true,
+					maxlength: 64
+				},
+				postal_code: {
+					required: true,
+					postalcode: true,
+					minlength: 5,
+					maxlength: 5
+				},
+				group_num: {
+					required: true,
+					groupnumber: true,
+					maxlength: 6,
+					minlength: 6
+				},
+				group_name: {
+					required: true,
+					maxlength: 50
+				},
+				troop_name: {
+					maxlength: 50
+				}
+			},
+			messages: {
+				name:         "Jméno musí být vyplněno (max 20 znaků)!",
+				surname:      "Příjmení musí být vyplněno (max 30 znaků)!",
+				nick:         "Přezdívka musí být vyplněna (max 20 znaků)!",
+				email:        "Zadejte validní e-mailovou adresu (max 30 znaků)!",
+				birthday:     "Zadejte datum narození ve správném formátu!",
+				street:       "Ulice musí být vyplněna (max 30 znaků)!",
+				city:         "Město musí být vyplněno (max 64 znaků)!",
+				postal_code:  "Zadejte PSČ ve správném formátu!",
+				group_num:    "Zadejte číslo střediska/přístavu ve správném formátu!",
+				group_name:   "Název střediska/přístavu musí být vyplněno (max 50 znaků)!",
+				troop_name:   "Název oddílu nemůže být delší jak 50 znaků!"
+			}
+		});
+	});
+</script>
 
 <!-- REGISTRACNI FORMULAR SRAZU -->
 
