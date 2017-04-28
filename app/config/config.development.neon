@@ -10,6 +10,9 @@ parameters:
 services:
     mail.mailer:
         class: Nette\Mail\SendmailMailer
+    cacheStorage:
+        class: Nette\Caching\Storages\DevNullStorage
+
 
 skautis:
     applicationId : f6b25658-2944-463c-ae99-22íec56a0326
