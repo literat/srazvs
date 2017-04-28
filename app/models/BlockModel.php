@@ -80,10 +80,7 @@ class BlockModel extends BaseModel
 	 */
 	public function renderHtmlSelect($blockId)
 	{
-		$result = $this->database
-			->table('kk_blocks')
-			->where('meeting ? AND program ? AND deleted ?', $_SESSION['meetingID'], '1', '0')
-			->fetchAll();
+		$result = $this->findByMeeting($this->getMeetingId());
 
 		$html_select = "<select style='width: 300px; font-size: 10px' name='block'>\n";
 
@@ -120,6 +117,10 @@ class BlockModel extends BaseModel
 		return $data;
 	}
 
+	/**
+	 * @param  integer $meetingId
+	 * @return ActiveRow
+	 */
 	public function idsFromCurrentMeeting($meetingId)
 	{
 		return $this->getDatabase()
@@ -129,6 +130,11 @@ class BlockModel extends BaseModel
 			->fetchAll();
 	}
 
+	/**
+	 * @param  integer $meetingId
+	 * @param  string  $dayVal
+	 * @return ActiveRow
+	 */
 	public function getExportBlocks($meetingId, $dayVal)
 	{
 		$result = $this->getDatabase()

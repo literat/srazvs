@@ -100,7 +100,6 @@ abstract class BaseModel extends Object
 	public function create(array $data)
 	{
 		$data['guid'] = $this->generateGuid();
-		//$result = $this->getDatabase()->query('INSERT INTO ' . $this->getTable(), $data);
 		$result = $this->getDatabase()->table($this->getTable())->insert($data);
 
 		return $result;
@@ -146,6 +145,7 @@ abstract class BaseModel extends Object
 		$data = [
 			'deleted' => '1',
 		];
+
 		$result = $this->getDatabase()
 			->table($this->getTable())
 			->where('id', $ids)
@@ -161,6 +161,7 @@ abstract class BaseModel extends Object
 	public function setMeetingId($meetingId)
 	{
 		$this->meetingId = $meetingId;
+
 		return $this;
 	}
 
@@ -205,6 +206,7 @@ abstract class BaseModel extends Object
 	protected function setTable($table)
 	{
 		$this->table = $table;
+
 		return $this;
 	}
 
