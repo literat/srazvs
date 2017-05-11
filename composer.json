@@ -1,5 +1,6 @@
 {
     "require": {
+        "php": ">=7.0.0",
         "skautis/skautis": "^2.0",
         "tracy/tracy": "^2.3",
         "nette/database": "^2.4",
@@ -34,6 +35,7 @@
         "sa": "vendor/bin/phpstan analyze -l 4 -c phpstan.neon app",
         "unit": "vendor/nette/tester/Tester/tester.php -- -c tests/php-unix.ini -j 10 tests/unit",
         "acceptance": "vendor/codeception/codeception/codecept run acceptance",
+        "clear": "find temp/cache ! -name 'placeholder.txt' -type f -exec rm -rf {} +",
         "deploy": "vendor/dg/ftp-deployment/deployment deployment.ini",
         "deploy-test": "vendor/dg/ftp-deployment/deployment deployment.ini --test",
         "release": "grunt build"
