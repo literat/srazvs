@@ -8,7 +8,6 @@ use App\Models\BlockModel;
 use App\Models\MealModel;
 use App\Services\Emailer;
 use App\Services\VisitorService;
-use Nette\Http\Request;
 use Nette\Utils\Strings;
 use Tracy\Debugger;
 use Exception;
@@ -59,7 +58,6 @@ class VisitorPresenter extends BasePresenter
 	 * @param BlockModel   $blocks
 	 * @param MeetingModel $meetings
 	 * @param Emailer      $emailer
-	 * @param Request      $request
 	 */
 	public function __construct(
 		VisitorModel $visitors,
@@ -67,8 +65,7 @@ class VisitorPresenter extends BasePresenter
 		BlockModel $blocks,
 		MeetingModel $meetings,
 		Emailer $emailer,
-		VisitorService $visitor,
-		Request $request
+		VisitorService $visitor
 	) {
 		$this->setModel($visitors);
 		$this->setMealModel($meals);
@@ -97,14 +94,14 @@ class VisitorPresenter extends BasePresenter
 	public function actionCreate()
 	{
 		try {
-			$postData = $this->getRequest()->getPost();
+			$postData = $this->getHttpRequest()->getPost();
 			$postData['meeting'] = $this->getMeetingId();
 
 			$guid = $this->getVisitorService()->create($postData);
 			$result = $this->sendRegistrationSummary($postData, $guid);
 
 			Debugger::log('Creation of visitor('. $guid .') successfull, result: ' . json_encode($result), Debugger::INFO);
-			$this->flashMessage('Účastník(' . $guid . ') byl úspěšně upraven.', 'ok');
+			$this->flashMessage('Účastník(' . $guid . ') byl úspěšně vytvořen.', 'ok');
 		} catch(Exception $e) {
 			Debugger::log('Creation of visitor('. $guid .') failed, result: ' .  $e->getMessage(), Debugger::ERROR);
 			$this->flashMessage('Creation of visitor failed, result: ' . $e->getMessage(), 'error');
@@ -122,7 +119,7 @@ class VisitorPresenter extends BasePresenter
 	public function actionUpdate($id)
 	{
 		try {
-			$postData = $this->getRequest()->getPost();
+			$postData = $this->getHttpRequest()->getPost();
 			$postData['meeting'] = $this->getMeetingId();
 			$postData['visitor'] = $id;
 
@@ -167,7 +164,7 @@ class VisitorPresenter extends BasePresenter
 	public function actionSend()
 	{
 		try {
-			$request = $this->getRequest();
+			$request = $this->getHttpRequest();
 			$subject = $request->getPost('subject', '');
 			$message = $request->getPost('message', '');
 			$bcc = explode(',', preg_replace("/\s+/", "", $request->getPost('recipients', '')));
@@ -337,7 +334,7 @@ class VisitorPresenter extends BasePresenter
 	 */
 	public function renderMail()
 	{
-		$ids = $this->getRequest()->getPost('checker');
+		$ids = $this->getHttpRequest()->getPost('checker');
 
 		$template = $this->getTemplate();
 		$template->recipientMailAddresses = $this->getModel()->getSerializedMailAddress($ids);
@@ -349,7 +346,7 @@ class VisitorPresenter extends BasePresenter
 	 */
 	public function renderListing()
 	{
-		$search = $this->getRequest()->getQuery('search');
+		$search = $this->getHttpRequest()->getQuery('search');
 
 		$model = $this->getModel();
 

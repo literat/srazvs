@@ -412,7 +412,7 @@ class ExportPresenter extends BasePresenter
 	 */
 	public function actionNameBadges()
 	{
-		$names = $this->getRequest()->getPost()['names'];
+		$names = $this->getHttpRequest()->getPost()['names'];
 		$this->renderNameBadges($names);
 	}
 

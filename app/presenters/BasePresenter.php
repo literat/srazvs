@@ -73,9 +73,9 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 	{
 		parent::startup();
 
-		$meetingId = $this->getRequest()->getQuery('mid', '');
+		$meetingId = $this->getHttpRequest()->getQuery('mid', '');
 
-		$backlink = $this->getRequest()->getQuery('backlink');
+		$backlink = $this->getHttpRequest()->getQuery('backlink');
 		if(!empty($backlink)) {
 			$this->setBacklink($backlink);
 		}
@@ -359,24 +359,6 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 	public function setSunlight(SunlightModel $sunlight)
 	{
 		$this->sunlight = $sunlight;
-		return $this;
-	}
-
-	/**
-	 * @return Nette\Http\Request
-	 */
-	public function getRequest()
-	{
-		return $this->request;
-	}
-
-	/**
-	 * @param  Request $request
-	 * @return $this
-	 */
-	public function setRequest(Request $request)
-	{
-		$this->request = $request;
 		return $this;
 	}
 

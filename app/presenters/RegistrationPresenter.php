@@ -9,7 +9,6 @@ use App\Models\MealModel;
 use App\Services\UserService;
 use App\Services\Emailer;
 use App\Services\VisitorService;
-use Nette\Http\Request;
 use Tracy\Debugger;
 
 /**
@@ -45,7 +44,6 @@ class RegistrationPresenter extends VisitorPresenter
 	private $disabled = false;
 
 	/**
-	 * @param Request        $request
 	 * @param MeetingModel   $meetingModel
 	 * @param UserService    $userService
 	 * @param VisitorModel   $visitorModel
@@ -54,7 +52,6 @@ class RegistrationPresenter extends VisitorPresenter
 	 * @param VisitorService $visitorService
 	 */
 	public function __construct(
-		Request $request,
 		MeetingModel $meetingModel,
 		UserService $userService,
 		VisitorModel $visitorModel,
@@ -63,7 +60,6 @@ class RegistrationPresenter extends VisitorPresenter
 		Emailer $emailer,
 		VisitorService $visitorService
 	) {
-		$this->setRequest($request);
 		$this->setMeetingModel($meetingModel);
 		$this->setUserService($userService);
 		$this->setVisitorModel($visitorModel);
@@ -104,7 +100,7 @@ class RegistrationPresenter extends VisitorPresenter
 	public function actionCreate()
 	{
 		try {
-			$postData = $this->getRequest()->getPost();
+			$postData = $this->getHttpRequest()->getPost();
 			$postData['meeting'] = $this->getMeetingId();
 
 			$guid = $this->getVisitorService()->create($postData);
@@ -127,7 +123,7 @@ class RegistrationPresenter extends VisitorPresenter
 	public function actionUpdate($guid)
 	{
 		try {
-			$postData = $this->getRequest()->getPost();
+			$postData = $this->getHttpRequest()->getPost();
 
 			$result = $this->getVisitorService()->update($guid, $postData);
 			$result = $this->sendRegistrationSummary($postData, $guid);

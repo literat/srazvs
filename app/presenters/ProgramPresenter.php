@@ -6,7 +6,6 @@ use App\Models\ProgramModel;
 use App\Models\BlockModel;
 use App\Models\MeetingModel;
 use App\Services\Emailer;
-use Nette\Http\Request;
 use Tracy\Debugger;
 
 /**
@@ -45,13 +44,11 @@ class ProgramPresenter extends BasePresenter
 	 */
 	public function __construct(
 		ProgramModel $model,
-		Request $request,
 		Emailer $emailer,
 		BlockModel $blockModel,
 		MeetingModel $meetingModel
 	) {
 		$this->setModel($model);
-		$this->setRequest($request);
 		$this->setEmailer($emailer);
 		$this->setBlockModel($blockModel);
 		$this->setMeetingModel($meetingModel);
@@ -73,7 +70,7 @@ class ProgramPresenter extends BasePresenter
 	public function actionCreate()
 	{
 		$model = $this->getModel();
-		$data = $this->getRequest()->getPost();
+		$data = $this->getHttpRequest()->getPost();
 
 		$this->setBacklink($data['backlink']);
 		unset($data['backlink']);
@@ -104,7 +101,7 @@ class ProgramPresenter extends BasePresenter
 	public function actionUpdate($id)
 	{
 		$model = $this->getModel();
-		$data = $this->getRequest()->getPost();
+		$data = $this->getHttpRequest()->getPost();
 
 		$this->setBacklink($data['backlink']);
 		unset($data['backlink']);
@@ -153,7 +150,7 @@ class ProgramPresenter extends BasePresenter
 	public function actionAnnotationupdate($id)
 	{
 		try {
-			$data = $this->getRequest()->getPost();
+			$data = $this->getHttpRequest()->getPost();
 			$result = $this->updateByGuid($id, $data);
 
 			Debugger::log('Modification of program annotation id ' . $id . ' with data ' . json_encode($data) . ' successfull, result: ' . json_encode($result), Debugger::INFO);
@@ -235,7 +232,7 @@ class ProgramPresenter extends BasePresenter
 		$template = $this->getTemplate();
 
 		$template->heading = 'nový program';
-		$template->page = $this->getRequest()->getQuery('page');
+		$template->page = $this->getHttpRequest()->getQuery('page');
 		$template->error_name = '';
 		$template->error_description = '';
 		$template->error_tutor = '';
@@ -279,7 +276,7 @@ class ProgramPresenter extends BasePresenter
 		$template = $this->getTemplate();
 
 		$template->page_title = 'Registrace programů pro lektory';
-		$template->page = $this->getRequest()->getQuery('page');
+		$template->page = $this->getHttpRequest()->getQuery('page');
 		$template->error_name = "";
 		$template->error_description = "";
 		$template->error_tutor = "";

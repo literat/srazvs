@@ -22,11 +22,11 @@
 	<meta name='copyright' content="(C) 2001 - {php date('Y')}, Litera Tomáš, Praha" />
 	<style type="text/css">
 	{cache 'categories:all', expire => '10 minutes', tags => ['categories:all']}
-	{foreach $categories as $id => $category}
-		.cat-{$category->style} {
-			border: 2px solid #{$category->bocolor};
-			background-color: #{$category->bgcolor};
-			color: #{$category->focolor};
+	{foreach $categories as $categoryId => $categoryCssItem}
+		.cat-{$categoryCssItem->style} {
+			border: 2px solid #{$categoryCssItem->bocolor};
+			background-color: #{$categoryCssItem->bgcolor};
+			color: #{$categoryCssItem->focolor};
 		}
 	{/foreach}
 	{/cache}

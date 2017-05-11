@@ -112,7 +112,7 @@ class AuthPresenter extends BasePresenter
 	 */
 	protected function handleSkautisLogin($ReturnUrl = NULL)
 	{
-		$post = $this->getRequest()->post;
+		$post = $this->getHttpRequest()->post;
 		//$post = $this->router->getPost();
 		// if token is not set - get out from here - must log in
 		if (!isset($post['skautIS_Token'])) {

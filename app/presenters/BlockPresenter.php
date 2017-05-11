@@ -3,7 +3,6 @@
 namespace App\Presenters;
 
 use Nette\Database\Context;
-use Nette\Http\Request;
 use Tracy\Debugger;
 use App\Services\Emailer;
 use App\Models\BlockModel;
@@ -32,13 +31,11 @@ class BlockPresenter extends BasePresenter
 
 	/**
 	 * @param BlockModel $model
-	 * @param Request    $request
 	 * @param Emailer    $emailer
 	 */
-	public function __construct(BlockModel $model, Request $request, Emailer $emailer)
+	public function __construct(BlockModel $model, Emailer $emailer)
 	{
 		$this->setModel($model);
-		$this->setRequest($request);
 		$this->setEmailer($emailer);
 	}
 
@@ -50,7 +47,7 @@ class BlockPresenter extends BasePresenter
 		$template = $this->getTemplate();
 
 		$template->heading = 'nový blok';
-		$template->page = $this->getRequest()->getQuery('page');
+		$template->page = $this->getHttpRequest()->getQuery('page');
 		$template->error_name = "";
 		$template->error_description = "";
 		$template->error_tutor = "";
@@ -75,7 +72,7 @@ class BlockPresenter extends BasePresenter
 	public function actionCreate()
 	{
 		$model = $this->getModel();
-		$data = $this->getRequest()->getPost();
+		$data = $this->getHttpRequest()->getPost();
 
 		$this->setBacklink($data['backlink']);
 		$data['from'] = date('H:i:s', mktime($data['start_hour'], $data['start_minute'], 0, 0, 0, 0));
@@ -111,7 +108,7 @@ class BlockPresenter extends BasePresenter
 	public function actionUpdate($id)
 	{
 		$model = $this->getModel();
-		$data = $this->getRequest()->getPost();
+		$data = $this->getHttpRequest()->getPost();
 
 		$this->setBacklink($data['backlink']);
 		$data['from'] = date('H:i:s', mktime($data['start_hour'], $data['start_minute'], 0, 0, 0, 0));
@@ -148,7 +145,7 @@ class BlockPresenter extends BasePresenter
 	public function actionAnnotationupdate($id)
 	{
 		try {
-			$data = $this->getRequest()->getPost();
+			$data = $this->getHttpRequest()->getPost();
 			$result = $this->updateByGuid($id, $data);
 
 			Debugger::log('Modification of block annotation id ' . $id . ' with data ' . json_encode($data) . ' successfull, result: ' . json_encode($result), Debugger::INFO);
@@ -215,7 +212,7 @@ class BlockPresenter extends BasePresenter
 		$template = $this->getTemplate();
 
 		$template->heading = 'úprava bloku';
-		$template->page = $this->getRequest()->getQuery('page');
+		$template->page = $this->getHttpRequest()->getQuery('page');
 		$template->error_name = "";
 		$template->error_description = "";
 		$template->error_tutor = "";
@@ -250,7 +247,7 @@ class BlockPresenter extends BasePresenter
 		$template = $this->getTemplate();
 
 		$template->page_title = 'Registrace programů pro lektory';
-		$template->page = $this->getRequest()->getQuery('page');
+		$template->page = $this->getHttpRequest()->getQuery('page');
 		$template->error_name = "";
 		$template->error_description = "";
 		$template->error_tutor = "";

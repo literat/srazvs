@@ -2,11 +2,10 @@
 
 namespace App\Presenters;
 
-use Nette\Database\Context;
-use Nette\Http\Request;
-use Tracy\Debugger;
-use App\Models\CategoryModel;
 use \Exception;
+use Tracy\Debugger;
+use Nette\Database\Context;
+use App\Models\CategoryModel;
 
 class CategoryPresenter extends BasePresenter
 {
@@ -16,12 +15,10 @@ class CategoryPresenter extends BasePresenter
 
 	/**
 	 * @param CategoryModel $model
-	 * @param Request       $request
 	 */
-	public function __construct(CategoryModel $model, Request $request)
+	public function __construct(CategoryModel $model)
 	{
 		$this->setModel($model);
-		$this->setRequest($request);
 	}
 
 	/**
@@ -49,7 +46,7 @@ class CategoryPresenter extends BasePresenter
 	{
 		try {
 			$model = $this->getModel();
-			$data = $this->getRequest()->getPost();
+			$data = $this->getHttpRequest()->getPost();
 			$result = $this->getModel()->create($data);
 
 			Debugger::log('Creation of category successfull, result: ' . json_encode($result), Debugger::INFO);
@@ -71,7 +68,7 @@ class CategoryPresenter extends BasePresenter
 	public function actionUpdate($id)
 	{
 		try {
-			$data = $this->getRequest()->getPost();
+			$data = $this->getHttpRequest()->getPost();
 			$result = $this->getModel()->update($id, $data);
 
 			Debugger::log('Modification of category id ' . $id . ' with data ' . json_encode($data) . ' successfull, result: ' . json_encode($result), Debugger::INFO);
