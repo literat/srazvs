@@ -18,6 +18,19 @@ class MealModel extends BaseModel
 	/**
 	 * @var array
 	 */
+	static public $meals = [
+		'fry_dinner'    => 'páteční večeře',
+		'sat_breakfast' => 'sobotní snídaně',
+		'sat_lunch'     => 'sobotní oběd',
+		'sat_dinner'    => 'sobotní večeře',
+		'sun_breakfast' => 'nedělní snídaně',
+		'sun_lunch'     => 'nedělní oběd',
+	];
+
+	/**
+	 * @deprecated
+	 * @var array
+	 */
 	static public $dayMeal = [
 		"páteční večeře"	=>	"fry_dinner",
 		"sobotní snídaně"	=>	"sat_breakfast",
@@ -74,6 +87,9 @@ class MealModel extends BaseModel
 			->update($data);
 	}
 
+	/**
+	 * @deprecated
+	 */
 	function getMeals($visitorId)
 	{
 		$meals = "<tr>";
@@ -100,6 +116,7 @@ class MealModel extends BaseModel
 	}
 
 	/**
+	 * @deprecated
 	 * Render HTML Meals <select>
 	 *
 	 * @param	string	value of selected meal

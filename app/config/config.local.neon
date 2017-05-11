@@ -86,6 +86,7 @@ services:
     export: App\Models\ExportModel
     visitor: App\Models\VisitorModel
     meal: App\Models\MealModel
+    province: App\Models\ProvinceModel
     - App\Components\ProgramOverviewControl
     - App\Components\BlocksByDayControl
     - App\Components\ProgramsControl
@@ -93,6 +94,7 @@ services:
     - App\Components\MaterialsControl
     - App\Components\MealControl
     - App\Services\VisitorService
+    - App\Forms\Factories\IRegistrationFormFactory
 
 extensions:
     skautis: Skautis\Nette\SkautisExtension

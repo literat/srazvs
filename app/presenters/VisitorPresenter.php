@@ -8,6 +8,7 @@ use App\Models\BlockModel;
 use App\Models\MealModel;
 use App\Services\Emailer;
 use App\Services\VisitorService;
+use App\Forms\Factories\IRegistrationFormFactory;
 use Nette\Utils\Strings;
 use Tracy\Debugger;
 use Exception;
@@ -53,6 +54,11 @@ class VisitorPresenter extends BasePresenter
 	protected $visitorService;
 
 	/**
+	 * @var IRegistrationFormFactory
+	 */
+	private $registrationFormFactory;
+
+	/**
 	 * @param VisitorModel $visitors
 	 * @param MealModel    $meals
 	 * @param BlockModel   $blocks
@@ -73,8 +79,25 @@ class VisitorPresenter extends BasePresenter
 		$this->setMeetingModel($meetings);
 		$this->setEmailer($emailer);
 		$this->setVisitorService($visitor);
-		$this->setRequest($request);
 	}
+
+	/**
+	 * @return IRegistrationFormFactory
+	 */
+	public function getRegistrationFormFactory(): IRegistrationFormFactory
+	{
+		return $this->registrationFormFactory;
+	}
+
+	/**
+     * Injector
+     *
+     * @param  IRegistrationFormFactory $factory
+     */
+    public function injectRegistrationFormFactory(IRegistrationFormFactory $factory)
+    {
+        $this->registrationFormFactory = $factory;
+    }
 
 	/**
 	 * @return void
@@ -355,6 +378,20 @@ class VisitorPresenter extends BasePresenter
 		$template->visitorCount = $model->getCount();
 		$template->meetingPrice	= $this->getMeetingModel()->getPrice('cost');
 		$template->search = $search;
+	}
+
+	/**
+	 * @return RegistrationFormControl
+	 */
+	protected function createComponentRegistrationForm(): RegistrationForm
+	{
+		$control = $this->registrationFormFactory->create();
+		$control->setMeetingId($this->getMeetingId());
+		$control->onRegistrationSave[] = function(RegistrationForm $control, $newVisitor) {
+			$this->redirect('create', ['id' => $newVisitor->guid]);
+		};
+
+		return $control;
 	}
 
 	/**
