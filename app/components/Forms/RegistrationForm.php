@@ -14,6 +14,8 @@ class RegistrationForm extends BaseForm
 
 	const TEMPLATE_NAME = 'RegistrationForm';
 
+	const MESSAGE_REQUIRED = 'Hodnota musí být vyplněna!';
+
 	/**
 	 * @var Closure
 	 */
@@ -69,36 +71,36 @@ class RegistrationForm extends BaseForm
 		$renderer->wrappers['label']['container'] = 'td';
 
 		$form->addText('name', 'Jméno:')
-			->setRequired()
+			->setRequired(static::MESSAGE_REQUIRED)
 			->addRule(Form::MAX_LENGTH, 'Jméno nesmí mít více jak %d znaků', 20);
 		$form->addText('surname', 'Příjmení:')
-			->setRequired()
+			->setRequired(static::MESSAGE_REQUIRED)
 			->addRule(Form::MAX_LENGTH, 'Příjmení nesmí mít více jak %d znaků', 30);
 		$form->addText('nick', 'Přezdívka:')
-			->setRequired()
+			->setRequired(static::MESSAGE_REQUIRED)
 			->addRule(Form::MAX_LENGTH, 'Přezdívka nesmí mít více jak %d znaků', 20);
 		$form->addEmail('email', 'E-mail:')
-			->setRequired();
+			->setRequired(static::MESSAGE_REQUIRED);
 		$form->addDatePicker('birthday', 'Datum narození:', 16)
-			->setRequired()
+			->setRequired(static::MESSAGE_REQUIRED)
 			->setReadOnly(false)
 			->setAttribute('placeholder', 'dd.mm.rrrr');
 		$form->addText('street', 'Ulice:')
-			->setRequired()
+			->setRequired(static::MESSAGE_REQUIRED)
 			->addRule(Form::MAX_LENGTH, 'Ulice nesmí mít více jak %d znaků', 30);;
 		$form->addText('city', 'Město:')
-			->setRequired()
+			->setRequired(static::MESSAGE_REQUIRED)
 			->addRule(Form::MAX_LENGTH, 'Město nesmí mít více jak %d znaků', 64);;
 		$form->addText('postal_code', 'PSČ:')
-			->setRequired()
+			->setRequired(static::MESSAGE_REQUIRED)
 			->addRule(Form::PATTERN, 'Číslo musí být ve formátu nnnnn!', '[1-9]{1}[0-9]{4}')
 			->setAttribute('placeholder', '12345');
 		$form->addText('group_num', 'Číslo středika/přístavu:')
-			->setRequired()
+			->setRequired(static::MESSAGE_REQUIRED)
 			->addRule(Form::PATTERN, 'Číslo musí být ve formátu nnn.nn!', '[1-9]{1}[0-9a-zA-Z]{2}\.[0-9a-zA-Z]{1}[0-9a-zA-Z]{1}')
 			->setAttribute('placeholder', '214.02');
 		$form->addText('group_name', 'Název střediska/přístavu:')
-			->setRequired()
+			->setRequired(static::MESSAGE_REQUIRED)
 			->addRule(Form::MAX_LENGTH, 'Název nesmí mít více jak %d znaků', 50)
 			->setAttribute('placeholder', '2. přístav Poutníci Kolín');
 		$form->addText('troop_name', 'Název oddílu:')
