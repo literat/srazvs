@@ -175,9 +175,9 @@ class VisitorService extends BaseService
 
 	/**
 	 * @param  VisitorModel $model
-	 * @return VisitorModel
+	 * @return VisitorService
 	 */
-	protected function setVisitorModel(VisitorModel $model)
+	protected function setVisitorModel(VisitorModel $model): VisitorService
 	{
 		$this->visitorModel = $model;
 

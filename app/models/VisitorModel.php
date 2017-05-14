@@ -131,7 +131,7 @@ class VisitorModel extends BaseModel
 	/**
 	 * Create a new visitor
 	 *
-	 * @return	boolean
+	 * @return	string
 	 */
 	public function assemble(array $DB_data, $meals_data, $programs_data, $returnGuid = false)
 	{
