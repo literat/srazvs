@@ -41,7 +41,7 @@ abstract class BaseControl extends Control
 	{
 		return sprintf(
 			'%s/%s.%s',
-			self::TEMPLATE_DIR,
+			static::TEMPLATE_DIR,
 			static::TEMPLATE_NAME,
 			self::TEMPLATE_EXT
 		);

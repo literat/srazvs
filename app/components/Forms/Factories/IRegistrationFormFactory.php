@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Forms\Factories;
+namespace App\Components\Forms\Factories;
 
-use App\Forms\RegistrationForm;
+use App\Components\Forms\RegistrationForm;
 
 /**
  * Generated factory

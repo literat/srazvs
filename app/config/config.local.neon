@@ -94,7 +94,8 @@ services:
     - App\Components\MaterialsControl
     - App\Components\MealControl
     - App\Services\VisitorService
-    - App\Forms\Factories\IRegistrationFormFactory
+    - App\Components\Forms\Factories\IRegistrationFormFactory
 
 extensions:
     skautis: Skautis\Nette\SkautisExtension
+    DateTimePicker: RadekDostal\NetteComponents\DateTimePicker\DateTimePicker\DI\DateTimePickerExtension

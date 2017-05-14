@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Forms;
+namespace App\Components\Forms;
 
 use App\Components\BaseControl;
 use App\Models\ProvinceModel;
@@ -9,35 +9,42 @@ use App\Models\BlockModel;
 use App\Models\MealModel;
 use Nette\Application\UI\Form;
 
-class RegistrationForm extends BaseControl
+class RegistrationForm extends BaseForm
 {
 
 	const TEMPLATE_NAME = 'RegistrationForm';
 
+	/**
+	 * @var Closure
+	 */
 	public $onRegistrationSave;
 
-	protected $meetingId = null;
-
+	/**
+	 * @var ProvinceModel
+	 */
 	protected $provinceModel;
 
+	/**
+	 * @var ProgramModel
+	 */
 	protected $programModel;
 
+	/**
+	 * @var BlockModel
+	 */
 	protected $blockModel;
 
 	/**
 	 * @param ProvinceModel $model
 	 */
-	public function __construct(ProvinceModel $province, ProgramModel $program, BlockModel $block, $meetingId = null)
+	public function __construct(ProvinceModel $province, ProgramModel $program, BlockModel $block)
 	{
 		$this->setProvinceModel($province);
 		$this->setProgramModel($program);
 		$this->setBlockModel($block);
-		$this->meetingId = $meetingId;
 	}
 
 	/**
-	 * @param  string $mealColumn
-	 * @param  string $mealName
 	 * @return void
 	 */
 	public function render()
@@ -50,47 +57,73 @@ class RegistrationForm extends BaseControl
 	}
 
 	/**
-	 * @param  string $mealColumn
-	 * @param  string $mealName
-	 * @return void
+	 * @return Form
 	 */
-	public function createComponentRegistrationForm()
+	public function createComponentRegistrationForm(): Form
 	{
-
 		$provinces = $this->getProvinceModel()->all();
 
 		$form = new Form;
-		$form->addText('name', 'Jméno:')->setRequired()
-			->addRule(Form::MIN_LENGTH, 'Jméno musí mít alespoň %d znak', 1)
-			->addRule(Form::MAX_LENGTH, 'Jméno nesmí mít více jak %d znaků', 20);
-		$form->addText('surname', 'Příjmení:')->setRequired()
-			->addRule(Form::MIN_LENGTH, 'Příjmení musí mít alespoň %d znak', 1)
-			->addRule(Form::MAX_LENGTH, 'Příjmení nesmí mít více jak %d znaků', 30);
-		$form->addText('nick', 'Přezdívka:')->setRequired()
-			->addRule(Form::MIN_LENGTH, 'Přezdívka musí mít alespoň %d znak', 1)
-			->addRule(Form::MAX_LENGTH, 'Přezdívka nesmí mít více jak %d znaků', 20);
-		$form->addEmail('email', 'E-mail:')->setRequired();
-		$form->addText('birthday', 'Datum narození:')->setRequired();
-		$form->addText('street', 'Ulice:')->setRequired();
-		$form->addText('city', 'Město:')->setRequired();
-		$form->addText('postal_code', 'PSČ:')->setRequired();
-		$form->addText('group_num', 'Číslo středika/přístavu:')->setRequired();
-		$form->addText('group_name', 'Název střediska/přístavu:')->setRequired();
-		$form->addText('troop_name', 'Název oddílu:');
 
-		$form->addSelect('province', 'Kraj:', $provinces);
+		$renderer = $form->getRenderer();
+		$renderer->wrappers['label']['container'] = 'td';
+
+		$form->addText('name', 'Jméno:')
+			->setRequired()
+			->addRule(Form::MAX_LENGTH, 'Jméno nesmí mít více jak %d znaků', 20);
+		$form->addText('surname', 'Příjmení:')
+			->setRequired()
+			->addRule(Form::MAX_LENGTH, 'Příjmení nesmí mít více jak %d znaků', 30);
+		$form->addText('nick', 'Přezdívka:')
+			->setRequired()
+			->addRule(Form::MAX_LENGTH, 'Přezdívka nesmí mít více jak %d znaků', 20);
+		$form->addEmail('email', 'E-mail:')
+			->setRequired();
+		$form->addDatePicker('birthday', 'Datum narození:', 16)
+			->setRequired()
+			->setReadOnly(false)
+			->setAttribute('placeholder', 'dd.mm.rrrr');
+		$form->addText('street', 'Ulice:')
+			->setRequired()
+			->addRule(Form::MAX_LENGTH, 'Ulice nesmí mít více jak %d znaků', 30);;
+		$form->addText('city', 'Město:')
+			->setRequired()
+			->addRule(Form::MAX_LENGTH, 'Město nesmí mít více jak %d znaků', 64);;
+		$form->addText('postal_code', 'PSČ:')
+			->setRequired()
+			->addRule(Form::PATTERN, 'Číslo musí být ve formátu nnnnn!', '[1-9]{1}[0-9]{4}')
+			->setAttribute('placeholder', '12345');
+		$form->addText('group_num', 'Číslo středika/přístavu:')
+			->setRequired()
+			->addRule(Form::PATTERN, 'Číslo musí být ve formátu nnn.nn!', '[1-9]{1}[0-9a-zA-Z]{2}\.[0-9a-zA-Z]{1}[0-9a-zA-Z]{1}')
+			->setAttribute('placeholder', '214.02');
+		$form->addText('group_name', 'Název střediska/přístavu:')
+			->setRequired()
+			->addRule(Form::MAX_LENGTH, 'Název nesmí mít více jak %d znaků', 50)
+			->setAttribute('placeholder', '2. přístav Poutníci Kolín');
+		$form->addText('troop_name', 'Název oddílu:')
+			->setAttribute('placeholder', '22. oddíl Galeje')
+			->addCondition(Form::FILLED, true)
+				->addRule(Form::MAX_LENGTH, 'Název nesmí mít více jak %d znaků', 50);
+
+		$form->addSelect('province', 'Kraj:', $provinces)
+			->setPrompt('Zvolte kraj');
 
 		$form = $this->buildMealSwitcher($form);
 
-		$form->addTextArea('arrival', 'Informace o příjezdu:');
-		$form->addTextArea('departure', 'Informace o odjezdu:');
+		$form->addTextArea('arrival', 'Informace o příjezdu:')
+			->setAttribute('placeholder', 'Napište, prosím, stručně jakým dopravním prostředkem a v kolik hodin (přibližně) přijedete na místo srazu.');
+		$form->addTextArea('departure', 'Informace o odjezdu:')
+			->setAttribute('placeholder', 'Napište, prosím, stručně jakým dopravním prostředkem a v kolik hodin (přibližně) sraz opustíte.');
 		$form->addTextArea('comment', 'Dotazy, přání, připomínky, stížnosti:');
-		$form->addTextArea('question', 'Vaše nabídka:');
-		$form->addTextArea('question2', 'Počet a typy lodí:');
+		$form->addTextArea('question', 'Vaše nabídka:')
+			->setAttribute('placeholder', 'Vaše nabídka na sdílení dobré praxe (co u vás umíte dobře a jste ochotni se o to podělit)');
+		$form->addTextArea('question2', 'Počet a typy lodí:')
+			->setAttribute('placeholder', 'Počet a typy lodí, které sebou přivezete (vyplňte pokud ano)');
 
 		$form = $this->buildProgramSwitcher($form);
 
-		$form->addHidden('mid', $this->meetingId);
+		$form->addHidden('mid', $this->getMeetingId());
 		$form->addHidden('bill', 0);
 		$form->addHidden('cost', '$cost');
 
@@ -102,12 +135,15 @@ class RegistrationForm extends BaseControl
 		return $form;
 	}
 
-	public function processForm($form)
+	/**
+	 * @param  Form $form
+	 * @return void
+	 */
+	public function processForm(Form $form)
 	{
-		dd($form->getValues());
-		// mohu použít $this->database
-		// zpracování formuláře, např. změním údaje upravované kategorie
-		// $category je nějaký řádek tabulky (entita), kterou zpracováváme
+		$registration = $form->getValues();
+		$registration['meeting'] = $this->getMeetingId();
+
 		$this->onRegistrationSave($this, $registration);
 	}
 
@@ -117,7 +153,7 @@ class RegistrationForm extends BaseControl
 	 */
 	protected function buildProgramSwitcher(Form $form): Form
 	{
-		$programBlocks = $this->getBlockModel()->getProgramBlocks($this->meetingId);
+		$programBlocks = $this->getBlockModel()->getProgramBlocks($this->getMeetingId());
 
 		foreach ($programBlocks as $block) {
 

@@ -10,6 +10,8 @@ use App\Services\UserService;
 use App\Services\Emailer;
 use App\Services\VisitorService;
 use Tracy\Debugger;
+use App\Components\Forms\RegistrationForm;
+use App\Components\Forms\Factories\IRegistrationFormFactory;
 
 /**
  * Registration controller
@@ -44,6 +46,11 @@ class RegistrationPresenter extends VisitorPresenter
 	private $disabled = false;
 
 	/**
+	 * @var IRegistrationFormFactory
+	 */
+	private $registrationFormFactory;
+
+	/**
 	 * @param MeetingModel   $meetingModel
 	 * @param UserService    $userService
 	 * @param VisitorModel   $visitorModel
@@ -67,6 +74,24 @@ class RegistrationPresenter extends VisitorPresenter
 		$this->setProgramModel($programModel);
 		$this->setEmailer($emailer);
 		$this->setVisitorService($visitorService);
+	}
+
+	/**
+	 * @return IRegistrationFormFactory
+	 */
+	public function getRegistrationFormFactory(): IRegistrationFormFactory
+	{
+		return $this->registrationFormFactory;
+	}
+
+	/**
+	 * Injector
+	 *
+	 * @param  IRegistrationFormFactory $factory
+	 */
+	public function injectRegistrationFormFactory(IRegistrationFormFactory $factory)
+	{
+		$this->registrationFormFactory = $factory;
 	}
 
 	/**
@@ -230,6 +255,31 @@ class RegistrationPresenter extends VisitorPresenter
 		$template->province = $this->getMeetingModel()->renderHtmlProvinceSelect($data->province);
 		$template->programs = $this->getVisitorModel()->renderProgramSwitcher($data->meeting, $data->id);
 		$template->cost	= $this->getMeetingModel()->getPrice('cost');
+	}
+
+	/**
+	 * @return RegistrationFormControl
+	 */
+	protected function createComponentRegistrationForm(): RegistrationForm
+	{
+		$control = $this->registrationFormFactory->create();
+		$control->setMeetingId($this->getMeetingId());
+		$control->onRegistrationSave[] = function(RegistrationForm $control, $newVisitor) {
+			try {
+				$guid = $this->getVisitorService()->create((array) $newVisitor);
+				$result = $this->sendRegistrationSummary((array) $newVisitor, $guid);
+
+				Debugger::log('Creation of visitor('. $guid .') successfull, result: ' . json_encode($result), Debugger::INFO);
+				$this->flashMessage('Účastník(' . $guid . ') byl úspěšně vytvořen.', 'ok');
+			} catch(Exception $e) {
+				Debugger::log('Creation of visitor('. $guid .') failed, result: ' .  $e->getMessage(), Debugger::ERROR);
+				$this->flashMessage('Creation of visitor failed, result: ' . $e->getMessage(), 'error');
+			}
+
+			$this->redirect('Registration:check', $guid);
+		};
+
+		return $control;
 	}
 
 	/**

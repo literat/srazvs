@@ -49,6 +49,8 @@ $configurator->addConfig(__DIR__ . '/config/config.local.neon');
 /**
  * DI Container and Session
  */
+RadekDostal\NetteComponents\DateTimePicker\DatePicker::register();
+
 $configurator->addServices(array(
     'session.session' => $session,
 ));
