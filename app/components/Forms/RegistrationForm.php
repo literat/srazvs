@@ -7,6 +7,7 @@ use App\Models\ProvinceModel;
 use App\Models\ProgramModel;
 use App\Models\BlockModel;
 use App\Models\MealModel;
+use App\Models\MeetingModel;
 use Nette\Application\UI\Form;
 
 class RegistrationForm extends BaseForm
@@ -15,6 +16,7 @@ class RegistrationForm extends BaseForm
 	const TEMPLATE_NAME = 'RegistrationForm';
 
 	const MESSAGE_REQUIRED = 'Hodnota musí být vyplněna!';
+	const MESSAGE_MAX_LENGTH = '%label nesmí mít více jak %d znaků!';
 
 	/**
 	 * @var Closure
@@ -37,13 +39,23 @@ class RegistrationForm extends BaseForm
 	protected $blockModel;
 
 	/**
+	 * @var  MeetingModel
+	 */
+	protected $meetingModel;
+
+	/**
 	 * @param ProvinceModel $model
 	 */
-	public function __construct(ProvinceModel $province, ProgramModel $program, BlockModel $block)
-	{
+	public function __construct(
+		ProvinceModel $province,
+		ProgramModel $program,
+		BlockModel $block,
+		MeetingModel $meeting
+	) {
 		$this->setProvinceModel($province);
 		$this->setProgramModel($program);
 		$this->setBlockModel($block);
+		$this->setMeetingModel($meeting);
 	}
 
 	/**
@@ -72,13 +84,13 @@ class RegistrationForm extends BaseForm
 
 		$form->addText('name', 'Jméno:')
 			->setRequired(static::MESSAGE_REQUIRED)
-			->addRule(Form::MAX_LENGTH, 'Jméno nesmí mít více jak %d znaků', 20);
+			->addRule(Form::MAX_LENGTH, static::MESSAGE_MAX_LENGTH, 20);
 		$form->addText('surname', 'Příjmení:')
 			->setRequired(static::MESSAGE_REQUIRED)
-			->addRule(Form::MAX_LENGTH, 'Příjmení nesmí mít více jak %d znaků', 30);
+			->addRule(Form::MAX_LENGTH, static::MESSAGE_MAX_LENGTH, 30);
 		$form->addText('nick', 'Přezdívka:')
 			->setRequired(static::MESSAGE_REQUIRED)
-			->addRule(Form::MAX_LENGTH, 'Přezdívka nesmí mít více jak %d znaků', 20);
+			->addRule(Form::MAX_LENGTH, static::MESSAGE_MAX_LENGTH, 20);
 		$form->addEmail('email', 'E-mail:')
 			->setRequired(static::MESSAGE_REQUIRED);
 		$form->addDatePicker('birthday', 'Datum narození:', 16)
@@ -87,10 +99,10 @@ class RegistrationForm extends BaseForm
 			->setAttribute('placeholder', 'dd.mm.rrrr');
 		$form->addText('street', 'Ulice:')
 			->setRequired(static::MESSAGE_REQUIRED)
-			->addRule(Form::MAX_LENGTH, 'Ulice nesmí mít více jak %d znaků', 30);;
+			->addRule(Form::MAX_LENGTH, static::MESSAGE_MAX_LENGTH, 30);;
 		$form->addText('city', 'Město:')
 			->setRequired(static::MESSAGE_REQUIRED)
-			->addRule(Form::MAX_LENGTH, 'Město nesmí mít více jak %d znaků', 64);;
+			->addRule(Form::MAX_LENGTH, static::MESSAGE_MAX_LENGTH, 64);;
 		$form->addText('postal_code', 'PSČ:')
 			->setRequired(static::MESSAGE_REQUIRED)
 			->addRule(Form::PATTERN, 'Číslo musí být ve formátu nnnnn!', '[1-9]{1}[0-9]{4}')
@@ -101,12 +113,12 @@ class RegistrationForm extends BaseForm
 			->setAttribute('placeholder', '214.02');
 		$form->addText('group_name', 'Název střediska/přístavu:')
 			->setRequired(static::MESSAGE_REQUIRED)
-			->addRule(Form::MAX_LENGTH, 'Název nesmí mít více jak %d znaků', 50)
+			->addRule(Form::MAX_LENGTH, static::MESSAGE_MAX_LENGTH, 50)
 			->setAttribute('placeholder', '2. přístav Poutníci Kolín');
 		$form->addText('troop_name', 'Název oddílu:')
 			->setAttribute('placeholder', '22. oddíl Galeje')
 			->addCondition(Form::FILLED, true)
-				->addRule(Form::MAX_LENGTH, 'Název nesmí mít více jak %d znaků', 50);
+				->addRule(Form::MAX_LENGTH, static::MESSAGE_MAX_LENGTH, 50);
 
 		$form->addSelect('province', 'Kraj:', $provinces)
 			->setPrompt('Zvolte kraj');
@@ -127,7 +139,7 @@ class RegistrationForm extends BaseForm
 
 		$form->addHidden('mid', $this->getMeetingId());
 		$form->addHidden('bill', 0);
-		$form->addHidden('cost', '$cost');
+		$form->addHidden('cost', $this->getMeetingModel()->getPrice('cost'));
 
 		$form->addSubmit('save', 'Uložit');
 		$form->addSubmit('reset', 'Storno');
@@ -242,11 +254,30 @@ class RegistrationForm extends BaseForm
 
 	/**
 	 * @param  BlockModel $model
-	 * @return RegistrationFormFactory
+	 * @return RegistrationForm
 	 */
 	protected function setBlockModel(BlockModel $model): RegistrationForm
 	{
 		$this->blockModel = $model;
+
+		return $this;
+	}
+
+	/**
+	 * @return MeetingModel
+	 */
+	protected function getMeetingModel(): MeetingModel
+	{
+		return $this->meetingModel;
+	}
+
+	/**
+	 * @param  MeetingModel $model
+	 * @return RegistrationForm
+	 */
+	protected function setMeetingModel(MeetingModel $model): RegistrationForm
+	{
+		$this->meetingModel = $model;
 
 		return $this;
 	}

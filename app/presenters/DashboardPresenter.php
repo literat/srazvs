@@ -18,16 +18,14 @@ class DashboardPresenter extends BasePresenter
 	private $programOverview;
 
 	/**
-	 * @param MeetingModel $model
-	 * @param Request      $request
+	 * @param MeetingModel           $model
+	 * @param ProgramOverviewControl $control
 	 */
 	public function __construct(
 		MeetingModel $model,
-		Request $request,
 		ProgramOverviewControl $control
 	) {
 		$this->setModel($model);
-		$this->setRequest($request);
 		$this->setProgramOverviewControl($control);
 	}
 

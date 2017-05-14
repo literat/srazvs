@@ -474,7 +474,7 @@ class VisitorModel extends BaseModel
 								checked
 						FROM kk_visitors AS vis
 						LEFT JOIN kk_provinces AS provs ON vis.province = provs.id
-						WHERE meeting = ? AND deleted = ? ' . $this->buildSearchQuery() . '
+						WHERE meeting = ? AND vis.deleted = ? ' . $this->buildSearchQuery() . '
 						ORDER BY vis.id ASC',
 						$this->getMeetingId(), '0')->fetchAll();
 	}

@@ -12,7 +12,6 @@ use App\Components\RegistrationGraphControl;
 use App\Components\MaterialsControl;
 use App\Components\MealControl;
 use Nette\Utils\Strings;
-use Nette\Http\Request;
 use Tracy\Debugger;
 
 /**
@@ -65,7 +64,6 @@ class ExportPresenter extends BasePresenter
 	 * @param ProgramModel             $program
 	 * @param ExcelFactory             $excel
 	 * @param PdfFactory               $pdf
-	 * @param Request                  $request
 	 * @param RegistrationGraphControl $control
 	 * @param MaterialsControl          $materialControl
 	 */
@@ -75,7 +73,6 @@ class ExportPresenter extends BasePresenter
 		BlockModel $block,
 		ExcelFactory $excel,
 		PdfFactory $pdf,
-		Request $request,
 		RegistrationGraphControl $control,
 		MaterialsControl $materialControl,
 		MealControl $mealControl
@@ -85,7 +82,6 @@ class ExportPresenter extends BasePresenter
 		$this->setBlockModel($block);
 		$this->setExcel($excel->create());
 		$this->setPdf($pdf->create());
-		$this->setRequest($request);
 		$this->setRegistrationGraphControl($control);
 		$this->setMaterialControl($materialControl);
 		$this->setMealControl($mealControl);
