@@ -1,32 +1,49 @@
-{layout '../@vodni_layout.latte'}
+{layout '../@layout_new.latte'}
 
 {block content}
-	<!-- content -->
-	<div id="content-program">
-	<div id="content-pad-program">
-<h1>Registrace na Srazy VS</h1>
-<h2>{$meeting_heading}</h2>
-<br />
 
-{foreach $flashes as $flash}
-<div class="flash {$flash->type}">{$flash->message}</div>
-{/foreach}
+<main role="main" class="site-content">
 
-{if $isRegistrationOpen}
+	<section class="section-header section-header-condensed">
+		<div class="container">
+
+			<h1 class="section-header-title">
+				{* <span class="glyphicon glyphicon-align-left offset-right icon-shift-down text-muted" aria-hidden="true"></span> *}
+				{$meeting_heading}
+			</h1>
+
+		</div><!-- .container -->
+	</section>
+
+	<div class="section-content">
+		<div class="container">
+
+			{foreach $flashes as $flash}
+			<div class="flash {$flash->type}">{$flash->message}</div>
+			{/foreach}
+
+			<div class="row">
+				{if !$loggedIn}
+				<div class="col-sm-4">
+					<a class="btn btn-default" href="/srazvs/auth/login/skautis">
+						<img src='{$imgDir}icons/skaut.png' /> Vyplnit přihlášu pomocí SkautIS účtu
+					</a>
+				</div>
+				{/if}
+			</div>
+
+			<div class="row">
+				<div class="col-md-10 col-md-offset-1">
+
+				{if $isRegistrationOpen}
 
 <!-- REGISTRACNI FORMULAR SRAZU -->
 
-{if !$loggedIn}
-<a class="link skautis" href="/srazvs/auth/login/skautis">
-	<img src='{$imgDir}icons/skaut.png' /> Vyplnit přihlášu pomocí SkautIS účtu
-</a>
-{/if}
 
-<hr />
 
 {control registrationForm}
 
-<script src='{$jsDir}jquery/validation/messages_cs.js' type='text/javascript'></script>
+{* <script src='{$jsDir}jquery/validation/messages_cs.js' type='text/javascript'></script>
 <script src='{$jsDir}jquery/validation/methods_de.js' type='text/javascript'></script>
 <script n:syntax="off" type="text/javascript">
 	$.validator.addMethod("groupnumber", function(value, element) {
@@ -110,7 +127,7 @@
 			}
 		});
 	});
-</script>
+</script> *}
 
 <!-- REGISTRACNI FORMULAR SRAZU -->
 
@@ -118,10 +135,10 @@
 <div>Registrace je uzavřena!</div>
 {/if}
 
-				<p> </p>
-				<p style="text-align: center;"> </p>
-			</div>
+				</div>
+			</div><!-- .row -->
+
 		</div>
-		<div class="cleaner"></div>
 	</div>
-</div>
+
+</main>

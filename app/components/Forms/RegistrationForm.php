@@ -9,6 +9,7 @@ use App\Models\BlockModel;
 use App\Models\MealModel;
 use App\Models\MeetingModel;
 use Nette\Application\UI\Form;
+use Nette\Forms\Controls;
 
 class RegistrationForm extends BaseForm
 {
@@ -44,6 +45,16 @@ class RegistrationForm extends BaseForm
 	protected $meetingModel;
 
 	/**
+	 * @var array
+	 */
+	protected $mealFields = [];
+
+	/**
+	 * @var array
+	 */
+	protected $programFields = [];
+
+	/**
 	 * @param ProvinceModel $model
 	 */
 	public function __construct(
@@ -63,10 +74,15 @@ class RegistrationForm extends BaseForm
 	 */
 	public function render()
 	{
+		$this->setMealFields();
+		$this->setProgramFields();
+
 		$template = $this->getTemplate();
 		$template->setFile($this->buildTemplatePath());
 		$template->imgDir = IMG_DIR;
 		$template->wwwDir = HTTP_DIR;
+		$template->meals = $this->getMealFields();
+		$template->programs = $this->getProgramFields();
 		$template->render();
 	}
 
@@ -79,42 +95,48 @@ class RegistrationForm extends BaseForm
 
 		$form = new Form;
 
-		$renderer = $form->getRenderer();
-		$renderer->wrappers['label']['container'] = 'td';
-
 		$form->addText('name', 'Jméno:')
 			->setRequired(static::MESSAGE_REQUIRED)
-			->addRule(Form::MAX_LENGTH, static::MESSAGE_MAX_LENGTH, 20);
+			->addRule(Form::MAX_LENGTH, static::MESSAGE_MAX_LENGTH, 20)
+			->getLabelPrototype()->setAttribute('class', 'required');
 		$form->addText('surname', 'Příjmení:')
 			->setRequired(static::MESSAGE_REQUIRED)
-			->addRule(Form::MAX_LENGTH, static::MESSAGE_MAX_LENGTH, 30);
+			->addRule(Form::MAX_LENGTH, static::MESSAGE_MAX_LENGTH, 30)
+			->getLabelPrototype()->setAttribute('class', 'required');
 		$form->addText('nick', 'Přezdívka:')
 			->setRequired(static::MESSAGE_REQUIRED)
-			->addRule(Form::MAX_LENGTH, static::MESSAGE_MAX_LENGTH, 20);
+			->addRule(Form::MAX_LENGTH, static::MESSAGE_MAX_LENGTH, 20)
+			->getLabelPrototype()->setAttribute('class', 'required');
 		$form->addEmail('email', 'E-mail:')
-			->setRequired(static::MESSAGE_REQUIRED);
-		$form->addDatePicker('birthday', 'Datum narození:', 16)
 			->setRequired(static::MESSAGE_REQUIRED)
-			->setReadOnly(false)
-			->setAttribute('placeholder', 'dd.mm.rrrr');
+			->getLabelPrototype()->setAttribute('class', 'required');
+		$form->addTbDatePicker('birthday', 'Datum narození:', null, 16)
+			->setRequired(static::MESSAGE_REQUIRED)
+			->setAttribute('placeholder', 'dd.mm.rrrr')
+			->getLabelPrototype()->setAttribute('class', 'required');
 		$form->addText('street', 'Ulice:')
 			->setRequired(static::MESSAGE_REQUIRED)
-			->addRule(Form::MAX_LENGTH, static::MESSAGE_MAX_LENGTH, 30);;
+			->addRule(Form::MAX_LENGTH, static::MESSAGE_MAX_LENGTH, 30)
+			->getLabelPrototype()->setAttribute('class', 'required');
 		$form->addText('city', 'Město:')
 			->setRequired(static::MESSAGE_REQUIRED)
-			->addRule(Form::MAX_LENGTH, static::MESSAGE_MAX_LENGTH, 64);;
+			->addRule(Form::MAX_LENGTH, static::MESSAGE_MAX_LENGTH, 64)
+			->getLabelPrototype()->setAttribute('class', 'required');
 		$form->addText('postal_code', 'PSČ:')
 			->setRequired(static::MESSAGE_REQUIRED)
 			->addRule(Form::PATTERN, 'Číslo musí být ve formátu nnnnn!', '[1-9]{1}[0-9]{4}')
-			->setAttribute('placeholder', '12345');
+			->setAttribute('placeholder', '12345')
+			->getLabelPrototype()->setAttribute('class', 'required');
 		$form->addText('group_num', 'Číslo středika/přístavu:')
 			->setRequired(static::MESSAGE_REQUIRED)
 			->addRule(Form::PATTERN, 'Číslo musí být ve formátu nnn.nn!', '[1-9]{1}[0-9a-zA-Z]{2}\.[0-9a-zA-Z]{1}[0-9a-zA-Z]{1}')
-			->setAttribute('placeholder', '214.02');
+			->setAttribute('placeholder', '214.02')
+			->getLabelPrototype()->setAttribute('class', 'required');
 		$form->addText('group_name', 'Název střediska/přístavu:')
 			->setRequired(static::MESSAGE_REQUIRED)
 			->addRule(Form::MAX_LENGTH, static::MESSAGE_MAX_LENGTH, 50)
-			->setAttribute('placeholder', '2. přístav Poutníci Kolín');
+			->setAttribute('placeholder', '2. přístav Poutníci Kolín')
+			->getLabelPrototype()->setAttribute('class', 'required');
 		$form->addText('troop_name', 'Název oddílu:')
 			->setAttribute('placeholder', '22. oddíl Galeje')
 			->addCondition(Form::FILLED, true)
@@ -141,8 +163,30 @@ class RegistrationForm extends BaseForm
 		$form->addHidden('bill', 0);
 		$form->addHidden('cost', $this->getMeetingModel()->getPrice('cost'));
 
-		$form->addSubmit('save', 'Uložit');
-		$form->addSubmit('reset', 'Storno');
+		$form->addSubmit('save', 'Uložit')
+			->setAttribute('class', 'btn btn-primary btn-raised');
+		$form->addSubmit('reset', 'Storno')
+			->setAttribute('class', 'btn btn-default btn-raised');
+
+		// setup form rendering
+		$renderer = $form->getRenderer();
+		$renderer->wrappers['controls']['container'] = NULL;
+		$renderer->wrappers['pair']['.error'] = 'has-error';
+		$renderer->wrappers['control']['description'] = 'span class=help-block';
+		$renderer->wrappers['control']['errorcontainer'] = 'span class=help-block';
+
+		// make form and controls compatible with Twitter Bootstrap
+		$form->getElementPrototype()->class('form-horizontal');
+		foreach ($form->getControls() as $control) {
+			if ($control instanceof Controls\Button) {
+				$control->getControlPrototype()->addClass(empty($usedPrimary) ? 'btn btn-primary' : 'btn btn-default');
+				$usedPrimary = TRUE;
+			} elseif ($control instanceof Controls\TextBase || $control instanceof Controls\SelectBox || $control instanceof Controls\MultiSelectBox) {
+				$control->getControlPrototype()->addClass('form-control');
+			} elseif ($control instanceof Controls\Checkbox || $control instanceof Controls\CheckboxList || $control instanceof Controls\RadioList) {
+				$control->getSeparatorPrototype()->setName('div')->addClass($control->getControlPrototype()->type);
+			}
+		}
 
 		$form->onSuccess[] = [$this, 'processForm'];
 
@@ -167,7 +211,7 @@ class RegistrationForm extends BaseForm
 	 */
 	protected function buildProgramSwitcher(Form $form): Form
 	{
-		$programBlocks = $this->getBlockModel()->getProgramBlocks($this->getMeetingId());
+		$programBlocks = $this->fetchProgramBlocks();
 
 		foreach ($programBlocks as $block) {
 
@@ -199,7 +243,8 @@ class RegistrationForm extends BaseForm
 			'ano' => 'ano',
 		];
 
-		foreach (MealModel::$meals as $name => $label) {
+		foreach ($this->fetchMeals() as $name => $label) {
+			$this->setMealField($name);
 			$form->addSelect($name, $label . ':', $yesNoArray);
 		}
 
@@ -280,6 +325,83 @@ class RegistrationForm extends BaseForm
 		$this->meetingModel = $model;
 
 		return $this;
+	}
+
+	/**
+	 * @return array
+	 */
+	protected function getMealFields(): array
+	{
+		return $this->mealFields;
+	}
+
+	/**
+	 * @param  string $meal
+	 * @return RegistrationForm
+	 */
+	protected function setMealField(string $meal): RegistrationForm
+	{
+		$this->mealFields[] = $meal;
+
+		return $this;
+	}
+
+	/**
+	 * @return array
+	 */
+	protected function getProgramFields(): array
+	{
+		return $this->programFields;
+	}
+
+	/**
+	 * @param  string $program
+	 * @return RegistrationForm
+	 */
+	protected function setProgramField(string $program): RegistrationForm
+	{
+		$this->programFields[] = $program;
+
+		return $this;
+	}
+
+	/**
+	 * @return RegistrationForm
+	 */
+	protected function setProgramFields(): RegistrationForm
+	{
+		$programBlocks = $this->fetchProgramBlocks();
+
+		foreach ($programBlocks as $block) {
+			$programFieldName = 'blck_' . $block->id;
+			$this->setProgramField($programFieldName);
+		}
+
+		return $this;
+	}
+
+	/**
+	 * @return  RegistrationForm
+	 */
+	protected function setMealFields(): RegistrationForm
+	{
+		$meals = $this->fetchMeals();
+
+		foreach ($meals as $name => $label) {
+			$this->setMealField($name);
+		}
+
+		return $this;
+	}
+
+	protected function fetchProgramBlocks()
+	{
+		return $this->getBlockModel()->getProgramBlocks($this->getMeetingId());
+	}
+
+	protected function fetchMeals()
+	{
+		return MealModel::$meals;
 	}
 
 }

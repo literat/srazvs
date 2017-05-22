@@ -1,32 +1,166 @@
-{control registrationForm}
+<div class="col-md-10 col-md-offset-1">
+
+{form registrationForm}
+
+	<div class="form-group required">
+		<div class="col-sm-3 control-label">{label name}</div>
+		<div class="col-sm-9 input-group">{input name}</div>
+	</div>
+
+	<div class="form-group required">
+		<div class="col-sm-3 control-label">{label surname}</div>
+		<div class="col-sm-9 input-group">{input surname}</div>
+	</div>
+
+	<div class="form-group required">
+		<div class="col-sm-3 control-label">{label nick}</div>
+		<div class="col-sm-9 input-group">{input nick}</div>
+	</div>
+
+	<div class="form-group required">
+		<div class="col-sm-3 control-label">{label email}</div>
+		<div class="col-sm-9 input-group">{input email}</div>
+	</div>
+
+	<div class="form-group required">
+		<div class="col-sm-3 control-label">{label birthday}</div>
+		<div class="col-sm-9 input-group date datepicker">
+			{input birthday}
+			<span class="input-group-addon">
+				<span class="glyphicon glyphicon-calendar"></span>
+			</span>
+		</div>
+	</div>
+
+	<div class="form-group required">
+		<div class="col-sm-3 control-label">{label street}</div>
+		<div class="col-sm-9 input-group">{input street}</div>
+	</div>
+
+	<div class="form-group required">
+		<div class="col-sm-3 control-label">{label city}</div>
+		<div class="col-sm-9 input-group">{input city}</div>
+	</div>
+
+	<div class="form-group required">
+		<div class="col-sm-3 control-label">{label postal_code}</div>
+		<div class="col-sm-9 input-group">{input postal_code}</div>
+	</div>
+
+	<div class="form-group required">
+		<div class="col-sm-3 control-label">{label group_num}</div>
+		<div class="col-sm-9 input-group">{input group_num}</div>
+	</div>
+
+	<div class="form-group required">
+		<div class="col-sm-3 control-label">{label group_name}</div>
+		<div class="col-sm-9 input-group">
+			<span class="input-group-addon">Junák - Český skaut,</span>
+			{input group_name}
+			<span class="input-group-addon">, z. s.</span>
+		</div>
+	</div>
+
+	<div class="form-group">
+		<div class="col-sm-3 control-label">{label troop_name}</div>
+		<div class="col-sm-9 input-group">{input troop_name}</div>
+	</div>
+
+	<div class="form-group">
+		<div class="col-sm-3 control-label">{label province}</div>
+		<div class="col-sm-9 input-group">{input province}</div>
+	</div>
+
+	{foreach $meals as $meal}
+		<div class="form-group">
+			<div class="col-sm-3 control-label">{label $meal}</div>
+			<div class="col-sm-9 input-group">{input $meal}</div>
+		</div>
+	{/foreach}
+
+	<div class="form-group">
+		<div class="col-sm-3 control-label">{label arrival}</div>
+		<div class="col-sm-9 input-group">{input arrival}</div>
+	</div>
+
+	<div class="form-group">
+		<div class="col-sm-3 control-label">{label departure}</div>
+		<div class="col-sm-9 input-group">{input departure}</div>
+	</div>
+
+	<div class="form-group">
+		<div class="col-sm-3 control-label">{label comment}</div>
+		<div class="col-sm-9 input-group">{input comment}</div>
+	</div>
+
+	<div class="form-group">
+		<div class="col-sm-3 control-label">{label question}</div>
+		<div class="col-sm-9 input-group">{input question}</div>
+	</div>
+
+	<div class="form-group">
+		<div class="col-sm-3 control-label">{label question2}</div>
+		<div class="col-sm-9 input-group">{input question2}</div>
+	</div>
+
+	{foreach $programs as $program}
+		<div class="form-group">
+			<div class="col-sm-4 control-label">{label $program}</div>
+			<div class="col-sm-8 input-group">{input $program}</div>
+		</div>
+	{/foreach}
+
+	<div class="form-group">
+		<div class="col-sm-3 control-label"></div>
+		<div class="col-sm-9">
+			{input save}
+			{input reset}
+		</div>
+	</div>
+
+	{input mid}
+	{input bill}
+	{input cost}
+
+{/form}
 
 <script type="text/javascript">
-	<!-- <![CDATA[
-	$(document).ready(function()
-	{
-		$.datepicker.setDefaults($.datepicker.regional['cs']);
-		var imgDir = {$imgDir};
-		$('input.datepicker').datepicker(
-		{
-			showOn: "both",
-			buttonImage: imgDir + "calendar_button.png",
-			buttonImageOnly: true,
-			showWeek: true,
-			firstDay: 7,
-			showOtherMonths: true,
-			selectOtherMonths: true,
-			showButtonPanel: true,
-			changeMonth: true,
-			changeYear: true,
-			dateFormat: 'dd.mm.yy',
-			maxDate: '0',
-			minDate: '-100Y',
-			yearRange: 'c-70,c+00',
-			monthNamesShort: ['Led','Úno','Bře','Dub','Kvě','Čer','Čec','Srp','Zář','Říj','Lis','Pro'],
-			dayNamesShort: ['Po', 'Út', 'St', 'Čt', 'Pá', 'So', 'Ne'],
-			dayNamesMin: ['Po', 'Út', 'St', 'Čt', 'Pá', 'So', 'Ne'],
-			weekHeader: 'Tý',
+	$(function () {
+		$('.datepicker').datetimepicker({
+			format: 'DD. MM. YYYY',
+			locale: 'cs',
+			showTodayButton: true,
+			showClose: true,
 		});
-	});
-	//]]> -->
-  </script>
+	})
+	// <!-- <![CDATA[
+	// $(document).ready(function()
+	// {
+	// 	//$.datepicker.setDefaults($.datepicker.regional['cs']);
+	// 	$('.datepicker').datepicker(
+	// 	{
+	// 		showOn: "both",
+	// 		todayBtn: true,
+	// 		autoclose: true,
+	// 		buttonImageOnly: true,
+	// 		showWeek: true,
+	// 		firstDay: 7,
+	// 		showOtherMonths: true,
+	// 		selectOtherMonths: true,
+	// 		showButtonPanel: true,
+	// 		changeMonth: true,
+	// 		changeYear: true,
+	// 		dateFormat: 'dd.mm.yy',
+	// 		maxDate: '0',
+	// 		minDate: '-100Y',
+	// 		yearRange: 'c-70,c+00',
+	// 		monthNamesShort: ['Led','Úno','Bře','Dub','Kvě','Čer','Čec','Srp','Zář','Říj','Lis','Pro'],
+	// 		dayNamesShort: ['Po', 'Út', 'St', 'Čt', 'Pá', 'So', 'Ne'],
+	// 		dayNamesMin: ['Po', 'Út', 'St', 'Čt', 'Pá', 'So', 'Ne'],
+	// 		weekHeader: 'Tý',
+	// 	});
+	// });
+	// //]]> -->
+</script>
+
+</div>
