@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="en">
 <head>
@@ -14,17 +13,18 @@
 	<meta name="author" content="Tomas Litera <tomas@litera.me>" />
 
 	<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Titillium+Web:400,300,700&amp;subset=latin,latin-ext" type="text/css" />
-	<link rel="stylesheet" href="{$cssDir}bootstrap-ui.min.css" />
-	<script type="text/javascript" src="{$jsDir}jquery.min.js"></script>
+	<link rel="stylesheet" href="{$basePath}/www/css/bootstrap-ui.min.css" />
+	<link rel="stylesheet" href="{$basePath}/www/css/custom.css?v{php echo appVersion()}" />
+	<script type="text/javascript" src="{$basePath}/www/js/jquery.min.js?v2.2.4"></script>
 
 </head>
 
-<body class="site has-navbar-fixed-top">
+<body class="site has-navbar-static-top">
 
 	<header role="banner" id="top" class="site-header">
 
 	<!-- Main navigation -->
-	<nav class="navbar navbar-fixed-top navbar-primary">
+	<nav class="navbar navbar-static-top navbar-primary">
 		<div class="container">
 
 			<!-- Brand and menu toggle -->
@@ -36,8 +36,8 @@
 					<span class="icon-bar"></span>
 				</button>
 				<a href="/orders/new" class="navbar-brand offset-right-large">
-					<span class="visible-xs visible-md visible-lg">Sraz VS | Registrace</span>
-					<span class="visible-sm" aria-hidden="true">BUI</span>
+					<span class="visible-xs visible-md visible-lg text-bold text-letterspacing">Sraz VS | Registrace</span>
+					<span class="visible-sm" aria-hidden="true">Sraz VS</span>
 				</a>
 			</div>
 

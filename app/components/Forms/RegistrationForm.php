@@ -165,10 +165,9 @@ class RegistrationForm extends BaseForm
 		$form->addHidden('bill', 0);
 		$form->addHidden('cost', $this->getMeetingModel()->getPrice('cost'));
 
-		$form->addSubmit('save', 'Uložit')
-			->setAttribute('class', 'btn btn-primary');
-		$form->addSubmit('reset', 'Storno')
-			->setAttribute('class', 'btn btn-default');
+		$form->addSubmit('save', 'Uložit');
+		$form->addSubmit('reset', 'storno')
+			->setAttribute('class', 'btn-reset');
 
 		// setup form rendering
 		$renderer = $form->getRenderer();
@@ -181,7 +180,7 @@ class RegistrationForm extends BaseForm
 		$form->getElementPrototype()->class('form-horizontal');
 		foreach ($form->getControls() as $control) {
 			if ($control instanceof Controls\Button) {
-				$control->getControlPrototype()->addClass(empty($usedPrimary) ? 'btn btn-primary' : 'btn btn-default');
+				$control->getControlPrototype()->addClass(empty($usedPrimary) ? 'btn btn-default' : '');
 				$usedPrimary = TRUE;
 			} elseif ($control instanceof Controls\TextBase || $control instanceof Controls\SelectBox || $control instanceof Controls\MultiSelectBox) {
 				$control->getControlPrototype()->addClass('form-control');
