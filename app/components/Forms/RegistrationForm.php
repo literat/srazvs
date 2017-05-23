@@ -81,6 +81,7 @@ class RegistrationForm extends BaseForm
 		$template->setFile($this->buildTemplatePath());
 		$template->imgDir = IMG_DIR;
 		$template->wwwDir = HTTP_DIR;
+		$template->jsDir = JS_DIR;
 		$template->meals = $this->getMealFields();
 		$template->programs = $this->getProgramFields();
 		$template->render();
@@ -112,7 +113,8 @@ class RegistrationForm extends BaseForm
 			->getLabelPrototype()->setAttribute('class', 'required');
 		$form->addTbDatePicker('birthday', 'Datum narození:', null, 16)
 			->setRequired(static::MESSAGE_REQUIRED)
-			->setAttribute('placeholder', 'dd.mm.rrrr')
+			->setFormat('d. m. Y')
+			->setAttribute('placeholder', 'dd. mm. rrrr')
 			->getLabelPrototype()->setAttribute('class', 'required');
 		$form->addText('street', 'Ulice:')
 			->setRequired(static::MESSAGE_REQUIRED)
@@ -164,9 +166,9 @@ class RegistrationForm extends BaseForm
 		$form->addHidden('cost', $this->getMeetingModel()->getPrice('cost'));
 
 		$form->addSubmit('save', 'Uložit')
-			->setAttribute('class', 'btn btn-primary btn-raised');
+			->setAttribute('class', 'btn btn-primary');
 		$form->addSubmit('reset', 'Storno')
-			->setAttribute('class', 'btn btn-default btn-raised');
+			->setAttribute('class', 'btn btn-default');
 
 		// setup form rendering
 		$renderer = $form->getRenderer();

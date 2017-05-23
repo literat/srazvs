@@ -6,7 +6,6 @@ use Skautis;
 use SkautisAuth;
 use App\Services\AuthService;
 use App\Services\UserService;
-use Nette\Http\Request;
 use Tracy\Debugger;
 
 /**
@@ -33,17 +32,13 @@ class AuthPresenter extends BasePresenter
 	/**
 	 * @param AuthService $authService
 	 * @param UserService $userService
-	 * @param Request     $request
-	 * @param User        $user
 	 */
 	public function __construct(
 		AuthService $authService,
-		UserService $userService,
-		Request $request
+		UserService $userService
 	) {
 		$this->setAuthService($authService);
 		$this->setUserService($userService);
-		$this->setRequest($request);
 	}
 
 	/**
