@@ -2,14 +2,17 @@
 
 namespace App\Components\Forms;
 
+use DateTime;
 use App\Components\BaseControl;
 use App\Models\ProvinceModel;
 use App\Models\ProgramModel;
 use App\Models\BlockModel;
 use App\Models\MealModel;
 use App\Models\MeetingModel;
+use App\Entities\VisitorEntity;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls;
+use App\Services\UserService;
 
 class RegistrationForm extends BaseForm
 {
@@ -55,18 +58,25 @@ class RegistrationForm extends BaseForm
 	protected $programFields = [];
 
 	/**
+	 * @var UserService
+	 */
+	protected $userService;
+
+	/**
 	 * @param ProvinceModel $model
 	 */
 	public function __construct(
 		ProvinceModel $province,
 		ProgramModel $program,
 		BlockModel $block,
-		MeetingModel $meeting
+		MeetingModel $meeting,
+		UserService $user
 	) {
 		$this->setProvinceModel($province);
 		$this->setProgramModel($program);
 		$this->setBlockModel($block);
 		$this->setMeetingModel($meeting);
+		$this->setUserService($user);
 	}
 
 	/**
@@ -167,6 +177,10 @@ class RegistrationForm extends BaseForm
 			->setAttribute('class', 'btn-reset');
 
 		$form = $this->setupRendering($form);
+
+		if($this->getUserService()->isLoggedIn()) {
+			$form->setDefaults(($this->useLoggedVisitor())->toArray());
+		}
 
 		$form->onSuccess[] = [$this, 'processForm'];
 
@@ -270,6 +284,39 @@ class RegistrationForm extends BaseForm
 		}
 
 		return $form;
+	}
+
+	/**
+	 * @return VisitorEntity
+	 */
+	protected function useLoggedVisitor(): VisitorEntity
+	{
+		$userDetail = $this->getUserService()->getUserDetail();
+		$skautisUser = $this->getUserService()->getPersonalDetail($userDetail->ID_Person);
+		$membership = $this->getUserService()->getPersonUnitDetail($userDetail->ID_Person);
+
+		if(!preg_match('/^[1-9]{1}[0-9a-zA-Z]{2}\.[0-9a-zA-Z]{1}[0-9a-zA-Z]{1}$/', $membership->RegistrationNumber)) {
+			$skautisUserUnit = $this->getUserService()->getParentUnitDetail($membership->ID_Unit)[0];
+		} else {
+			$skautisUserUnit = $this->getUserService()->getUnitDetail($membership->ID_Unit);
+		}
+
+		$visitor = new VisitorEntity;
+		$visitor->name = $skautisUser->FirstName;
+		$visitor->surname = $skautisUser->LastName;
+		$visitor->nick = $skautisUser->NickName;
+		$visitor->email = $skautisUser->Email;
+		$visitor->street = $skautisUser->Street;
+		$visitor->city = $skautisUser->City;
+		$visitor->postal_code = preg_replace('/\s+/', '', $skautisUser->Postcode);
+		$visitor->birthday = (new DateTime($skautisUser->Birthday))->format('d. m. Y');
+		$visitor->group_name = $skautisUserUnit->DisplayName;
+		$visitor->group_num = $skautisUserUnit->RegistrationNumber;
+		if(isset($membership->Unit)) {
+			$visitor->troop_name = $membership->Unit;
+		}
+
+		return $visitor;
 	}
 
 	/**
@@ -423,6 +470,25 @@ class RegistrationForm extends BaseForm
 	protected function fetchMeals()
 	{
 		return MealModel::$meals;
+	}
+
+	/**
+	 * @return UserService
+	 */
+	protected function getUserService()
+	{
+		return $this->userService;
+	}
+
+	/**
+	 * @param  UserService $service
+	 * @return $this
+	 */
+	protected function setUserService(UserService $service)
+	{
+		$this->userService = $service;
+
+		return $this;
 	}
 
 }

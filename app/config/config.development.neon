@@ -15,7 +15,7 @@ services:
 
 
 skautis:
-    applicationId : f6b25658-2944-463c-ae99-22íec56a0326
+    applicationId : f6b25658-2944-463c-ae99-229ec56a0326
     testMode : true #using http://test-is.skautis.cz/
     profiler : true
 

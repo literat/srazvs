@@ -137,6 +137,10 @@ class VisitorModel extends BaseModel
 	{
 		$return = true;
 
+		if(!$DB_data['province']) {
+			$DB_data['province'] = 0;
+		}
+
 		$DB_data['birthday'] = new \DateTime($DB_data['birthday']);
 		$DB_data['reg_daytime'] = (new \DateTime())->format('Y-m-d H:i:s');
 		$DB_data['guid'] = md5(uniqid());

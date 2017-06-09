@@ -37,6 +37,8 @@ class ProvinceModel extends BaseModel
 			$province = $province->province_name;
 		});
 
+		unset($provinces[0]);
+
 		return $provinces;
 	}
 

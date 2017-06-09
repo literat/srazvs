@@ -187,7 +187,7 @@ class RegistrationPresenter extends VisitorPresenter
 		$template->meetingId = $this->getMeetingId();
 		$template->cost	= $this->getMeetingModel()->getPrice('cost');
 
-		if($this->getUserservice()->isLoggedIn()) {
+		if($this->getUserService()->isLoggedIn()) {
 			$userDetail = $this->getUserService()->getUserDetail();
 			$skautisUser = $this->getUserService()->getPersonalDetail($userDetail->ID_Person);
 			$membership = $this->getUserService()->getPersonUnitDetail($userDetail->ID_Person);

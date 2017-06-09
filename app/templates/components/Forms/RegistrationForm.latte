@@ -136,11 +136,12 @@
 <script type="text/javascript">
 	$(function () {
 		$('.datepicker').datetimepicker({
-			format: 'DD. mm. YYYY',
-			locale: 'cs',
+			format: 'DD. MM. YYYY',
+			locale: moment().locale('cs'),
 			showTodayButton: true,
 			showClose: true,
 		});
+		$('.datepicker').datetimepicker().datetimepicker('maxDate', moment().format('DD. MM. YYYY'));
 	})
 </script>
 
