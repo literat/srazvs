@@ -111,7 +111,7 @@ class BlockModel extends BaseModel
 					program
 				FROM kk_blocks
 				WHERE deleted = ? AND program = ? AND meeting = ?
-				ORDER BY `day` ASC',
+				ORDER BY `day`, `from` ASC',
 				'0', '1', $meetingId)->fetchAll();
 
 		return $data;
