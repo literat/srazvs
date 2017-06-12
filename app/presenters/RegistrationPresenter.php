@@ -2,6 +2,8 @@
 
 namespace App\Presenters;
 
+use DateTime;
+use App\Entities\VisitorEntity;
 use App\Models\MeetingModel;
 use App\Models\VisitorModel;
 use App\Models\ProgramModel;
@@ -175,42 +177,8 @@ class RegistrationPresenter extends VisitorPresenter
 		$template->disabled = $disabled;
 		$template->loggedIn = $this->getUserService()->isLoggedIn();
 
-		// requested for visitors fields
-		foreach($this->getVisitorModel()->columns as $column) {
-			$data[$column] = '';
-		}
-		$template->data = $data;
-
-		$template->meals = $this->getMealModel()->renderHtmlMealsSelect(null, $disabled);
-		$template->province = $this->getMeetingModel()->renderHtmlProvinceSelect(null);
-		$template->programs = $this->getVisitorModel()->renderProgramSwitcher($this->getMeetingId(), null);
-		$template->meetingId = $this->getMeetingId();
-		$template->cost	= $this->getMeetingModel()->getPrice('cost');
-
 		if($this->getUserService()->isLoggedIn()) {
-			$userDetail = $this->getUserService()->getUserDetail();
-			$skautisUser = $this->getUserService()->getPersonalDetail($userDetail->ID_Person);
-			$membership = $this->getUserService()->getPersonUnitDetail($userDetail->ID_Person);
-
-			if(!preg_match('/^[1-9]{1}[0-9a-zA-Z]{2}\.[0-9a-zA-Z]{1}[0-9a-zA-Z]{1}$/', $membership->RegistrationNumber)) {
-				$skautisUserUnit = $this->getUserService()->getParentUnitDetail($membership->ID_Unit)[0];
-			} else {
-				$skautisUserUnit = $this->getUserService()->getUnitDetail($membership->ID_Unit);
-			}
-
-			$template->data['name'] = $skautisUser->FirstName;
-			$template->data['surname'] = $skautisUser->LastName;
-			$template->data['nick'] = $skautisUser->NickName;
-			$template->data['email'] = $skautisUser->Email;
-			$template->data['street'] = $skautisUser->Street;
-			$template->data['city'] = $skautisUser->City;
-			$template->data['postal_code'] = preg_replace('/\s+/', '', $skautisUser->Postcode);
-			$template->data['birthday'] = $skautisUser->Birthday;
-			$template->data['group_name'] = $skautisUserUnit->DisplayName;
-			$template->data['group_num'] = $skautisUserUnit->RegistrationNumber;
-			if(isset($membership->Unit)) {
-				$template->data['troop_name'] = $membership->Unit;
-			}
+			$this['registrationForm']->setDefaults(($this->useLoggedVisitor())->toArray());
 		}
 	}
 
@@ -223,6 +191,8 @@ class RegistrationPresenter extends VisitorPresenter
 		$data = $this->getVisitorModel()->findByGuid($guid);
 
 		$this->getMeetingModel()->setRegistrationHandlers($data->meeting);
+
+		$this['registrationForm']->setDefaults();
 
 		$template = $this->getTemplate();
 		$template->guid = $guid;
@@ -239,22 +209,21 @@ class RegistrationPresenter extends VisitorPresenter
 	 */
 	public function renderEdit($guid)
 	{
-		$data = $this->getVisitorModel()->findByGuid($guid);
-		$mealData = $this->getMealModel()->findByVisitorId($data->id);
+		$visitor = $this->getVisitorModel()->findByGuid($guid);
+		$meals = $this->getMealModel()->findByVisitorId($visitor->id);
+		$programs = $this->getVisitorModel()->getVisitorPrograms($visitor->id);
 
-		$this->getMeetingModel()->setRegistrationHandlers($data->meeting);
+		$this->getMeetingModel()->setRegistrationHandlers($visitor->meeting);
 
 		$template = $this->getTemplate();
 		$template->guid = $guid;
-		$template->data = $data;
-		$template->meetingId = $data->meeting;
-		$template->mealData = $mealData;
+		$template->meetingId = $visitor->meeting;
 		$template->loggedIn = $this->getUserService()->isLoggedIn();
 		$template->disabled = $this->getMeetingModel()->isRegOpen($this->getDebugMode()) ? "" : "disabled";
-		$template->meals = $this->getMealModel()->renderHtmlMealsSelect($mealData, $this->disabled);
-		$template->province = $this->getMeetingModel()->renderHtmlProvinceSelect($data->province);
-		$template->programs = $this->getVisitorModel()->renderProgramSwitcher($data->meeting, $data->id);
-		$template->cost	= $this->getMeetingModel()->getPrice('cost');
+
+		$data = array_merge($visitor->toArray(), $meals->toArray(), $programs);
+
+		$this['registrationForm']->setDefaults($data);
 	}
 
 	/**
@@ -280,6 +249,39 @@ class RegistrationPresenter extends VisitorPresenter
 		};
 
 		return $control;
+	}
+
+	/**
+	 * @return VisitorEntity
+	 */
+	protected function useLoggedVisitor(): VisitorEntity
+	{
+		$userDetail = $this->getUserService()->getUserDetail();
+		$skautisUser = $this->getUserService()->getPersonalDetail($userDetail->ID_Person);
+		$membership = $this->getUserService()->getPersonUnitDetail($userDetail->ID_Person);
+
+		if(!preg_match('/^[1-9]{1}[0-9a-zA-Z]{2}\.[0-9a-zA-Z]{1}[0-9a-zA-Z]{1}$/', $membership->RegistrationNumber)) {
+			$skautisUserUnit = $this->getUserService()->getParentUnitDetail($membership->ID_Unit)[0];
+		} else {
+			$skautisUserUnit = $this->getUserService()->getUnitDetail($membership->ID_Unit);
+		}
+
+		$visitor = new VisitorEntity;
+		$visitor->name = $skautisUser->FirstName;
+		$visitor->surname = $skautisUser->LastName;
+		$visitor->nick = $skautisUser->NickName;
+		$visitor->email = $skautisUser->Email;
+		$visitor->street = $skautisUser->Street;
+		$visitor->city = $skautisUser->City;
+		$visitor->postal_code = preg_replace('/\s+/', '', $skautisUser->Postcode);
+		$visitor->birthday = (new DateTime($skautisUser->Birthday))->format('d. m. Y');
+		$visitor->group_name = $skautisUserUnit->DisplayName;
+		$visitor->group_num = $skautisUserUnit->RegistrationNumber;
+		if(isset($membership->Unit)) {
+			$visitor->troop_name = $membership->Unit;
+		}
+
+		return $visitor;
 	}
 
 	/**

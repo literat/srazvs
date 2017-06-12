@@ -9,7 +9,6 @@ use App\Models\ProgramModel;
 use App\Models\BlockModel;
 use App\Models\MealModel;
 use App\Models\MeetingModel;
-use App\Entities\VisitorEntity;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls;
 use App\Services\UserService;
@@ -95,6 +94,17 @@ class RegistrationForm extends BaseForm
 	}
 
 	/**
+	 * @param  array $defaults
+	 * @return RegistrationForm
+	 */
+	public function setDefaults(array $defaults = []): RegistrationForm
+	{
+		$this['registrationForm']->setDefaults($defaults);
+
+		return $this;
+	}
+
+	/**
 	 * @return Form
 	 */
 	public function createComponentRegistrationForm(): Form
@@ -177,10 +187,6 @@ class RegistrationForm extends BaseForm
 			->setAttribute('class', 'btn-reset');
 
 		$form = $this->setupRendering($form);
-
-		if($this->getUserService()->isLoggedIn()) {
-			$form->setDefaults(($this->useLoggedVisitor())->toArray());
-		}
 
 		$form->onSuccess[] = [$this, 'processForm'];
 
@@ -287,39 +293,6 @@ class RegistrationForm extends BaseForm
 	}
 
 	/**
-	 * @return VisitorEntity
-	 */
-	protected function useLoggedVisitor(): VisitorEntity
-	{
-		$userDetail = $this->getUserService()->getUserDetail();
-		$skautisUser = $this->getUserService()->getPersonalDetail($userDetail->ID_Person);
-		$membership = $this->getUserService()->getPersonUnitDetail($userDetail->ID_Person);
-
-		if(!preg_match('/^[1-9]{1}[0-9a-zA-Z]{2}\.[0-9a-zA-Z]{1}[0-9a-zA-Z]{1}$/', $membership->RegistrationNumber)) {
-			$skautisUserUnit = $this->getUserService()->getParentUnitDetail($membership->ID_Unit)[0];
-		} else {
-			$skautisUserUnit = $this->getUserService()->getUnitDetail($membership->ID_Unit);
-		}
-
-		$visitor = new VisitorEntity;
-		$visitor->name = $skautisUser->FirstName;
-		$visitor->surname = $skautisUser->LastName;
-		$visitor->nick = $skautisUser->NickName;
-		$visitor->email = $skautisUser->Email;
-		$visitor->street = $skautisUser->Street;
-		$visitor->city = $skautisUser->City;
-		$visitor->postal_code = preg_replace('/\s+/', '', $skautisUser->Postcode);
-		$visitor->birthday = (new DateTime($skautisUser->Birthday))->format('d. m. Y');
-		$visitor->group_name = $skautisUserUnit->DisplayName;
-		$visitor->group_num = $skautisUserUnit->RegistrationNumber;
-		if(isset($membership->Unit)) {
-			$visitor->troop_name = $membership->Unit;
-		}
-
-		return $visitor;
-	}
-
-	/**
 	 * @return ProvinceModel
 	 */
 	protected function getProvinceModel(): ProvinceModel
@@ -409,7 +382,9 @@ class RegistrationForm extends BaseForm
 	 */
 	protected function setMealField(string $meal): RegistrationForm
 	{
-		$this->mealFields[] = $meal;
+		if(!in_array($meal, $this->mealFields)) {
+			$this->mealFields[] = $meal;
+		}
 
 		return $this;
 	}
