@@ -188,19 +188,17 @@ class RegistrationPresenter extends VisitorPresenter
 	 */
 	public function renderCheck($guid)
 	{
-		$data = $this->getVisitorModel()->findByGuid($guid);
+		$visitor = $this->getVisitorModel()->findByGuid($guid);
 
-		$this->getMeetingModel()->setRegistrationHandlers($data->meeting);
-
-		$this['registrationForm']->setDefaults();
+		$this->getMeetingModel()->setRegistrationHandlers($visitor->meeting);
 
 		$template = $this->getTemplate();
 		$template->guid = $guid;
-		$template->data = $data;
-		$template->meetingId = $data->meeting;
-		$template->meals = $this->getMealModel()->findByVisitorId($data->id);
-		$template->province = $this->getMeetingModel()->getProvinceNameById($data->province);
-		$template->programs = $this->getProgramModel()->getSelectedPrograms($data->id);
+		$template->visitor = $visitor;
+		$template->meetingId = $visitor->meeting;
+		$template->meals = $this->getMealModel()->findByVisitorId($visitor->id);
+		$template->province = $this->getMeetingModel()->getProvinceNameById($visitor->province);
+		$template->programs = $this->getProgramModel()->findByVisitorId($visitor->id);
 	}
 
 	/**

@@ -393,6 +393,27 @@ class ProgramModel extends BaseModel
 		return $programs;
 	}
 
+	/**
+	 * @param  int    $visitorId
+	 * @return array
+	 */
+	public function findByVisitorId(int $visitorId): array
+	{
+		return $this->getDatabase()
+			->query('SELECT progs.name AS prog_name,
+							day,
+							DATE_FORMAT(`from`, "%H:%i") AS `from`,
+							DATE_FORMAT(`to`, "%H:%i") AS `to`
+					FROM kk_programs AS progs
+					LEFT JOIN `kk_visitor-program` AS visprog ON progs.id = visprog.program
+					LEFT JOIN kk_visitors AS vis ON vis.id = visprog.visitor
+					LEFT JOIN kk_blocks AS blocks ON progs.block = blocks.id
+					WHERE vis.id = ?
+					ORDER BY `day`, `from` ASC',
+					$visitorId)
+			->fetchAll();
+	}
+
 	public static function getPdfPrograms($id, $vid, $database){
 		$result = $database
 			->table('kk_programs')
