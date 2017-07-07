@@ -208,4 +208,32 @@ class BlockModel extends BaseModel
 				->fetchAll();
 	}
 
+	/**
+	 * Return blocks that contents programs
+	 *
+	 * @param	int		meeting ID
+	 * @return	array	result and number of affected rows
+	 */
+	public function findProgramBlocksByMeeting(int $meetingId)
+	{
+		return $this->getDatabase()
+			->query('SELECT id,
+					day,
+					DATE_FORMAT(`from`, "%H:%i") AS `from`,
+					DATE_FORMAT(`to`, "%H:%i") AS `to`,
+					name,
+					program
+				FROM kk_blocks
+				WHERE deleted = ? AND program = ? AND meeting = ?
+				ORDER BY `day`, `from` ASC',
+				'0', '1', $meetingId)->fetchAll();
+	}
+
+	public function findByProgramId(int $programId)
+	{
+		return $this->getDatabase()
+			->query()
+			->fetch();
+	}
+
 }

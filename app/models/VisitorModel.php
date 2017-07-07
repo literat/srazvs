@@ -542,4 +542,17 @@ class VisitorModel extends BaseModel
 			->fetch();
 	}
 
+	/**
+	 * @param	int		ID of visitor
+	 * @return	mixed	result
+	 */
+	public function findVisitorPrograms(int $visitorId)
+	{
+		return $this->getDatabase()
+			->table('kk_visitor-program')
+			->select('id, program')
+			->where('visitor', $visitorId)
+			->fetchAll();
+	}
+
 }

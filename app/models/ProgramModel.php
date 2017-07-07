@@ -552,4 +552,17 @@ class ProgramModel extends BaseModel
 			->fetchAll();
 	}
 
+	/**
+	 * @param  int  $programId
+	 * @return Row
+	 */
+	public function findByProgramId(int $programId)
+	{
+		return $this->getDatabase()
+			->table($this->getTable())
+			->where('id ? AND deleted ?', $programId, '0')
+			->limit(1)
+			->fetch();
+	}
+
 }

@@ -11,6 +11,7 @@ use App\Models\MealModel;
 use App\Services\UserService;
 use App\Services\Emailer;
 use App\Services\VisitorService;
+use App\Services\ProgramService;
 use Tracy\Debugger;
 use App\Components\Forms\RegistrationForm;
 use App\Components\Forms\Factories\IRegistrationFormFactory;
@@ -43,6 +44,11 @@ class RegistrationPresenter extends VisitorPresenter
 	private $userService;
 
 	/**
+	 * @var ProgramService
+	 */
+	private $programService;
+
+	/**
 	 * @var boolean
 	 */
 	private $disabled = false;
@@ -67,7 +73,8 @@ class RegistrationPresenter extends VisitorPresenter
 		MealModel $mealModel,
 		ProgramModel $programModel,
 		Emailer $emailer,
-		VisitorService $visitorService
+		VisitorService $visitorService,
+		ProgramService $programService
 	) {
 		$this->setMeetingModel($meetingModel);
 		$this->setUserService($userService);
@@ -76,6 +83,7 @@ class RegistrationPresenter extends VisitorPresenter
 		$this->setProgramModel($programModel);
 		$this->setEmailer($emailer);
 		$this->setVisitorService($visitorService);
+		$this->setProgramService($programService);
 	}
 
 	/**
@@ -207,9 +215,10 @@ class RegistrationPresenter extends VisitorPresenter
 	 */
 	public function renderEdit($guid)
 	{
+		// TODO: move this into visitor service
 		$visitor = $this->getVisitorModel()->findByGuid($guid);
 		$meals = $this->getMealModel()->findByVisitorId($visitor->id);
-		$programs = $this->getVisitorModel()->getVisitorPrograms($visitor->id);
+		$programs = $this->getProgramService()->assembleFormPrograms($visitor->id);
 
 		$this->getMeetingModel()->setRegistrationHandlers($visitor->meeting);
 
@@ -373,6 +382,25 @@ class RegistrationPresenter extends VisitorPresenter
 	protected function setUserService(UserService $service)
 	{
 		$this->userService = $service;
+
+		return $this;
+	}
+
+	/**
+	 * @return ProgramService
+	 */
+	protected function getProgramService()
+	{
+		return $this->programService;
+	}
+
+	/**
+	 * @param  ProgramService $service
+	 * @return $this
+	 */
+	protected function setProgramService(ProgramService $service)
+	{
+		$this->programService = $service;
 
 		return $this;
 	}

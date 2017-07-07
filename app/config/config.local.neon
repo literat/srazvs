@@ -94,6 +94,7 @@ services:
     - App\Components\MaterialsControl
     - App\Components\MealControl
     - App\Services\VisitorService
+    - App\Services\ProgramService
     - App\Components\Forms\Factories\IRegistrationFormFactory
     - App\Services\Translators\CsTranslator
 
