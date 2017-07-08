@@ -142,10 +142,10 @@ class RegistrationPresenter extends VisitorPresenter
 			$result = $this->sendRegistrationSummary($postData, $guid);
 
 			Debugger::log('Creation of registration('. $guid .') successfull, result: ' . json_encode($result), Debugger::INFO);
-			$this->flashMessage('Registrace(' . $guid . ') byla úspěšně založena.', 'ok');
+			$this->flashMessage('Registrace(' . $guid . ') byla úspěšně založena.', self::FLASH_TYPE_OK);
 		} catch(Exception $e) {
 			Debugger::log('Creation of registration('. $guid .') failed, result: ' .  $e->getMessage(), Debugger::ERROR);
-			$this->flashMessage('Creation of registration failed, result: ' . $e->getMessage(), 'error');
+			$this->flashMessage('Creation of registration failed, result: ' . $e->getMessage(), self::FLASH_TYPE_ERROR);
 		}
 
 		$this->redirect('Registration:check', $guid);
@@ -164,10 +164,10 @@ class RegistrationPresenter extends VisitorPresenter
 			$result = $this->sendRegistrationSummary($postData, $guid);
 
 			Debugger::log('Modification of registration('. $guid .') successfull, result: ' . json_encode($result), Debugger::INFO);
-			$this->flashMessage('Registrace(' . $guid . ') byla úspěšně upravena.', 'ok');
+			$this->flashMessage('Registrace(' . $guid . ') byla úspěšně upravena.', self::FLASH_TYPE_OK);
 		} catch(Exception $e) {
 			Debugger::log('Modification of registration('. $guid .') failed, result: ' .  $e->getMessage(), Debugger::ERROR);
-			$this->flashMessage('Modification of registration(' . $guid . ') failed, result: ' . $e->getMessage(), 'error');
+			$this->flashMessage('Modification of registration(' . $guid . ') failed, result: ' . $e->getMessage(), self::FLASH_TYPE_ERROR);
 		}
 
 		$this->redirect('Registration:check', $guid);
@@ -215,22 +215,18 @@ class RegistrationPresenter extends VisitorPresenter
 	 */
 	public function renderEdit($guid)
 	{
-		// TODO: move this into visitor service
-		$visitor = $this->getVisitorModel()->findByGuid($guid);
-		$meals = $this->getMealModel()->findByVisitorId($visitor->id);
-		$programs = $this->getProgramService()->assembleFormPrograms($visitor->id);
+		$visitor = $this->getVisitorService()->findByGuid($guid);
+		$meetingId = $visitor['meeting'];
 
-		$this->getMeetingModel()->setRegistrationHandlers($visitor->meeting);
+		$this->getMeetingModel()->setRegistrationHandlers($meetingId);
 
 		$template = $this->getTemplate();
 		$template->guid = $guid;
-		$template->meetingId = $visitor->meeting;
+		$template->meetingId = $meetingId;
 		$template->loggedIn = $this->getUserService()->isLoggedIn();
 		$template->disabled = $this->getMeetingModel()->isRegOpen($this->getDebugMode()) ? "" : "disabled";
 
-		$data = array_merge($visitor->toArray(), $meals->toArray(), $programs);
-
-		$this['registrationForm']->setDefaults($data);
+		$this['registrationForm']->setDefaults($visitor);
 	}
 
 	/**
@@ -245,11 +241,11 @@ class RegistrationPresenter extends VisitorPresenter
 				$guid = $this->getVisitorService()->create((array) $newVisitor);
 				$result = $this->sendRegistrationSummary((array) $newVisitor, $guid);
 
-				Debugger::log('Creation of visitor('. $guid .') successfull, result: ' . json_encode($result), Debugger::INFO);
-				$this->flashMessage('Účastník(' . $guid . ') byl úspěšně vytvořen.', 'ok');
+				Debugger::log('Storage of visitor('. $guid .') successfull, result: ' . json_encode($result), Debugger::INFO);
+				$this->flashMessage('Účastník(' . $guid . ') byl úspěšně uložen.', self::FLASH_TYPE_OK);
 			} catch(Exception $e) {
-				Debugger::log('Creation of visitor('. $guid .') failed, result: ' .  $e->getMessage(), Debugger::ERROR);
-				$this->flashMessage('Creation of visitor failed, result: ' . $e->getMessage(), 'error');
+				Debugger::log('Storage of visitor('. $guid .') failed, result: ' .  $e->getMessage(), Debugger::ERROR);
+				$this->flashMessage('Uložení účastníka selhalo, chyba: ' . $e->getMessage(), self::FLASH_TYPE_ERROR);
 			}
 
 			$this->redirect('Registration:check', $guid);

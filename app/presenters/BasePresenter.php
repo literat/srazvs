@@ -15,6 +15,9 @@ use Nette\Caching\Cache;
 abstract class BasePresenter extends Nette\Application\UI\Presenter
 {
 
+	const FLASH_TYPE_OK    = 'success';
+	const FLASH_TYPE_ERROR = 'alert';
+
 	/**
 	 * @var string
 	 */

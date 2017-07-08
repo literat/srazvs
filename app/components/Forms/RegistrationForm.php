@@ -182,7 +182,8 @@ class RegistrationForm extends BaseForm
 		$form->addHidden('bill', 0);
 		$form->addHidden('cost', $this->getMeetingModel()->getPrice('cost'));
 
-		$form->addSubmit('save', 'Uložit');
+		$form->addSubmit('save', 'Uložit')
+			->setAttribute('class', 'btn-primary');
 		$form->addSubmit('reset', 'storno')
 			->setAttribute('class', 'btn-reset');
 

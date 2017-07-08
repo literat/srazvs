@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\VisitorModel;
 use App\Models\MealModel;
 use App\Models\BlockModel;
+use App\Services\ProgramService;
 use Nette\Utils\Strings;
 
 class VisitorService extends BaseService
@@ -26,19 +27,26 @@ class VisitorService extends BaseService
 	protected $blockModel;
 
 	/**
-	 * @param VisitorModel $visitor
-	 * @param MealModel    $meal
-	 * @param BlockModel   $block
-	 * @param Emailer      $emailer
+	 * @var ProgramService
+	 */
+	protected $programService;
+
+	/**
+	 * @param VisitorModel   $visitor
+	 * @param MealModel      $meal
+	 * @param BlockModel     $block
+	 * @param ProgramService $program
 	 */
 	public function __construct(
 		VisitorModel $visitor,
 		MealModel $meal,
-		BlockModel $block
+		BlockModel $block,
+		ProgramService $program
 	) {
 		$this->setVisitorModel($visitor);
 		$this->setMealModel($meal);
 		$this->setBlockModel($block);
+		$this->setProgramService($program);
 	}
 
 	/**
@@ -96,6 +104,19 @@ class VisitorService extends BaseService
 		return Strings::substring($data['name'], 0, 1)
 			. Strings::substring($data['surname'], 0, 1)
 			. Strings::substring($data['birthday'], -2);
+	}
+
+	/**
+	 * @param  string $guid
+	 * @return array
+	 */
+	public function findByGuid(string $guid): array
+	{
+		$visitor = $this->getVisitorModel()->findByGuid($guid);
+		$meals = $this->getMealModel()->findByVisitorId($visitor->id);
+		$programs = $this->getProgramService()->assembleFormPrograms($visitor->id);
+
+		return array_merge($visitor->toArray(), $meals->toArray(), $programs);
 	}
 
 	/**
@@ -180,6 +201,25 @@ class VisitorService extends BaseService
 	protected function setVisitorModel(VisitorModel $model): VisitorService
 	{
 		$this->visitorModel = $model;
+
+		return $this;
+	}
+
+	/**
+	 * @return ProgramService
+	 */
+	protected function getProgramService()
+	{
+		return $this->programService;
+	}
+
+	/**
+	 * @param  ProgramService $service
+	 * @return ProgramService
+	 */
+	protected function setProgramService(ProgramService $service): VisitorService
+	{
+		$this->programService = $service;
 
 		return $this;
 	}
