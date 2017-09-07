@@ -11,6 +11,7 @@
         "nette/robot-loader": "^2.4",
         "nette/bootstrap": "^2.4",
         "nette/application": "^2.4",
+        "nette/php-generator": "^2.6",
         "mpdf/mpdf": "^6.1",
         "phpoffice/phpexcel": "^1.8",
         "latte/latte": "^2.4",
@@ -24,7 +25,8 @@
         "mockery/mockery": "^0.9.4",
         "codeception/codeception": "^2.2",
         "dg/ftp-deployment": "~2.1",
-        "phpstan/phpstan": "^0.6.4"
+        "phpstan/phpstan": "^0.6.4",
+        "phpunit/phpunit": "^5.7"
     },
     "autoload": {
         "files": [
