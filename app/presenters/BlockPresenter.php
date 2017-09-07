@@ -6,6 +6,7 @@ use Nette\Database\Context;
 use Tracy\Debugger;
 use App\Services\Emailer;
 use App\Models\BlockModel;
+use App\Models\MeetingModel;
 use \Exception;
 
 /**
@@ -30,13 +31,19 @@ class BlockPresenter extends BasePresenter
 	private $emailer;
 
 	/**
+	 * @var MeetingModel
+	 */
+	private $meetingModel;
+
+	/**
 	 * @param BlockModel $model
 	 * @param Emailer    $emailer
 	 */
-	public function __construct(BlockModel $model, Emailer $emailer)
+	public function __construct(BlockModel $model, Emailer $emailer, MeetingModel $meetingModel)
 	{
 		$this->setModel($model);
 		$this->setEmailer($emailer);
+		$this->setMeetingModel($meetingModel);
 	}
 
 	/**
@@ -255,8 +262,11 @@ class BlockPresenter extends BasePresenter
 		$template->error_material = "";
 
 		$block = $this->getModel()->findBy('guid', $id);
+		$meeting = $this->getMeetingModel()->find($this->getMeetingId());
+
 		$this->blockId = $block->id;
 		$template->block = $block;
+		$template->meeting = $meeting;
 		$template->id = $id;
 	}
 
@@ -331,6 +341,27 @@ class BlockPresenter extends BasePresenter
 		if($from > $to) {
 			throw new Exception('Starting time is greater then finishing time.');
 		}
+	}
+
+
+	/**
+	 * @return MeetingModel
+	 */
+	public function getMeetingModel(): MeetingModel
+	{
+		return $this->meetingModel;
+	}
+
+	/**
+	 * @param MeetingModel $meetingModel
+	 *
+	 * @return self
+	 */
+	public function setMeetingModel(MeetingModel $meetingModel): self
+	{
+		$this->meetingModel = $meetingModel;
+
+		return $this;
 	}
 
 }
