@@ -47,11 +47,13 @@ class VisitorServiceTest extends TestCase
 $mockedVisitorModel = Mockery::mock('App\Models\VisitorModel');
 $mockedMealModel = Mockery::mock('App\Models\MealModel');
 $mockedBLockModel = Mockery::mock('App\Models\BlockModel');
+$mockedProgramService = Mockery::mock('App\Services\ProgramService');
 
 $visitorService = new VisitorService(
 	$mockedVisitorModel,
 	$mockedMealModel,
-	$mockedBLockModel
+	$mockedBLockModel,
+	$mockedProgramService
 );
 
 $test = new VisitorServiceTest($visitorService);
