@@ -29,6 +29,14 @@
 
 			<table class='form'>
 				<tr>
+					<td class='label'><label>Datum:</label></td>
+					<td>{$meeting->start_date|date:'%d. %m. %Y'} - {$meeting->end_date|date:'%d. %m. %Y'}</td>
+				</tr>
+				<tr>
+					<td class='label'><label>Den a čas:</label></td>
+					<td>{$block->day}, {$block->from|date:'%H:%M'} - {$block->to|date:'%H:%M'}</td>
+				</tr>
+				<tr>
 					<td class='label'><label><span class="required">*</span>Název:</label></td>
 					<td><input type='text' name='name' size='30' value='{$block->name}' />{$error_name}</td>
 				</tr>

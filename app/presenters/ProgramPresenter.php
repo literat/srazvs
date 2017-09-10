@@ -284,8 +284,13 @@ class ProgramPresenter extends BasePresenter
 		$template->error_material = "";
 
 		$program = $this->getModel()->findBy('guid', $id);
+		$block = $this->getBlockModel()->find($program->block);
+		$meeting = $this->getMeetingModel()->find($this->getMeetingId());
+
 		$this->programId = $program->id;
 		$template->program = $program;
+		$template->block = $block;
+		$template->meeting = $meeting;
 		$template->id = $id;
 	}
 
