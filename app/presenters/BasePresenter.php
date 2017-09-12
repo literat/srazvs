@@ -15,10 +15,13 @@ use Nette\Caching\Cache;
 abstract class BasePresenter extends Nette\Application\UI\Presenter
 {
 
+	const FLASH_TYPE_OK    = 'success';
+	const FLASH_TYPE_ERROR = 'alert';
+
 	/**
-	 * backlink
+	 * @var string
 	 */
-	protected $backlink;
+	public $backlink = '';
 
 	/** @var Model */
 	protected $model;
@@ -73,10 +76,18 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 	{
 		parent::startup();
 
-		$meetingId = $this->getRequest()->getQuery('mid', '');
+		$meetingId = $this->getHttpRequest()->getQuery('mid', '');
+
+		$backlink = $this->getHttpRequest()->getQuery('backlink');
+		if(!empty($backlink)) {
+			$this->setBacklink($backlink);
+		}
 
 		if($meetingId){
 			$_SESSION['meetingID'] = $meetingId;
+		} elseif(!isset($_SESSION['meetingID'])) {
+			$meeting = $this->getContainer()->getService('meeting');
+			$_SESSION['meetingID'] = $meeting->getLastMeetingId();
 		}
 
 		$this->setMeetingId($_SESSION['meetingID']);
@@ -111,6 +122,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 		$template->progDir = PROG_DIR;
 		$template->visitDir = VISIT_DIR;
 		$template->expDir = EXP_DIR;
+		$template->meetDir = MEET_DIR;
 
 		$template->categories = $this->remember('categories:all', 10, function () {
 			return $this->getContainer()->getService('category')->all();
@@ -122,6 +134,9 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 		$template->meeting = $meeting->getPlaceAndYear($_SESSION['meetingID']);
 		$template->menuItems = $meeting->getMenuItems();
 		$template->meeting_heading	= $meeting->getRegHeading();
+		$template->meetingId = $this->getMeetingId();
+		$template->backlinkUrl = $this->getBacklinkUrl();
+		$template->backlink = $this->getBacklink();
 		//$this->template->backlink = $this->getParameter("backlink");
 
 		//$this->template->production = $this->context->parameters['environment'] === 'production' ? 1 : 0;
@@ -194,110 +209,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 	 */
 	protected $debugMode = false;
 
-	/**
-	 * This is the default function that will be called by Router.php
-	 *
-	 * @param array $getVars the GET variables posted to index.php
-	 */
-	public function init()
-	{
-		$id = $this->requested("id",$this->itemId);
-		$this->cms = $this->requested("cms","");
-		$this->error = $this->requested("error","");
-		$this->page = $this->requested("page","");
-
-
-		switch($this->cms) {
-			case "delete":
-				$this->delete($id);
-				break;
-			case "new":
-				$this->__new();
-				break;
-			case "create":
-				$this->create();
-				break;
-			case "edit":
-				$this->edit($id);
-				break;
-			case "modify":
-				$this->update($id);
-				break;
-			case "mail":
-				$this->mail();
-				break;
-			case 'export-visitors':
-				$this->Export->renderProgramVisitors($id);
-				break;
-
-		}
-
-		$this->render();
-	}
-
-	/**
-	 * @param  array $data
-	 * @return string
-	 */
-	protected function calculateCode4Bank(array $data)
-	{
-		return Strings::toAscii(
-			mb_substr($data['name'], 0, 1, 'utf-8')
-			. mb_substr($data['surname'], 0, 1, 'utf-8')
-			. mb_substr($data['birthday'], 2, 2)
-		);
-	}
-
-	/**
-	 * requested()
-	 * - ziska promenne z GET
-	 *
-	 * @author tomasliterahotmail.com
-	 *
-	 * @param string $var - nazev pole GET
-	 * @param $default - defaultni hodnota v pripade neexistence GET
-	 */
-	protected function requested($var, $default = NULL)
-	{
-		if($this->router->getParameter($var)) $out = $this->clearString($this->router->getParameter($var));
-		elseif($this->router->getPost($var)) $out = $this->clearString($this->router->getPost($var));
-		else $out = $default;
-
-		return $out;
-	}
-
-	protected function processClearString($string)
-	{
-		//specialni znaky
-		$string = htmlspecialchars($string);
-		//html tagy
-		$string = strip_tags($string);
-		//slashes
-		$string = stripslashes($string);
-
-		return $string;
-	}
-
-	/**
-	 * clearString()
-	 * - ocisti retezec od html, backslashu a specialnich znaku
-	 *
-	 * @author tomas.litera@gmail.com
-	 *
-	 * @param string $string - retezec znaku
-	 * @return string $string - ocisteny retezec
-	 */
-	protected function clearString($string)
-	{
-		if(is_array($string)) {
-			foreach ($string as $key => $value) {
-				$string[$key] = $this->processClearString($value);
-			}
-		} else {
-			$string = $this->processClearString($string);
-		}
-		return $string;
-	}
+	protected $sunlight;
 
 	/**
 	 * Render check box
@@ -454,24 +366,6 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 	}
 
 	/**
-	 * @return Nette\Http\Request
-	 */
-	public function getRequest()
-	{
-		return $this->request;
-	}
-
-	/**
-	 * @param  Request $request
-	 * @return $this
-	 */
-	public function setRequest(Request $request)
-	{
-		$this->request = $request;
-		return $this;
-	}
-
-	/**
 	 * @return integer
 	 */
 	protected function getMeetingId()
@@ -546,6 +440,40 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 	protected function getDebugMode()
 	{
 		return $this->debugMode;
+	}
+
+	/**
+	 * @return string
+	 */
+	protected function getBacklink()
+	{
+		return $this->backlink;
+	}
+
+	/**
+	 * @param  string $backlink
+	 * @return $this
+	 */
+	protected function setBacklink($backlink)
+	{
+		$this->backlink = $backlink;
+
+		return $this;
+	}
+
+	/**
+	 * @return string
+	 */
+	protected function getBacklinkUrl()
+	{
+		if($this->getBacklink()) {
+			return $this->link(
+				$this->getBacklink(),
+				[
+					'backlink' => null
+				]
+			);
+		}
 	}
 
 }

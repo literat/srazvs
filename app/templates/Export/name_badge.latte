@@ -1,0 +1,63 @@
+<head>
+	<style n:syntax='off'>
+		body {
+			font-family:Verdana,Arial,Geneva,Sans-Serif;
+			font-size:10px;
+			text-align:left;
+		}
+
+		table {
+			border-collapse:collapse;
+			width:100%;
+		}
+
+		td {
+			text-align:left;
+			width:375px;
+			width:500px;
+			_border:1px solid black;
+		}
+
+		h1 {font-size:70px;color:#555;}
+
+		.cutLine {border: 2px dotted black; vertical-align:top;}
+		.nick {height:298px;vertical-align:middle;text-align:center;}
+	</style>
+</head>
+<body>
+{foreach $result as $row}
+	{if $iterator->isFirst()}
+	<table>
+	{/if}
+		{if $iterator->isOdd()}
+		<tr>
+		{/if}
+			<td class='cutLine'>
+				<table>
+					<tr>
+						<td class='nick'>
+							<h1>{$row['nick']}</h1>
+						</td>
+					</tr>
+				</table>
+			</td>
+		{if $iterator->isEven()}
+		</tr>
+		{/if}
+		{if $iterator->isOdd() && $iterator->isLast()}
+			<td class='cutLine'>
+				<table>
+					<tr>
+						<td class='nick'>
+							<h1></h1>
+						</td>
+					</tr>
+				</table>
+			</td>
+		{/if}
+	{if $iterator->isLast()}
+		</tr>
+	</table>
+	{/if}
+{/foreach}
+</body>

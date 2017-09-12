@@ -35,7 +35,6 @@ class MeetingModel extends BaseModel
 	/** @var string registration heading text */
 	public $regHeading = '';
 
-	private $configuration;
 	private $program;
 	private $httpEncoding;
 	private $dbTable;
@@ -142,17 +141,17 @@ class MeetingModel extends BaseModel
 	 *
 	 * @return	string	html table
 	 */
-	public function getData($meeting_id = NULL)
+	public function getData($meetingId = null)
 	{
-		if(isset($meeting_id)) {
+		if(isset($meetingId)) {
 			$data = $this->getDatabase()
 				->table($this->getTable())
-				->where('deleted ? AND id ?',  '0', $meeting_id)
+				->where('deleted ? AND id ?', '0', $meetingId)
 				->fetch();
 		} else {
 			$data = $this->getDatabase()
 				->table($this->getTable())
-				->where('deleted',  '0')
+				->where('deleted', '0')
 				->fetchAll();
 		}
 
@@ -183,7 +182,7 @@ class MeetingModel extends BaseModel
 	 * @param	int	ID of selected province
 	 * @return	string	html <select>
 	 */
-	public function renderHtmlProvinceSelect($selected_province)
+	public function renderHtmlProvinceSelect($selectedProvince)
 	{
 		$html_select = "<select style='width: 195px; font-size: 10px' name='province'>\n";
 
@@ -191,12 +190,12 @@ class MeetingModel extends BaseModel
 			->table('kk_provinces')
 			->fetchAll();
 
-		foreach($result as $data){
-			if($data['id'] == $selected_province){
+		foreach($result as $data) {
+			if($data['id'] == $selectedProvince) {
 				$sel = "selected";
 			}
 			else $sel = "";
-			$html_select .= "<option value='".$data['id']."' ".$sel.">".$data['province_name']."</option>";
+			$html_select .= "<option value='" . $data['id'] . "' " . $sel . ">" . $data['province_name'] . "</option>";
 		}
 
 		$html_select .= "</select>\n";
@@ -204,41 +203,9 @@ class MeetingModel extends BaseModel
 		return $html_select;
 	}
 
-	/**
-	 * Get Programs for Overview
-	 *
-	 * @return	string	html
-	 */
-	public function getPrograms($blockId)
-	{
-		$result = $this->getDatabase()
-			->query('SELECT	progs.id AS id,
-						progs.name AS name,
-						style
-				FROM kk_programs AS progs
-				LEFT JOIN kk_categories AS cat ON cat.id = progs.category
-				WHERE block = ? AND progs.deleted = ?
-				LIMIT 10',
-				$blockId, '0')->fetchAll();
-
-		if(!$result) {
-			$html = "";
-		} else {
-			$html = "<table class='programs'>\n";
-			$html .= " <tr>\n";
-			foreach($result as $data){
-				$html .= "<td class='category cat-".$data['style']."' style='text-align:center;'>\n";
-				$html .= "<a class='program' href='".PROG_DIR."/edit/".$data['id']."?page=meeting' title='".$data['name']."'>".$data['name']."</a>\n";
-				$html .= "</td>\n";
-			}
-			$html .= " </tr>\n";
-			$html .= "</table>\n";
-		}
-		return $html;
-	}
-
 	/** Public program same as getPrograms*/
-	public function getPublicPrograms($block_id){
+	public function getPublicPrograms($blockId)
+	{
 		$result = $this->getDatabase()
 			->query('SELECT progs.id AS id,
 						progs.name AS name,
@@ -247,16 +214,17 @@ class MeetingModel extends BaseModel
 				LEFT JOIN kk_categories AS cat ON cat.id = progs.category
 				WHERE block = ? AND progs.deleted = ?
 				LIMIT 10',
-				$block_id, '0')
+				$blockId, '0')
 			->fetchAll();
 
-		if(!$result) $html = "";
-		else {
+		if(!$result) {
+			$html = '';
+		} else {
 			$html = "<table>\n";
 			$html .= " <tr>\n";
-			foreach($result as $data){
+			foreach($result as $data) {
 				$html .= "<td class='category cat-".$data['style']."' style='text-align:center;'>\n";
-				$html .= "<a class='programLink' rel='programDetail' href='#' rel='programDetail' title='".$this->program->getDetail($data['id'], 'program', $this->httpEncoding)."'>".$data['name']."</a>\n";
+				$html .= "<a class='programLink' rel='programDetail' href='#' rel='programDetail' title='" . $this->program->getDetail($data['id'], 'program', $this->httpEncoding) . "'>" . $data['name'] . "</a>\n";
 				$html .= "</td>\n";
 			}
 			$html .= " </tr>\n";
@@ -265,75 +233,18 @@ class MeetingModel extends BaseModel
 		return $html;
 	}
 
-	/**
-	 * Render Program Overview
-	 *
-	 * @return	string	html
-	 */
-	public function renderProgramOverview()
-	{
-		$html = "";
-
-		foreach($this->weekendDays as $key => $value){
-			$html .= "<table class='blocks'>\n";
-			$html .= " <tr>\n";
-			$html .= "  <td class='day' colspan='2' >".$value."</td>\n";
-			$html .= " </tr>\n";
-
-			$result = $this->getDatabase()
-				->query('SELECT	blocks.id AS id,
-							day,
-							DATE_FORMAT(`from`, "%H:%i") AS `from`,
-							DATE_FORMAT(`to`, "%H:%i") AS `to`,
-							blocks.name AS name,
-							program,
-							style
-					FROM kk_blocks AS blocks
-					LEFT JOIN kk_categories AS cat ON cat.id = blocks.category
-					WHERE blocks.deleted = ? AND day = ? AND blocks.meeting = ?
-					ORDER BY `from` ASC',
-					'0', $value, $this->meetingId)
-				->fetchAll();
-
-			if(!$result){
-				$html .= "<td class='emptyTable' style='width:400px;'>Nejsou žádná aktuální data.</td>\n";
-			} else {
-				foreach($result as $data){
-					$html .= "<tr>\n";
-					$html .= "<td class='time'>".$data['from']." - ".$data['to']."</td>\n";
-					if($data['program'] == 1){
-						$html .= "<td class='category cat-".$data['style']."'>\n";
-						$html .= "<div>\n";
-						$html .= "<a class='block' href='".BLOCK_DIR."/edit/".$data['id']."?page=meeting' title='".$data['name']."'>".$data['name']."</a>\n";
-						$html .= "</div>\n";
-						$html .= $this->getPrograms($data['id']);
-						$html .= "</td>\n";
-					} else {
-						$html .= "<td class='category cat-".$data['style']."'>";
-						$html .= "<a class='block' href='".BLOCK_DIR."/edit/".$data['id']."?page=meeting' title='".$data['name']."'>".$data['name']."</a>\n";
-						$html .= "</td>\n";
-					}
-					$html .= "</tr>\n";
-				}
-			}
-			$html .= "</table>\n";
-		}
-
-		return $html;
-	}
-
-	public function renderPublicProgramOverview()
+	public function renderPublicProgramOverview($meetingId)
 	{
 		$days = array("pátek", "sobota", "neděle");
 		$html = "";
 
-		foreach($days as $dayKey => $dayVal){
+		foreach($days as $dayKey => $dayVal) {
 			$html .= "<table>\n";
 			$html .= " <tr>\n";
-			$html .= "  <td class='day' colspan='2' >".$dayVal."</td>\n";
+			$html .= "  <td class='day' colspan='2' >" . $dayVal . "</td>\n";
 			$html .= " </tr>\n";
 
-			$result = $this->database
+			$result = $this->getDatabase()
 				->query('SELECT	blocks.id AS id,
 							day,
 							DATE_FORMAT(`from`, "%H:%i") AS `from`,
@@ -346,27 +257,25 @@ class MeetingModel extends BaseModel
 					LEFT JOIN kk_categories AS cat ON cat.id = blocks.category
 					WHERE blocks.deleted = ? AND day = ? AND meeting = ?
 					ORDER BY `from` ASC',
-					'0', $dayVal, $this->meetingId)
+					'0', $dayVal, $meetingId)
 				->fetchAll();
 
-			if(!$result){
+			if(!$result) {
 				$html .= "<td class='emptyTable' style='width:400px;'>Nejsou žádná aktuální data.</td>\n";
-			}
-			else{
-				foreach($result as $data){
+			} else {
+				foreach($result as $data) {
 					$html .= "<tr>\n";
-					$html .= "<td class='time'>".$data['from']." - ".$data['to']."</td>\n";
-					if(($data['program'] == 1) && ($data['display_progs'] == 1)){
-						$html .= "<td class='category cat-".$data['style']."' class='daytime'>\n";
+					$html .= "<td class='time'>" . $data['from'] . " - " . $data['to'] . "</td>\n";
+					if(($data['program'] == 1) && ($data['display_progs'] == 1)) {
+						$html .= "<td class='category cat-" . $data['style'] . "' class='daytime'>\n";
 						$html .= "<div>\n";
-						$html .= "<a class='programLink rel='programDetail' href='#' rel='programDetail' title='".$this->program->getDetail($data['id'], 'block', $this->httpEncoding)."'>".$data['name']."</a>\n";
+						$html .= "<a class='programLink rel='programDetail' href='#' rel='programDetail' title='" . $this->program->getDetail($data['id'], 'block', $this->httpEncoding) . "'>" . $data['name'] . "</a>\n";
 						$html .= "</div>\n";
 						$html .= $this->getPublicPrograms($data['id']);
 						$html .= "</td>\n";
-					}
-					else {
-						$html .= "<td class='category cat-".$data['style']."'>";
-						$html .= "<a class='programLink rel='programDetail' href='#' rel='programDetail' title='".$this->program->getDetail($data['id'], 'block', $this->httpEncoding)."'>".$data['name']."</a>\n";
+					} else {
+						$html .= "<td class='category cat-" . $data['style'] . "'>";
+						$html .= "<a class='programLink rel='programDetail' href='#' rel='programDetail' title='" . $this->program->getDetail($data['id'], 'block', $this->httpEncoding) . "'>" . $data['name'] . "</a>\n";
 						$html .= "</td>\n";
 					}
 					$html .= "</tr>\n";
@@ -404,14 +313,14 @@ class MeetingModel extends BaseModel
 
 		$html_row = "";
 
-		if(!$result){
+		if(!$result) {
 			$html_row .= "<tr class='radek1'>";
-			$html_row .= "<td><img class='edit' src='".IMG_DIR."icons/edit2.gif' /></td>\n";
-			$html_row .= "<td><img class='edit' src='".IMG_DIR."icons/delete2.gif' /></td>\n";
+			$html_row .= "<td><img class='edit' src='" . IMG_DIR . "icons/edit2.gif' /></td>\n";
+			$html_row .= "<td><img class='edit' src='" . IMG_DIR . "icons/delete2.gif' /></td>\n";
 			$html_row .= "<td colspan='11' class='emptyTable'>Nejsou k dispozici žádné položky.</td>";
 			$html_row .= "</tr>";
 		} else {
-			foreach($result as $data){
+			foreach($result as $data) {
 				$html_row .= "<tr class='radek1'>";
 				$html_row .= "\t\t\t<td><a href='process.php?id=".$data['id']."&cms=edit&page=meetings' title='Upravit'><img class='edit' src='".IMG_DIR."icons/edit.gif' /></a></td>\n";
 				$html_row .= "\t\t\t<td><a href=\"javascript:confirmation('?id=".$data['id']."&amp;cms=del', 'sraz: ".$data['place']." ".$data['start_date']." -> Opravdu SMAZAT tento sraz? Jste si jisti?')\" title='Odstranit'><img class='edit' src='".IMG_DIR."icons/delete.gif' /></a></td>\n";
@@ -462,42 +371,86 @@ class MeetingModel extends BaseModel
 		return $html_table;
 	}
 
-	public function setRegistrationHandlers($meeting_id = NULL) {
-		$data = $this->getDatabase()
+	/**
+	 * @param  integer $meetingId
+	 * @return $this
+	 */
+	public function setRegistrationHandlers($meetingId = 1)
+	{
+		$meeting = $this->getDatabase()
 			->table($this->getTable())
-			->select('id,
-				place,
-				DATE_FORMAT(start_date, "%Y") AS year,
-				UNIX_TIMESTAMP(open_reg) AS open_reg,
-				UNIX_TIMESTAMP(close_reg) AS close_reg')
-			->where($meeting_id ? 'id = "' . $meeting_id . '"' : '1')
+			->select('id')
+			->select('place')
+			->select('DATE_FORMAT(start_date, "%Y") AS year')
+			->select('UNIX_TIMESTAMP(open_reg) AS open_reg')
+			->select('UNIX_TIMESTAMP(close_reg) AS close_reg')
+			->where('id', $meetingId)
 			->order('id DESC')
 			->limit(1)
 			->fetch();
 
-		$mid = $data['id'];
-		$meetingHeader =
+		$this->setRegHeading($meeting->place . ' ' . $meeting->year);
+		$this->setRegClosing($meeting->close_reg);
+		$this->setRegOpening($meeting->open_reg);
 
-		$this->regHeading = $data['place']." ".$data['year'];
-		$this->regClosing = $data['close_reg'];
-		$this->regOpening = $data['open_reg'];
-
-		return TRUE;
+		return $this;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getRegOpening()
 	{
 		return $this->regOpening;
 	}
 
+	/**
+	 * @param  string $value
+	 * @return $this
+	 */
+	public function setRegOpening($value = '')
+	{
+		$this->regOpening = $value;
+
+		return $this;
+	}
+
+	/**
+	 * @return string
+	 */
 	public function getRegClosing()
 	{
 		return $this->regClosing;
 	}
 
+	/**
+	 * @param  string $value
+	 * @return $this
+	 */
+	public function setRegClosing($value = '')
+	{
+		$this->regClosing = $value;
+
+		return $this;
+	}
+
+	/**
+	 * @return string
+	 */
 	public function getRegHeading()
 	{
 		return $this->regHeading;
+	}
+
+	/**
+	 * @param  string $value
+	 * @return $this
+	 */
+	public function setRegHeading($value = '')
+	{
+		$this->regHeading = $value;
+
+		return $this;
 	}
 
 	/**
@@ -510,8 +463,13 @@ class MeetingModel extends BaseModel
 		return (($this->getRegOpening() < time()) && (time() < $this->getRegClosing()) || $debug);
 	}
 
-	public function getProvinceNameById($id) {
-		return $this->database
+	/**
+	 * @param  integer $id
+	 * @return string
+	 */
+	public function getProvinceNameById($id)
+	{
+		return $this->getDatabase()
 			->table('kk_provinces')
 			->select('province_name')
 			->where('id', $id)
@@ -519,26 +477,47 @@ class MeetingModel extends BaseModel
 			->fetchField('province_name');
 	}
 
+	/**
+	 * @param  integer|string $meetingId
+	 * @return ActiveRow
+	 */
 	public function getPlaceAndYear($meetingId)
 	{
-		return $this->getDatabase()->query(
-			'SELECT	place, DATE_FORMAT(start_date, "%Y") AS year
-			FROM ' . $this->getTable() . '
-			WHERE id = ? AND deleted = ?
-			LIMIT 1', $meetingId, '0')
+		return $this->getDatabase()
+			->table($this->getTable())
+			->select('place')
+			->select('DATE_FORMAT(start_date, "%Y") AS year')
+			->where('id = ? AND deleted = ?', $meetingId, '0')
+			->limit(1)
 			->fetch();
 	}
 
+	/**
+	 * @return ActiveRow
+	 */
 	public function getMenuItems()
 	{
-		return $this->database->query(
-			'SELECT id AS mid,
-					place,
-					DATE_FORMAT(start_date, "%Y") AS year
-			FROM ' . $this->dbTable . '
-			WHERE deleted = ?
-			ORDER BY id DESC',
-			'0')->fetchAll();
+		return $this->getDatabase()
+			->table($this->getTable())
+			->select('id AS mid')
+			->select('place')
+			->select('DATE_FORMAT(start_date, "%Y") AS year')
+			->where('deleted', '0')
+			->order('id DESC')
+			->fetchAll();
+	}
+
+	/**
+	 * @return integer
+	 */
+	public function getLastMeetingId()
+	{
+		return $this->getDatabase()
+			->table($this->getTable())
+			->select('id')
+			->order('id DESC')
+			->limit(1)
+			->fetchField();
 	}
 
 }

@@ -3,10 +3,10 @@
 namespace App\Presenters;
 
 use Nette\Database\Context;
-use Nette\Http\Request;
 use Tracy\Debugger;
 use App\Services\Emailer;
 use App\Models\BlockModel;
+use App\Models\MeetingModel;
 use \Exception;
 
 /**
@@ -31,15 +31,19 @@ class BlockPresenter extends BasePresenter
 	private $emailer;
 
 	/**
+	 * @var MeetingModel
+	 */
+	private $meetingModel;
+
+	/**
 	 * @param BlockModel $model
-	 * @param Request    $request
 	 * @param Emailer    $emailer
 	 */
-	public function __construct(BlockModel $model, Request $request, Emailer $emailer)
+	public function __construct(BlockModel $model, Emailer $emailer, MeetingModel $meetingModel)
 	{
 		$this->setModel($model);
-		$this->setRequest($request);
 		$this->setEmailer($emailer);
+		$this->setMeetingModel($meetingModel);
 	}
 
 	/**
@@ -50,7 +54,7 @@ class BlockPresenter extends BasePresenter
 		$template = $this->getTemplate();
 
 		$template->heading = 'nový blok';
-		$template->page = $this->getRequest()->getQuery('page');
+		$template->page = $this->getHttpRequest()->getQuery('page');
 		$template->error_name = "";
 		$template->error_description = "";
 		$template->error_tutor = "";
@@ -75,9 +79,9 @@ class BlockPresenter extends BasePresenter
 	public function actionCreate()
 	{
 		$model = $this->getModel();
-		$data = $this->getRequest()->getPost();
+		$data = $this->getHttpRequest()->getPost();
 
-		$page = $data['page'];
+		$this->setBacklink($data['backlink']);
 		$data['from'] = date('H:i:s', mktime($data['start_hour'], $data['start_minute'], 0, 0, 0, 0));
 		$data['to'] = date('H:i:s', mktime($data['end_hour'], $data['end_minute'], 0, 0, 0, 0));
 		$data['meeting'] = $this->getMeetingId();
@@ -86,7 +90,7 @@ class BlockPresenter extends BasePresenter
 		unset($data['end_hour']);
 		unset($data['start_minute']);
 		unset($data['end_minute']);
-		unset($data['page']);
+		unset($data['backlink']);
 
 		try {
 			$this->guardToGreaterThanFrom($data['from'], $data['to']);
@@ -101,8 +105,7 @@ class BlockPresenter extends BasePresenter
 			$this->flashMessage('Creation of block failed, result: ' . $e->getMessage(), 'error');
 		}
 
-		// TODO: redirect using page
-		$this->redirect('Block:listing');
+		$this->redirect($this->getBacklink() ?: 'Block:listing');
 	}
 
 	/**
@@ -112,18 +115,19 @@ class BlockPresenter extends BasePresenter
 	public function actionUpdate($id)
 	{
 		$model = $this->getModel();
-		$data = $this->getRequest()->getPost();
+		$data = $this->getHttpRequest()->getPost();
 
-		$page = $data['page'];
+		$this->setBacklink($data['backlink']);
 		$data['from'] = date('H:i:s', mktime($data['start_hour'], $data['start_minute'], 0, 0, 0, 0));
 		$data['to'] = date('H:i:s', mktime($data['end_hour'], $data['end_minute'], 0, 0, 0, 0));
 		$data['meeting'] = $this->getMeetingId();
+		array_key_exists('display_progs', $data) ?: $data['display_progs'] = '1';
 
 		unset($data['start_hour']);
 		unset($data['end_hour']);
 		unset($data['start_minute']);
 		unset($data['end_minute']);
-		unset($data['page']);
+		unset($data['backlink']);
 
 		try {
 			$this->guardToGreaterThanFrom($data['from'], $data['to']);
@@ -138,8 +142,7 @@ class BlockPresenter extends BasePresenter
 			$this->flashMessage('Modification of block id ' . $id . ' failed, result: ' . $e->getMessage(), 'error');
 		}
 
-		// TODO: redirect using page
-		$this->redirect('Block:listing');
+		$this->redirect($this->getBacklink() ?: 'Block:listing');
 	}
 
 	/**
@@ -149,7 +152,7 @@ class BlockPresenter extends BasePresenter
 	public function actionAnnotationupdate($id)
 	{
 		try {
-			$data = $this->getRequest()->getPost();
+			$data = $this->getHttpRequest()->getPost();
 			$result = $this->updateByGuid($id, $data);
 
 			Debugger::log('Modification of block annotation id ' . $id . ' with data ' . json_encode($data) . ' successfull, result: ' . json_encode($result), Debugger::INFO);
@@ -216,7 +219,7 @@ class BlockPresenter extends BasePresenter
 		$template = $this->getTemplate();
 
 		$template->heading = 'úprava bloku';
-		$template->page = $this->getRequest()->getQuery('page');
+		$template->page = $this->getHttpRequest()->getQuery('page');
 		$template->error_name = "";
 		$template->error_description = "";
 		$template->error_tutor = "";
@@ -251,7 +254,7 @@ class BlockPresenter extends BasePresenter
 		$template = $this->getTemplate();
 
 		$template->page_title = 'Registrace programů pro lektory';
-		$template->page = $this->getRequest()->getQuery('page');
+		$template->page = $this->getHttpRequest()->getQuery('page');
 		$template->error_name = "";
 		$template->error_description = "";
 		$template->error_tutor = "";
@@ -259,8 +262,11 @@ class BlockPresenter extends BasePresenter
 		$template->error_material = "";
 
 		$block = $this->getModel()->findBy('guid', $id);
+		$meeting = $this->getMeetingModel()->find($this->getMeetingId());
+
 		$this->blockId = $block->id;
 		$template->block = $block;
+		$template->meeting = $meeting;
 		$template->id = $id;
 	}
 
@@ -335,6 +341,27 @@ class BlockPresenter extends BasePresenter
 		if($from > $to) {
 			throw new Exception('Starting time is greater then finishing time.');
 		}
+	}
+
+
+	/**
+	 * @return MeetingModel
+	 */
+	public function getMeetingModel(): MeetingModel
+	{
+		return $this->meetingModel;
+	}
+
+	/**
+	 * @param MeetingModel $meetingModel
+	 *
+	 * @return self
+	 */
+	public function setMeetingModel(MeetingModel $meetingModel): self
+	{
+		$this->meetingModel = $meetingModel;
+
+		return $this;
 	}
 
 }

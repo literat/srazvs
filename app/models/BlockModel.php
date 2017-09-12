@@ -80,10 +80,7 @@ class BlockModel extends BaseModel
 	 */
 	public function renderHtmlSelect($blockId)
 	{
-		$result = $this->database
-			->table('kk_blocks')
-			->where('meeting ? AND program ? AND deleted ?', $_SESSION['meetingID'], '1', '0')
-			->fetchAll();
+		$result = $this->findByMeeting($this->getMeetingId());
 
 		$html_select = "<select style='width: 300px; font-size: 10px' name='block'>\n";
 
@@ -114,12 +111,16 @@ class BlockModel extends BaseModel
 					program
 				FROM kk_blocks
 				WHERE deleted = ? AND program = ? AND meeting = ?
-				ORDER BY `day` ASC',
+				ORDER BY `day`, `from` ASC',
 				'0', '1', $meetingId)->fetchAll();
 
 		return $data;
 	}
 
+	/**
+	 * @param  integer $meetingId
+	 * @return ActiveRow
+	 */
 	public function idsFromCurrentMeeting($meetingId)
 	{
 		return $this->getDatabase()
@@ -129,6 +130,11 @@ class BlockModel extends BaseModel
 			->fetchAll();
 	}
 
+	/**
+	 * @param  integer $meetingId
+	 * @param  string  $dayVal
+	 * @return ActiveRow
+	 */
 	public function getExportBlocks($meetingId, $dayVal)
 	{
 		$result = $this->getDatabase()
@@ -178,6 +184,56 @@ class BlockModel extends BaseModel
 			->select('id')
 			->where('meeting ? AND program ? AND deleted ?', $meetingId, '1', '0')
 			->fetchAll();
+	}
+
+	/**
+	 * @param  string $day
+	 * @return Row
+	 */
+	public function findByDay($day = '')
+	{
+		return $this->getDatabase()
+				->query('SELECT	blocks.id AS id,
+							day,
+							DATE_FORMAT(`from`, "%H:%i") AS `from`,
+							DATE_FORMAT(`to`, "%H:%i") AS `to`,
+							blocks.name AS name,
+							program,
+							style
+					FROM kk_blocks AS blocks
+					LEFT JOIN kk_categories AS cat ON cat.id = blocks.category
+					WHERE blocks.deleted = ? AND day = ? AND blocks.meeting = ?
+					ORDER BY `from` ASC',
+					'0', $day, $this->getMeetingId())
+				->fetchAll();
+	}
+
+	/**
+	 * Return blocks that contents programs
+	 *
+	 * @param	int		meeting ID
+	 * @return	array	result and number of affected rows
+	 */
+	public function findProgramBlocksByMeeting(int $meetingId)
+	{
+		return $this->getDatabase()
+			->query('SELECT id,
+					day,
+					DATE_FORMAT(`from`, "%H:%i") AS `from`,
+					DATE_FORMAT(`to`, "%H:%i") AS `to`,
+					name,
+					program
+				FROM kk_blocks
+				WHERE deleted = ? AND program = ? AND meeting = ?
+				ORDER BY `day`, `from` ASC',
+				'0', '1', $meetingId)->fetchAll();
+	}
+
+	public function findByProgramId(int $programId)
+	{
+		return $this->getDatabase()
+			->query()
+			->fetch();
 	}
 
 }

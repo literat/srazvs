@@ -5,10 +5,13 @@ namespace App\Presenters;
 use App\Models\ExportModel;
 use App\Models\ProgramModel;
 use App\Models\BlockModel;
+use App\Models\MealModel;
 use App\Factories\ExcelFactory;
 use App\Factories\PdfFactory;
+use App\Components\RegistrationGraphControl;
+use App\Components\MaterialsControl;
+use App\Components\MealControl;
 use Nette\Utils\Strings;
-use Nette\Http\Request;
 use Tracy\Debugger;
 
 /**
@@ -19,7 +22,7 @@ use Tracy\Debugger;
 class ExportPresenter extends BasePresenter
 {
 
-	const TEMPLATE_DIR = __DIR__ . '/../templates/export/';
+	const TEMPLATE_DIR = __DIR__ . '/../templates/Export/';
 	const TEMPLATE_EXT = 'latte';
 
 	/**
@@ -42,11 +45,27 @@ class ExportPresenter extends BasePresenter
 	protected $filename;
 
 	/**
-	 * @param ExportModel  $export
-	 * @param ProgramModel $program
-	 * @param ExcelFactory $excel
-	 * @param PdfFactory   $pdf
-	 * @param Request      $request
+	 * @var RegistrationGraphControl
+	 */
+	private $registrationGraphControl;
+
+	/**
+	 * @var MaterialsControl
+	 */
+	private $materialControl;
+
+	/**
+	 * @var MealControl
+	 */
+	private $mealControl;
+
+	/**
+	 * @param ExportModel              $export
+	 * @param ProgramModel             $program
+	 * @param ExcelFactory             $excel
+	 * @param PdfFactory               $pdf
+	 * @param RegistrationGraphControl $control
+	 * @param MaterialsControl          $materialControl
 	 */
 	public function __construct(
 		ExportModel $export,
@@ -54,14 +73,18 @@ class ExportPresenter extends BasePresenter
 		BlockModel $block,
 		ExcelFactory $excel,
 		PdfFactory $pdf,
-		Request $request
+		RegistrationGraphControl $control,
+		MaterialsControl $materialControl,
+		MealControl $mealControl
 	) {
 		$this->setModel($export);
 		$this->setProgramModel($program);
 		$this->setBlockModel($block);
 		$this->setExcel($excel->create());
 		$this->setPdf($pdf->create());
-		$this->setRequest($request);
+		$this->setRegistrationGraphControl($control);
+		$this->setMaterialControl($materialControl);
+		$this->setMealControl($mealControl);
 	}
 
 	/**
@@ -82,14 +105,12 @@ class ExportPresenter extends BasePresenter
 		$settingsModel = $this->getModel();
 		$template = $this->getTemplate();
 
-		$template->graph = $settingsModel->renderGraph();
-		$template->graphHeight = $settingsModel->getGraphHeight();
+		$template->graphHeight = $this->calculateGraphHeight();
 		$template->account = $settingsModel->getMoney('account');
 		$template->balance = $settingsModel->getMoney('balance');
 		$template->suma = $settingsModel->getMoney('suma');
 		$template->programs = $this->getProgramModel()->renderExportPrograms();
-		$template->materials = $settingsModel->getMaterial();
-		$template->meals = $settingsModel->renderMealCount();
+		$template->meals = MealModel::$dayMeal;
 	}
 
 	public function renderEvidence($type, $id = null)
@@ -387,7 +408,7 @@ class ExportPresenter extends BasePresenter
 	 */
 	public function actionNameBadges()
 	{
-		$names = $this->getRequest()->getPost()['names'];
+		$names = $this->getHttpRequest()->getPost()['names'];
 		$this->renderNameBadges($names);
 	}
 
@@ -588,8 +609,83 @@ class ExportPresenter extends BasePresenter
 			$this->getPdf()->WriteHTML((string) $template, 0);
 			// download
 			$this->getPdf()->Output($this->filename, "D");
-		exit;
+			exit;
 		}
+	}
+
+	/**
+	 * @return RegistrationGraphControl
+	 */
+	protected function createComponentRegistrationGraph()
+	{
+		return $this->registrationGraphControl->setMeetingId($this->getMeetingId());
+	}
+
+	/**
+	 * @param  RegistrationGraphControl $control
+	 * @return $this
+	 */
+	protected function setRegistrationGraphControl(RegistrationGraphControl $control)
+	{
+		$this->registrationGraphControl = $control;
+
+		return $this;
+	}
+
+	/**
+	 * @return MaterialControl
+	 */
+	protected function createComponentMaterials()
+	{
+		return $this->materialControl->setMeetingId($this->getMeetingId());
+	}
+
+	/**
+	 * @param  MaterialControl $control
+	 * @return $this
+	 */
+	protected function setMaterialControl(MaterialsControl $control)
+	{
+		$this->materialControl = $control;
+
+		return $this;
+	}
+
+	/**
+	 * @return MealControl
+	 */
+	protected function createComponentMeal()
+	{
+		return $this->mealControl->setMeetingId($this->getMeetingId());
+	}
+
+	/**
+	 * @param  MealControl $control
+	 * @return $this
+	 */
+	protected function setMealControl(MealControl $control)
+	{
+		$this->mealControl = $control;
+
+		return $this;
+	}
+
+	/**
+	 * @return integer
+	 */
+	protected function calculateGraphHeight()
+	{
+		$graphHeight = RegistrationGraphControl::GRAPH_HEIGHT_INIT;
+
+		foreach($this->getModel()->graph() as $graph) {
+			$graphHeight += RegistrationGraphControl::GRAPH_HEIGHT_STEP;
+		}
+
+		if($graphHeight < RegistrationGraphControl::GRAPH_HEIGHT_MIN) {
+			$graphHeight = RegistrationGraphControl::GRAPH_HEIGHT_MIN;
+		}
+
+		return $graphHeight;
 	}
 
 	/**

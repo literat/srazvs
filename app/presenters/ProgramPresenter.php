@@ -6,7 +6,6 @@ use App\Models\ProgramModel;
 use App\Models\BlockModel;
 use App\Models\MeetingModel;
 use App\Services\Emailer;
-use Nette\Http\Request;
 use Tracy\Debugger;
 
 /**
@@ -45,13 +44,11 @@ class ProgramPresenter extends BasePresenter
 	 */
 	public function __construct(
 		ProgramModel $model,
-		Request $request,
 		Emailer $emailer,
 		BlockModel $blockModel,
 		MeetingModel $meetingModel
 	) {
 		$this->setModel($model);
-		$this->setRequest($request);
 		$this->setEmailer($emailer);
 		$this->setBlockModel($blockModel);
 		$this->setMeetingModel($meetingModel);
@@ -73,9 +70,10 @@ class ProgramPresenter extends BasePresenter
 	public function actionCreate()
 	{
 		$model = $this->getModel();
-		$data = $this->getRequest()->getPost();
-		$page = $data['page'];
-		unset($data['page']);
+		$data = $this->getHttpRequest()->getPost();
+
+		$this->setBacklink($data['backlink']);
+		unset($data['backlink']);
 
 		if(!array_key_exists('display_in_reg', $data)) {
 			$data['display_in_reg'] = 1;
@@ -93,8 +91,7 @@ class ProgramPresenter extends BasePresenter
 			$this->flashMessage('Záznam se nepodařilo uložit, result: ' . $e->getMessage(), 'error');
 		}
 
-		// TODO: redirect using page
-		$this->redirect('Program:listing');
+		$this->redirect($this->getBacklink() ?: 'Program:listing');
 	}
 
 	/**
@@ -104,10 +101,10 @@ class ProgramPresenter extends BasePresenter
 	public function actionUpdate($id)
 	{
 		$model = $this->getModel();
-		$data = $this->getRequest()->getPost();
+		$data = $this->getHttpRequest()->getPost();
 
-		$page = $data['page'];
-		unset($data['page']);
+		$this->setBacklink($data['backlink']);
+		unset($data['backlink']);
 
 		if(!array_key_exists('display_in_reg', $data)) {
 			$data['display_in_reg'] = 1;
@@ -125,8 +122,7 @@ class ProgramPresenter extends BasePresenter
 			$this->flashMessage('Modification of program id ' . $id . ' failed, result: ' . $e->getMessage(), 'error');
 		}
 
-		// TODO: redirect using page
-		$this->redirect('Program:listing');
+		$this->redirect($this->getBacklink() ?: 'Program:listing');
 	}
 
 	/**
@@ -154,7 +150,7 @@ class ProgramPresenter extends BasePresenter
 	public function actionAnnotationupdate($id)
 	{
 		try {
-			$data = $this->getRequest()->getPost();
+			$data = $this->getHttpRequest()->getPost();
 			$result = $this->updateByGuid($id, $data);
 
 			Debugger::log('Modification of program annotation id ' . $id . ' with data ' . json_encode($data) . ' successfull, result: ' . json_encode($result), Debugger::INFO);
@@ -207,7 +203,7 @@ class ProgramPresenter extends BasePresenter
 		} else {
 			$template->display_program = false;
 		}
-		$template->public_program = $this->getMeetingModel()->renderPublicProgramOverview();
+		$template->public_program = $this->getMeetingModel()->renderPublicProgramOverview($this->getMeetingId());
 		$template->page_title = 'Srazy VS - veřejný program';
 		$template->style = 'table { border-collapse:separate; width:100%; }
 				td { .width:100%; text-align:center; padding:0px; }
@@ -236,7 +232,7 @@ class ProgramPresenter extends BasePresenter
 		$template = $this->getTemplate();
 
 		$template->heading = 'nový program';
-		$template->page = $this->getRequest()->getQuery('page');
+		$template->page = $this->getHttpRequest()->getQuery('page');
 		$template->error_name = '';
 		$template->error_description = '';
 		$template->error_tutor = '';
@@ -258,7 +254,6 @@ class ProgramPresenter extends BasePresenter
 
 		$template = $this->getTemplate();
 		$template->heading = 'úprava programu';
-		$template->page = $this->getRequest()->getQuery('page');
 		$template->error_name = '';
 		$template->error_description = '';
 		$template->error_tutor = '';
@@ -281,7 +276,7 @@ class ProgramPresenter extends BasePresenter
 		$template = $this->getTemplate();
 
 		$template->page_title = 'Registrace programů pro lektory';
-		$template->page = $this->getRequest()->getQuery('page');
+		$template->page = $this->getHttpRequest()->getQuery('page');
 		$template->error_name = "";
 		$template->error_description = "";
 		$template->error_tutor = "";
@@ -289,8 +284,13 @@ class ProgramPresenter extends BasePresenter
 		$template->error_material = "";
 
 		$program = $this->getModel()->findBy('guid', $id);
+		$block = $this->getBlockModel()->find($program->block);
+		$meeting = $this->getMeetingModel()->find($this->getMeetingId());
+
 		$this->programId = $program->id;
 		$template->program = $program;
+		$template->block = $block;
+		$template->meeting = $meeting;
 		$template->id = $id;
 	}
 

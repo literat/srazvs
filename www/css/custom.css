@@ -1,0 +1,40 @@
+.navbar-primary {
+	background-color: transparent;
+	border-color: #fff;
+}
+
+.navbar-primary .navbar-brand,
+.navbar-primary .navbar-brand:focus,
+.navbar-primary .navbar-brand:hover {
+	color: #000;
+}
+
+.section-header {
+	border-bottom: none;
+	background-color: transparent;
+}
+
+.section-header h1.section-header-title {
+	color: #777;
+}
+
+.footer {
+	background-color: transparent;
+	font-variant: small-caps;
+}
+
+/* helpers */
+.col-centered{
+	float: none;
+	margin: 0 auto;
+}
+
+.btn-reset {
+	background: none;
+	border: none;
+	cursor: pointer;
+}
+
+.btn-reset:hover {
+	text-decoration: underline;
+}

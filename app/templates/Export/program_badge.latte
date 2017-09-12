@@ -1,0 +1,108 @@
+<head>
+	<style n:syntax='off'>
+		body {
+			font-family:Verdana,Arial,Geneva,Sans-Serif;
+			font-size:9px;
+			text-align:left;
+		}
+
+		table {
+			border-collapse:collapse;
+			width:100%;
+		}
+
+		td {
+			text-align:left;
+			_width:375px;
+			_border:1px solid black;
+		}
+
+		.cutLine {border: 2px dotted black; vertical-align:top;}
+
+		.day {font-size:12px;font-weight:bold;margin-top:15px;}
+		.time {color:grey;}
+		.meal {font-size:10px;font-weight:bold;}
+
+		.program{font-size:13px;color:black;}
+
+		.meeting{font-size:13px; color:#4169e1;}
+		.block, .group_name {color:grey;}
+		.name, .group_name, .meeting {text-align:right;}
+		.program, .nick {font-weight:bold;}
+	</style>
+</head>
+<body>
+
+{foreach $result as $unused}
+	{if $iterator->odd}
+	<table>
+		<tr>
+			<td class='cutLine'>
+	{else}
+			<td class='cutLine'>
+	{/if}
+	<table>
+		<tr>
+			<td>
+				<table>
+				{foreach $days as $day}
+					<tr>
+						<td class='day'>{$day}</td>
+					</tr>
+		{var $result = $exportBlocks[$day]}
+
+		{if !$result}
+			<td class='emptyTable' style='width:400px;'>Nejsou žádná aktuální data.</td>
+		{else}
+			{foreach $result as $row}
+				<tr>
+				{if $row['category'] == 7}
+					<td>
+						<span class='meal'>
+						{$row['from']} - {$row['to']}
+				{else}
+					<td>
+						<span class='time'>{$row['from']} - {$row['to']}
+						</span>
+				{/if}
+
+				{* kdyz je programovy blok, tak zobrazim jenom jeho obsah*}
+				{if $row['program']}
+					{php echo App\Models\ProgramModel::getProgramNames($row['id'])}
+					</td>
+				{else}
+					{if $row['category'] == 7}
+						{$row['name']}
+						</span></td>
+					{else}
+						{$row['name']}
+						</td>
+					{/if}
+				{/if}
+					</tr>
+				{if $day_val == "SOBOTA" && $row['name'] == "Oběd"}
+						</table>
+					</td>
+					<td>
+						<table>
+				{/if}
+			{/foreach}
+		{/if}
+	{/foreach}
+				</table>
+
+			</td>
+		</tr>
+	</table>
+
+	{if $iterator->odd}
+			</td>
+	{else}
+			</td>
+		</tr>
+	</table>
+	{/if}
+
+	{breakIf $iterator->counter > 5}
+{/foreach}
+</body>

@@ -18,7 +18,20 @@ class MealModel extends BaseModel
 	/**
 	 * @var array
 	 */
-	protected $dayMeal = [
+	static public $meals = [
+		'fry_dinner'    => 'páteční večeře',
+		'sat_breakfast' => 'sobotní snídaně',
+		'sat_lunch'     => 'sobotní oběd',
+		'sat_dinner'    => 'sobotní večeře',
+		'sun_breakfast' => 'nedělní snídaně',
+		'sun_lunch'     => 'nedělní oběd',
+	];
+
+	/**
+	 * @deprecated
+	 * @var array
+	 */
+	static public $dayMeal = [
 		"páteční večeře"	=>	"fry_dinner",
 		"sobotní snídaně"	=>	"sat_breakfast",
 		"sobotní oběd"		=>	"sat_lunch",
@@ -74,6 +87,9 @@ class MealModel extends BaseModel
 			->update($data);
 	}
 
+	/**
+	 * @deprecated
+	 */
 	function getMeals($visitorId)
 	{
 		$meals = "<tr>";
@@ -100,6 +116,7 @@ class MealModel extends BaseModel
 	}
 
 	/**
+	 * @deprecated
 	 * Render HTML Meals <select>
 	 *
 	 * @param	string	value of selected meal
@@ -110,14 +127,13 @@ class MealModel extends BaseModel
 	{
 		// order must be firtsly NO and then YES
 		// first value is displayed in form as default
-		$mealArray = array("ne" => "ne","ano" => "ano");
-		$yesNoArray = array("ne", "ano");
+		$yesNoArray = array('ne', 'ano');
 
-		$htmlSelect = "";
-		foreach($this->dayMeal as $title => $varName){
-			if(preg_match("/breakfast/", $varName))	$mealIcon = "breakfast";
-			if(preg_match("/lunch/", $varName))		$mealIcon = "lunch";
-			if(preg_match("/dinner/", $varName))	$mealIcon = "dinner";
+		$htmlSelect = '';
+		foreach(static::$dayMeal as $title => $varName){
+			if(preg_match('/breakfast/', $varName))	$mealIcon = 'breakfast';
+			if(preg_match('/lunch/', $varName))		$mealIcon = 'lunch';
+			if(preg_match('/dinner/', $varName))	$mealIcon = 'dinner';
 
 			$htmlSelect .= "<span style='display:block;font-size:11px;'>".$title.":</span>\n";
 			$htmlSelect .= "<img style='width:18px;' src='".IMG_DIR."icons/".$mealIcon.".png' />\n";

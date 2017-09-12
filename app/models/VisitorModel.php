@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Nette\Database\Context;
 use Nette\Utils\Strings;
-use Tracy\Debugger;
 use \Exception;
 
 /**
@@ -132,16 +131,15 @@ class VisitorModel extends BaseModel
 	/**
 	 * Create a new visitor
 	 *
-	 * @return	boolean
+	 * @return	string
 	 */
 	public function assemble(array $DB_data, $meals_data, $programs_data, $returnGuid = false)
 	{
 		$return = true;
 
-		$DB_data['code'] =
-			Strings::substring($DB_data['name'], 0, 1)
-			. Strings::substring($DB_data['surname'], 0, 1)
-			. Strings::substring($DB_data['birthday'], 2, 2);
+		if(!$DB_data['province']) {
+			$DB_data['province'] = 0;
+		}
 
 		$DB_data['birthday'] = new \DateTime($DB_data['birthday']);
 		$DB_data['reg_daytime'] = (new \DateTime())->format('Y-m-d H:i:s');
@@ -158,7 +156,7 @@ class VisitorModel extends BaseModel
 			// gets data from database
 			$program_blocks = $this->Blocks->getProgramBlocks($DB_data['meeting']);
 
-			foreach($program_blocks as $DB_blocks_data){
+			foreach($program_blocks as $DB_blocks_data) {
 				$bindingsData = array(
 					'visitor' => $ID_visitor,
 					'program' => $programs_data[$DB_blocks_data['id']],
@@ -168,21 +166,20 @@ class VisitorModel extends BaseModel
 				$bindingsData['guid'] = md5(uniqid());
 				$result_binding = $this->database->query('INSERT INTO `kk_visitor-program`', $bindingsData);
 
-				if(!$result_binding){
-					$return = "ERROR_BINDING_VISITOR_PROGRAM";
-					break;
+				if(!$result_binding) {
+					throw new Exception('Error while binding visitor`s program');
 				}
 			}
 
 			if($return) {
 
 				// create meals for visitor
-				if(!$return = $this->Meals->create($meals_data)){
-					$return = "ERROR_CREATE_MEALS";
+				if(!$return = $this->Meals->create($meals_data)) {
+					throw new Exception('Error while creating meals');
 				}
 			}
 		} else {
-			$return = "ERROR_CREATE_VISITOR";
+			throw new Exception('Error while creating visitor');
 		}
 
 		//return $return;
@@ -205,12 +202,7 @@ class VisitorModel extends BaseModel
 	public function modify($ID_visitor, $DB_data, $meals_data, $programs_data)
 	{
 		// for returning specific error
-		$error = array('visitor' => TRUE, 'meal' => TRUE, 'program' => TRUE);
-
-		$DB_data['code'] =
-			Strings::substring($DB_data['name'], 0, 1)
-			. Strings::substring($DB_data['surname'], 0, 1)
-			. Strings::substring($DB_data['birthday'], 2, 2);
+		$error = array('visitor' => true, 'meal' => true, 'program' => true);
 
 		$DB_data['birthday'] = new \DateTime($DB_data['birthday']);
 
@@ -230,7 +222,7 @@ class VisitorModel extends BaseModel
 		$oldPrograms = $this->getVisitorPrograms($ID_visitor);
 
 		// update old data to new existing
-		foreach($programBlocks as $programBlock){
+		foreach($programBlocks as $programBlock) {
 			$data = array('program' => $programs_data[$programBlock->id]);
 			// read first value from array and shift it to the end
 			$oldProgram = array_shift($oldPrograms);
@@ -244,7 +236,7 @@ class VisitorModel extends BaseModel
 		return $ID_visitor;
 	}
 
-/**
+	/**
 	 * Modify a visitor
 	 *
 	 * @param	int		$visitor_id		ID of a visitor
@@ -256,12 +248,7 @@ class VisitorModel extends BaseModel
 	public function modifyByGuid($guid, $DB_data, $meals_data, $programs_data)
 	{
 		// for returning specific error
-		$error = array('visitor' => TRUE, 'meal' => TRUE, 'program' => TRUE);
-
-		$DB_data['code'] =
-			Strings::substring($DB_data['name'], 0, 1)
-			. Strings::substring($DB_data['surname'], 0, 1)
-			. Strings::substring($DB_data['birthday'], 2, 2);
+		$error = array('visitor' => true, 'meal' => true, 'program' => true);
 
 		$DB_data['birthday'] = new \DateTime($DB_data['birthday']);
 
@@ -283,7 +270,7 @@ class VisitorModel extends BaseModel
 		$oldPrograms = $this->getVisitorPrograms($visitor->id);
 
 		// update old data to new existing
-		foreach($programBlocks as $programBlock){
+		foreach($programBlocks as $programBlock) {
 			$data = array('program' => $programs_data[$programBlock->id]);
 			// read first value from array and shift it to the end
 			$oldProgram = array_shift($oldPrograms);
@@ -305,7 +292,7 @@ class VisitorModel extends BaseModel
 	 */
 	public function delete($id)
 	{
-		return $this->getTable()
+		return $this->getDatabase()
 			->table($this->getTable())
 			->where('id', $id)
 			->update([
@@ -370,7 +357,7 @@ class VisitorModel extends BaseModel
 		$search = $this->getSearch();
 
 		$query = '';
-		if($search){
+		if($search) {
 			$query = "AND (`code` REGEXP '" . $search . "'
 							OR `group_num` REGEXP '" . $search . "'
 							OR `name` REGEXP '" . $search . "'
@@ -394,7 +381,7 @@ class VisitorModel extends BaseModel
 	{
 		$billData = $this->getBill($query_id);
 
-		if($billData['bill'] < $this->Meeting->getPrice('cost')){
+		if($billData['bill'] < $this->Meeting->getPrice('cost')) {
 			$bill = array('bill' => $this->Meeting->getPrice($type));
 			$payResult = $this->getDatabase()
 				->table($this->getTable())
@@ -456,10 +443,10 @@ class VisitorModel extends BaseModel
 		if(!$programBlocks){
 			$html .= "<div class='emptyTable' style='width:400px;'>Nejsou žádná aktuální data.</div>\n";
 		} else {
-			foreach($programBlocks as $block){
+			foreach($programBlocks as $block) {
 				$html .= "<div class='block-" . $block->id .  " ".Strings::webalize($block['day'])."'>".$block['day'].", ".$block['from']." - ".$block['to']." : ".$block['name']."</div>\n";
 				// rendering programs in block
-				if($block['program'] == 1){
+				if($block['program'] == 1) {
 					$html .= "<div class='block-" . $block->id .  " programs ".Strings::webalize($block['day'])." ".Strings::webalize($block['name'])."'>".$this->Programs->getPrograms($block['id'], $visitorId)."</div>";
 				}
 				$html .= "<br />";
@@ -491,7 +478,7 @@ class VisitorModel extends BaseModel
 								checked
 						FROM kk_visitors AS vis
 						LEFT JOIN kk_provinces AS provs ON vis.province = provs.id
-						WHERE meeting = ? AND deleted = ? ' . $this->buildSearchQuery() . '
+						WHERE meeting = ? AND vis.deleted = ? ' . $this->buildSearchQuery() . '
 						ORDER BY vis.id ASC',
 						$this->getMeetingId(), '0')->fetchAll();
 	}
@@ -522,7 +509,8 @@ class VisitorModel extends BaseModel
 	 * @param  array  $queryId
 	 * @return string
 	 */
-	public function getSerializedMailAddress(array $queryId = []) {
+	public function getSerializedMailAddress(array $queryId = [])
+	{
 		$recipientMailAddresses = '';
 
 		$emails = $this->getDatabase()
@@ -553,4 +541,18 @@ class VisitorModel extends BaseModel
 			->where('id', $id)
 			->fetch();
 	}
+
+	/**
+	 * @param	int		ID of visitor
+	 * @return	mixed	result
+	 */
+	public function findVisitorPrograms(int $visitorId)
+	{
+		return $this->getDatabase()
+			->table('kk_visitor-program')
+			->select('id, program')
+			->where('visitor', $visitorId)
+			->fetchAll();
+	}
+
 }

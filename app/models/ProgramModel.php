@@ -50,11 +50,6 @@ class ProgramModel extends BaseModel
 		self::$connection = $this->getDatabase();
 	}
 
-	public function setMeetingId($id)
-	{
-		$this->meetingId = $id;
-	}
-
 	/**
 	 * Get programs
 	 *
@@ -398,6 +393,27 @@ class ProgramModel extends BaseModel
 		return $programs;
 	}
 
+	/**
+	 * @param  int    $visitorId
+	 * @return array
+	 */
+	public function findByVisitorId(int $visitorId): array
+	{
+		return $this->getDatabase()
+			->query('SELECT progs.name AS prog_name,
+							day,
+							DATE_FORMAT(`from`, "%H:%i") AS `from`,
+							DATE_FORMAT(`to`, "%H:%i") AS `to`
+					FROM kk_programs AS progs
+					LEFT JOIN `kk_visitor-program` AS visprog ON progs.id = visprog.program
+					LEFT JOIN kk_visitors AS vis ON vis.id = visprog.visitor
+					LEFT JOIN kk_blocks AS blocks ON progs.block = blocks.id
+					WHERE vis.id = ?
+					ORDER BY `day`, `from` ASC',
+					$visitorId)
+			->fetchAll();
+	}
+
 	public static function getPdfPrograms($id, $vid, $database){
 		$result = $database
 			->table('kk_programs')
@@ -475,13 +491,13 @@ class ProgramModel extends BaseModel
 			->limit(1)
 			->fetch();
 
-		$name = $data['name']; //requested("name",$data['name']);
-		$description = $data['description'];//requested("description",$data['description']);
-		$tutor = $data['tutor'];//requested("tutor",$data['tutor']);
-		$email = $data['email'];//requested("email",$data['email']);
+		$name = $data['name'];
+		$description = $data['description'];
+		$tutor = $data['tutor'];
+		$email = $data['email'];
 
 		if($type == "program"){
-			$capacity = $data['capacity'];//requested("capacity",$data['capacity']);
+			$capacity = $data['capacity'];
 
 			$countData = $this->database
 				->query('SELECT COUNT(visitor) AS visitors
@@ -517,4 +533,66 @@ class ProgramModel extends BaseModel
 			->limit(1)
 			->fetch();
 	}
+
+	/**
+	 * @param  integer $blockId
+	 * @return Row
+	 */
+	public function findByBlockId($blockId = null)
+	{
+		return $this->getDatabase()
+			->query('SELECT	progs.id AS id,
+						progs.name AS name,
+						style
+				FROM kk_programs AS progs
+				LEFT JOIN kk_categories AS cat ON cat.id = progs.category
+				WHERE block = ? AND progs.deleted = ?
+				LIMIT 10',
+				$blockId, '0')
+			->fetchAll();
+	}
+
+	/**
+	 * @param  int  $programId
+	 * @return Row
+	 */
+	public function findByProgramId(int $programId)
+	{
+		return $this->getDatabase()
+			->table($this->getTable())
+			->where('id ? AND deleted ?', $programId, '0')
+			->limit(1)
+			->fetch();
+	}
+
+	/**
+	 * @param  int  $programId
+	 * @return Row
+	 */
+	public function findProgramVisitors(int $programId)
+	{
+		return $this->getDatabase()
+				->query('SELECT vis.name AS name,
+								vis.surname AS surname,
+								vis.nick AS nick
+						FROM kk_visitors AS vis
+						LEFT JOIN `kk_visitor-program` AS visprog ON vis.id = visprog.visitor
+						WHERE visprog.program = ? AND vis.deleted = ?',
+						$programId, '0')->fetchAll();
+	}
+
+	/**
+	 * @param  int  $programId
+	 * @return Row
+	 */
+	public function countProgramVisitors(int $programId)
+	{
+		return $this->getDatabase()
+				->query('SELECT COUNT(*)
+						FROM kk_visitors AS vis
+						LEFT JOIN `kk_visitor-program` AS visprog ON vis.id = visprog.visitor
+						WHERE visprog.program = ? AND vis.deleted = ?',
+						$programId, '0')->fetch()[0];
+	}
+
 }

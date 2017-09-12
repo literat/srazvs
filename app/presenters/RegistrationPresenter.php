@@ -2,15 +2,19 @@
 
 namespace App\Presenters;
 
+use DateTime;
+use App\Entities\VisitorEntity;
 use App\Models\MeetingModel;
 use App\Models\VisitorModel;
 use App\Models\ProgramModel;
-use App\Models\BlockModel;
 use App\Models\MealModel;
 use App\Services\UserService;
 use App\Services\Emailer;
-use Nette\Http\Request;
+use App\Services\VisitorService;
+use App\Services\ProgramService;
 use Tracy\Debugger;
+use App\Components\Forms\RegistrationForm;
+use App\Components\Forms\Factories\IRegistrationFormFactory;
 
 /**
  * Registration controller
@@ -21,7 +25,7 @@ use Tracy\Debugger;
  * @copyright 2013-06-12 <tomaslitera@hotmail.com>
  * @package srazvs
  */
-class RegistrationPresenter extends BasePresenter
+class RegistrationPresenter extends VisitorPresenter
 {
 
 	/**
@@ -30,29 +34,9 @@ class RegistrationPresenter extends BasePresenter
 	private $visitorModel;
 
 	/**
-	 * @var Emailer
-	 */
-	private $emailer;
-
-	/**
-	 * @var MeetingModel
-	 */
-	private $meetingModel;
-
-	/**
-	 * @var MealModel
-	 */
-	private $mealModel;
-
-	/**
 	 * @var ProgramModel
 	 */
 	private $programModel;
-
-	/**
-	 * @var BlockModel
-	 */
-	private $blockModel;
 
 	/**
 	 * @var UserService
@@ -60,37 +44,64 @@ class RegistrationPresenter extends BasePresenter
 	private $userService;
 
 	/**
+	 * @var ProgramService
+	 */
+	private $programService;
+
+	/**
 	 * @var boolean
 	 */
 	private $disabled = false;
 
 	/**
-	 * @param Request      $request
-	 * @param MeetingModel $meetingModel
-	 * @param UserService  $userService
-	 * @param VisitorModel $visitorModel
-	 * @param MealModel    $mealModel
-	 * @param ProgramModel $programModel
-	 * @param BlockModel   $blockModel
+	 * @var IRegistrationFormFactory
+	 */
+	private $registrationFormFactory;
+
+	/**
+	 * @param MeetingModel   $meetingModel
+	 * @param UserService    $userService
+	 * @param VisitorModel   $visitorModel
+	 * @param MealModel      $mealModel
+	 * @param ProgramModel   $programModel
+	 * @param VisitorService $visitorService
 	 */
 	public function __construct(
-		Request $request,
 		MeetingModel $meetingModel,
 		UserService $userService,
 		VisitorModel $visitorModel,
 		MealModel $mealModel,
 		ProgramModel $programModel,
-		BlockModel $blockModel,
-		Emailer $emailer
+		Emailer $emailer,
+		VisitorService $visitorService,
+		ProgramService $programService
 	) {
-		$this->setRequest($request);
 		$this->setMeetingModel($meetingModel);
 		$this->setUserService($userService);
 		$this->setVisitorModel($visitorModel);
 		$this->setMealModel($mealModel);
 		$this->setProgramModel($programModel);
-		$this->setBlockModel($blockModel);
 		$this->setEmailer($emailer);
+		$this->setVisitorService($visitorService);
+		$this->setProgramService($programService);
+	}
+
+	/**
+	 * @return IRegistrationFormFactory
+	 */
+	public function getRegistrationFormFactory(): IRegistrationFormFactory
+	{
+		return $this->registrationFormFactory;
+	}
+
+	/**
+	 * Injector
+	 *
+	 * @param  IRegistrationFormFactory $factory
+	 */
+	public function injectRegistrationFormFactory(IRegistrationFormFactory $factory)
+	{
+		$this->registrationFormFactory = $factory;
 	}
 
 	/**
@@ -106,7 +117,7 @@ class RegistrationPresenter extends BasePresenter
 			$this->getMeetingModel()->setRegistrationHandlers(1);
 			$this->setMeetingId(1);
 		} else {
-			$this->getMeetingModel()->setRegistrationHandlers();
+			$this->getMeetingModel()->setRegistrationHandlers($this->getMeetingId());
 		}
 
 		$template = $this->getTemplate();
@@ -124,79 +135,39 @@ class RegistrationPresenter extends BasePresenter
 	public function actionCreate()
 	{
 		try {
-			$postData = $this->getRequest()->getPost();
+			$postData = $this->getHttpRequest()->getPost();
 			$postData['meeting'] = $this->getMeetingId();
 
-			$visitor = array_intersect_key($postData, array_flip($this->getVisitorModel()->getColumns()));
-			$meals = array_intersect_key($postData, array_flip($this->getMealModel()->getColumns()));
-
-			$blocks = $this->getBlockModel()->findByMeeting($this->getMeetingId());
-			$programs = [];
-			$programs = array_map(function($block) use ($postData) {
-				if(!array_key_exists('blck_' . $block['id'], $postData)) {
-					return 0;
-				}
-
-				return $postData['blck_' . $block['id']];
-			}, $blocks);
-
-			if($guid = $this->getVisitorModel()->assemble($visitor, $meals, $programs, true)) {
-				$code4bank = $this->calculateCode4Bank($visitor);
-
-				$recipientMail = $visitor['email'];
-				$recipientName = $visitor['name']." ".$visitor['surname'];
-				$recipient = [$recipientMail => $recipientName];
-
-				$result= $this->getEmailer()->sendRegistrationSummary($recipient, $guid, $code4bank);
-			}
+			$guid = $this->getVisitorService()->create($postData);
+			$result = $this->sendRegistrationSummary($postData, $guid);
 
 			Debugger::log('Creation of registration('. $guid .') successfull, result: ' . json_encode($result), Debugger::INFO);
-			$this->flashMessage('Registrace(' . $guid . ') byla úspěšně založena.', 'ok');
+			$this->flashMessage('Registrace(' . $guid . ') byla úspěšně založena.', self::FLASH_TYPE_OK);
 		} catch(Exception $e) {
 			Debugger::log('Creation of registration('. $guid .') failed, result: ' .  $e->getMessage(), Debugger::ERROR);
-			$this->flashMessage('Creation of registration failed, result: ' . $e->getMessage(), 'error');
+			$this->flashMessage('Creation of registration failed, result: ' . $e->getMessage(), self::FLASH_TYPE_ERROR);
 		}
 
 		$this->redirect('Registration:check', $guid);
 	}
 
 	/**
-	 * @param  integer 	$id
+	 * @param  string  $guid
 	 * @return void
 	 */
 	public function actionUpdate($guid)
 	{
 		try {
-			$postData = $this->getRequest()->getPost();
+			$postData = $this->getHttpRequest()->getPost();
 
-			$visitor = array_intersect_key($postData, array_flip($this->getVisitorModel()->getColumns()));
-			$meals = array_intersect_key($postData, array_flip($this->getMealModel()->getColumns()));
-
-			$blocks = $this->getBlockModel()->idsFromCurrentMeeting($postData['meeting']);
-
-			$programs = [];
-			$programs = array_map(function($block) use ($postData) {
-				if(!array_key_exists('blck_' . $block['id'], $postData)) {
-					return 0;
-				}
-
-				return $postData['blck_' . $block['id']];
-			}, $blocks);
-
-			$result = $this->getVisitorModel()->modifyByGuid($guid, $visitor, $meals, $programs);
-			$code4bank = $this->calculateCode4Bank($postData);
-
-			$recipient_mail = $postData['email'];
-			$recipient_name = $postData['name']." ".$postData['surname'];
-			$recipient = [$recipient_mail => $recipient_name];
-
-			$return = $this->getEmailer()->sendRegistrationSummary($recipient, $guid, $code4bank);
+			$result = $this->getVisitorService()->update($guid, $postData);
+			$result = $this->sendRegistrationSummary($postData, $guid);
 
 			Debugger::log('Modification of registration('. $guid .') successfull, result: ' . json_encode($result), Debugger::INFO);
-			$this->flashMessage('Registrace(' . $guid . ') byla úspěšně upravena.', 'ok');
+			$this->flashMessage('Registrace(' . $guid . ') byla úspěšně upravena.', self::FLASH_TYPE_OK);
 		} catch(Exception $e) {
 			Debugger::log('Modification of registration('. $guid .') failed, result: ' .  $e->getMessage(), Debugger::ERROR);
-			$this->flashMessage('Modification of registration(' . $guid . ') failed, result: ' . $e->getMessage(), 'error');
+			$this->flashMessage('Modification of registration(' . $guid . ') failed, result: ' . $e->getMessage(), self::FLASH_TYPE_ERROR);
 		}
 
 		$this->redirect('Registration:check', $guid);
@@ -214,42 +185,8 @@ class RegistrationPresenter extends BasePresenter
 		$template->disabled = $disabled;
 		$template->loggedIn = $this->getUserService()->isLoggedIn();
 
-		// requested for visitors fields
-		foreach($this->getVisitorModel()->columns as $column) {
-			$data[$column] = '';
-		}
-		$template->data = $data;
-
-		$template->meals = $this->getMealModel()->renderHtmlMealsSelect(null, $disabled);
-		$template->province = $this->getMeetingModel()->renderHtmlProvinceSelect(null);
-		$template->programs = $this->getVisitorModel()->renderProgramSwitcher($this->getMeetingId(), null);
-		$template->meetingId = $this->getMeetingId();
-		$template->cost	= $this->getMeetingModel()->getPrice('cost');
-
-		if($this->getUserservice()->isLoggedIn()) {
-			$userDetail = $this->getUserModel()->getUserDetail();
-			$skautisUser = $this->getUserModel()->getPersonalDetail($userDetail->ID_Person);
-			$membership = $this->getUserModel()->getPersonUnitDetail($userDetail->ID_Person);
-
-			if(!preg_match('/^[1-9]{1}[0-9a-zA-Z]{2}\.[0-9a-zA-Z]{1}[0-9a-zA-Z]{1}$/', $membership->RegistrationNumber)) {
-				$skautisUserUnit = $this->getUserModel()->getParentUnitDetail($membership->ID_Unit)[0];
-			} else {
-				$skautisUserUnit = $this->getUserModel()->getUnitDetail($membership->ID_Unit);
-			}
-
-			$template->data['name'] = $skautisUser->FirstName;
-			$template->data['surname'] = $skautisUser->LastName;
-			$template->data['nick'] = $skautisUser->NickName;
-			$template->data['email'] = $skautisUser->Email;
-			$template->data['street'] = $skautisUser->Street;
-			$template->data['city'] = $skautisUser->City;
-			$template->data['postal_code'] = preg_replace('/\s+/','',$skautisUser->Postcode);
-			$template->data['birthday'] = $skautisUser->Birthday;
-			$template->data['group_name'] = $skautisUserUnit->DisplayName;
-			$template->data['group_num'] = $skautisUserUnit->RegistrationNumber;
-			if(isset($membership->Unit)) {
-				$template->data['troop_name'] = $membership->Unit;
-			}
+		if($this->getUserService()->isLoggedIn()) {
+			$this['registrationForm']->setDefaults(($this->useLoggedVisitor())->toArray());
 		}
 	}
 
@@ -259,17 +196,17 @@ class RegistrationPresenter extends BasePresenter
 	 */
 	public function renderCheck($guid)
 	{
-		$data = $this->getVisitorModel()->findByGuid($guid);
+		$visitor = $this->getVisitorModel()->findByGuid($guid);
 
-		$this->getMeetingModel()->setRegistrationHandlers($data->meeting);
+		$this->getMeetingModel()->setRegistrationHandlers($visitor->meeting);
 
 		$template = $this->getTemplate();
 		$template->guid = $guid;
-		$template->data = $data;
-		$template->meetingId = $data->meeting;
-		$template->meals = $this->getMealModel()->findByVisitorId($data->id);
-		$template->province = $this->getMeetingModel()->getProvinceNameById($data->province);
-		$template->programs = $this->getProgramModel()->getSelectedPrograms($data->id);
+		$template->visitor = $visitor;
+		$template->meetingId = $visitor->meeting;
+		$template->meals = $this->getMealModel()->findByVisitorId($visitor->id);
+		$template->province = $this->getMeetingModel()->getProvinceNameById($visitor->province);
+		$template->programs = $this->getProgramModel()->findByVisitorId($visitor->id);
 	}
 
 	/**
@@ -278,41 +215,76 @@ class RegistrationPresenter extends BasePresenter
 	 */
 	public function renderEdit($guid)
 	{
-		$data = $this->getVisitorModel()->findByGuid($guid);
-		$mealData = $this->getMealModel()->findByVisitorId($data->id);
+		$visitor = $this->getVisitorService()->findByGuid($guid);
+		$meetingId = $visitor['meeting'];
 
-		$this->getMeetingModel()->setRegistrationHandlers($data->meeting);
+		$this->getMeetingModel()->setRegistrationHandlers($meetingId);
 
 		$template = $this->getTemplate();
 		$template->guid = $guid;
-		$template->data = $data;
-		$template->meetingId = $data->meeting;
-		$template->mealData = $mealData;
+		$template->meetingId = $meetingId;
 		$template->loggedIn = $this->getUserService()->isLoggedIn();
 		$template->disabled = $this->getMeetingModel()->isRegOpen($this->getDebugMode()) ? "" : "disabled";
-		$template->meals = $this->getMealModel()->renderHtmlMealsSelect($mealData, $this->disabled);
-		$template->province = $this->getMeetingModel()->renderHtmlProvinceSelect($data->province);
-		$template->programs = $this->getVisitorModel()->renderProgramSwitcher($data->meeting, $data->id);
-		$template->cost	= $this->getMeetingModel()->getPrice('cost');
+
+		$this['registrationForm']->setDefaults($visitor);
 	}
 
 	/**
-	 * @return BlockModel
+	 * @return RegistrationFormControl
 	 */
-	protected function getBlockModel()
+	protected function createComponentRegistrationForm(): RegistrationForm
 	{
-		return $this->blockModel;
+		$control = $this->registrationFormFactory->create();
+		$control->setMeetingId($this->getMeetingId());
+		$control->onRegistrationSave[] = function(RegistrationForm $control, $newVisitor) {
+			try {
+				$guid = $this->getVisitorService()->create((array) $newVisitor);
+				$result = $this->sendRegistrationSummary((array) $newVisitor, $guid);
+
+				Debugger::log('Storage of visitor('. $guid .') successfull, result: ' . json_encode($result), Debugger::INFO);
+				$this->flashMessage('Účastník(' . $guid . ') byl úspěšně uložen.', self::FLASH_TYPE_OK);
+			} catch(Exception $e) {
+				Debugger::log('Storage of visitor('. $guid .') failed, result: ' .  $e->getMessage(), Debugger::ERROR);
+				$this->flashMessage('Uložení účastníka selhalo, chyba: ' . $e->getMessage(), self::FLASH_TYPE_ERROR);
+			}
+
+			$this->redirect('Registration:check', $guid);
+		};
+
+		return $control;
 	}
 
 	/**
-	 * @param  BlockModel $model
-	 * @return $this
+	 * @return VisitorEntity
 	 */
-	protected function setBlockModel(BlockModel $model)
+	protected function useLoggedVisitor(): VisitorEntity
 	{
-		$this->blockModel = $model;
+		$userDetail = $this->getUserService()->getUserDetail();
+		$skautisUser = $this->getUserService()->getPersonalDetail($userDetail->ID_Person);
+		$membership = $this->getUserService()->getPersonUnitDetail($userDetail->ID_Person);
 
-		return $this;
+		if(!preg_match('/^[1-9]{1}[0-9a-zA-Z]{2}\.[0-9a-zA-Z]{1}[0-9a-zA-Z]{1}$/', $membership->RegistrationNumber)) {
+			$skautisUserUnit = $this->getUserService()->getParentUnitDetail($membership->ID_Unit)[0];
+		} else {
+			$skautisUserUnit = $this->getUserService()->getUnitDetail($membership->ID_Unit);
+		}
+
+		$visitor = new VisitorEntity;
+		$visitor->name = $skautisUser->FirstName;
+		$visitor->surname = $skautisUser->LastName;
+		$visitor->nick = $skautisUser->NickName;
+		$visitor->email = $skautisUser->Email;
+		$visitor->street = $skautisUser->Street;
+		$visitor->city = $skautisUser->City;
+		$visitor->postal_code = preg_replace('/\s+/', '', $skautisUser->Postcode);
+		$visitor->birthday = (new DateTime($skautisUser->Birthday))->format('d. m. Y');
+		$visitor->group_name = $skautisUserUnit->DisplayName;
+		$visitor->group_num = $skautisUserUnit->RegistrationNumber;
+		if(isset($membership->Unit)) {
+			$visitor->troop_name = $membership->Unit;
+		}
+
+		return $visitor;
 	}
 
 	/**
@@ -392,25 +364,6 @@ class RegistrationPresenter extends BasePresenter
 	}
 
 	/**
-	 * @return Emailer
-	 */
-	protected function getEmailer()
-	{
-		return $this->emailer;
-	}
-
-	/**
-	 * @param  Emailer $emailer
-	 * @return $this
-	 */
-	protected function setEmailer(Emailer $emailer)
-	{
-		$this->emailer = $emailer;
-
-		return $this;
-	}
-
-	/**
 	 * @return UserService
 	 */
 	protected function getUserService()
@@ -425,6 +378,25 @@ class RegistrationPresenter extends BasePresenter
 	protected function setUserService(UserService $service)
 	{
 		$this->userService = $service;
+
+		return $this;
+	}
+
+	/**
+	 * @return ProgramService
+	 */
+	protected function getProgramService()
+	{
+		return $this->programService;
+	}
+
+	/**
+	 * @param  ProgramService $service
+	 * @return $this
+	 */
+	protected function setProgramService(ProgramService $service)
+	{
+		$this->programService = $service;
 
 		return $this;
 	}

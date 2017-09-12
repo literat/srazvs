@@ -7,7 +7,8 @@ use App\Models\VisitorModel;
 use App\Models\BlockModel;
 use App\Models\MealModel;
 use App\Services\Emailer;
-use Nette\Http\Request;
+use App\Services\VisitorService;
+use Nette\Utils\Strings;
 use Tracy\Debugger;
 use Exception;
 
@@ -47,12 +48,16 @@ class VisitorPresenter extends BasePresenter
 	protected $meetingModel;
 
 	/**
+	 * @var VisitorSErvice
+	 */
+	protected $visitorService;
+
+	/**
 	 * @param VisitorModel $visitors
 	 * @param MealModel    $meals
 	 * @param BlockModel   $blocks
 	 * @param MeetingModel $meetings
 	 * @param Emailer      $emailer
-	 * @param Request      $request
 	 */
 	public function __construct(
 		VisitorModel $visitors,
@@ -60,14 +65,14 @@ class VisitorPresenter extends BasePresenter
 		BlockModel $blocks,
 		MeetingModel $meetings,
 		Emailer $emailer,
-		Request $request
+		VisitorService $visitor
 	) {
 		$this->setModel($visitors);
 		$this->setMealModel($meals);
 		$this->setBlockModel($blocks);
 		$this->setMeetingModel($meetings);
 		$this->setEmailer($emailer);
-		$this->setRequest($request);
+		$this->setVisitorService($visitor);
 	}
 
 	/**
@@ -88,30 +93,14 @@ class VisitorPresenter extends BasePresenter
 	public function actionCreate()
 	{
 		try {
-			$postData = $this->getRequest()->getPost();
+			$postData = $this->getHttpRequest()->getPost();
 			$postData['meeting'] = $this->getMeetingId();
 
-			$visitor = array_intersect_key($postData, array_flip($this->getModel()->getColumns()));
-			$meals = array_intersect_key($postData, array_flip($this->getMealModel()->getColumns()));
-
-			$blocks = $this->getBlockModel()->findByMeeting($this->getMeetingId());
-			$programs = [];
-			$programs = array_map(function($block) use ($postData) {
-				return $postData['blck_' . $block['id']];
-			}, $blocks);
-
-			if($guid = $this->getModel()->assemble($visitor, $meals, $programs, true)) {
-				$code4bank = $this->calculateCode4Bank($visitor);
-
-				$recipientMail = $visitor['email'];
-				$recipientName = $visitor['name']." ".$visitor['surname'];
-				$recipient = [$recipientMail => $recipientName];
-
-				$result= $this->getEmailer()->sendRegistrationSummary($recipient, $guid, $code4bank);
-			}
+			$guid = $this->getVisitorService()->create($postData);
+			$result = $this->sendRegistrationSummary($postData, $guid);
 
 			Debugger::log('Creation of visitor('. $guid .') successfull, result: ' . json_encode($result), Debugger::INFO);
-			$this->flashMessage('Účastník(' . $guid . ') byl úspěšně upraven.', 'ok');
+			$this->flashMessage('Účastník(' . $guid . ') byl úspěšně vytvořen.', 'ok');
 		} catch(Exception $e) {
 			Debugger::log('Creation of visitor('. $guid .') failed, result: ' .  $e->getMessage(), Debugger::ERROR);
 			$this->flashMessage('Creation of visitor failed, result: ' . $e->getMessage(), 'error');
@@ -129,20 +118,13 @@ class VisitorPresenter extends BasePresenter
 	public function actionUpdate($id)
 	{
 		try {
-			$postData = $this->getRequest()->getPost();
+			$postData = $this->getHttpRequest()->getPost();
 			$postData['meeting'] = $this->getMeetingId();
 			$postData['visitor'] = $id;
 
-			$visitor = array_intersect_key($postData, array_flip($this->getModel()->getColumns()));
-			$meals = array_intersect_key($postData, array_flip($this->getMealModel()->getColumns()));
+			$result = $this->getVisitorService()->update($id, $postData);
 
-			$blocks = $this->getBlockModel()->findByMeeting($this->getMeetingId());
-			$programs = [];
-			$programs = array_map(function($block) use ($postData) {
-				return $postData['blck_' . $block['id']];
-			}, $blocks);
-
-			$result = $this->getModel()->modify($id, $visitor, $meals, $programs);
+			//$result = $this->sendRegistrationSummary($visitor, $guid);
 
 			Debugger::log('Modification of visitor('. $id .') successfull, result: ' . json_encode($result), Debugger::INFO);
 			$this->flashMessage('Účastník(' . $id . ') byl úspěšně upraven.', 'ok');
@@ -161,7 +143,8 @@ class VisitorPresenter extends BasePresenter
 	public function actionDelete($id)
 	{
 		try {
-			$result = $this->getModel()->delete($id);
+			$result = $this->getVisitorService()->delete($id);
+
 			Debugger::log('Destroying of visitor('. $id .') successfull, result: ' . json_encode($result), Debugger::INFO);
 			$this->flashMessage('Položka byla úspěšně smazána', 'ok');
 		} catch(Exception $e) {
@@ -180,7 +163,7 @@ class VisitorPresenter extends BasePresenter
 	public function actionSend()
 	{
 		try {
-			$request = $this->getRequest();
+			$request = $this->getHttpRequest();
 			$subject = $request->getPost('subject', '');
 			$message = $request->getPost('message', '');
 			$bcc = explode(',', preg_replace("/\s+/", "", $request->getPost('recipients', '')));
@@ -350,7 +333,7 @@ class VisitorPresenter extends BasePresenter
 	 */
 	public function renderMail()
 	{
-		$ids = $this->getRequest()->getPost('checker');
+		$ids = $this->getHttpRequest()->getPost('checker');
 
 		$template = $this->getTemplate();
 		$template->recipientMailAddresses = $this->getModel()->getSerializedMailAddress($ids);
@@ -362,7 +345,7 @@ class VisitorPresenter extends BasePresenter
 	 */
 	public function renderListing()
 	{
-		$search = $this->getRequest()->getQuery('search');
+		$search = $this->getHttpRequest()->getQuery('search');
 
 		$model = $this->getModel();
 
@@ -392,41 +375,19 @@ class VisitorPresenter extends BasePresenter
 	}
 
 	/**
-	 * @return BlockModel
+	 * @param  array   $visitor
+	 * @return boolean
 	 */
-	protected function getBlockModel()
+	protected function sendRegistrationSummary(array $visitor, $guid)
 	{
-		return $this->blockModel;
-	}
+		$recipient = [
+			$visitor['email'] => $visitor['name']. ' ' . $visitor['surname'],
+		];
 
-	/**
-	 * @param  BlockModel $model
-	 * @return $this
-	 */
-	protected function setBlockModel(BlockModel $model)
-	{
-		$this->blockModel = $model;
+		$code4bank = $this->getVisitorService()->calculateCode4Bank($visitor);
+		$result = $this->getEmailer()->sendRegistrationSummary($recipient, $guid, $code4bank);
 
-		return $this;
-	}
-
-	/**
-	 * @return MealModel
-	 */
-	protected function getMealModel()
-	{
-		return $this->mealModel;
-	}
-
-	/**
-	 * @param  MealModel $model
-	 * @return $this
-	 */
-	protected function setMealModel(MealModel $model)
-	{
-		$this->mealModel = $model;
-
-		return $this;
+		return $result;
 	}
 
 	/**
@@ -460,9 +421,66 @@ class VisitorPresenter extends BasePresenter
 	 * @param  Emailer $emailer
 	 * @return $this
 	 */
-	protected function setEmailer($emailer)
+	protected function setEmailer(Emailer $emailer)
 	{
 		$this->emailer = $emailer;
+
+		return $this;
+	}
+
+	/**
+	 * @return MealModel
+	 */
+	protected function getMealModel()
+	{
+		return $this->mealModel;
+	}
+
+	/**
+	 * @param  MealModel $model
+	 * @return $this
+	 */
+	protected function setMealModel(MealModel $model)
+	{
+		$this->mealModel = $model;
+
+		return $this;
+	}
+
+	/**
+	 * @return BlockModel
+	 */
+	protected function getBlockModel()
+	{
+		return $this->blockModel;
+	}
+
+	/**
+	 * @param  BlockModel $model
+	 * @return $this
+	 */
+	protected function setBlockModel(BlockModel $model)
+	{
+		$this->blockModel = $model;
+
+		return $this;
+	}
+
+	/**
+	 * @return VisitorService
+	 */
+	protected function getVisitorService()
+	{
+		return $this->visitorService;
+	}
+
+	/**
+	 * @param  VisitorService $service
+	 * @return $this
+	 */
+	protected function setVisitorService(VisitorService $service)
+	{
+		$this->visitorService = $service;
 
 		return $this;
 	}

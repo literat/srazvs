@@ -11,9 +11,10 @@
 	<link rel="stylesheet" href="{$cssDir}dgxcolormixer_s.css" type="text/css" media="screen,projection,tv" />
 	<script src='{$jsDir}function.js' type='text/javascript'></script>
 	<script src='{$jsDir}jquery/jquery.min.js' type='text/javascript'></script>
+	<script src='{$jsDir}live-form-validation.js' type='text/javascript'></script>
 	<link href='../../srazvs/inc/favicon.ico' rel='shortcut icon' />
 	<meta http-equiv='Content-Language' content='cs' />
-	<meta http-equiv='Cache-Control' content='cache' />
+	<meta http-equiv='Cache-Control' content='private, no-cache' />
 	<meta name='robots' content='index' />
 	<meta name='description' content='administrační systém pro Srazy VS' />
 	<meta name='keywords' lang='cs' content='plexis, administrace, cms' />
@@ -22,11 +23,11 @@
 	<meta name='copyright' content="(C) 2001 - {php date('Y')}, Litera Tomáš, Praha" />
 	<style type="text/css">
 	{cache 'categories:all', expire => '10 minutes', tags => ['categories:all']}
-	{foreach $categories as $id => $category}
-		.cat-{$category->style} {
-			border: 2px solid #{$category->bocolor};
-			background-color: #{$category->bgcolor};
-			color: #{$category->focolor};
+	{foreach $categories as $categoryId => $categoryCssItem}
+		.cat-{$categoryCssItem->style} {
+			border: 2px solid #{$categoryCssItem->bocolor};
+			background-color: #{$categoryCssItem->bgcolor};
+			color: #{$categoryCssItem->focolor};
 		}
 	{/foreach}
 	{/cache}

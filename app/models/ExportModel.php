@@ -15,30 +15,39 @@ use Nette\Database\Context;
 class ExportModel extends BaseModel
 {
 
-	/** @var int graph height */
+	/**
+	 * @var integer
+	 */
 	private $graphHeight;
 
-	/** @var CategoryModel categories */
-	private $category;
-
+	/**
+	 * @var Context
+	 */
 	private static $connection;
 
 	/**
-	 * @param Context       $database
-	 * @param CategoryModel $category
+	 * @param Context  $database
 	 */
-	public function __construct(Context $database, CategoryModel $category)
+	public function __construct(Context $database)
 	{
 		$this->setDatabase($database);
-		$this->category = $category;
 		self::$connection = $this->getDatabase();
 	}
 
+	/**
+	 * @param  integer $height
+	 * @return $this
+	 */
 	public function setGraphHeight($height)
 	{
 		$this->graphHeight = $height;
+
+		return $this;
 	}
 
+	/**
+	 * @return integer
+	 */
 	public function getGraphHeight()
 	{
 		return $this->graphHeight;
@@ -52,7 +61,7 @@ class ExportModel extends BaseModel
 	 */
 	public function mealTicket()
 	{
-		return $this->database->query('SELECT	vis.id AS id,
+		return $this->getDatabase()->query('SELECT	vis.id AS id,
 				name,
 				surname,
 				nick,
@@ -85,7 +94,7 @@ class ExportModel extends BaseModel
 		LEFT JOIN kk_provinces AS provs ON vis.province = provs.id
 		LEFT JOIN kk_meetings AS meets ON meets.id = vis.meeting
 		WHERE meeting = ? AND vis.deleted = ?
-		', $this->meetingId, '0')->fetchAll();
+		', $this->getMeetingId(), '0')->fetchAll();
 	}
 
 	/**
@@ -96,7 +105,7 @@ class ExportModel extends BaseModel
 	 */
 	public function attendance()
 	{
-		return $this->database->query('SELECT	vis.id AS id,
+		return $this->getDatabase()->query('SELECT	vis.id AS id,
 						name,
 						surname,
 						nick,
@@ -112,7 +121,7 @@ class ExportModel extends BaseModel
 				LEFT JOIN kk_meetings AS meets ON meets.id = vis.meeting
 				WHERE meeting = ? AND vis.deleted = ?
 				ORDER BY surname ASC',
-				$this->meetingId, '0')->fetchAll();
+				$this->getMeetingId(), '0')->fetchAll();
 	}
 
 	/**
@@ -123,7 +132,7 @@ class ExportModel extends BaseModel
 	 */
 	public function nameList()
 	{
-		return $this->database->query('SELECT	vis.id AS id,
+		return $this->getDatabase()->query('SELECT	vis.id AS id,
 						name,
 						surname,
 						nick,
@@ -139,7 +148,7 @@ class ExportModel extends BaseModel
 				LEFT JOIN kk_meetings AS meets ON meets.id = vis.meeting
 				WHERE meeting = ? AND vis.deleted = ?
 				ORDER BY nick ASC
-				', $this->meetingId, '0')->fetchAll();
+				', $this->getMeetingId(), '0')->fetchAll();
 	}
 
 	/**
@@ -153,7 +162,7 @@ class ExportModel extends BaseModel
 		$evidenceLimit = '';
 		$specificVisitor = '';
 
-		if(isset($visitorId) && $visitorId != NULL){
+		if(isset($visitorId) && $visitorId != NULL) {
 			$evidenceLimit = 'LIMIT 1';
 			$specificVisitor = "vis.id IN (" . $visitorId . ") AND";
 		}
@@ -265,7 +274,7 @@ class ExportModel extends BaseModel
 
 	public function getLargeProgramData($day)
 	{
-		return $this->database->query('SELECT 	blocks.id AS id,
+		return $this->getDatabase()->query('SELECT 	blocks.id AS id,
 						day,
 						DATE_FORMAT(`from`, "%H:%i") AS `from`,
 						DATE_FORMAT(`to`, "%H:%i") AS `to`,
@@ -276,7 +285,7 @@ class ExportModel extends BaseModel
 			FROM kk_blocks AS blocks
 			LEFT JOIN kk_categories AS cat ON cat.id = blocks.category
 			WHERE blocks.deleted = ? AND day = ? AND meeting = ?
-			ORDER BY `from` ASC', '0', $day, $this->meetingId)->fetchAll();
+			ORDER BY `from` ASC', '0', $day, $this->getMeetingId())->fetchAll();
 	}
 
 	/**
@@ -287,15 +296,16 @@ class ExportModel extends BaseModel
 	 */
 	public function largeProgram()
 	{
-		return $this->database->query('SELECT	id,
-						place,
-						DATE_FORMAT(start_date, "%Y") AS year,
-						UNIX_TIMESTAMP(open_reg) AS open_reg,
-						UNIX_TIMESTAMP(close_reg) as close_reg
-				FROM kk_meetings
-				WHERE id = ?
-				ORDER BY id DESC
-				LIMIT 1', $this->meetingId)->fetch();
+		return $this->getDatabase()
+			->table('kk_meetings')
+			->select('id, place')
+			->select('DATE_FORMAT(start_date, "%Y") AS year')
+			->select('UNIX_TIMESTAMP(open_reg) AS open_reg')
+			->select('UNIX_TIMESTAMP(close_reg) AS close_reg')
+			->where('id = ?', $this->getMeetingId())
+			->order('id DESC')
+			->limit(1)
+			->fetchField();
 	}
 
 	/**
@@ -306,15 +316,16 @@ class ExportModel extends BaseModel
 	 */
 	public function publicProgram()
 	{
-		return $this->database->query('SELECT	id,
-						place,
-						DATE_FORMAT(start_date, "%Y") AS year,
-						UNIX_TIMESTAMP(open_reg) AS open_reg,
-						UNIX_TIMESTAMP(close_reg) as close_reg
-				FROM kk_meetings
-				WHERE id = ?
-				ORDER BY id DESC
-				LIMIT 1', $this->meetingId)->fetch();
+		return $this->getDatabase()
+			->table('kk_meetings')
+			->select('id, place')
+			->select('DATE_FORMAT(start_date, "%Y") AS year')
+			->select('UNIX_TIMESTAMP(open_reg) AS open_reg')
+			->select('UNIX_TIMESTAMP(close_reg) AS close_reg')
+			->where('id = ?', $this->getMeetingId())
+			->order('id DESC')
+			->limit(1)
+			->fetchField();
 	}
 
 	/**
@@ -325,9 +336,11 @@ class ExportModel extends BaseModel
 	 */
 	public function programBadges()
 	{
-		return $this->database->query('SELECT	*
-			FROM kk_visitors AS vis
-			WHERE meeting = ? AND vis.deleted = ?', $this->meetingId, '0')->fetchAll();
+		return $this->getDatabase()
+			->table('kk_visitors')
+			->where('meeting', $this->getMeetingId())
+			->where('deleted', '0')
+			->fetchAll();
 	}
 
 	/**
@@ -338,22 +351,21 @@ class ExportModel extends BaseModel
 	 */
 	public function nameBadges()
 	{
-		return $this->database->query('SELECT	vis.id AS id,
-						nick
-				FROM kk_visitors AS vis
-				WHERE meeting = ? AND vis.deleted = ?', $this->meetingId, '0')->fetchAll();
+		return $this->getDatabase()
+			->table('kk_visitors')
+			->select('id')
+			->select('nick')
+			->where('meeting', $this->getMeetingId())
+			->where('deleted', '0')
+			->fetchAll();
 	}
 
 	/**
-	 * Generate registration graph
-	 *
-	 * @return	mixed	html
+	 * @return ActiveRow
 	 */
-	public function renderGraph()
+	public function graph()
 	{
-		$graph_width = 94;
-
-		$graph = $this->database
+		return $this->getDatabase()
 			->query('SELECT DATE_FORMAT(reg_daytime, "%d. %m. %Y") AS day,
 							   COUNT(reg_daytime) AS reg_count
 						FROM `kk_visitors` AS vis
@@ -361,9 +373,15 @@ class ExportModel extends BaseModel
 						WHERE meet.id = ? AND vis.deleted = ?
 						GROUP BY day
 						ORDER BY reg_daytime ASC',
-						$this->meetingId, '0')->fetchAll();
+						$this->getMeetingId(), '0')->fetchAll();
+	}
 
-		$graphMax = $this->database
+	/**
+	 * @return integer
+	 */
+	public function graphMax()
+	{
+		return $this->getDatabase()
 			->query('SELECT MAX( reg_count ) AS max
 					  FROM (
 						SELECT DATE_FORMAT( reg_daytime, "%d. %m. %Y" ) AS
@@ -374,41 +392,15 @@ class ExportModel extends BaseModel
 							AND vis.deleted = ?
 						GROUP BY DAY
 					  ) AS cnt',
-					  $this->meetingId, '0')->fetch();
-
-		$reg_graph = "<table style='width:100%;'>";
-
-		$graph_height = 0;
-
-		foreach($graph as $graphRow) {
-				// trojclenka pro zjisteni pomeru sirky grafu...(aby nam to nevylezlo mimo obrazovku)
-		/*var_dump($max);
-		var_dump($graph_width);
-		var_dump($graph_data['reg_count']);
-		echo 	$width = ceil(($graph_width/$max)*$graph_data['reg_count'])."\n";*/
-			$width = ceil($graph_width/$graphMax['max']*$graphRow['reg_count']);
-			$reg_graph .= "<tr><td align='right' style='width:60px;'>".$graphRow['day']."</td><td><img src='".IMG_DIR."graph.png' alt='".$graphRow['reg_count']."' style='width:".$width."%;' height='12' border='0'>".$graphRow['reg_count']."</td>";
-
-			$graph_height += 21.5;
-		}
-
-		$reg_graph .= "</table>";
-
-		if($graph_height < 290) $graph_height = 290;
-
-		$this->setGraphHeight($graph_height);
-
-		return $reg_graph;
+					  $this->getMeetingId(), '0')->fetchField();
 	}
 
 	/**
-	 * Get materials for each program
-	 *
-	 * @return	mixed	html
+	 * @return ActiveRow
 	 */
-	public function getMaterial()
+	public function materials()
 	{
-		$data = $this->database
+		return $this->getDatabase()
 			->query('SELECT	progs.id AS id,
 						progs.name AS name,
 						progs.material AS material
@@ -417,17 +409,7 @@ class ExportModel extends BaseModel
 				WHERE progs.deleted = ?
 					AND bls.meeting = ?
 					AND bls.deleted = ?',
-					'0', $this->meetingId, '0')->fetchAll();
-
-		$html = "";
-		foreach($data as $item){
-			if($item['material'] == "") $material = "(žádný)";
-			else $material = $item['material'];
-			$html .= "<div><a rel='programDetail' href='".PRJ_DIR."program/?id=".$item['id']."&cms=edit&page=export' title='".$item['name']."'>".$item['name']."</a>:\n</div>";
-			$html .= "<div style='margin-left:10px;font-size:12px;font-weight:bold;'>".$material."</div>";
-		}
-
-		return $html;
+					'0', $this->getMeetingId(), '0')->fetchAll();
 	}
 
 	/**
@@ -438,14 +420,14 @@ class ExportModel extends BaseModel
 	 */
 	public function getMoney($type)
 	{
-		$data = $this->database
+		$data = $this->getDatabase()
 			->query('SELECT SUM(bill) AS account,
 							COUNT(bill) * vis.cost AS suma,
 							COUNT(bill) * vis.cost - SUM(bill) AS balance
 					FROM kk_visitors AS vis
 					LEFT JOIN kk_meetings AS meets ON vis.meeting = meets.id
 					WHERE meeting = ? AND vis.deleted = ?',
-					$this->meetingId, '0')->fetch();
+					$this->getMeetingId(), '0')->fetch();
 
 		switch($type){
 			case "account":
@@ -471,43 +453,16 @@ class ExportModel extends BaseModel
 	 */
 	public function getMealCount($meal)
 	{
-		$data = $this->database
+		$data = $this->getDatabase()
 			->query('SELECT count(?) AS ?
 				FROM `kk_meals` AS mls
 				LEFT JOIN `kk_visitors` AS vis ON vis.id = mls.visitor
 				WHERE vis.deleted = ?
 					AND vis.meeting = ?
 					AND ' . $meal . ' = ?',
-					$meal, $meal, '0', $_SESSION['meetingID'], 'ano')->fetch();
+					$meal, $meal, '0', $this->getMeetingId(), 'ano')->fetch();
 
 		return $data[$meal];
-	}
-
-	/**
-	 * Render data from getMealCount
-	 *
-	 * @return	mixed	html
-	 */
-	public function renderMealCount()
-	{
-		$mealsArr = array("fry_dinner" => "páteční večeře",
-						  "sat_breakfast" => "sobotní snídaně",
-						  "sat_lunch" => "sobotní oběd",
-						  "sat_dinner" => "sobotní večeře",
-						  "sun_breakfast" => "nedělní snídaně",
-						  "sun_lunch" => "nedělní oběd");
-
-		$meals = "<table>";
-
-		foreach($mealsArr as $mealsKey => $mealsVal){
-			$mealCount = $this->getMealCount($mealsKey);
-
-			$meals .= "<tr><td>".$mealsVal.":</td><td><span style='font-size:12px; font-weight:bold;'>".$mealCount."</span></td></tr>";
-		}
-
-		$meals .= "</table>";
-
-		return $meals;
 	}
 
 	/**
@@ -518,7 +473,7 @@ class ExportModel extends BaseModel
 	 */
 	public function programVisitors($programId)
 	{
-		return $this->database
+		return $this->getDatabase()
 			->query('SELECT vis.name AS name,
 							vis.surname AS surname,
 							vis.nick AS nick,
@@ -537,7 +492,7 @@ class ExportModel extends BaseModel
 	 */
 	public function programDetails()
 	{
-		return $this->database
+		return $this->getDatabase()
 			->query('SELECT prog.name AS name,
 						 prog.description AS description,
 						 prog.tutor AS tutor,
@@ -546,7 +501,7 @@ class ExportModel extends BaseModel
 					LEFT JOIN `kk_blocks` AS block ON block.id = prog.block
 					WHERE block.meeting = ?
 						AND prog.deleted = ?
-						AND block.deleted = ?', $this->meetingId, '0', '0')->fetchAll();
+						AND block.deleted = ?', $this->getMeetingId(), '0', '0')->fetchAll();
 	}
 
 	/**
@@ -557,7 +512,7 @@ class ExportModel extends BaseModel
 	 */
 	public function visitorsExcel()
 	{
-		return $this->database
+		return $this->getDatabase()
 			->query('
 		SELECT vis.id AS id,
 			code,
@@ -592,7 +547,7 @@ class ExportModel extends BaseModel
 		/*LEFT JOIN `kk_visitor-program` AS visprog ON visprog.visitor = vis.id
 		LEFT JOIN `kk_programs` AS progs ON visprog.program = progs.id*/
 		LEFT JOIN `kk_meals` AS mls ON mls.visitor = vis.id
-		WHERE vis.deleted = ? AND meeting = ?', '0', $this->meetingId)->fetchAll();
+		WHERE vis.deleted = ? AND meeting = ?', '0', $this->getMeetingId())->fetchAll();
 	}
 
 }

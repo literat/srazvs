@@ -1,0 +1,84 @@
+{layout '../@vodni_layout.latte'}
+
+{block content}
+
+<!-- content -->
+<div id="content-program">
+	<div id="content-pad-program">
+		<h1>Anotace programu na srazy VS</h1>
+		<br />
+		<h2>{$meeting_heading}</h2>
+		<br />
+
+		{foreach $flashes as $flash}
+		<div class="flash {$flash->type}">{$flash->message}</div>
+		{/foreach}
+
+		<form action='{$blockDir}/annotationupdate/{$id}' method='post'>
+
+			<div class='button-line'>
+				<button type='submit' onclick=\"this.form.submit()\">
+					<img src='{$imgDir}icons/save.png' /> Uložit
+				</button>
+				<button type='button' onclick="window.location.replace({$wwwDir} + 'sraz-kk-setkani-cinovniku.p77.html')">
+					<img src='{$imgDir}icons/storno.png'  /> Storno
+				</button>
+			</div>
+
+			<div style="text-align:center;"><span class="required">*</span>Takto označené položky musí být vyplněné!</div>
+
+			<table class='form'>
+				<tr>
+					<td class='label'><label>Datum:</label></td>
+					<td>{$meeting->start_date|date:'%d. %m. %Y'} - {$meeting->end_date|date:'%d. %m. %Y'}</td>
+				</tr>
+				<tr>
+					<td class='label'><label>Den a čas:</label></td>
+					<td>{$block->day}, {$block->from|date:'%H:%M'} - {$block->to|date:'%H:%M'}</td>
+				</tr>
+				<tr>
+					<td class='label'><label><span class="required">*</span>Název:</label></td>
+					<td><input type='text' name='name' size='30' value='{$block->name}' />{$error_name}</td>
+				</tr>
+				<tr>
+					<td colspan="2">Doplň, prosím, popis Tvého programu (bude se zobrazovat účastníkům na webu při výběru programu).
+					</td>
+				</tr>
+				<tr>
+					<td class='label'><label>Popis:</label></td>
+					<td><textarea name='description' rows='10' cols="70">{$block->description}</textarea>{$error_description}</td>
+				</tr>
+				<tr>
+					<td class='label'><label>Lektor:</label></td>
+					<td><input type='text' name='tutor' size='30' value='{$block->tutor}' />{$error_tutor}</td>
+				</tr>
+				<tr>
+					<td class='label'><label>E-mail:</label></td>
+					<td><input type='text' name='email' size='30' value='{$block->email}' />{$error_email}</td>
+				</tr>
+				<tr>
+					<td colspan="2">Doplň, prosím, maximální počet účastníků, kteří se mohou Tvého programu zúčastnit.
+					</td>
+				</tr>
+				<tr>
+					<td class='label'><label>Kapacita:</label></td>
+					<td><input type='text' name='capacity' size='10' value='{$block->capacity}' /> (omezeno na 255)</td>
+				</tr>
+			</table>
+
+			<div class='button-line'>
+				<button type='submit' onclick=\"this.form.submit()\">
+					<img src='{$imgDir}icons/save.png' /> Uložit</button>
+				<button type='button' onclick="window.location.replace({$wwwDir} + 'sraz-kk-setkani-cinovniku.p77.html')">
+					<img src='{$imgDir}icons/storno.png'  /> Storno</button>
+			</div>
+
+		</form>
+
+		<p></p>
+		<p style="text-align: center; "></p>
+	</div>
+</div>
+<div class="cleaner"></div>
+</div>
+</div>

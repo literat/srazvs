@@ -58,21 +58,23 @@ class RegistrationCest extends CestCase
 		$I->see('Třebíč - jaro 2010');
 	}
 
-	/**
-	 * @skipTest
-	 */
+	public function ensure_that_registrace_works(\AcceptanceTester $I)
+	{
+		$I->wantTo('ensure that registrace works');
+		$I->amOnPage('srazvs/registrace/');
+		$I->see('Registrace na srazy VS');
+		$I->see('Třebíč - jaro 2010');
+		$I->seeInCurrentUrl('/srazvs/registration/');
+	}
+
 	public function it_should_fail_registrate_new_visitor(AcceptanceTester $I)
 	{
 		$I->amOnPage('/srazvs/registration/');
 		$I->see('Registrace na srazy VS');
 		$I->wantTo('Fail registration of new visitor');
-		$I->click('Uložit', '#registration');
+		$I->click('Uložit', 'form');
 		$I->seeInCurrentUrl('/srazvs/registration/');
-		//$I->see('Jméno musí být vyplněno (max 20 znaků)!');
-		/* TODO:
-			- test fail messages
-			- controlling data without javascript needed
-		*/
+		$I->see('Hodnota musí být vyplněna!');
 	}
 
 	public function it_should_registrate_new_visitor(AcceptanceTester $I)
@@ -81,10 +83,10 @@ class RegistrationCest extends CestCase
 		$I->see('Registrace na srazy VS');
 		$I->wantTo('Registrate new visitor');
 		$this->fillForm($I, $this->successVisitor);
-		$I->click('Uložit', '#registration');
+		$I->click('Uložit', 'form');
 		$this->successRegistrationUri = $I->grabFromCurrentUrl();
 		$I->seeCurrentUrlMatches($this->succeededRegistrationUrl);
-		$I->see('úspěšně založena');
+		$I->see('úspěšně vytvořen');
 		$I->see('Registrace na srazy K + K');
 		foreach ($this->successVisitor['fields'] as $field => $value) {
 			$I->see($value);

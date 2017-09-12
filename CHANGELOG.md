@@ -1,3 +1,40 @@
+<a name="2.7.0"></a>
+# [2.7.0](https://github.com/literat/srazvs/compare/v2.6.0...v2.7.0) (2017-09-12)
+
+
+### Bug Fixes
+
+* **Creating program:** Backlink url ([27f9772](https://github.com/literat/srazvs/commit/27f9772))
+* **Deployment:** Errors after deployment ([8d2de83](https://github.com/literat/srazvs/commit/8d2de83))
+* **Http Request:** Used bad method to get http request (refs #89) ([0e56c4b](https://github.com/literat/srazvs/commit/0e56c4b))
+* **Meeting editation:** Fix form action path ([eb098e9](https://github.com/literat/srazvs/commit/eb098e9))
+* **Name badges:** Fixing layout against background (refs #34) ([afce059](https://github.com/literat/srazvs/commit/afce059))
+* **Print:** Height of large program heading (refs #34) ([d055d45](https://github.com/literat/srazvs/commit/d055d45))
+* Static analysis ([513196b](https://github.com/literat/srazvs/commit/513196b))
+* Turning on and off displaying programs in blocks ([752e92f](https://github.com/literat/srazvs/commit/752e92f))
+* Typo (refs #98) ([e322af2](https://github.com/literat/srazvs/commit/e322af2))
+* **Program badges:** Fix badges count on page (refs #34) ([ab946df](https://github.com/literat/srazvs/commit/ab946df)), closes [#34](https://github.com/literat/srazvs/issues/34)
+* **Public program:** Get mmeting id as parameter ([70847c8](https://github.com/literat/srazvs/commit/70847c8))
+* **Registration:** Calculation of code for bank ([9ce5df5](https://github.com/literat/srazvs/commit/9ce5df5))
+* **Registration:** Forgotten set request (refs #51) ([0c888a6](https://github.com/literat/srazvs/commit/0c888a6))
+* **Registration:** Order by day and time (refs #95) ([e1e644d](https://github.com/literat/srazvs/commit/e1e644d))
+* **Registration:** Selecting date of birth and saving data (refs #95) ([51c32be](https://github.com/literat/srazvs/commit/51c32be))
+* **Registration:** Set registration handlers and fix deletion of visitor ([6c1096c](https://github.com/literat/srazvs/commit/6c1096c))
+* **Registration:** Transform template directory to upper (refs #51) ([8074722](https://github.com/literat/srazvs/commit/8074722))
+* **Travis CI:** Code coverage path ([e607ea8](https://github.com/literat/srazvs/commit/e607ea8))
+
+### Features
+
+* **Backlinks:** Backlinks to dashboard (refs #76) ([a7b15db](https://github.com/literat/srazvs/commit/a7b15db))
+* **Registration:** JS validation (refs #95) ([c9c192f](https://github.com/literat/srazvs/commit/c9c192f))
+* **Registration:** Styling (refs #95) ([9c329fb](https://github.com/literat/srazvs/commit/9c329fb))
+* **Registration:** UI (refs #95) ([45783fc](https://github.com/literat/srazvs/commit/45783fc))
+* **Registration:** Upgrade to PHP 7 (refs #51) ([3046140](https://github.com/literat/srazvs/commit/3046140))
+* **Registration in CZ:** Added one way route for `registrace` (refs #82) ([f916d74](https://github.com/literat/srazvs/commit/f916d74))
+* Display date and time in annotations (refs #97) ([92b600c](https://github.com/literat/srazvs/commit/92b600c))
+
+
+
 <a name="2.6.0"></a>
 # [2.6.0](https://github.com/literat/srazvs/compare/v2.5.0...v2.6.0) (2017-02-23)
 

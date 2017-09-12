@@ -3,7 +3,6 @@
 namespace App\Presenters;
 
 use App\Models\MeetingModel;
-use Nette\Http\Request;
 use Tracy\Debugger;
 use Exception;
 
@@ -16,10 +15,9 @@ class MeetingPresenter extends BasePresenter
 	/**
 	 * Prepare initial values
 	 */
-	public function __construct(MeetingModel $model, Request $request)
+	public function __construct(MeetingModel $model)
 	{
 		$this->setModel($model);
-		$this->setRequest($request);
 	}
 
 	/**
@@ -29,7 +27,7 @@ class MeetingPresenter extends BasePresenter
 	{
 		try {
 			$model = $this->getModel();
-			$data = $this->getRequest()->getPost();
+			$data = $this->getHttpRequest()->getPost();
 			$result = $this->getModel()->create($data);
 
 			Debugger::log('Creation of meeting successfull, result: ' . json_encode($result), Debugger::INFO);
@@ -49,7 +47,7 @@ class MeetingPresenter extends BasePresenter
 	public function actionUpdate($id)
 	{
 		try {
-			$data = $this->getRequest()->getPost();
+			$data = $this->getHttpRequest()->getPost();
 			$result = $this->getModel()->update($id, $data);
 
 			Debugger::log('Modification of meeting id ' . $id . ' with data ' . json_encode($data) . ' successfull, result: ' . json_encode($result), Debugger::INFO);

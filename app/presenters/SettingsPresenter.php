@@ -4,7 +4,6 @@ namespace App\Presenters;
 
 use App\Models\SettingsModel;
 use App\Services\Emailer;
-use Nette\Http\Request;
 use Tracy\Debugger;
 
 class SettingsPresenter extends BasePresenter
@@ -18,13 +17,11 @@ class SettingsPresenter extends BasePresenter
 	/**
 	 * @param SettingsModel $settingsModel
 	 * @param Emailer       $emailer
-	 * @param Request       $request
 	 */
-	public function __construct(SettingsModel $settingsModel, Emailer $emailer, Request $request)
+	public function __construct(SettingsModel $settingsModel, Emailer $emailer)
 	{
 		$this->setModel($settingsModel);
 		$this->setEmailer($emailer);
-		$this->setRequest($request);
 	}
 
 	/**
@@ -34,7 +31,7 @@ class SettingsPresenter extends BasePresenter
 	public function actionUpdate($id)
 	{
 		try {
-			$data = $this->getRequest()->getPost();
+			$data = $this->getHttpRequest()->getPost();
 			$this->getModel()->modifyMailJSON($id, $data['subject'], $data['message']);
 
 			Debugger::log('Settings: mail type ' . $id . ' update succesfull.', Debugger::INFO);
@@ -54,7 +51,7 @@ class SettingsPresenter extends BasePresenter
 	public function actionMail($id)
 	{
 		try {
-			$recipient = $this->getRequest()->getPost()['test-mail'];
+			$recipient = $this->getHttpRequest()->getPost()['test-mail'];
 			$jsonMail = $this->getModel()->getMailJSON($id);
 
 			$this->getEmailer()
