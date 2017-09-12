@@ -12,7 +12,7 @@
         "nette/bootstrap": "^2.4",
         "nette/application": "^2.4",
         "nette/php-generator": "^2.6",
-        "mpdf/mpdf": "^6.1",
+        "mpdf/mpdf": "v7.0.0-beta2",
         "phpoffice/phpexcel": "^1.8",
         "latte/latte": "^2.4",
         "skautis/nette": "^2.0",
