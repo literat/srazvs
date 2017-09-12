@@ -565,4 +565,34 @@ class ProgramModel extends BaseModel
 			->fetch();
 	}
 
+	/**
+	 * @param  int  $programId
+	 * @return Row
+	 */
+	public function findProgramVisitors(int $programId)
+	{
+		return $this->getDatabase()
+				->query('SELECT vis.name AS name,
+								vis.surname AS surname,
+								vis.nick AS nick
+						FROM kk_visitors AS vis
+						LEFT JOIN `kk_visitor-program` AS visprog ON vis.id = visprog.visitor
+						WHERE visprog.program = ? AND vis.deleted = ?',
+						$programId, '0')->fetchAll();
+	}
+
+	/**
+	 * @param  int  $programId
+	 * @return Row
+	 */
+	public function countProgramVisitors(int $programId)
+	{
+		return $this->getDatabase()
+				->query('SELECT COUNT(*)
+						FROM kk_visitors AS vis
+						LEFT JOIN `kk_visitor-program` AS visprog ON vis.id = visprog.visitor
+						WHERE visprog.program = ? AND vis.deleted = ?',
+						$programId, '0')->fetch()[0];
+	}
+
 }

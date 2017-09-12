@@ -267,8 +267,11 @@ class RegistrationForm extends BaseForm
 				$programs[$program->id] = $program->name;
 			}
 
-			$form->addRadioList('blck_' . $block->id, $block->day . ', ' . $block->from .' - ' . $block->to .' : ' . $block->name, $programs)
-				->setDefaultValue(0);
+			$form->addRadioList(
+				'blck_' . $block->id, $block->day . ', ' . $block->from .' - ' . $block->to .' : ' . $block->name,
+				$programs
+			)->setDefaultValue(0)
+			->setDisabled($this->filterFilledCapacity($programs));
 		}
 
 		return $form;
@@ -438,11 +441,17 @@ class RegistrationForm extends BaseForm
 		return $this;
 	}
 
+	/**
+	 * @return Row
+	 */
 	protected function fetchProgramBlocks()
 	{
 		return $this->getBlockModel()->getProgramBlocks($this->getMeetingId());
 	}
 
+	/**
+	 * @return array
+	 */
 	protected function fetchMeals()
 	{
 		return MealModel::$meals;
@@ -465,6 +474,24 @@ class RegistrationForm extends BaseForm
 		$this->userService = $service;
 
 		return $this;
+	}
+
+	/**
+	 * @param  array  $programs
+	 * @return array
+	 */
+	protected function filterFilledCapacity(array $programs = []): array
+	{
+		return array_keys(
+			array_filter($programs, function($name, $id) {
+				if ($id) {
+					$visitorsOnProgram = $this->getProgramModel()->countProgramVisitors($id);
+					$programCapacity = $this->getProgramModel()->findByProgramId($id)->capacity;
+
+					return $visitorsOnProgram >= $programCapacity;
+				}
+			}, ARRAY_FILTER_USE_BOTH)
+		);
 	}
 
 }
