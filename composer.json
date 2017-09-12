@@ -1,6 +1,6 @@
 {
     "require": {
-        "php": "~7.0.0",
+        "php": ">=7.0.0",
         "skautis/skautis": "^2.0",
         "tracy/tracy": "^2.3",
         "nette/database": "^2.4",
@@ -25,7 +25,8 @@
         "mockery/mockery": "^0.9.4",
         "codeception/codeception": "^2.2",
         "dg/ftp-deployment": "~2.1",
-        "phpunit/phpunit": "^5.7"
+        "phpunit/phpunit": "^5.7",
+        "doctrine/instantiator": "~1.0.0"
     },
     "autoload": {
         "files": [
