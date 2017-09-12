@@ -1,0 +1,29 @@
+{layout '../@layout.latte'}
+
+{block content}
+<div class='siteContentRibbon'>Správa účastníků</div>
+
+{foreach $flashes as $flash}
+<div class="flash {$flash->type}">{$flash->message}</div>
+{/foreach}
+
+<div class='pageRibbon'>hromadný e-mail</div>
+<div>
+
+<form action='{$visitDir}/send' method='post'>
+	<div class='button-line'>
+		<button type='submit' onclick=\"this.form.submit()\">
+			<img src='{$imgDir}icons/mail.png' /> Odeslat</button>
+	</div>
+	<label>Příjemci:</label><br />
+	<textarea name="recipients" cols="40" rows="30">{$recipientMailAddresses}</textarea><br /><br />
+	<label>Předmět:</label><br />
+	<input type="text" name="subject" size="100" /><br /><br />
+	<label>Obsah:</label><br />
+	<textarea style="max-width:60%;" name="message" cols="150" rows="20"></textarea>
+	<input type="hidden" name="cms" value="send" />
+	<div class='button-line'>
+		<button type='submit' onclick=\"this.form.submit()\">
+			<img src='{$imgDir}icons/mail.png' /> Odeslat</button>
+	</div>
+</form>

@@ -1,0 +1,69 @@
+<head>
+	<style n:syntax='off'>
+		body {
+			font-family:Arial,Geneva,Sans-Serif;
+			text-align:center;
+			vertical-align:middle;
+		}
+
+		h1 {font-size:30px;padding:0px;margin:0px;}
+		h2 {font-size:20px;padding:0px;margin:0px;}
+
+		table {
+			border-collapse:collapse;
+			width:100%;
+			vertical-align:top;
+		}
+
+		td {
+			width:100%;
+			padding-left:30px;
+			height:40px;
+			font-size:20px;
+			/*border:1px solid black;*/
+			text-align:middle;
+		}
+
+		td.day {
+			border:1px solid black;
+			background-color:#000;
+			width:100%;
+			text-align:center;
+			height:20px;
+			color:#fff;
+		}
+
+		td.time {
+			border:1px solid black;
+			background-color:#dddddd;
+			width:300px;
+			text-align:center;
+			vertical-align:middle;
+			font-weight:bold;
+			font-size:25px;
+		}
+	</style>
+</head>
+<body>
+	<h1>{$header}</h1>
+	<h2>program srazu vodních skautů</h2>
+
+	<table>
+			{var $days = array("PÁTEK", "SOBOTA", "NEDĚLE")}
+			{foreach $days as $day}
+					<tr>
+						<td class='day' colspan='2' >{$day}</td>
+					</tr>
+					{var $result = $export->getLargeProgramData($day)}
+					{foreach $result as $row}
+					<tr>
+						<td class='time'>{$row['from']} - {$row['to']}</td>
+						<td style='border:1px solid black;'>
+							<div>{$row['name']}</div>
+							{php echo $program->getProgramsLarge($row['id'])}
+						</td>
+					</tr>
+					{/foreach}
+		{/foreach}
+	</table>
+</body>

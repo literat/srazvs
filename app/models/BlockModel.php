@@ -1,6 +1,8 @@
 <?php
 
-namespace App;
+namespace App\Models;
+
+use Nette\Database\Context;
 
 /**
  * Blocks
@@ -12,152 +14,62 @@ namespace App;
  */
 class BlockModel extends BaseModel
 {
-	/** @var integer meeting ID */
-	private $meetingId;
+
+	/** @var string */
+	protected $table = 'kk_blocks';
+
+	/** @var array */
+	public $columns = [
+		'guid',
+		'name',
+		'day',
+		'from',
+		'to',
+		'program',
+		'display_progs',
+		'description',
+		'tutor',
+		'email',
+		'category',
+		'material',
+		'capacity',
+		//"meeting",
+	];
+
+	private static $connection;
 
 	/**
-	 * Array of database block table columns
-	 * @var array
+	 * @param Context  $database
 	 */
-	public $dbColumns = array();
-
-	/**
-	 * Array of form names
-	 * @var array
-	 */
-	public $formNames = array();
-
-	/**
-	 * Init variables
-	 *
-	 * @param int $meeting_ID ID of meeting
-	 */
-	public function __construct($database)
+	public function __construct(Context $database)
 	{
-		$this->dbColumns = array(
-			'guid',
-			"name",
-			"day",
-			"from",
-			"to",
-			"program",
-			"display_progs",
-			"description",
-			"tutor",
-			"email",
-			"category",
-			"material",
-			"capacity"/*,
-			"meeting"*/
-		);
-		$this->formNames = array(
-			'guid',
-			"name",
-			"day",
-			"start_hour",
-			"end_hour",
-			"start_minute",
-			"end_minute",
-			"program",
-			"display_progs",
-			"description",
-			"tutor",
-			"email",
-			"category",
-			"material",
-			"capacity",
-			"day",
-			"from",
-			"to"
-		);
-		$this->dbTable = "kk_blocks";
-
-		$this->database = $database;
-	}
-
-	public function setMeetingId($id)
-	{
-		$this->meetingId = $id;
+		$this->setDatabase($database);
+		self::$connection = $this->getDatabase();
 	}
 
 	/**
-	 * Get data from database
-	 *
-	 * @return	string	html of a table
+	 * @return	ActiveRow
 	 */
-	public function getData($block_id = NULL)
+	public function all()
 	{
-		if(isset($block_id)) {
-			$data = $this->database
-				->query('SELECT guid,
-								name,
-								DATE_FORMAT(`from`,"%H") AS start_hour,
-								DATE_FORMAT(`to`,"%H") AS end_hour,
-								DATE_FORMAT(`from`,"%i") AS start_minute,
-								DATE_FORMAT(`to`,"%i") AS end_minute,
-								`day`,
-								`from`,
-								`to`,
-								program,
-								display_progs,
-								description,
-								material,
-								tutor,
-								email,
-								capacity,
-								category
-						FROM kk_blocks
-						WHERE id = ? AND deleted = ?
-						LIMIT 1',
-						$block_id, '0')->fetch();
-		} else {
-			$data = $this->database
-				->query('SELECT blocks.guid AS guid,
-							blocks.id AS id,
-							blocks.name AS name,
-							cat.name AS cat_name,
-							day,
-							DATE_FORMAT(`from`, "%H:%i") AS `from`,
-							DATE_FORMAT(`to`, "%H:%i") AS `to`,
-							description,
-							tutor,
-							email,
-							style
-					FROM kk_blocks AS blocks
-					LEFT JOIN kk_categories AS cat ON cat.id = blocks.category
-					WHERE blocks.meeting = ? AND blocks.deleted = ?
-					ORDER BY day, `from` ASC',
-					$this->meetingId, '0')->fetchAll();
-		}
-
-		return $data;
-	}
-
-	public function annotation($guid)
-	{
-		return $this->database
-				->query('SELECT guid,
-								id,
-								name,
-								DATE_FORMAT(`from`,"%H") AS start_hour,
-								DATE_FORMAT(`to`,"%H") AS end_hour,
-								DATE_FORMAT(`from`,"%i") AS start_minute,
-								DATE_FORMAT(`to`,"%i") AS end_minute,
-								`day`,
-								`from`,
-								`to`,
-								program,
-								display_progs,
-								description,
-								material,
-								tutor,
-								email,
-								capacity,
-								category
-						FROM kk_blocks
-						WHERE guid = ? AND deleted = ?
-						LIMIT 1',
-						$guid, '0')->fetch();
+		return $this->getDatabase()
+			->query('SELECT blocks.guid AS guid,
+						blocks.id AS id,
+						blocks.name AS name,
+						cat.name AS cat_name,
+						day,
+						DATE_FORMAT(`from`, "%H:%i") AS `from`,
+						DATE_FORMAT(`to`, "%H:%i") AS `to`,
+						description,
+						tutor,
+						email,
+						style
+				FROM kk_blocks AS blocks
+				LEFT JOIN kk_categories AS cat ON cat.id = blocks.category
+				WHERE blocks.meeting = ? AND blocks.deleted = ?
+				ORDER BY day, `from` ASC',
+				$this->getMeetingId(), '0')
+			->fetchAll();
 	}
 
 	/**
@@ -168,10 +80,7 @@ class BlockModel extends BaseModel
 	 */
 	public function renderHtmlSelect($blockId)
 	{
-		$result = $this->database
-			->table('kk_blocks')
-			->where('meeting ? AND program ? AND deleted ?', $_SESSION['meetingID'], '1', '0')
-			->fetchAll();
+		$result = $this->findByMeeting($this->getMeetingId());
 
 		$html_select = "<select style='width: 300px; font-size: 10px' name='block'>\n";
 
@@ -193,7 +102,7 @@ class BlockModel extends BaseModel
 	 */
 	public function getProgramBlocks($meetingId)
 	{
-		$data = $this->database
+		$data = $this->getDatabase()
 			->query('SELECT id,
 					day,
 					DATE_FORMAT(`from`, "%H:%i") AS `from`,
@@ -202,15 +111,33 @@ class BlockModel extends BaseModel
 					program
 				FROM kk_blocks
 				WHERE deleted = ? AND program = ? AND meeting = ?
-				ORDER BY `day` ASC',
+				ORDER BY `day`, `from` ASC',
 				'0', '1', $meetingId)->fetchAll();
 
 		return $data;
 	}
 
-	public static function getExportBlocks($meetingId, $dayVal, $database)
+	/**
+	 * @param  integer $meetingId
+	 * @return ActiveRow
+	 */
+	public function idsFromCurrentMeeting($meetingId)
 	{
-		$result = $database
+		return $this->getDatabase()
+			->table($this->getTable())
+			->select('id')
+			->where('meeting ? AND program ? AND deleted ?', $meetingId, '1', '0')
+			->fetchAll();
+	}
+
+	/**
+	 * @param  integer $meetingId
+	 * @param  string  $dayVal
+	 * @return ActiveRow
+	 */
+	public function getExportBlocks($meetingId, $dayVal)
+	{
+		$result = $this->getDatabase()
 			->query('SELECT blocks.id AS id,
 						day,
 						DATE_FORMAT(`from`, "%H:%i") AS `from`,
@@ -238,11 +165,75 @@ class BlockModel extends BaseModel
 	 */
 	public function getTutor($blockId)
 	{
-		return $this->database
-			->table($this->dbTable)
+		return $this->getDatabase()
+			->table($this->getTable())
 			->select('guid, email, tutor')
 			->where('id ? AND deleted ?', $blockId, '0')
 			->limit(1)
 			->fetch();
 	}
+
+	/**
+	 * @param  int $meetingId
+	 * @return Database
+	 */
+	public function findByMeeting($meetingId)
+	{
+		return $this->getDatabase()
+			->table($this->getTable())
+			->select('id')
+			->where('meeting ? AND program ? AND deleted ?', $meetingId, '1', '0')
+			->fetchAll();
+	}
+
+	/**
+	 * @param  string $day
+	 * @return Row
+	 */
+	public function findByDay($day = '')
+	{
+		return $this->getDatabase()
+				->query('SELECT	blocks.id AS id,
+							day,
+							DATE_FORMAT(`from`, "%H:%i") AS `from`,
+							DATE_FORMAT(`to`, "%H:%i") AS `to`,
+							blocks.name AS name,
+							program,
+							style
+					FROM kk_blocks AS blocks
+					LEFT JOIN kk_categories AS cat ON cat.id = blocks.category
+					WHERE blocks.deleted = ? AND day = ? AND blocks.meeting = ?
+					ORDER BY `from` ASC',
+					'0', $day, $this->getMeetingId())
+				->fetchAll();
+	}
+
+	/**
+	 * Return blocks that contents programs
+	 *
+	 * @param	int		meeting ID
+	 * @return	array	result and number of affected rows
+	 */
+	public function findProgramBlocksByMeeting(int $meetingId)
+	{
+		return $this->getDatabase()
+			->query('SELECT id,
+					day,
+					DATE_FORMAT(`from`, "%H:%i") AS `from`,
+					DATE_FORMAT(`to`, "%H:%i") AS `to`,
+					name,
+					program
+				FROM kk_blocks
+				WHERE deleted = ? AND program = ? AND meeting = ?
+				ORDER BY `day`, `from` ASC',
+				'0', '1', $meetingId)->fetchAll();
+	}
+
+	public function findByProgramId(int $programId)
+	{
+		return $this->getDatabase()
+			->query()
+			->fetch();
+	}
+
 }

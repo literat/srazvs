@@ -1,0 +1,65 @@
+{layout '../@layout.latte'}
+
+{block content}
+		<div class='siteContentRibbon'>Správa kategorií</div>
+		<div class='pageRibbon'>seznam kategorií</div>
+
+		{foreach $flashes as $flash}
+		<div class="flash {$flash->type}">{$flash->message}</div>
+		{/foreach}
+
+		<div class='link'>
+			<a class='link' href='{$catDir}/new'>
+				<img src='{$imgDir}icons/new.png' />NOVÁ KATEGORIE</a>
+		</div>
+
+		<script src='{$jsDir}jquery/jquery.tablesorter.min.js' type='text/javascript'></script>
+		<script>
+		$(document).ready(function() {
+			$("#CategoryTable").tablesorter( {
+				headers: {
+					0: { sorter: false},
+					1: { sorter: false},
+					3: { sorter: false}
+				}
+			} );
+		} );
+		</script>
+		<table id='CategoryTable' class='list tablesorter'>
+			<thead>
+				<tr>
+					<th></th>
+					<th></th>
+					<th class='tab1'>název</th>
+					<th class='tab1'>styl</th>
+				</tr>
+			</thead>
+			<tfoot>
+				<tr>
+					<th></th>
+					<th></th>
+					<th class='tab1'>název</th>
+					<th class='tab1'>styl</th>
+				</tr>
+			</tfoot>
+			<tbody>
+			{foreach $categories as $id => $category}
+				<tr class='radek1'>
+					<td>
+						<a href='{$catDir}/edit/{$id}' title='Upravit kategorii'>
+							<img class='edit' src='{$imgDir}icons/edit.gif' />
+						</a>
+					</td>
+					<td>
+						<a href="javascript:confirmation('{$catDir}/delete/{$id}', 'opravdu smazat kategorii {$category->name}? jste si jisti?')" title='Odstranit'>
+							<img class='edit' src='{$imgDir}icons/delete.gif' />
+						</a>
+					</td>
+					<td>{$category->name}</td>
+					<td>
+						<div class='cat-{$category->style}'>{$category->style}</div>
+					</td>
+				</tr>
+			{/foreach}
+			</tbody>
+		</table>

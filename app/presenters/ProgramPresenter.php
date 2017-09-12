@@ -2,8 +2,11 @@
 
 namespace App\Presenters;
 
-use Nette\Database\Context;
-use Nette\DI\Container;
+use App\Models\ProgramModel;
+use App\Models\BlockModel;
+use App\Models\MeetingModel;
+use App\Services\Emailer;
+use Tracy\Debugger;
 
 /**
  * Program controller
@@ -15,290 +18,172 @@ use Nette\DI\Container;
  */
 class ProgramPresenter extends BasePresenter
 {
-	/**
-	 * This template variable will hold the 'this->View' portion of our MVC for this
-	 * controller
-	 */
-	protected $template = 'listing';
 
 	/**
-	 * Template directory
-	 * @var string
-	 */
-	protected $templateDir = 'program';
-
-	/**
-	 * ID of item
 	 * @var integer
 	 */
-	private $programId = NULL;
+	private $programId = null;
 
 	/**
-	 * ID of meeting
-	 * @var integer
-	 */
-	protected $meetingId = 0;
-
-	/**
-	 * Object farm container
-	 * @var Container
-	 */
-	private $container;
-
-	/**
-	 * Program model
-	 * @var ProgramModel
-	 */
-	private $Program;
-
-	/**
-	 * Emailer class
 	 * @var Emailer
 	 */
-	private $Emailer;
+	private $emailer;
 
 	/**
-	 * Export class
-	 * @var Export
+	 * @var BlockModel
 	 */
-	private $Export;
+	private $blockModel;
 
 	/**
-	 * Category class
-	 * @var Category
+	 * @var MeetingModel
 	 */
-	private $Category;
-
-	/**
-	 * Meeting class
-	 * @var Meeting
-	 */
-	private $Meeting;
-
-	private $block;
-	private $action;
+	private $meetingModel;
 
 	/**
 	 * Prepare model classes and get meeting id
 	 */
-	public function __construct(Context $database, Container $container)
-	{
-		$this->database = $database;
-		$this->container = $container;
-		$this->debugMode = $this->container->parameters['debugMode'];
-		$this->router = $this->container->parameters['router'];
-		$this->Program = $this->container->createServiceProgram();
-		$this->block = $this->container->createServiceBlock();
-		$this->Emailer = $this->container->createServiceEmailer();
-		$this->Export = $this->container->createServiceExports();
-		$this->Meeting = $this->container->createServiceMeeting();
-		$this->Category = $this->container->createServiceCategory();
-		$this->latte = $this->container->getService('latte');
-
-		if($this->meetingId = $this->requested('mid', '')){
-			$_SESSION['meetingID'] = $this->meetingId;
-		} else {
-			$this->meetingId = $_SESSION['meetingID'];
-		}
-
-		$this->Program->setMeetingId($this->meetingId);
-		$this->Meeting->setMeetingId($this->meetingId);
-		$this->Meeting->setHttpEncoding($this->container->parameters['encoding']);
-
-		if($this->debugMode){
-			$this->Meeting->setRegistrationHandlers(1);
-			$this->meetingId = 1;
-		} else {
-			$this->Meeting->setRegistrationHandlers();
-		}
+	public function __construct(
+		ProgramModel $model,
+		Emailer $emailer,
+		BlockModel $blockModel,
+		MeetingModel $meetingModel
+	) {
+		$this->setModel($model);
+		$this->setEmailer($emailer);
+		$this->setBlockModel($blockModel);
+		$this->setMeetingModel($meetingModel);
 	}
 
 	/**
-	 * This is the default function that will be called by Router.php
-	 *
-	 * @param array $getVars the GET variables posted to index.php
-	 */
-	public function init()
-	{
-		$action = $this->requested('action');
-		$id = $this->requested('id', $this->programId);
-		$this->cms = $this->requested('cms', '');
-		$this->error = $this->requested('error', '');
-		$this->page = $this->requested('page', '');
-
-		$this->action = $this->cms ? $this->cms : $action;
-
-		switch($this->action) {
-			case "delete":
-				$this->delete($id);
-				$this->render();
-				break;
-			case "new":
-				$this->__new();
-				$this->render();
-				break;
-			case "create":
-				$this->create();
-				$this->render();
-				break;
-			case "edit":
-				$this->edit($id);
-				$this->render();
-				break;
-			case "modify":
-				$this->update($id);
-				$this->render();
-				break;
-			case "mail":
-				$this->mailRender($id);
-				break;
-			case "public":
-				$this->publicView();
-				$this->render();
-				break;
-			case "annotation":
-				if(is_numeric($id)) {
-					$this->update($id);
-				}
-				$this->annotationRender($id);
-				break;
-			default:
-				$this->render();
-				break;
-		}
-	}
-
-	/**
-	 * Prepare page for new item
-	 *
 	 * @return void
 	 */
-	private function __new()
+	public function startup()
 	{
-		$this->template = 'form';
-
-		$this->heading = "nový program";
-		$this->todo = "create";
-
-		foreach($this->Program->formNames as $key) {
-				if($key == 'display_in_reg') $value = '1';
-				if($key == 'capacity') $value = '0';
-				else $value = "";
-				$this->data[$key] = $this->requested($key, $value);
-		}
+		parent::startup();
+		$this->getModel()->setMeetingId($this->getMeetingId());
+		$this->getMeetingModel()->setMeetingId($this->getMeetingId());
 	}
 
 	/**
-	 * Process data from form
-	 *
 	 * @return void
 	 */
-	private function create()
+	public function actionCreate()
 	{
-		$postData = $this->router->getPost();
+		$model = $this->getModel();
+		$data = $this->getHttpRequest()->getPost();
 
-		foreach($this->Program->formNames as $key) {
-				if(array_key_exists($key, $postData) && !is_null($postData[$key])) {
-					$$key = $postData[$key];
-				}
-				elseif($key == 'display_in_reg') $$key = '1';
-				elseif($key == 'capacity') $$key = '0';
-				else $$key = '';
+		$this->setBacklink($data['backlink']);
+		unset($data['backlink']);
+
+		if(!array_key_exists('display_in_reg', $data)) {
+			$data['display_in_reg'] = 1;
 		}
 
-		foreach($this->Program->dbColumns as $key) {
-			$DB_data[$key] = $$key;
+		try {
+			$result = $this->getModel()->create($data);
+
+			Debugger::log('Creation of program successfull, result: ' . json_encode($result), Debugger::INFO);
+
+			$this->flashMessage('Položka byla úspěšně vytvořena', 'ok');
+		} catch(Exception $e) {
+			Debugger::log('Creation of program with data ' . json_encode($data) . ' failed, result: ' . $e->getMessage(), Debugger::ERROR);
+
+			$this->flashMessage('Záznam se nepodařilo uložit, result: ' . $e->getMessage(), 'error');
 		}
 
-		if($this->Program->create($DB_data)){
-			redirect(PRJ_DIR.$this->page."?error=ok");
-		}
-	}
-
-
-	/**
-	 * Process data from editing
-	 *
-	 * @param  int 	$id 	of item
-	 * @return void
-	 */
-	private function update($id = NULL)
-	{
-		$postData = $this->router->getPost();
-
-		foreach($this->Program->formNames as $key) {
-				if(array_key_exists($key, $postData) && !is_null($postData[$key])) {
-					$$key = $postData[$key];
-				}
-				elseif($key == 'display_in_reg') $$key = '1';
-				else $$key = '';
-		}
-
-		foreach($this->Program->dbColumns as $key) {
-			$DB_data[$key] = $$key;
-		}
-
-		$this->Program->update($id, $DB_data);
-
-		if($this->page == 'annotation') {
-			$queryString = '/' . $DB_data['guid'] . '?error=ok';
-		} else {
-			$queryString = "?error=ok";
-		}
-
-		redirect(PRJ_DIR . 'program/' . $this->page . $queryString);
+		$this->redirect($this->getBacklink() ?: 'Program:listing');
 	}
 
 	/**
-	 * Prepare data for editing
-	 *
-	 * @param  int $id of item
+	 * @param  integer $id
 	 * @return void
 	 */
-	private function edit($id)
+	public function actionUpdate($id)
 	{
-		$this->template = 'form';
+		$model = $this->getModel();
+		$data = $this->getHttpRequest()->getPost();
 
-		$this->heading = "úprava programu";
-		$this->todo = "modify";
+		$this->setBacklink($data['backlink']);
+		unset($data['backlink']);
 
-		$this->programId = $id;
-
-		$dbData = $this->Program->getData($id);
-
-		foreach($this->Program->formNames as $key) {
-			$this->data[$key] = $this->requested($key, $dbData[$key]);
+		if(!array_key_exists('display_in_reg', $data)) {
+			$data['display_in_reg'] = 1;
 		}
+
+		try {
+			$result = $this->getModel()->update($id, $data);
+
+			Debugger::log('Modification of program id ' . $id . ' with data ' . json_encode($data) . ' successfull, result: ' . json_encode($result), Debugger::INFO);
+
+			$this->flashMessage('Položka byla úspěšně upravena.', 'ok');
+		} catch(Exception $e) {
+			Debugger::log('Modification of program id ' . $id . ' failed, result: ' . $e->getMessage(), Debugger::ERROR);
+
+			$this->flashMessage('Modification of program id ' . $id . ' failed, result: ' . $e->getMessage(), 'error');
+		}
+
+		$this->redirect($this->getBacklink() ?: 'Program:listing');
 	}
 
 	/**
-	 * Delete item by id
-	 *
-	 * @param  int $id of item
+	 * @param  integer  $id
 	 * @return void
 	 */
-	private function delete($id)
+	public function actionDelete($id)
 	{
-		if($this->Program->delete($id)) {
-			  	redirect("?program&error=del");
+		try {
+			$result = $this->getModel()->delete($id);
+			Debugger::log('Destroying of program successfull, result: ' . json_encode($result), Debugger::INFO);
+			$this->flashMessage('Položka byla úspěšně smazána.', 'ok');
+		} catch(Exception $e) {
+			Debugger::log('Destroying of program failed, result: ' .  $e->getMessage(), Debugger::ERROR);
+			$this->flashMessage('Smazání programu se nezdařilo, result: ' . $e->getMessage(), 'error');
 		}
+
+		$this->redirect('Program:listing');
 	}
 
 	/**
-	 * Send mail to tutor
-	 *
+	 * @param  integer $id
 	 * @return void
 	 */
-	private function mailRender($id)
+	public function actionAnnotationupdate($id)
 	{
-		$tutors = $this->Program->getTutor($id);
-		$recipients = $this->parseTutorEmail($tutors);
+		try {
+			$data = $this->getHttpRequest()->getPost();
+			$result = $this->updateByGuid($id, $data);
 
-		if($this->Emailer->tutor($recipients, $tutors->guid, 'program')) {
-			redirect('/srazvs/program?error=mail_send');
-		} else {
-			redirect('program?id=' . $id . '&error=email&cms=edit');
+			Debugger::log('Modification of program annotation id ' . $id . ' with data ' . json_encode($data) . ' successfull, result: ' . json_encode($result), Debugger::INFO);
+
+			$this->flashMessage('Položka byla úspěšně upravena.', 'ok');
+		} catch(Exception $e) {
+			Debugger::log('Modification of program annotation guid ' . $id . ' failed, result: ' . $e->getMessage(), Debugger::ERROR);
+
+			$this->flashMessage('Modification of program annotation guid ' . $id . ' failed, result: ' . $e->getMessage(), 'error');
 		}
+
+		$this->redirect('Program:annotation', $id);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function actionMail($id)
+	{
+		try {
+			$tutors = $this->getModel()->getTutor($id);
+			$recipients = $this->parseTutorEmail($tutors);
+
+			$this->getEmailer()->tutor($recipients, $tutors->guid, 'program');
+
+			Debugger::log('Sending email to program tutor successfull, result: ' . json_encode($recipients) . ', ' . $tutors->guid, Debugger::INFO);
+			$this->flashMessage('Email lektorovi byl odeslán..', 'ok');
+		} catch(Exception $e) {
+			Debugger::log('Sending email to program tutor failed, result: ' .  $e->getMessage(), Debugger::ERROR);
+			$this->flashMessage('Email lektorovi nebyl odeslán, result: ' . $e->getMessage(), 'error');
+		}
+
+		$this->redirect('Program:edit', $id);
 	}
 
 	/**
@@ -306,157 +191,161 @@ class ProgramPresenter extends BasePresenter
 	 *
 	 * @return void
 	 */
-	private function publicView()
+	public function renderPublic()
 	{
-		$this->template = 'view';
-	}
+		$this->getMeetingModel()->setRegistrationHandlers($this->getMeetingId());
 
-	/**
-	 * Prepare data for annotation
-	 *
-	 * @param  int $id of item
-	 * @return void
-	 */
-	private function annotationRender($guid)
-	{
-		$this->template = 'annotation';
-
-		$this->heading = "úprava programu";
-		$this->todo = "modify";
-
-		$data = $this->Program->annotation($guid);
-
-		$this->Meeting->setRegistrationHandlers();
-
-		$this->programId = $data->id;
-
-		$error_name = "";
-		$error_description = "";
-		$error_tutor = "";
-		$error_email = "";
-		$error_material = "";
-
-		$parameters = [
-			'cssDir'	=> CSS_DIR,
-			'jsDir'		=> JS_DIR,
-			'imgDir'	=> IMG_DIR,
-			'wwwDir'	=> HTTP_DIR,
-			'error'		=> printError($this->error),
-			'todo'		=> $this->todo,
-			'cms'		=> $this->cms,
-			'data'		=> $data,
-			'mid'		=> $this->meetingId,
-			'id'		=> $this->programId,
-			'page'		=> $this->page,
-			'heading'	=> $this->heading,
-			'page_title'=> 'Registrace programů pro lektory',
-			'meeting_heading'	=> $this->Meeting->getRegHeading(),
-			'error_name'		=> printError($error_name),
-			'error_description'	=> printError($error_description),
-			'error_tutor'		=> printError($error_tutor),
-			'error_email'		=> printError($error_email),
-			'error_material'	=> printError($error_material),
-		];
-
-		$this->latte->render(__DIR__ . '/../templates/' . $this->templateDir.'/'.$this->template . '.latte', $parameters);
-	}
-
-	/**
-	 * Render all page
-	 *
-	 * @return void
-	 */
-	public function render()
-	{
-		$error = "";
-		if(!empty($this->data)) {
-			$error_name = "";
-			$error_description = "";
-			$error_tutor = "";
-			$error_email = "";
-			$error_material = "";
-
-			// category select box
-			$cat_roll = $this->Category->renderHtmlSelect($this->data['category']);
-			// blocks select box
-			$block_select = $this->block->renderHtmlSelect($this->data['block']);
-			// display in registration check box
-			$display_in_reg_checkbox = $this->renderHtmlCheckBox('display_in_reg', 0, $this->data['display_in_reg']);
-			// time select boxes
-		}
-
-		$parameters = [
-			'cssDir'	=> CSS_DIR,
-			'jsDir'		=> JS_DIR,
-			'imgDir'	=> IMG_DIR,
-			'wwwDir'	=> HTTP_DIR,
-			'expDir'	=> EXP_DIR,
-			'error'		=> printError($this->error),
-			'todo'		=> $this->todo,
-			'cms'		=> $this->cms,
-			'render'	=> $this->Program->getData(),
-			'mid'		=> $this->meetingId,
-			'page'		=> $this->page,
-			'heading'	=> $this->heading,
-		];
-
-		if($this->action != 'public' && $this->action != 'annotation') {
-			$parameters = array_merge($parameters, [
-				'style'		=> $this->Category->getStyles(),
-				'user'		=> $this->getSunlightUser($_SESSION[SESSION_PREFIX.'user']),
-				'meeting'	=> $this->getPlaceAndYear($_SESSION['meetingID']),
-				'menu'		=> $this->generateMenu(),
-			]);
-		}
-
-		if(!empty($this->data)) {
-			$parameters = array_merge($parameters, [
-				'id'				=> $this->programId,
-				'data'				=> $this->data,
-				'error_name'		=> printError($error_name),
-				'error_description'	=> printError($error_description),
-				'error_tutor'		=> printError($error_tutor),
-				'error_email'		=> printError($error_email),
-				'error_material'	=> printError($error_material),
-				'cat_roll'			=> $cat_roll,
-				'block_select'		=> $block_select,
-				'program_visitors'	=> $this->Program->getProgramVisitors($this->programId),
-				'display_in_reg_checkbox'	=> $display_in_reg_checkbox,
-				'formkey'			=> ((int)$this->programId.$this->meetingId) * 116 + 39147,
-				'meeting_heading'	=> $this->Meeting->getRegHeading(),
-				'block'				=> $this->itemId,
-				'page_title'		=> 'Registrace programů pro lektory',
-				'type'				=> isset($this->data['type']) ? $this->data['type'] : NULL,
-				'hash'				=> isset($this->data['formkey']) ? $this->data['formkey'] : NULL,
-			]);
-		}
-
-		if($this->action == 'public') {
-			$parameters['meeting_heading'] = $this->Meeting->getRegHeading();
+		$template = $this->getTemplate();
+		$template->meeting_heading = $this->getMeetingModel()->getRegHeading();
 			////otevirani a uzavirani prihlasovani
-			if(($this->Meeting->getRegOpening() < time()) || $this->debugMode) {
-				$parameters['display_program'] = true;
-			} else {
-				$parameters['display_program'] = false;
-			}
-			$parameters['public_program'] = $this->Meeting->renderPublicProgramOverview();
-			$parameters['page_title'] = 'Srazy VS - veřejný program';
-			$parameters['style'] = 'table { border-collapse:separate; width:100%; }
+		if(($this->getMeetingModel()->getRegOpening() < time()) || $this->getDebugMode()) {
+			$template->display_program = true;
+		} else {
+			$template->display_program = false;
+		}
+		$template->public_program = $this->getMeetingModel()->renderPublicProgramOverview($this->getMeetingId());
+		$template->page_title = 'Srazy VS - veřejný program';
+		$template->style = 'table { border-collapse:separate; width:100%; }
 				td { .width:100%; text-align:center; padding:0px; }
 				td.day { border:1px solid black; background-color:#777777; width:80px; }
 				td.time { background-color:#cccccc; width:80px; }';
-		} elseif($this->cms == 'annotation') {
-			$parameters['meeting_heading'] = $this->Meeting->getRegHeading();
-			////otevirani a uzavirani prihlasovani
-			if(($this->Meeting->getRegOpening() < time()) || $this->debugMode) {
-				$parameters['display_program'] = true;
-			} else {
-				$parameters['display_program'] = false;
-			}
-			$parameters['type'] = $this->data['type'];
-			$parameters['formkey'] = $this->data['formkey'];
-		}
-
-		$this->latte->render(__DIR__ . '/../templates/' . $this->templateDir.'/'.$this->template . '.latte', $parameters);
 	}
+
+	/**
+	 * @return void
+	 */
+	public function renderListing()
+	{
+		$model = $this->getModel();
+		$template = $this->getTemplate();
+
+		$template->programs = $model->all();
+		$template->mid = $this->meetingId;
+		$template->heading = $this->heading;
+	}
+
+	/**
+	 * @return void
+	 */
+	public function renderNew()
+	{
+		$template = $this->getTemplate();
+
+		$template->heading = 'nový program';
+		$template->page = $this->getHttpRequest()->getQuery('page');
+		$template->error_name = '';
+		$template->error_description = '';
+		$template->error_tutor = '';
+		$template->error_email = '';
+		$template->error_material = '';
+		$template->display_in_reg_checkbox = $this->renderHtmlCheckBox('display_in_reg', 0, 1);
+		$template->block_select = $this->getBlockModel()->renderHtmlSelect(null);
+		$template->selectedCategory	= null;
+	}
+
+	/**
+	 * @param  integer $id
+	 * @return void
+	 */
+	public function renderEdit($id)
+	{
+		$this->programId = $id;
+		$program = $this->getModel()->find($id);
+
+		$template = $this->getTemplate();
+		$template->heading = 'úprava programu';
+		$template->error_name = '';
+		$template->error_description = '';
+		$template->error_tutor = '';
+		$template->error_email = '';
+		$template->error_material = '';
+		$template->display_in_reg_checkbox = $this->renderHtmlCheckBox('display_in_reg', 1, $program->display_in_reg);
+		$template->block_select = $this->getBlockModel()->renderHtmlSelect($program->block);
+		$template->selectedCategory	= $program->category;
+		$template->program_visitors = $this->getModel()->getProgramVisitors($id);
+		$template->program = $program;
+		$template->id = $id;
+	}
+
+	/**
+	 * @param  integer $id
+	 * @return void
+	 */
+	public function renderAnnotation($id)
+	{
+		$template = $this->getTemplate();
+
+		$template->page_title = 'Registrace programů pro lektory';
+		$template->page = $this->getHttpRequest()->getQuery('page');
+		$template->error_name = "";
+		$template->error_description = "";
+		$template->error_tutor = "";
+		$template->error_email = "";
+		$template->error_material = "";
+
+		$program = $this->getModel()->findBy('guid', $id);
+		$block = $this->getBlockModel()->find($program->block);
+		$meeting = $this->getMeetingModel()->find($this->getMeetingId());
+
+		$this->programId = $program->id;
+		$template->program = $program;
+		$template->block = $block;
+		$template->meeting = $meeting;
+		$template->id = $id;
+	}
+
+	/**
+	 * @return Emailer
+	 */
+	protected function getEmailer()
+	{
+		return $this->emailer;
+	}
+
+	/**
+	 * @param  Emailer $emailer
+	 * @return $this
+	 */
+	protected function setEmailer(Emailer $emailer)
+	{
+		$this->emailer = $emailer;
+		return $this;
+	}
+
+	/**
+	 * @return BlockModel
+	 */
+	protected function getBlockModel()
+	{
+		return $this->blockModel;
+	}
+
+	/**
+	 * @param  BlockModel $blockModel
+	 * @return $this
+	 */
+	protected function setBlockModel(BlockModel $blockModel)
+	{
+		$this->blockModel = $blockModel;
+		return $this;
+	}
+
+	/**
+	 * @return MeetingModel
+	 */
+	protected function getMeetingModel()
+	{
+		return $this->meetingModel;
+	}
+
+	/**
+	 * @param  MeetingModel $model
+	 * @return $this
+	 */
+	protected function setMeetingModel(MeetingModel $model)
+	{
+		$this->meetingModel = $model;
+		return $this;
+	}
+
 }

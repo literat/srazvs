@@ -1,0 +1,7 @@
+{foreach $materials as $material}
+	{var $materialBody = $material->material ?: '(žádný)'}
+	<div>
+		<a rel='programDetail' href='{plink Program:edit $material->id, backlink => 'Export:default'}' title='{$material->name}'>{$material->name}</a>
+	</div>
+	<div style='margin-left:10px;font-size:12px;font-weight:bold;'>{$materialBody}</div>
+{/foreach}

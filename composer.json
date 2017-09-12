@@ -1,24 +1,45 @@
 {
     "require": {
-        "dg/ftp-deployment": "~2.1",
+        "php": ">=7.0.0",
         "skautis/skautis": "^2.0",
         "tracy/tracy": "^2.3",
-        "nette/database": "<2.4",
-        "nette/mail": "<2.4",
-        "nette/di": "<2.4",
-        "nette/utils": "<2.4",
-        "nette/neon": "<2.4",
-        "nette/robot-loader": "<2.4",
-        "nette/bootstrap": "<2.4",
-        "nette/application": "<2.4",
-        "mpdf/mpdf": "^6.1",
+        "nette/database": "^2.4",
+        "nette/mail": "^2.4",
+        "nette/di": "^2.4",
+        "nette/utils": "^2.4",
+        "nette/neon": "^2.4",
+        "nette/robot-loader": "^2.4",
+        "nette/bootstrap": "^2.4",
+        "nette/application": "^2.4",
+        "nette/php-generator": "^2.6",
+        "mpdf/mpdf": "v7.0.0-beta2",
         "phpoffice/phpexcel": "^1.8",
-        "latte/latte": "<2.4",
-        "skautis/nette": "^2.0"
+        "latte/latte": "^2.4",
+        "skautis/nette": "^2.0",
+        "nette/forms": "^2.4",
+        "nette/security": "^2.4",
+        "radekdostal/nette-datetimepicker": "^2.5"
     },
     "require-dev": {
         "nette/tester": "^1.7",
         "mockery/mockery": "^0.9.4",
-        "codeception/codeception": "^2.2"
+        "codeception/codeception": "^2.2",
+        "dg/ftp-deployment": "~2.1",
+        "phpunit/phpunit": "^5.7",
+        "doctrine/instantiator": "~1.0.0"
+    },
+    "autoload": {
+        "files": [
+            "app/helpers.php"
+        ]
+    },
+    "scripts": {
+        "sa": "vendor/bin/phpstan analyze -l 4 -c phpstan.neon app",
+        "unit": "vendor/nette/tester/Tester/tester -c tests/php-unix.ini -j 10 tests/unit",
+        "acceptance": "vendor/codeception/codeception/codecept run acceptance",
+        "clear": "find temp/cache ! -name 'placeholder.txt' -type f -exec rm -rf {} +",
+        "deploy": "vendor/dg/ftp-deployment/deployment deployment.ini",
+        "deploy-test": "vendor/dg/ftp-deployment/deployment deployment.ini --test",
+        "release": "grunt build"
     }
 }

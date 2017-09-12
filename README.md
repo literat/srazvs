@@ -1,6 +1,8 @@
 [SrazyVS application](http://vodni.skauting.cz/srazyvs)
 ===================================
 
+[![Build Status](https://travis-ci.org/literat/srazvs.svg?branch=master)](https://travis-ci.org/literat/srazvs)
+
 Requirements
 ------------
 SrazyVS application package for PHP 5.3 requires PHP 5.3.0 or later. The package
@@ -22,7 +24,7 @@ The best way to install Srazy VS application is to download the latest package f
 
 - `libs`: contains necessery libraries for application running
 
-Note: this is only !development version! 
+Note: this is only !development version!
 
 
 Getting started

@@ -1,3 +1,72 @@
+<a name="2.7.0"></a>
+# [2.7.0](https://github.com/literat/srazvs/compare/v2.6.0...v2.7.0) (2017-09-12)
+
+
+### Bug Fixes
+
+* **Creating program:** Backlink url ([27f9772](https://github.com/literat/srazvs/commit/27f9772))
+* **Deployment:** Errors after deployment ([8d2de83](https://github.com/literat/srazvs/commit/8d2de83))
+* **Http Request:** Used bad method to get http request (refs #89) ([0e56c4b](https://github.com/literat/srazvs/commit/0e56c4b))
+* **Meeting editation:** Fix form action path ([eb098e9](https://github.com/literat/srazvs/commit/eb098e9))
+* **Name badges:** Fixing layout against background (refs #34) ([afce059](https://github.com/literat/srazvs/commit/afce059))
+* **Print:** Height of large program heading (refs #34) ([d055d45](https://github.com/literat/srazvs/commit/d055d45))
+* Static analysis ([513196b](https://github.com/literat/srazvs/commit/513196b))
+* Turning on and off displaying programs in blocks ([752e92f](https://github.com/literat/srazvs/commit/752e92f))
+* Typo (refs #98) ([e322af2](https://github.com/literat/srazvs/commit/e322af2))
+* **Program badges:** Fix badges count on page (refs #34) ([ab946df](https://github.com/literat/srazvs/commit/ab946df)), closes [#34](https://github.com/literat/srazvs/issues/34)
+* **Public program:** Get mmeting id as parameter ([70847c8](https://github.com/literat/srazvs/commit/70847c8))
+* **Registration:** Calculation of code for bank ([9ce5df5](https://github.com/literat/srazvs/commit/9ce5df5))
+* **Registration:** Forgotten set request (refs #51) ([0c888a6](https://github.com/literat/srazvs/commit/0c888a6))
+* **Registration:** Order by day and time (refs #95) ([e1e644d](https://github.com/literat/srazvs/commit/e1e644d))
+* **Registration:** Selecting date of birth and saving data (refs #95) ([51c32be](https://github.com/literat/srazvs/commit/51c32be))
+* **Registration:** Set registration handlers and fix deletion of visitor ([6c1096c](https://github.com/literat/srazvs/commit/6c1096c))
+* **Registration:** Transform template directory to upper (refs #51) ([8074722](https://github.com/literat/srazvs/commit/8074722))
+* **Travis CI:** Code coverage path ([e607ea8](https://github.com/literat/srazvs/commit/e607ea8))
+
+### Features
+
+* **Backlinks:** Backlinks to dashboard (refs #76) ([a7b15db](https://github.com/literat/srazvs/commit/a7b15db))
+* **Registration:** JS validation (refs #95) ([c9c192f](https://github.com/literat/srazvs/commit/c9c192f))
+* **Registration:** Styling (refs #95) ([9c329fb](https://github.com/literat/srazvs/commit/9c329fb))
+* **Registration:** UI (refs #95) ([45783fc](https://github.com/literat/srazvs/commit/45783fc))
+* **Registration:** Upgrade to PHP 7 (refs #51) ([3046140](https://github.com/literat/srazvs/commit/3046140))
+* **Registration in CZ:** Added one way route for `registrace` (refs #82) ([f916d74](https://github.com/literat/srazvs/commit/f916d74))
+* Display date and time in annotations (refs #97) ([92b600c](https://github.com/literat/srazvs/commit/92b600c))
+
+
+
+<a name="2.6.0"></a>
+# [2.6.0](https://github.com/literat/srazvs/compare/v2.5.0...v2.6.0) (2017-02-23)
+
+
+### Bug Fixes
+
+* **Cool urls:** Return by storno (refs #55) ([e05372d](https://github.com/literat/srazvs/commit/e05372d))
+* **Migration to presenters:** Category modification logging (refs #79) ([4031b50](https://github.com/literat/srazvs/commit/4031b50))
+* **Payment of visitor:** Bad property (refs #77) ([3dc942d](https://github.com/literat/srazvs/commit/3dc942d))
+* **Program cards:** See programs in program cards (refs #72) ([084a4e5](https://github.com/literat/srazvs/commit/084a4e5))
+
+### Features
+
+* **Cool urls:** Blocks cool urls (refs #55) ([5af2493](https://github.com/literat/srazvs/commit/5af2493))
+* **Cool urls:** Program use cool urls (refs #55) ([c87e7d6](https://github.com/literat/srazvs/commit/c87e7d6))
+* **Cool urls:** Settings use cool urls (refs #55) ([dc7d8f8](https://github.com/literat/srazvs/commit/dc7d8f8))
+* **Cool urls:** Submit forms to actions and use them (refs #55) ([020f964](https://github.com/literat/srazvs/commit/020f964))
+* **Migration to presenters:** Convert category select box to latte (refs #79) ([24ea6b9](https://github.com/literat/srazvs/commit/24ea6b9))
+* **Migration to presenters:** Generating guid method in base model (refs #79) ([ab70678](https://github.com/literat/srazvs/commit/ab70678))
+* **Migration to presenters:** Model for sunlight part of database (refs #79) ([b96974b](https://github.com/literat/srazvs/commit/b96974b))
+* **Migration to presenters:** Rename category templates by actions (refs #79) ([f78766f](https://github.com/literat/srazvs/commit/f78766f))
+* **Migration to presenters:** Setting template variables before render for all (refs #79) ([92ec7f1](https://github.com/literat/srazvs/commit/92ec7f1))
+* **Migration to presenters:** Using DI for database context (refs #79) ([de3055a](https://github.com/literat/srazvs/commit/de3055a))
+* **Registration guid:** Added guid to visitors columns (refs #63) ([b732887](https://github.com/literat/srazvs/commit/b732887))
+* **Registration guid:** Fetching data from meals and blocks (refs #63) ([7389dbc](https://github.com/literat/srazvs/commit/7389dbc))
+* **Registration guid:** Fix test because they do not follow redirs (refs #63) ([d4a4da1](https://github.com/literat/srazvs/commit/d4a4da1)), closes [#63](https://github.com/literat/srazvs/issues/63)
+* **Registration guid:** Make it public (refs #63) ([46c8995](https://github.com/literat/srazvs/commit/46c8995))
+* **Registration guid:** Refactoring registration to use guid (refs #63) ([94412e9](https://github.com/literat/srazvs/commit/94412e9))
+* **Registration guid:** Using guid instead of hash (refs #63) ([1c0ad3a](https://github.com/literat/srazvs/commit/1c0ad3a))
+
+
+
 <a name="2.5.0"></a>
 # [2.5.0](https://github.com/literat/srazvs/compare/v2.4.0...v2.5.0) (2016-11-12)
 

@@ -87,10 +87,10 @@ class BlockCest extends CestCase
 		$I->see('Správa bloků');
 		$I->wantTo('Create new block with basic data');
 		$I->click('NOVÝ BLOK', '#content');
-		$I->seeCurrentUrlMatches('~/srazvs/block/\?cms=new~');
+		$I->seeCurrentUrlMatches('~/srazvs/block/new~');
 		$this->fillForm($I, $this->simpleBlock);
 		$I->click('Uložit', '#content');
-		$I->seeInCurrentUrl('/srazvs/block?error=ok');
+		$I->seeInCurrentUrl('/srazvs/block');
 	}
 
 	public function it_should_update_simple_block(\AcceptanceTester $I)
@@ -103,7 +103,7 @@ class BlockCest extends CestCase
 		$I->see('Správa bloků');
 		$I->wantTo('Create new block with all data');
 		$I->click('NOVÝ BLOK', '#content');
-		$I->seeCurrentUrlMatches('~/srazvs/block/\?cms=new~');
+		$I->seeCurrentUrlMatches('~/srazvs/block/new~');
 		$this->fillForm($I, $this->fullBlock);
 		$I->click('Uložit', '#content');
 		$I->seeInCurrentUrl('/srazvs/block?error=ok');

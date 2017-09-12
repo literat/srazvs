@@ -1,12 +1,14 @@
 {
   "name": "srazvs",
-  "version": "2.5.0",
+  "version": "2.7.0",
   "description": "SrazyVS application",
   "main": "index.php",
   "directories": {
     "test": "tests"
   },
-  "dependencies": {},
+  "dependencies": {
+    "bootstrap-ui": "^2.3.3"
+  },
   "devDependencies": {
     "grunt": "*",
     "grunt-bump": "*",

@@ -7,18 +7,15 @@ use Nette\Database\Context;
 use Nette\Caching\Storages\FileStorage;
 use Nette\Database\Structure;
 use Nette\Loaders\RobotLoader;
-use Nette\Application\Routers\RouteList;
-use Nette\Application\Routers\Route;
+use App\Routers\RouterFactory;
 
 require_once __DIR__ . '/../vendor/autoload.php';
-require_once __DIR__ . '/../inc/errors.inc.php';
 
 define('SESSION_PREFIX', md5('localhost'.'vodni'.'vodni'.'sunlight')."-");
 
 //nastartovani session
 session_name(SESSION_PREFIX . 'session');
 
-//$httpRequest = $container->getByType('Nette\Http\Request');
 $requestFatory = new Nette\Http\RequestFactory;
 $httpRequest = $requestFatory->createHttpRequest();
 $httpResponse = new Nette\Http\Response;
@@ -52,6 +49,8 @@ $configurator->addConfig(__DIR__ . '/config/config.local.neon');
 /**
  * DI Container and Session
  */
+RadekDostal\NetteComponents\DateTimePicker\TbDatePicker::register();
+
 $configurator->addServices(array(
     'session.session' => $session,
 ));
@@ -87,67 +86,16 @@ define('CAT_DIR',		PRJ_DIR.'category');
 define('EXP_DIR',		PRJ_DIR.'export');
 define('SET_DIR',		PRJ_DIR.'settings');
 
-if(!function_exists('dd')) {
-	/**
-	 * Dump the passed variables and end the script.
-	 *
-	 * @param  mixed
-	 * @return void
-	 */
-	function dd() {
-		array_map(function ($x){
-			(\Tracy\Debugger::dump($x));
-		}, func_get_args());
-
-		die(1);
-	}
-}
-
-if(!function_exists('redirect')) {
-	function redirect($url) {
-		$httpResponse = new Nette\Http\Response;
-		$httpResponse->redirect($url);
-		exit;
-	}
-}
-
-if(!function_exists('appVersion')) {
-	function appVersion() {
-		$packagePath = realpath(__DIR__ . '/../package.json');
-		$package = json_decode(file_get_contents($packagePath));
-		return $package->version;
-	}
-}
-
 /**
  * Connecting to Database
  */
-$connection = $container->getService('connection');
-$database = $container->getService('database');
-
-// Tracy database panel
-Nette\Database\Helpers::createDebugPanel($connection);
-
-if(!isset($_SESSION['meetingID'])) {
-	$_SESSION['meetingID'] = $database
-		->table('kk_meetings')
-		->select('id')
-		->order('id DESC')
-		->limit(1)
-		->fetchField();
-}
+$connection = $container->getService('database.default.connection');
+$database = $container->getService('database.default.context');
 
 /**
  * Routing
  */
-$router = new RouteList;
-$router[] = new Route('/', [
-	'presenter' => 'Meeting',
-    'action' => 'index',
-    'id' => $_SESSION['meetingID'],
-]);
-$router[] = new Route('<presenter>[/<action>]', 'Meeting:index');
-$router[] = new Route('<presenter>/<action>[/<id>]', 'Meeting:index');
+$router = $container->getService('routing.router');
 
 $appRequest = $router->match($httpRequest);
 
@@ -163,54 +111,32 @@ if($appRequest) {
 	die;
 }
 
-
-$container->addService('router', $router);
 $target = $parameters['appDir'] . '/presenters/' . $controllerName . 'Presenter.php';
 $container->parameters['router'] = $appRequest;
-
-/**
- * Templating
- */
-$latte = new \Latte\Engine;
-$latte->setTempDirectory(__DIR__ . '/../temp');
-$latte->addFilter(NULL, 'Filters::common');
-$container->addService('latte', $latte);
 
 $publicPages = [
 	'Block.annotation',
 	'Program.annotation',
 	'Program.public',
-	'Export.programPublic',
-	'Export.programDetails',
-	'Registration.index',
+	'Export.program',
+	'Export.program',
+	'Registration.default',
+	'Registration.check',
+	'Registration.create',
+	'Registration.edit',
+	'Registration.update',
 	'Auth.login',
 	'Auth.skautis',
 ];
 
-//get target
+/**
+ * Including access control
+ */
 if(file_exists($target)) {
-
 	// access control
 	if(array_search($controllerName.'.'.$action, $publicPages) === false) {
 		include_once(INC_DIR . 'access.inc.php');
 	}
-
-	require_once($target);
-
-	//modify page to fit naming convention
-	$class = 'App\Presenters\\' . $controllerName . 'Presenter';
-
-	//instantiate the appropriate class
-	if(class_exists($class)) {
-		$controller = new $class($database, $container);
-	} else {
-		//did we name our class correctly?
-		die('class does not exist!');
-	}
-} else {
-	//can't find the file in 'controllers'!
-	die('page does not exist!');
 }
 
-//once we have the controller instantiated, execute the default function
-$controller->init();
+return $container;

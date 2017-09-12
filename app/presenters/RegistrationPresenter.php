@@ -2,9 +2,19 @@
 
 namespace App\Presenters;
 
-use Nette\Database\Context;
-use Nette\DI\Container;
+use DateTime;
+use App\Entities\VisitorEntity;
+use App\Models\MeetingModel;
+use App\Models\VisitorModel;
+use App\Models\ProgramModel;
+use App\Models\MealModel;
+use App\Services\UserService;
+use App\Services\Emailer;
+use App\Services\VisitorService;
+use App\Services\ProgramService;
 use Tracy\Debugger;
+use App\Components\Forms\RegistrationForm;
+use App\Components\Forms\Factories\IRegistrationFormFactory;
 
 /**
  * Registration controller
@@ -15,215 +25,118 @@ use Tracy\Debugger;
  * @copyright 2013-06-12 <tomaslitera@hotmail.com>
  * @package srazvs
  */
-class RegistrationPresenter extends BasePresenter
+class RegistrationPresenter extends VisitorPresenter
 {
-	/**
-	 * template
-	 * @var string
-	 */
-	protected $template = 'form';
 
 	/**
-	 * Object farm container
-	 * @var Container
-	 */
-	private $container;
-
-	/**
-	 * Visitor model
 	 * @var VisitorModel
 	 */
-	private $Visitor;
+	private $visitorModel;
 
 	/**
-	 * Emailer class
-	 * @var Emailer
+	 * @var ProgramModel
 	 */
-	private $Emailer;
+	private $programModel;
 
 	/**
-	 * Export class
-	 * @var Export
+	 * @var UserService
 	 */
-	private $Export;
+	private $userService;
 
 	/**
-	 * Meeting class
-	 * @var Meeting
+	 * @var ProgramService
 	 */
-	private $Meeting;
+	private $programService;
 
 	/**
-	 * Meal class
-	 * @var Meal
+	 * @var boolean
 	 */
-	private $Meal;
+	private $disabled = false;
 
 	/**
-	 * Program class
-	 * @var Program
+	 * @var IRegistrationFormFactory
 	 */
-	private $Program;
+	private $registrationFormFactory;
 
 	/**
-	 * Error
-	 * @var array
+	 * @param MeetingModel   $meetingModel
+	 * @param UserService    $userService
+	 * @param VisitorModel   $visitorModel
+	 * @param MealModel      $mealModel
+	 * @param ProgramModel   $programModel
+	 * @param VisitorService $visitorService
 	 */
+	public function __construct(
+		MeetingModel $meetingModel,
+		UserService $userService,
+		VisitorModel $visitorModel,
+		MealModel $mealModel,
+		ProgramModel $programModel,
+		Emailer $emailer,
+		VisitorService $visitorService,
+		ProgramService $programService
+	) {
+		$this->setMeetingModel($meetingModel);
+		$this->setUserService($userService);
+		$this->setVisitorModel($visitorModel);
+		$this->setMealModel($mealModel);
+		$this->setProgramModel($programModel);
+		$this->setEmailer($emailer);
+		$this->setVisitorService($visitorService);
+		$this->setProgramService($programService);
+	}
+
+	/**
+	 * @return IRegistrationFormFactory
+	 */
+	public function getRegistrationFormFactory(): IRegistrationFormFactory
+	{
+		return $this->registrationFormFactory;
+	}
+
+	/**
+	 * Injector
+	 *
+	 * @param  IRegistrationFormFactory $factory
+	 */
+
 	protected $error = FALSE;
 
 	protected $hash = NULL;
 	private $item;
-	private $disabled;
 	private $mealData;
 	private $user;
 	private $event;
 
-	/**
-	 * Prepare model classes and get meeting id
-	 */
-	public function __construct(Context $database, Container $container)
+	public function injectRegistrationFormFactory(IRegistrationFormFactory $factory)
 	{
-		$this->item = '';
-
-		$this->templateDir = 'registration';
-		$this->page = 'registration';
-
-		$this->database = $database;
-		$this->container = $container;
-		$this->router = $this->container->parameters['router'];
-		$this->Visitor = $this->container->createServiceVisitor();
-		$this->Emailer = $this->container->createServiceEmailer();
-		$this->Export = $this->container->createServiceExports();
-		$this->Meeting = $this->container->createServiceMeeting();
-		$this->Meal = $this->container->createServiceMeal();
-		$this->Program = $this->container->createServiceProgram();
-		$this->latte = $this->container->getService('latte');
-
-		$this->debugMode = $this->container->parameters['debugMode'];
-
-		if($this->meetingId = $this->requested('mid', '')){
-			$_SESSION['meetingID'] = $this->meetingId;
-		} elseif($this->debugMode) {
-			$this->meetingId = 1;
-		} else {
-			$this->meetingId = $_SESSION['meetingID'];
-		}
-
-		$this->Program->setMeetingId($this->meetingId);
-		$this->Meeting->setMeetingId($this->meetingId);
-		$this->Meeting->setHttpEncoding($this->container->parameters['encoding']);
-
-		if($this->debugMode) {
-			$this->Meeting->setRegistrationHandlers(1);
-			$this->meetingId = 1;
-		} else {
-			$this->Meeting->setRegistrationHandlers();
-		}
-
-		$this->user = $this->container->getService('userService');
-		$this->event = $this->container->getService('eventService');
+		$this->registrationFormFactory = $factory;
 	}
 
 	/**
-	 * This is the default function that will be called by Router.php
-	 *
-	 * @param array $getVars the GET variables posted to index.php
-	 */
-	public function init()
-	{
-		$id = $this->requested('id', (isset($this->itemId)) ? $this->itemId : '');
-		$this->cms = $this->requested('cms', '');
-		$this->error = $this->requested('error', '');
-		$this->page = $this->requested('page', '');
-		$search = $this->requested('search', '');
-		$this->disabled = $this->requested('disabled', '');
-
-		if($ids = $this->requested('checker')){
-			$query_id = NULL;
-			foreach($ids as $key => $value) {
-				$query_id .= $value.',';
-			}
-			$query_id = rtrim($query_id, ',');
-		}
-		else {
-			$query_id = $ids;
-		}
-
-		if($this->hash = $this->requested('hash')) {
-			$data = $this->database
-				->table('kk_visitors')
-				->select('id, meeting')
-				->where('hash', $this->hash)
-				->fetch();
-
-			//$this->meetingId = (($getVars['hash'] - 49873) / 147)%10;
-			//$id = floor((($getVars['hash'] - 49873) / 147)/10);
-			$this->meetingId = $data['meeting'];
-			$id = $data['id'];
-
-			$this->Meeting->setRegistrationHandlers($this->meetingId);
-			if($this->cms == '') {
-				$this->cms = "edit";
-			}
-		}
-
-		switch($this->cms) {
-			case "new":
-				$this->__new();
-				break;
-			case "create":
-				$this->create();
-				break;
-			case "edit":
-				$this->edit($id);
-				break;
-			case "modify":
-				$this->update($id);
-				break;
-			case "check":
-				$this->check($id);
-				break;
-			default:
-				$this->__new();
-				break;
-		}
-
-		$this->render();
-	}
-
-	/**
-	 * Prepare page for new item
-	 *
 	 * @return void
 	 */
-	private function __new()
+	public function startup()
 	{
-		$this->template = 'form';
+		parent::startup();
 
-		$this->heading = "nový program";
-		$this->todo = "create";
+		$this->getMeetingModel()->setMeetingId($this->getMeetingId());
 
-		// requested for meals
-		foreach($this->Meal->dbColumns as $var_name) {
-			$$var_name = $this->requested($var_name, 'ne');
-			$this->mealData[$var_name] = $$var_name;
+		if($this->getDebugMode()) {
+			$this->getMeetingModel()->setRegistrationHandlers(1);
+			$this->setMeetingId(1);
+		} else {
+			$this->getMeetingModel()->setRegistrationHandlers($this->getMeetingId());
 		}
 
-		// requested for visitors fields
-		foreach($this->Visitor->dbColumns as $key) {
-			if($key == 'bill') $value = 0;
-			else $value = "";
-			$this->data[$key] = $this->requested($key, $value);
-		}
-	}
+		//$this->user = $this->container->getService('userService');
+		//$this->event = $this->container->getService('eventService');
 
-	private function getblocks()
-	{
-		return $this->database
-			->table('kk_blocks')
-			->select('id')
-			->where('meeting ? AND program ? AND deleted ?', $this->meetingId, '1', '0')
-			->fetchAll();
+		$template = $this->getTemplate();
+
+		$template->page_title = "Registrace srazu VS";
+		$template->meeting_heading = $this->getMeetingModel()->getRegHeading();
+		$template->isRegistrationOpen = $this->getMeetingModel()->isRegOpen($this->getDebugMode());
 	}
 
 	/**
@@ -231,329 +144,281 @@ class RegistrationPresenter extends BasePresenter
 	 *
 	 * @return void
 	 */
-	private function create()
+	public function actionCreate()
 	{
-		// TODO
-		////ziskani zvolenych programu
-		$blocks = $this->getblocks();
+		try {
+			$postData = $this->getHttpRequest()->getPost();
+			$postData['meeting'] = $this->getMeetingId();
 
-		foreach($blocks as $blockData){
-			$$blockData['id'] = $this->requested('blck_' . $blockData['id'], 0);
-			$programs_data[$blockData['id']] = $$blockData['id'];
-			//echo $blockData['id'].":".$$blockData['id']."|";
+			$guid = $this->getVisitorService()->create($postData);
+			$result = $this->sendRegistrationSummary($postData, $guid);
+
+			Debugger::log('Creation of registration('. $guid .') successfull, result: ' . json_encode($result), Debugger::INFO);
+			$this->flashMessage('Registrace(' . $guid . ') byla úspěšně založena.', self::FLASH_TYPE_OK);
+		} catch(Exception $e) {
+			Debugger::log('Creation of registration('. $guid .') failed, result: ' .  $e->getMessage(), Debugger::ERROR);
+			$this->flashMessage('Creation of registration failed, result: ' . $e->getMessage(), self::FLASH_TYPE_ERROR);
 		}
 
-		// requested for visitors
-		foreach($this->Visitor->dbColumns as $key) {
-				if($key == 'bill') $$key = $this->requested($key, 0);
-				elseif($key == 'birthday') {
-					$$key = $this->cleardate2DB($this->requested($key, 0), 'Y-m-d');
-				}
-				else $$key = $this->requested($key, '');
-				$db_data[$key] = $$key;
+		$this->redirect('Registration:check', $guid);
+	}
+
+	/**
+	 * @param  string  $guid
+	 * @return void
+	 */
+	public function actionUpdate($guid)
+	{
+		try {
+			$postData = $this->getHttpRequest()->getPost();
+
+			$result = $this->getVisitorService()->update($guid, $postData);
+			$result = $this->sendRegistrationSummary($postData, $guid);
+
+			Debugger::log('Modification of registration('. $guid .') successfull, result: ' . json_encode($result), Debugger::INFO);
+			$this->flashMessage('Registrace(' . $guid . ') byla úspěšně upravena.', self::FLASH_TYPE_OK);
+		} catch(Exception $e) {
+			Debugger::log('Modification of registration('. $guid .') failed, result: ' .  $e->getMessage(), Debugger::ERROR);
+			$this->flashMessage('Modification of registration(' . $guid . ') failed, result: ' . $e->getMessage(), self::FLASH_TYPE_ERROR);
 		}
 
-		// i must add visitor's ID because it is empty
-		$db_data['meeting'] = $this->meetingId;
-		$db_data['hash'] = hash('sha1', microtime());
+		$this->redirect('Registration:check', $guid);
+	}
 
-		// requested for meals
-		foreach($this->Meal->dbColumns as $var_name) {
-			$$var_name = $this->requested($var_name, null);
-			$meals_data[$var_name] = $$var_name;
+	/**
+	 * @return void
+	 */
+	public function renderDefault()
+	{
+		$template = $this->getTemplate();
+
+		////otevirani a uzavirani prihlasovani
+		$disabled = $this->getMeetingModel()->isRegOpen($this->getDebugMode()) ? "" : "disabled";
+		$template->disabled = $disabled;
+		$template->loggedIn = $this->getUserService()->isLoggedIn();
+
+		if($this->getUserService()->isLoggedIn()) {
+			$this['registrationForm']->setDefaults(($this->useLoggedVisitor())->toArray());
 		}
-		//if(!$this->error) {
+	}
+
+	/**
+	 * @param  string  $guid
+	 * @return void
+	 */
+	public function renderCheck($guid)
+	{
+		$visitor = $this->getVisitorModel()->findByGuid($guid);
+
+		$this->getMeetingModel()->setRegistrationHandlers($visitor->meeting);
+
+		$template = $this->getTemplate();
+		$template->guid = $guid;
+		$template->visitor = $visitor;
+		$template->meetingId = $visitor->meeting;
+		$template->meals = $this->getMealModel()->findByVisitorId($visitor->id);
+		$template->province = $this->getMeetingModel()->getProvinceNameById($visitor->province);
+		$template->programs = $this->getProgramModel()->findByVisitorId($visitor->id);
+	}
+
+	/**
+	 * @param  string $guid
+	 * @return void
+	 */
+	public function renderEdit($guid)
+	{
+		$visitor = $this->getVisitorService()->findByGuid($guid);
+		$meetingId = $visitor['meeting'];
+
+		$this->getMeetingModel()->setRegistrationHandlers($meetingId);
+
+		$template = $this->getTemplate();
+		$template->guid = $guid;
+		$template->meetingId = $meetingId;
+		$template->loggedIn = $this->getUserService()->isLoggedIn();
+		$template->disabled = $this->getMeetingModel()->isRegOpen($this->getDebugMode()) ? "" : "disabled";
+
 			// create
-			if($vid = $this->Visitor->create($db_data, $meals_data, $programs_data)) {
-				//dd($this->user->isLoggedIn(), $this->Meeting->getEventId(), $this->Meeting->getCourseId());
-				if($this->user->isLoggedIn() && $this->Meeting->getEventId() && $this->Meeting->getCourseId()) {
-					$personId = $this->user->getUserDetail()->ID_Person;
-					dd($this->event->insertParticipant($personId, $this->Meeting->eventId, $this->Meeting->courseId));
-				}
+			// if($vid = $this->Visitor->create($db_data, $meals_data, $programs_data)) {
+			// 	//dd($this->user->isLoggedIn(), $this->Meeting->getEventId(), $this->Meeting->getCourseId());
+			// 	if($this->user->isLoggedIn() && $this->Meeting->getEventId() && $this->Meeting->getCourseId()) {
+			// 		$personId = $this->user->getUserDetail()->ID_Person;
+			// 		dd($this->event->insertParticipant($personId, $this->Meeting->eventId, $this->Meeting->courseId));
+			// 	}
 
-				######################## ODESILAM EMAIL ##########################
-				Debugger::log('Creating Visitor ' . $vid, 'info');
-				// zaheshovane udaje, aby se nedali jen tak ziskat data z databaze
-				$code4bank = $this->code4Bank($db_data);
-				//$hash = ((int)$vid.$this->meetingId) * 147 + 49873;
-				$hash = $db_data['hash'];
-
-				$recipient_mail = $db_data['email'];
-				$recipient_name = $db_data['name']." ".$db_data['surname'];
-				$recipient = [$recipient_mail => $recipient_name];
-
-				$return = $this->Emailer->sendRegistrationSummary($recipient, $hash, $code4bank);
-
-				if($return === TRUE) {
-					Debugger::log('Mail send to ' . $recipient_mail, 'info');
-					if(is_int($vid)) {
-						$vid = "ok";
-					}
-					redirect("?hash=".$hash."&error=".$vid."&cms=check");
-				} else {
-					Debugger::log('Mail not send to ' . $recipient_mail, 'error');
-					redirect("?hash=".$hash."&error=email&cms=check");
-					//echo 'Došlo k chybě při odeslání e-mailu.';
-					//echo 'Chybová hláška: ' . $return;
-				}
-				//redirect("?page=".$this->page."&error=ok");
-			} else {
-				Debugger::log('Visitor not created', 'error');
-				redirect("?page=".$this->page."&error=error");
-			}
-		//} else {
-		//	redirect("?page=".$this->page."&error=error");
-		//}
+		$this['registrationForm']->setDefaults($visitor);
 	}
 
 	/**
-	 * Process data from editing
-	 *
-	 * @param  int 	$id 	of item
-	 * @return void
+	 * @return RegistrationFormControl
 	 */
-	private function update($id = NULL)
+	protected function createComponentRegistrationForm(): RegistrationForm
 	{
-		// TODO
-		////ziskani zvolenych programu
-		$blocks = $this->getblocks();
+		$control = $this->registrationFormFactory->create();
+		$control->setMeetingId($this->getMeetingId());
+		$control->onRegistrationSave[] = function(RegistrationForm $control, $newVisitor) {
+			try {
+				$guid = $this->getVisitorService()->create((array) $newVisitor);
+				$result = $this->sendRegistrationSummary((array) $newVisitor, $guid);
 
-		foreach($blocks as $blockData){
-			$$blockData['id'] = $this->requested('blck_' . $blockData['id'],0);
-			$programs_data[$blockData['id']] = $$blockData['id'];
-			//echo $blockData['id'].":".$$blockData['id']."|";
-		}
-
-		foreach($this->Visitor->dbColumns as $key) {
-				if($key == 'bill') $$key = $this->requested($key, 0);
-				elseif($key == 'birthday') {
-					$$key = $this->cleardate2DB($this->requested($key, 0), 'Y-m-d');
-				}
-				else $$key = $this->requested($key, null);
-				$db_data[$key] = $$key;
-		}
-
-		// i must add visitor's ID because it is empty
-		$db_data['meeting'] = $this->meetingId;
-		$db_data['hash'] = hash('sha1', microtime());
-
-		foreach($this->Meal->dbColumns as $var_name) {
-			$$var_name = $this->requested($var_name, null);
-			$meals_data[$var_name] = $$var_name;
-		}
-		// i must add visitor's ID because it is empty
-		$meals_data['visitor'] = $id;
-
-		if($vid = $this->Visitor->modify($id, $db_data, $meals_data, $programs_data)){
-			######################## ODESILAM EMAIL ##########################
-			Debugger::log('Visitor ' . $id . ' was modified', 'info');
-			// zaheshovane udaje, aby se nedali jen tak ziskat data z databaze
-			$code4bank = substr($db_data['name'], 0, 1).substr($db_data['surname'], 0, 1).substr($db_data['birthday'], 2, 2);
-			//$hash = ((int)$vid.$this->meetingId) * 147 + 49873;
-			$hash = $db_data['hash'];
-
-			$recipient_mail = $db_data['email'];
-			$recipient_name = $db_data['name']." ".$db_data['surname'];
-			$recipient = [$recipient_mail => $recipient_name];
-
-			$return = $this->Emailer->sendRegistrationSummary($recipient, $hash, $code4bank);
-
-			if($return === TRUE) {
-				Debugger::log('Mail send to ' . $recipient_mail, 'info');
-				if(is_numeric($vid)) {
-					$vid = "ok";
-				}
-				redirect("?hash=".$hash."&error=".$vid."&cms=check");
-			} else {
-				Debugger::log('Mail not send to ' . $recipient_mail, 'error');
-				redirect("?hash=".$hash."&error=email&cms=check");
-				//echo 'Došlo k chybě při odeslání e-mailu.';
-				//echo 'Chybová hláška: ' . $return;
+				Debugger::log('Storage of visitor('. $guid .') successfull, result: ' . json_encode($result), Debugger::INFO);
+				$this->flashMessage('Účastník(' . $guid . ') byl úspěšně uložen.', self::FLASH_TYPE_OK);
+			} catch(Exception $e) {
+				Debugger::log('Storage of visitor('. $guid .') failed, result: ' .  $e->getMessage(), Debugger::ERROR);
+				$this->flashMessage('Uložení účastníka selhalo, chyba: ' . $e->getMessage(), self::FLASH_TYPE_ERROR);
 			}
-			//redirect("?page=".$this->page."&error=ok");
+
+			$this->redirect('Registration:check', $guid);
+		};
+
+		return $control;
+	}
+
+	/**
+	 * @return VisitorEntity
+	 */
+	protected function useLoggedVisitor(): VisitorEntity
+	{
+		$userDetail = $this->getUserService()->getUserDetail();
+		$skautisUser = $this->getUserService()->getPersonalDetail($userDetail->ID_Person);
+		$membership = $this->getUserService()->getPersonUnitDetail($userDetail->ID_Person);
+
+		if(!preg_match('/^[1-9]{1}[0-9a-zA-Z]{2}\.[0-9a-zA-Z]{1}[0-9a-zA-Z]{1}$/', $membership->RegistrationNumber)) {
+			$skautisUserUnit = $this->getUserService()->getParentUnitDetail($membership->ID_Unit)[0];
 		} else {
-			Debugger::log('Visitor modification failed!', 'error');
-			redirect("?page=".$this->page."&error=error");
+			$skautisUserUnit = $this->getUserService()->getUnitDetail($membership->ID_Unit);
 		}
+
+		$visitor = new VisitorEntity;
+		$visitor->name = $skautisUser->FirstName;
+		$visitor->surname = $skautisUser->LastName;
+		$visitor->nick = $skautisUser->NickName;
+		$visitor->email = $skautisUser->Email;
+		$visitor->street = $skautisUser->Street;
+		$visitor->city = $skautisUser->City;
+		$visitor->postal_code = preg_replace('/\s+/', '', $skautisUser->Postcode);
+		$visitor->birthday = (new DateTime($skautisUser->Birthday))->format('d. m. Y');
+		$visitor->group_name = $skautisUserUnit->DisplayName;
+		$visitor->group_num = $skautisUserUnit->RegistrationNumber;
+		if(isset($membership->Unit)) {
+			$visitor->troop_name = $membership->Unit;
+		}
+
+		return $visitor;
 	}
 
 	/**
-	 * Prepare data for editing
-	 *
-	 * @param  int $id of item
-	 * @return void
+	 * @return MealModel
 	 */
-	private function edit($id)
+	protected function getMealModel()
 	{
-		$this->template = 'form';
-
-		$this->heading = "úprava programu";
-		$this->todo = "modify";
-
-		$this->itemId = $id;
-
-		$dbData = $this->Visitor->getData($id);
-		foreach($this->Visitor->dbColumns as $key) {
-			$this->data[$key] = $this->requested($key, $dbData[$key]);
-		}
-
-		$DB_data = $this->database
-			->table('kk_meals')
-			->where('visitor', $this->itemId)
-			->limit(1)
-			->fetch();
-
-		foreach($this->Meal->dbColumns as $var_name) {
-			$$var_name = $this->requested($var_name, $DB_data[$var_name]);
-			$this->mealData[$var_name] = $$var_name;
-		}
+		return $this->mealModel;
 	}
 
 	/**
-	 * Prepare data for check
-	 *
-	 * @param  int $id of item
-	 * @return void
+	 * @param  MealModel $model
+	 * @return $this
 	 */
-	private function check($id)
+	protected function setMealModel(MealModel $model)
 	{
-		$this->template = 'check';
+		$this->mealModel = $model;
 
-		$this->heading = "kontrola přihlášky";
-		$this->todo = NULL;
-
-		$this->itemId = $id;
-
-		$dbData = $this->Visitor->getData($id);
-		foreach($this->Visitor->dbColumns as $key) {
-			$this->data[$key] = $this->requested($key, $dbData[$key]);
-		}
-
-		$DB_data = $this->database
-			->table('kk_meals')
-			->where('visitor', $this->itemId)
-			->limit(1)
-			->fetch();
-
-		foreach($this->Meal->dbColumns as $var_name) {
-			$$var_name = $this->requested($var_name, $DB_data[$var_name]);
-			$this->mealData[$var_name] = $$var_name;
-		}
-	}
-
-	private function cleardate2DB ($inputDate, $formatDate)
-	{
-				//list($d, $m, $r) = split("[/.-]", $input_datum);
-				list($d, $m, $r) = preg_split("[/|\.|-]", $inputDate);
-				// beru prvni znak a delam z nej integer
-				$rtest = $r{0};
-				$rtest += 0;
-				$mtest = $m{0};
-				$mtest += 0;
-
-				// pokud je to nula, musim odstranit prvni znak
-				if(($rtest) == 0) $r = substr($r, 1);
-				if(($mtest) == 0) $m = substr($m, 1);
-
-				$d += 0; $m += 0; $r += 0;
-				$date = date("$formatDate",mktime(0,0,0,$m,$d,$r));
-				return $date;
+		return $this;
 	}
 
 	/**
-	 * Render all page
-	 *
-	 * @return void
+	 * @return MeetingModel
 	 */
-	public function render()
+	protected function getMeetingModel()
 	{
-		$error = "";
-		$disabled = NULL;
-		if(!empty($this->data)) {
-			$error_name = "";
-			$error_surname = "";
-			$error_nick = "";
-			$error_email = "";
-			$error_postal_code = "";
-			$error_group_num = "";
-			$error_bill = "";
-			$error_birthday = "";
-			$error_street = "";
-			$error_city = "";
-			$error_group_name = "";
-
-			if($this->cms == 'check') {
-				$meals_select = $this->Meal->getMealsArray($this->itemId);
-				$province_select = $this->Meeting->getProvinceNameById($this->data['province']);
-				$program_switcher = $this->Program->getSelectedPrograms($this->itemId);
-			} else {
-				$meals_select = $this->Meal->renderHtmlMealsSelect($this->mealData, $this->disabled);
-				$province_select = $this->Meeting->renderHtmlProvinceSelect($this->data['province']);
-				$program_switcher = $this->Visitor->renderProgramSwitcher($this->meetingId, $this->itemId);
-			}
-
-		}
-
-		$parameters = [
-			'cssDir'	=> CSS_DIR,
-			'jsDir'		=> JS_DIR,
-			'imgDir'	=> IMG_DIR,
-			'wwwDir'	=> HTTP_DIR,
-			'error'		=> printError($this->error),
-			'todo'		=> $this->todo,
-			'cms'		=> $this->cms,
-			'render'	=> $this->Visitor->getData(),
-			'mid'		=> $this->meetingId,
-			'page'		=> $this->page,
-			'heading'	=> $this->heading,
-			'page_title'=> "Registrace srazu VS",
-			'meeting_heading'	=> $this->Meeting->getRegHeading(),
-			////otevirani a uzavirani prihlasovani
-			'disabled'	=> $this->Meeting->isRegOpen($this->debugMode) ? "" : "disabled",
-			'loggedIn'	=> $this->user->isLoggedIn(),
-		];
-
-		if($this->user->isLoggedIn()) {
-			$userDetail = $this->user->getUserDetail();
-			$skautisUser = $this->user->getPersonalDetail($userDetail->ID_Person);
-			$membership = $this->user->getPersonUnitDetail($userDetail->ID_Person);
-
-			if(!preg_match('/^[1-9]{1}[0-9a-zA-Z]{2}\.[0-9a-zA-Z]{1}[0-9a-zA-Z]{1}$/', $membership->RegistrationNumber)) {
-				$skautisUserUnit = $this->user->getParentUnitDetail($membership->ID_Unit)[0];
-			} else {
-				$skautisUserUnit = $this->user->getUnitDetail($membership->ID_Unit);
-			}
-
-			$this->data['name'] = $skautisUser->FirstName;
-			$this->data['surname'] = $skautisUser->LastName;
-			$this->data['nick'] = $skautisUser->NickName;
-			$this->data['email'] = $skautisUser->Email;
-			$this->data['street'] = $skautisUser->Street;
-			$this->data['city'] = $skautisUser->City;
-			$this->data['postal_code'] = preg_replace('/\s+/','',$skautisUser->Postcode);
-			$this->data['birthday'] = $skautisUser->Birthday;
-			$this->data['group_name'] = $skautisUserUnit->DisplayName;
-			$this->data['group_num'] = $skautisUserUnit->RegistrationNumber;
-			if(isset($membership->Unit)) {
-				$this->data['troop_name'] = $membership->Unit;
-			}
-		}
-
-		if(!empty($this->data)) {
-			$parameters = array_merge($parameters, [
-				'id'				=> isset($this->itemId) ? $this->itemId : '',
-				'data'				=> $this->data,
-				'birthday'			=> date_format(date_create($this->data['birthday']),"d.m.Y"),
-				'province'			=> $province_select,
-				'meals'				=> $meals_select,
-				'cost'				=> $this->Meeting->getPrice('cost'),
-				'checked'			=> empty($this->data['checked']) ? '0' : $this->data['checked'],
-				'programs'			=> $program_switcher,
-				'hash'				=> $this->hash,
-				'isRegistrationOpen'		=> $this->Meeting->isRegOpen($this->debugMode),
-			]);
-		}
-
-		$this->latte->render(__DIR__ . '/../templates/' . $this->templateDir.'/'.$this->template . '.latte', $parameters);
+		return $this->meetingModel;
 	}
+
+	/**
+	 * @param  MeetingModel $model
+	 * @return $this
+	 */
+	protected function setMeetingModel(MeetingModel $model)
+	{
+		$this->meetingModel = $model;
+
+		return $this;
+	}
+
+	/**
+	 * @return VisitorModel
+	 */
+	protected function getVisitorModel()
+	{
+		return $this->visitorModel;
+	}
+
+	/**
+	 * @param  VisitorModel $model
+	 * @return $this
+	 */
+	protected function setVisitorModel(VisitorModel $model)
+	{
+		$this->visitorModel = $model;
+
+		return $this;
+	}
+
+	/**
+	 * @return ProgramModel
+	 */
+	protected function getProgramModel()
+	{
+		return $this->programModel;
+	}
+
+	/**
+	 * @param  ProgramModel $model
+	 * @return $this
+	 */
+	protected function setProgramModel(ProgramModel $model)
+	{
+		$this->programModel = $model;
+
+		return $this;
+	}
+
+	/**
+	 * @return UserService
+	 */
+	protected function getUserService()
+	{
+		return $this->userService;
+	}
+
+	/**
+	 * @param  UserService $service
+	 * @return $this
+	 */
+	protected function setUserService(UserService $service)
+	{
+		$this->userService = $service;
+
+		return $this;
+	}
+
+	/**
+	 * @return ProgramService
+	 */
+	protected function getProgramService()
+	{
+		return $this->programService;
+	}
+
+	/**
+	 * @param  ProgramService $service
+	 * @return $this
+	 */
+	protected function setProgramService(ProgramService $service)
+	{
+		$this->programService = $service;
+
+		return $this;
+	}
+
 }

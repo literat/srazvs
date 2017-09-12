@@ -525,10 +525,17 @@ div.programs.patek.pomoc-s-plachtenim {
 	color: #A94442;
 }
 
+/*
 .boats-offer {
 	display: none;
 }
+*/
 
 /*---------------------------------------------------------------------------------------------------------
 		8) Help
 ---------------------------------------------------------------------------------------------------------*/
+
+#frm-registrationForm-registrationForm textarea {
+	width: 367px;
+	height: 120px;
+}

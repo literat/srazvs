@@ -1,9 +1,12 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
+use App\Models\BaseModel;
 use Nette\Utils\Json;
+use Nette\Database\Context;
 use Tracy\Debugger;
+use \Exception;
 
 /**
  * Settings
@@ -15,36 +18,27 @@ use Tracy\Debugger;
  */
 class SettingsModel extends BaseModel
 {
-	/**
-	 * Array of database block table columns
-	 *
-	 * @var array	DB_columns[]
-	 */
-	public $dbColumns = array();
 
-	/** Constructor */
-	public function __construct($database)
+	/** @var string */
+	protected $table = 'kk_settings';
+
+	/**
+	 * @param Context $database
+	 */
+	public function __construct(Context $database)
 	{
-		$this->dbTable = "kk_settings";
-		$this->database = $database;
+		$this->setDatabase($database);
 	}
 
 	/**
-	 * Get all settings
-	 *
-	 * @return	string	html table
+	 * @return	Nette\Database\Table\ActiveRow
 	 */
-	public function getData()
+	public function allOrFail()
 	{
-		$data = $this->database
-			->table($this->dbTable)
-			->where('deleted', 0)
-			->order('name')
-			->fetchAll();
+		$data = $this->all();
 
 		if(!$data) {
-			Debugger::log('Settings: no data found!', Debugger::ERROR);
-			return NULL;
+			throw new Exception('Settings: no data found!');
 		} else {
 			return $data;
 		}
@@ -59,34 +53,69 @@ class SettingsModel extends BaseModel
 	 */
 	public function modifyMailJSON($type, $subject, $message)
 	{
-		$mailData = array('subject' => $subject, 'message' => $message);
+		$mailData = [
+			'subject' => $subject,
+			'message' => $message
+		];
 
-		$value = array('value' => Json::encode($mailData));
+		$data = [
+			'value' => Json::encode($mailData)
+		];
 
-		$result = $this->database
-			->table($this->dbTable)
-			->where('name', 'mail_' . $type)
-			->update($value);
+		$result = $this->updateByName($data, 'mail_' . $type);
 
-		if($result) {
-			Debugger::log('Settings: mail type ' . $type . ' successfully modified!', Debugger::INFO);
-			$error = 'E_UPDATE_NOTICE';
-			$error = 'ok';
+		if(!$result) {
+			throw new Exception('Mail modification failed!');
 		} else {
-			Debugger::log('Settings: mail type ' . $type . ' modification failed!', Debugger::ERROR);
-			$error = 'E_UPDATE_ERROR';
+			return $result;
 		}
-
-		return $error;
 	}
 
+	/**
+	 * @param  string $type
+	 * @return object
+	 */
 	public function getMailJSON($type)
 	{
-		$data = $this->database
-			->table($this->dbTable)
-			->where('name', 'mail_' . $type)
-			->fetch();
+		$data = $this->findByName('mail_' . $type);
 
 		return Json::decode($data->value);
 	}
+
+	/**
+	 * @return ActiveRow
+	 */
+	public function all()
+	{
+		return $this->getDatabase()
+			->table($this->getTable())
+			->order('name')
+			->fetchAll();
+	}
+
+	/**
+	 * @param  string $name
+	 * @return ActiveRow
+	 */
+	public function findByName($name)
+	{
+		return $this->getDatabase()
+			->table($this->getTable())
+			->where('name', $name)
+			->fetch();
+	}
+
+	/**
+	 * @param  array  $data
+	 * @param  string $name
+	 * @return ActiveRow
+	 */
+	public function updateByName(array $data, $name)
+	{
+		return $this->getDatabase()
+			->table($this->getTable())
+			->where('name', $name)
+			->update($data);
+	}
+
 }

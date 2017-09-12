@@ -1,0 +1,202 @@
+{layout '../@layout_new.latte'}
+
+{define buttons}
+	{if $isRegistrationOpen}
+
+	<div class="row">
+		<div class="col-md-10 col-md-offset-1 section-content">
+
+			<div id="button-line" class='button-line'>
+				<a class="btn btn-success" href="{$wwwDir}srazvs/registration/">
+					<span class='glyphicon glyphicon-plus'></span> Nová přihláška
+				</a>
+				<a class="btn btn-info" href="{$wwwDir}srazvs/registration/edit/{$guid}">
+					<span class='glyphicon glyphicon-pencil'></span> Upravit
+				</a>
+			</div>
+
+		</div>
+	</div>
+
+	{else}
+
+	<div class="row">
+		<div class="col-md-10 col-md-offset-1 section-content">
+
+			<div class="alert alert-error alert-dismissible fade in">
+				<button type="button" class="close" data-dismiss="alert">&times;</button>
+				<span class="glyphicon glyphicon-warning-sign offset-right" aria-hidden="true"></span>
+				Registrace je uzavřena! Nahlížené údaje již není možné upravovat!
+			</div>
+
+			<div class='button-line'>
+				<button type="button" class="btn btn-default" disabled>
+					<span class='glyphicon glyphicon-plus'></span> Nová přihláška
+				</button>
+				<button type='button' class="btn btn-default" disables>
+					<span class='glyphicon glyphicon-pencil'></span> Upravit
+				</button>
+			</div>
+
+		</div>
+	</div>
+
+	{/if}
+{/define}
+
+{block content}
+
+<main role="main" class="site-content">
+
+	<section class="section-header section-header-condensed">
+		<div class="container text-center">
+
+			<h1 class="section-header-title">
+				{$meeting_heading}
+			</h1>
+
+		</div><!-- .container -->
+	</section>
+
+	<section class="section-content">
+		<div class="container">
+
+			{foreach $flashes as $flash}
+			<div role="alert" class="flash alert alert-{$flash->type} alert-dismissible alert-full fade in">
+				<button type="button" class="close" data-dismiss="alert">&times;</button>
+				<div class="container">
+					<span class="glyphicon glyphicon-ok-sign offset-right" aria-hidden="true"></span>
+					{$flash->message}
+				</div>
+			</div>
+			{/foreach}
+
+			<div class="row">
+				<div class="col-md-10 col-md-offset-1">
+
+				<p><h3>Děkujeme za přihlášení na sraz VS.</h3></p>
+
+				<p style="font-weight:bold;">Zkontrolujte si, prosím, Vámi zadané údaje. V případě nesouhlasících údajů a provedení změny kontaktujte, prosím, <a href="mailto:tomaslitera&#64;hotmail.com" title="správce registrace">správce</a>. Pokud problémy přetrvávají, můžete se pokusit ho na nějakém srazu VS chytit a ukamenovat...</p>
+
+				</div>
+			</div>
+
+			{include buttons}
+
+			<div class="row">
+				<div class="col-md-10 col-md-offset-1">
+
+					<div class="table-responsive">
+
+						<table class='table table-hover'>
+							<tr>
+								<td class='text-bold col-md-5'>Jméno:</td>
+								<td id="name">{$visitor->name}</td>
+							</tr>
+							<tr>
+								<td class='text-bold'>Příjmení:</td>
+								<td>{$visitor->surname}</td>
+							</tr>
+							<tr>
+								<td class='text-bold'>Přezdívka:</td>
+								<td>{$visitor->nick}</td>
+							</tr>
+							<tr>
+								<td class='text-bold'>E-mail:</td>
+								<td>{$visitor->email}</td>
+							</tr>
+							<tr>
+								<td class='text-bold'>Datum narození:</td>
+								<td>{$visitor->birthday|date:'%d.%m.%Y'}</td>
+							</tr>
+							<tr>
+								<td class='text-bold'>Ulice:</td>
+								<td>{$visitor->street}</td>
+							</tr>
+							<tr>
+								<td class='text-bold'>Město:</td>
+								<td>{$visitor->city}</td>
+							</tr>
+							<tr>
+								<td class='text-bold'>PSČ:</td>
+								<td>{$visitor->postal_code}</td>
+							</tr>
+							<tr>
+								<td class='text-bold'>Číslo střediska/přístavu:</td>
+								<td>{$visitor->group_num}</td>
+							</tr>
+							<tr>
+								<td class='text-bold'>Název střediska/přístavu:</td>
+								<td>
+									<div style="margin:2px 0px 2px 0px; font-weight:bold;">Junák - český skaut, z. s.</div>
+									{$visitor->group_name}
+								</td>
+							</tr>
+							<tr>
+								<td class='text-bold'>Název oddílu:</td>
+								<td>{$visitor->troop_name}</td>
+							</tr>
+							<tr>
+								<td class='text-bold'>Kraj:</td>
+								<td>{$province|noescape}</td>
+							</tr>
+							<tr>
+								<td class='text-bold'>Stravování:</td>
+								<td>
+									<div>páteční večeře: <span style="font-weight:bold;">{$meals->fry_dinner}</span></div>
+									<div>sobotní snídaně: <span style="font-weight:bold;">{$meals->sat_breakfast}</span></div>
+									<div>sobotní oběd: <span style="font-weight:bold;">{$meals->sat_lunch}</span></div>
+									<div>sobotní večeře: <span style="font-weight:bold;">{$meals->sat_dinner}</span></div>
+									<div>nedělní snídaně: <span style="font-weight:bold;">{$meals->sun_breakfast}</span></div>
+									<div>nedělní oběd: <span style="font-weight:bold;">{$meals->sun_lunch}</span></div>
+								</td>
+							</tr>
+							<tr>
+								<td class='text-bold'>Informace o příjezdu:</td>
+								<td>{$visitor->arrival}</td>
+							</tr>
+							<tr>
+								<td class='text-bold'>Informace o odjezdu:</td>
+								<td>{$visitor->departure}</td>
+							</tr>
+							<tr>
+								<td class='text-bold'>Dotazy, přání, připomínky, stížnosti:</td>
+								<td>{$visitor->comment}</td>
+							</tr>
+							<tr>
+								<td class='text-bold'>Sdílení zkušeností:</td>
+								<td>{$visitor->question}</td>
+							</tr>
+							<tr class="text-bold">
+								<td class=''>Počet a typy lodí:</td>
+								<td>{$visitor->question2}</td>
+							</tr>
+
+						</table>
+
+					</div>
+
+					<div style='border-bottom:1px solid black;padding-left:10px;' class="text-bold">Vybrané programy:</div>
+
+					{if $programs}
+
+						{foreach $programs as $program}
+							{$program->day}, {$program->from} - {$program->to}
+							<div style='padding:5px 0px 5px 20px;'>- {$program->prog_name}</div>
+						{/foreach}
+
+					{else}
+
+						<p>Nemáte žádné vybrané programy.</p>
+
+					{/if}
+
+				</div>
+			</div><!-- .row -->
+
+			{include buttons}
+
+		</div>
+	</section>
+
+</main>

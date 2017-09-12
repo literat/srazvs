@@ -1,6 +1,8 @@
 <?php
 
-namespace App;
+namespace App\Models;
+
+use Nette\Database\Context;
 
 /**
  * Meal
@@ -13,51 +15,81 @@ namespace App;
 class MealModel extends BaseModel
 {
 
-	/** @var array	meals */
-	public $day_meal = array();
+	/**
+	 * @var array
+	 */
+	static public $meals = [
+		'fry_dinner'    => 'páteční večeře',
+		'sat_breakfast' => 'sobotní snídaně',
+		'sat_lunch'     => 'sobotní oběd',
+		'sat_dinner'    => 'sobotní večeře',
+		'sun_breakfast' => 'nedělní snídaně',
+		'sun_lunch'     => 'nedělní oběd',
+	];
 
-	/** Constructor */
-	public function __construct($database)
+	/**
+	 * @deprecated
+	 * @var array
+	 */
+	static public $dayMeal = [
+		"páteční večeře"	=>	"fry_dinner",
+		"sobotní snídaně"	=>	"sat_breakfast",
+		"sobotní oběd"		=>	"sat_lunch",
+		"sobotní večeře"	=>	"sat_dinner",
+		"nedělní snídaně"	=>	"sun_breakfast",
+		"nedělní oběd"		=>	"sun_lunch"
+	];
+
+	/**
+	 * @var string
+	 */
+	protected $table = 'kk_meals';
+
+	/**
+	 * @var array
+	 */
+	protected $columns = [
+		"visitor",
+		"fry_dinner",
+		"sat_breakfast",
+		"sat_lunch",
+		"sat_dinner",
+		"sun_breakfast",
+		"sun_lunch"
+	];
+
+	/**
+	 * @param Context $database
+	 */
+	public function __construct(Context $database)
 	{
-		$this->dbColumns = array(
-			"visitor",
-			"fry_dinner",
-			"sat_breakfast",
-			"sat_lunch",
-			"sat_dinner",
-			"sun_breakfast",
-			"sun_lunch"
-		);
-
-		$this->dayMeal = array(
-			"páteční večeře"	=>	"fry_dinner",
-			"sobotní snídaně"	=>	"sat_breakfast",
-			"sobotní oběd"		=>	"sat_lunch",
-			"sobotní večeře"	=>	"sat_dinner",
-			"nedělní snídaně"	=>	"sun_breakfast",
-			"nedělní oběd"		=>	"sun_lunch"
-		);
-		$this->dbTable = "kk_meals";
-		$this->database = $database;
+		$this->setDatabase($database);
 	}
 
 	/**
-	 * Modify record
-	 *
-	 * @param	int		$id			Id of record
-	 * @param	array	$db_data	Array of data
-	 * @return	bool
+	 * @return array
 	 */
-	public function modify($id, array $dbData)
+	public function getColumns()
 	{
-		$result = $this->database
-			->table($this->dbTable)
-			->where('visitor', $id)
-			->update($dbData);
-
-		return $result;
+		return $this->columns;
 	}
 
+	/**
+	 * @param  integer $visitorId
+	 * @param  array   $data
+	 * @return ActiveRow
+	 */
+	public function update($visitorId, array $data)
+	{
+		return $this->getDatabase()
+			->table($this->getTable())
+			->where('visitor', $visitorId)
+			->update($data);
+	}
+
+	/**
+	 * @deprecated
+	 */
 	function getMeals($visitorId)
 	{
 		$meals = "<tr>";
@@ -65,7 +97,7 @@ class MealModel extends BaseModel
 
 		$result = $this->database
 			->table($this->dbTable)
-			->where('vsitor', $visitorId)
+			->where('visitor', $visitorId)
 			->fetchAll();
 
 		if(!$result){
@@ -84,6 +116,7 @@ class MealModel extends BaseModel
 	}
 
 	/**
+	 * @deprecated
 	 * Render HTML Meals <select>
 	 *
 	 * @param	string	value of selected meal
@@ -94,14 +127,13 @@ class MealModel extends BaseModel
 	{
 		// order must be firtsly NO and then YES
 		// first value is displayed in form as default
-		$mealArray = array("ne" => "ne","ano" => "ano");
-		$yesNoArray = array("ne", "ano");
+		$yesNoArray = array('ne', 'ano');
 
-		$htmlSelect = "";
-		foreach($this->dayMeal as $title => $varName){
-			if(preg_match("/breakfast/", $varName))	$mealIcon = "breakfast";
-			if(preg_match("/lunch/", $varName))		$mealIcon = "lunch";
-			if(preg_match("/dinner/", $varName))	$mealIcon = "dinner";
+		$htmlSelect = '';
+		foreach(static::$dayMeal as $title => $varName){
+			if(preg_match('/breakfast/', $varName))	$mealIcon = 'breakfast';
+			if(preg_match('/lunch/', $varName))		$mealIcon = 'lunch';
+			if(preg_match('/dinner/', $varName))	$mealIcon = 'dinner';
 
 			$htmlSelect .= "<span style='display:block;font-size:11px;'>".$title.":</span>\n";
 			$htmlSelect .= "<img style='width:18px;' src='".IMG_DIR."icons/".$mealIcon.".png' />\n";
@@ -121,17 +153,18 @@ class MealModel extends BaseModel
 	}
 
 	/**
-	 * Get meals data into array
+	 * Get meals data by visitor id
 	 *
 	 * @param	integer	visitor id
-	 * @return	array	meal => ano|ne
+	 * @return	mixed
 	 */
-	public function getMealsArray($visitorId)
+	public function findByVisitorId($visitorId)
 	{
-		return $this->database
-			->table($this->dbTable)
+		return $this->getDatabase()
+			->table($this->getTable())
 			->where('visitor', $visitorId)
 			->limit(1)
 			->fetch();
 	}
+
 }

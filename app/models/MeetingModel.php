@@ -1,6 +1,10 @@
 <?php
 
-namespace App;
+namespace App\Models;
+
+use Nette\Database\Context;
+use App\Models\ProgramModel;
+use App\Models\BaseModel;
 
 /**
  * Meeting
@@ -10,13 +14,8 @@ namespace App;
  * @created 2012-11-09
  * @author Tomas Litera <tomaslitera@hotmail.com>
  */
-class MeetingModel
+class MeetingModel extends BaseModel
 {
-	/**
-	 * Meeting ID
-	 * @var int
-	 */
-	private $meetingId;
 
 	/** @var array days of weekend */
 	private $weekendDays = array();
@@ -40,13 +39,15 @@ class MeetingModel
 	public $courseId;
 
 	private $configuration;
+
 	private $program;
 	private $httpEncoding;
-	private $database;
 	private $dbTable;
 
+	protected $table = 'kk_meetings';
+
 	/** Constructor */
-	public function __construct($database, $program)
+	public function __construct(Context $database, ProgramModel $program)
 	{
 		$this->weekendDays = array("pátek", "sobota", "neděle");
 		$this->form_names = array(
@@ -76,13 +77,8 @@ class MeetingModel
 			"numbering"
 		);
 		$this->dbTable = "kk_meetings";
-		$this->database = $database;
+		$this->setDatabase($database);
 		$this->program = $program;
-	}
-
-	public function setMeetingId($id)
-	{
-		$this->meetingId = $id;
 	}
 
 	public function setHttpEncoding($encoding)
@@ -112,7 +108,7 @@ class MeetingModel
 	public function create(array $data)
 	{
 		$data['guid'] = md5(uniqid());
-		$result = $this->database->query('INSERT INTO ' . $this->dbTable, $data);
+		$result = $this->getDatabase()->query('INSERT INTO ' . $this->getTable(), $data);
 
 		return $result;
 	}
@@ -126,7 +122,7 @@ class MeetingModel
 	 */
 	public function update($id, array $data)
 	{
-		$result = $this->database->table($this->dbTable)->where('id', $id)->update($data);
+		$result = $this->getDatabase()->table($this->getTable())->where('id', $id)->update($data);
 
 		return $result;
 	}
@@ -140,7 +136,7 @@ class MeetingModel
 	public function delete($ids)
 	{
 		$data = array('deleted' => '1');
-		$result = $this->database->table($this->dbTable)->where('id', $ids)->update($data);
+		$result = $this->getDatabase()->table($this->getTable())->where('id', $ids)->update($data);
 
 		return $result;
 	}
@@ -150,17 +146,17 @@ class MeetingModel
 	 *
 	 * @return	string	html table
 	 */
-	public function getData($meeting_id = NULL)
+	public function getData($meetingId = null)
 	{
-		if(isset($meeting_id)) {
-			$data = $this->database
-				->table($this->dbTable)
-				->where('deleted ? AND id ?',  '0', $meeting_id)
+		if(isset($meetingId)) {
+			$data = $this->getDatabase()
+				->table($this->getTable())
+				->where('deleted ? AND id ?', '0', $meetingId)
 				->fetch();
 		} else {
-			$data = $this->database
-				->table($this->dbTable)
-				->where('deleted',  '0')
+			$data = $this->getDatabase()
+				->table($this->getTable())
+				->where('deleted', '0')
 				->fetchAll();
 		}
 
@@ -172,22 +168,17 @@ class MeetingModel
 	}
 
 	/**
-	 * Get meeting price
-	 *
-	 * @var		string	type of charge
-	 * @return	int		return cost or false
+	 * @param  string $priceType cost|advance
+	 * @return integer
 	 */
-	public function getPrice($type)
+	public function getPrice($priceType)
 	{
-		$data = $this->database
-			->table($this->dbTable)
-			->where('id', $this->meetingId)
+		return $this->getDatabase()
+			->table($this->getTable())
+			->select($priceType)
+			->where('id', $this->getMeetingId())
 			->limit(1)
-			->fetch();
-
-		if($type == 'cost') return $data['cost'];
-		elseif($type == 'advance') return $data['advance'];
-		else return -1;
+			->fetchField();
 	}
 
 	/**
@@ -196,20 +187,20 @@ class MeetingModel
 	 * @param	int	ID of selected province
 	 * @return	string	html <select>
 	 */
-	public function renderHtmlProvinceSelect($selected_province)
+	public function renderHtmlProvinceSelect($selectedProvince)
 	{
 		$html_select = "<select style='width: 195px; font-size: 10px' name='province'>\n";
 
-		$result = $this->database
+		$result = $this->getDatabase()
 			->table('kk_provinces')
 			->fetchAll();
 
-		foreach($result as $data){
-			if($data['id'] == $selected_province){
+		foreach($result as $data) {
+			if($data['id'] == $selectedProvince) {
 				$sel = "selected";
 			}
 			else $sel = "";
-			$html_select .= "<option value='".$data['id']."' ".$sel.">".$data['province_name']."</option>";
+			$html_select .= "<option value='" . $data['id'] . "' " . $sel . ">" . $data['province_name'] . "</option>";
 		}
 
 		$html_select .= "</select>\n";
@@ -217,42 +208,10 @@ class MeetingModel
 		return $html_select;
 	}
 
-	/**
-	 * Get Programs for Overview
-	 *
-	 * @return	string	html
-	 */
-	public function getPrograms($blockId)
-	{
-		$result = $this->database
-			->query('SELECT	progs.id AS id,
-						progs.name AS name,
-						style
-				FROM kk_programs AS progs
-				LEFT JOIN kk_categories AS cat ON cat.id = progs.category
-				WHERE block = ? AND progs.deleted = ?
-				LIMIT 10',
-				$blockId, '0')->fetchAll();
-
-		if(!$result) {
-			$html = "";
-		} else {
-			$html = "<table class='programs'>\n";
-			$html .= " <tr>\n";
-			foreach($result as $data){
-				$html .= "<td class='category cat-".$data['style']."' style='text-align:center;'>\n";
-				$html .= "<a class='program' href='".PROG_DIR."/?id=".$data['id']."&cms=edit&page=meeting' title='".$data['name']."'>".$data['name']."</a>\n";
-				$html .= "</td>\n";
-			}
-			$html .= " </tr>\n";
-			$html .= "</table>\n";
-		}
-		return $html;
-	}
-
 	/** Public program same as getPrograms*/
-	public function getPublicPrograms($block_id){
-		$result = $this->database
+	public function getPublicPrograms($blockId)
+	{
+		$result = $this->getDatabase()
 			->query('SELECT progs.id AS id,
 						progs.name AS name,
 						style
@@ -260,16 +219,17 @@ class MeetingModel
 				LEFT JOIN kk_categories AS cat ON cat.id = progs.category
 				WHERE block = ? AND progs.deleted = ?
 				LIMIT 10',
-				$block_id, '0')
+				$blockId, '0')
 			->fetchAll();
 
-		if(!$result) $html = "";
-		else {
+		if(!$result) {
+			$html = '';
+		} else {
 			$html = "<table>\n";
 			$html .= " <tr>\n";
-			foreach($result as $data){
+			foreach($result as $data) {
 				$html .= "<td class='category cat-".$data['style']."' style='text-align:center;'>\n";
-				$html .= "<a class='programLink' rel='programDetail' href='#' rel='programDetail' title='".$this->program->getDetail($data['id'], 'program', $this->httpEncoding)."'>".$data['name']."</a>\n";
+				$html .= "<a class='programLink' rel='programDetail' href='#' rel='programDetail' title='" . $this->program->getDetail($data['id'], 'program', $this->httpEncoding) . "'>" . $data['name'] . "</a>\n";
 				$html .= "</td>\n";
 			}
 			$html .= " </tr>\n";
@@ -278,75 +238,18 @@ class MeetingModel
 		return $html;
 	}
 
-	/**
-	 * Render Program Overview
-	 *
-	 * @return	string	html
-	 */
-	public function renderProgramOverview()
-	{
-		$html = "";
-
-		foreach($this->weekendDays as $key => $value){
-			$html .= "<table class='blocks'>\n";
-			$html .= " <tr>\n";
-			$html .= "  <td class='day' colspan='2' >".$value."</td>\n";
-			$html .= " </tr>\n";
-
-			$result = $this->database
-				->query('SELECT	blocks.id AS id,
-							day,
-							DATE_FORMAT(`from`, "%H:%i") AS `from`,
-							DATE_FORMAT(`to`, "%H:%i") AS `to`,
-							blocks.name AS name,
-							program,
-							style
-					FROM kk_blocks AS blocks
-					LEFT JOIN kk_categories AS cat ON cat.id = blocks.category
-					WHERE blocks.deleted = ? AND day = ? AND blocks.meeting = ?
-					ORDER BY `from` ASC',
-					'0', $value, $this->meetingId)
-				->fetchAll();
-
-			if(!$result){
-				$html .= "<td class='emptyTable' style='width:400px;'>Nejsou žádná aktuální data.</td>\n";
-			} else {
-				foreach($result as $data){
-					$html .= "<tr>\n";
-					$html .= "<td class='time'>".$data['from']." - ".$data['to']."</td>\n";
-					if($data['program'] == 1){
-						$html .= "<td class='category cat-".$data['style']."'>\n";
-						$html .= "<div>\n";
-						$html .= "<a class='block' href='".BLOCK_DIR."/?id=".$data['id']."&cms=edit&page=meeting' title='".$data['name']."'>".$data['name']."</a>\n";
-						$html .= "</div>\n";
-						$html .= $this->getPrograms($data['id']);
-						$html .= "</td>\n";
-					} else {
-						$html .= "<td class='category cat-".$data['style']."'>";
-						$html .= "<a class='block' href='".BLOCK_DIR."/?id=".$data['id']."&cms=edit&page=meeting' title='".$data['name']."'>".$data['name']."</a>\n";
-						$html .= "</td>\n";
-					}
-					$html .= "</tr>\n";
-				}
-			}
-			$html .= "</table>\n";
-		}
-
-		return $html;
-	}
-
-	public function renderPublicProgramOverview()
+	public function renderPublicProgramOverview($meetingId)
 	{
 		$days = array("pátek", "sobota", "neděle");
 		$html = "";
 
-		foreach($days as $dayKey => $dayVal){
+		foreach($days as $dayKey => $dayVal) {
 			$html .= "<table>\n";
 			$html .= " <tr>\n";
-			$html .= "  <td class='day' colspan='2' >".$dayVal."</td>\n";
+			$html .= "  <td class='day' colspan='2' >" . $dayVal . "</td>\n";
 			$html .= " </tr>\n";
 
-			$result = $this->database
+			$result = $this->getDatabase()
 				->query('SELECT	blocks.id AS id,
 							day,
 							DATE_FORMAT(`from`, "%H:%i") AS `from`,
@@ -359,27 +262,25 @@ class MeetingModel
 					LEFT JOIN kk_categories AS cat ON cat.id = blocks.category
 					WHERE blocks.deleted = ? AND day = ? AND meeting = ?
 					ORDER BY `from` ASC',
-					'0', $dayVal, $this->meetingId)
+					'0', $dayVal, $meetingId)
 				->fetchAll();
 
-			if(!$result){
+			if(!$result) {
 				$html .= "<td class='emptyTable' style='width:400px;'>Nejsou žádná aktuální data.</td>\n";
-			}
-			else{
-				foreach($result as $data){
+			} else {
+				foreach($result as $data) {
 					$html .= "<tr>\n";
-					$html .= "<td class='time'>".$data['from']." - ".$data['to']."</td>\n";
-					if(($data['program'] == 1) && ($data['display_progs'] == 1)){
-						$html .= "<td class='category cat-".$data['style']."' class='daytime'>\n";
+					$html .= "<td class='time'>" . $data['from'] . " - " . $data['to'] . "</td>\n";
+					if(($data['program'] == 1) && ($data['display_progs'] == 1)) {
+						$html .= "<td class='category cat-" . $data['style'] . "' class='daytime'>\n";
 						$html .= "<div>\n";
-						$html .= "<a class='programLink rel='programDetail' href='#' rel='programDetail' title='".$this->program->getDetail($data['id'], 'block', $this->httpEncoding)."'>".$data['name']."</a>\n";
+						$html .= "<a class='programLink rel='programDetail' href='#' rel='programDetail' title='" . $this->program->getDetail($data['id'], 'block', $this->httpEncoding) . "'>" . $data['name'] . "</a>\n";
 						$html .= "</div>\n";
 						$html .= $this->getPublicPrograms($data['id']);
 						$html .= "</td>\n";
-					}
-					else {
-						$html .= "<td class='category cat-".$data['style']."'>";
-						$html .= "<a class='programLink rel='programDetail' href='#' rel='programDetail' title='".$this->program->getDetail($data['id'], 'block', $this->httpEncoding)."'>".$data['name']."</a>\n";
+					} else {
+						$html .= "<td class='category cat-" . $data['style'] . "'>";
+						$html .= "<a class='programLink rel='programDetail' href='#' rel='programDetail' title='" . $this->program->getDetail($data['id'], 'block', $this->httpEncoding) . "'>" . $data['name'] . "</a>\n";
 						$html .= "</td>\n";
 					}
 					$html .= "</tr>\n";
@@ -417,14 +318,14 @@ class MeetingModel
 
 		$html_row = "";
 
-		if(!$result){
+		if(!$result) {
 			$html_row .= "<tr class='radek1'>";
-			$html_row .= "<td><img class='edit' src='".IMG_DIR."icons/edit2.gif' /></td>\n";
-			$html_row .= "<td><img class='edit' src='".IMG_DIR."icons/delete2.gif' /></td>\n";
+			$html_row .= "<td><img class='edit' src='" . IMG_DIR . "icons/edit2.gif' /></td>\n";
+			$html_row .= "<td><img class='edit' src='" . IMG_DIR . "icons/delete2.gif' /></td>\n";
 			$html_row .= "<td colspan='11' class='emptyTable'>Nejsou k dispozici žádné položky.</td>";
 			$html_row .= "</tr>";
 		} else {
-			foreach($result as $data){
+			foreach($result as $data) {
 				$html_row .= "<tr class='radek1'>";
 				$html_row .= "\t\t\t<td><a href='process.php?id=".$data['id']."&cms=edit&page=meetings' title='Upravit'><img class='edit' src='".IMG_DIR."icons/edit.gif' /></a></td>\n";
 				$html_row .= "\t\t\t<td><a href=\"javascript:confirmation('?id=".$data['id']."&amp;cms=del', 'sraz: ".$data['place']." ".$data['start_date']." -> Opravdu SMAZAT tento sraz? Jste si jisti?')\" title='Odstranit'><img class='edit' src='".IMG_DIR."icons/delete.gif' /></a></td>\n";
@@ -475,42 +376,86 @@ class MeetingModel
 		return $html_table;
 	}
 
-	public function setRegistrationHandlers($meeting_id = NULL) {
-		$data = $this->database
-			->table($this->dbTable)
-			->select('id,
-				place,
-				DATE_FORMAT(start_date, "%Y") AS year,
-				UNIX_TIMESTAMP(open_reg) AS open_reg,
-				UNIX_TIMESTAMP(close_reg) AS close_reg')
-			->where($meeting_id ? 'id = "' . $meeting_id . '"' : '1')
+	/**
+	 * @param  integer $meetingId
+	 * @return $this
+	 */
+	public function setRegistrationHandlers($meetingId = 1)
+	{
+		$meeting = $this->getDatabase()
+			->table($this->getTable())
+			->select('id')
+			->select('place')
+			->select('DATE_FORMAT(start_date, "%Y") AS year')
+			->select('UNIX_TIMESTAMP(open_reg) AS open_reg')
+			->select('UNIX_TIMESTAMP(close_reg) AS close_reg')
+			->where('id', $meetingId)
 			->order('id DESC')
 			->limit(1)
 			->fetch();
 
-		$mid = $data['id'];
-		$meetingHeader =
+		$this->setRegHeading($meeting->place . ' ' . $meeting->year);
+		$this->setRegClosing($meeting->close_reg);
+		$this->setRegOpening($meeting->open_reg);
 
-		$this->regHeading = $data['place']." ".$data['year'];
-		$this->regClosing = $data['close_reg'];
-		$this->regOpening = $data['open_reg'];
-
-		return TRUE;
+		return $this;
 	}
 
+	/**
+	 * @return string
+	 */
 	public function getRegOpening()
 	{
 		return $this->regOpening;
 	}
 
+	/**
+	 * @param  string $value
+	 * @return $this
+	 */
+	public function setRegOpening($value = '')
+	{
+		$this->regOpening = $value;
+
+		return $this;
+	}
+
+	/**
+	 * @return string
+	 */
 	public function getRegClosing()
 	{
 		return $this->regClosing;
 	}
 
+	/**
+	 * @param  string $value
+	 * @return $this
+	 */
+	public function setRegClosing($value = '')
+	{
+		$this->regClosing = $value;
+
+		return $this;
+	}
+
+	/**
+	 * @return string
+	 */
 	public function getRegHeading()
 	{
 		return $this->regHeading;
+	}
+
+	/**
+	 * @param  string $value
+	 * @return $this
+	 */
+	public function setRegHeading($value = '')
+	{
+		$this->regHeading = $value;
+
+		return $this;
 	}
 
 	/**
@@ -523,8 +468,13 @@ class MeetingModel
 		return (($this->getRegOpening() < time()) && (time() < $this->getRegClosing()) || $debug);
 	}
 
-	public function getProvinceNameById($id) {
-		return $this->database
+	/**
+	 * @param  integer $id
+	 * @return string
+	 */
+	public function getProvinceNameById($id)
+	{
+		return $this->getDatabase()
 			->table('kk_provinces')
 			->select('province_name')
 			->where('id', $id)
@@ -548,6 +498,49 @@ class MeetingModel
 			->where('id', $this->meetingId)
 			->limit(1)
 			->fetchField('skautis_course_id');
+	}
+
+	/**
+	 * @param  integer|string $meetingId
+	 * @return ActiveRow
+	 */
+	public function getPlaceAndYear($meetingId)
+	{
+		return $this->getDatabase()
+			->table($this->getTable())
+			->select('place')
+			->select('DATE_FORMAT(start_date, "%Y") AS year')
+			->where('id = ? AND deleted = ?', $meetingId, '0')
+			->limit(1)
+			->fetch();
+	}
+
+	/**
+	 * @return ActiveRow
+	 */
+	public function getMenuItems()
+	{
+		return $this->getDatabase()
+			->table($this->getTable())
+			->select('id AS mid')
+			->select('place')
+			->select('DATE_FORMAT(start_date, "%Y") AS year')
+			->where('deleted', '0')
+			->order('id DESC')
+			->fetchAll();
+	}
+
+	/**
+	 * @return integer
+	 */
+	public function getLastMeetingId()
+	{
+		return $this->getDatabase()
+			->table($this->getTable())
+			->select('id')
+			->order('id DESC')
+			->limit(1)
+			->fetchField();
 	}
 
 }

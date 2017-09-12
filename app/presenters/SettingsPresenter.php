@@ -2,181 +2,114 @@
 
 namespace App\Presenters;
 
-use Nette\Database\Context;
-use Nette\DI\Container;
+use App\Models\SettingsModel;
+use App\Services\Emailer;
+use Tracy\Debugger;
 
-/**
- * This file handles the retrieval and serving of news articles
- */
 class SettingsPresenter extends BasePresenter
 {
-	/**
-	 * template
-	 * @var string
-	 */
-	protected $template = 'form';
 
 	/**
-	 * template directory
-	 * @var string
-	 */
-	protected $templateDir = 'settings';
-
-	/**
-	 * meeting ID
-	 * @var integer
-	 */
-	protected $meetingId = 0;
-
-	/**
-	 * page where to return
-	 * @var string
-	 */
-	protected $page = 'settings';
-
-	/**
-	 * Container class
-	 * @var [type]
-	 */
-	private $container;
-
-	/**
-	 * Category model
-	 * @var Category
-	 */
-	private $Settings;
-
-	/**
-	 * Emailer model
 	 * @var Emailer
 	 */
-	private $Emailer;
+	private $emailer;
 
 	/**
-	 * Prepare initial values
+	 * @param SettingsModel $settingsModel
+	 * @param Emailer       $emailer
 	 */
-	public function __construct(Context $database, Container $container)
+	public function __construct(SettingsModel $settingsModel, Emailer $emailer)
 	{
-		$this->database = $database;
-		$this->container = $container;
-		$this->router = $this->container->parameters['router'];
-		$this->Settings = $this->container->createServiceSettings();
-		$this->Emailer = $this->container->createServiceEmailer();
-		$this->latte = $this->container->getService('latte');
-
-		if($this->meetingId = $this->requested('mid', '')){
-			$_SESSION['meetingID'] = $this->meetingId;
-		} else {
-			$this->meetingId = $_SESSION['meetingID'];
-		}
+		$this->setModel($settingsModel);
+		$this->setEmailer($emailer);
 	}
 
 	/**
-	 * This is the default function that will be called by router.php
-	 *
-	 * @param array $getVars the GET variables posted to index.php
-	 */
-	public function init()
-	{
-		########################## KONTROLA ###############################
-
-		$this->cms = $this->requested('cms', '');
-		$this->error = $this->requested('error', '');
-		$this->page = $this->requested('page', $this->page);
-
-		######################### DELETE CATEGORY #########################
-
-		switch($this->cms) {
-			case "update":
-				$this->update($this->requested('mail', ''));
-				break;
-			case "mail":
-				$this->mail($this->requested('mail', ''), $this->requested('test-mail', ''));
-			default:
-				$this->edit();
-		}
-
-		$this->render();
-	}
-
-	/**
-	 * Prepare form page
-	 * @param  int $id of item
-	 * @return void
-	 */
-	private function edit()
-	{
-		$this->heading = "úprava kategorie";
-		$this->template = "form";
-	}
-
-	/**
-	 * Update item in DB
-	 *
-	 * @param 	string 	$type 	type of mail
+	 * @param 	string 	$id
 	 * @return 	void
 	 */
-	private function update($type)
+	public function actionUpdate($id)
 	{
-		$error = $this->Settings->modifyMailJSON($type, $this->requested('subject', ''), $this->requested('message', ''));
+		try {
+			$data = $this->getHttpRequest()->getPost();
+			$this->getModel()->modifyMailJSON($id, $data['subject'], $data['message']);
 
-		if($error == 'ok') {
-			redirect("?page=".$this->page."&error=ok");
+			Debugger::log('Settings: mail type ' . $id . ' update succesfull.', Debugger::INFO);
+			$this->flashMessage('Settings: mail type ' . $id . ' update succesfull.', 'ok');
+		} catch(Exception $e) {
+			Debugger::log('Settings: mail type ' . $id . ' update failed, result: ' . $e->getMessage(), Debugger::ERROR);
+			$this->flashMessage('Settings: mail type ' . $id . ' update failed, result: ' . $e->getMessage(), 'error');
 		}
+
+		$this->redirect('Settings:listing');
 	}
 
 	/**
-	 * Send test mail
-	 *
-	 * @param 	string 	$type 		type of mail
-	 * @param 	string 	$test_mail 	e-mail address
+	 * @param 	string 	$id
 	 * @return 	void
 	 */
-	private function mail($type, $test_mail)
+	public function actionMail($id)
 	{
-		if($this->Emailer->sendMail(array($test_mail => ''),
-									$this->Settings->getMailJSON($type)->subject,
-									html_entity_decode($this->Settings->getMailJSON($type)->message))
-		) {
-			redirect("?error=mail_send");
+		try {
+			$recipient = $this->getHttpRequest()->getPost()['test-mail'];
+			$jsonMail = $this->getModel()->getMailJSON($id);
+
+			$this->getEmailer()
+				->sendMail(
+					[$recipient => ''],
+					$jsonMail->subject,
+					html_entity_decode($jsonMail->message)
+				);
+
+			Debugger::log('Settings: mail type ' . $id . ' succesfully send to recipient ' . $recipient, Debugger::INFO);
+			$this->flashMessage('Settings: mail type ' . $id . ' succesfully send.', 'ok');
+		} catch (Exception $e) {
+			Debugger::log('Settings: mail type ' . $id . ' send to recipient ' . $recipient . ' failed, result: ' . $e->getMessage(), Debugger::ERROR);
+			$this->flashMessage('Settings: mail type ' . $id . ' send to recipient failed, result: ' . $e->getMessage(), 'error');
 		}
+
+		$this->redirect('Settings:listing');
 	}
 
 	/**
-	 * Render entire page
 	 * @return void
 	 */
-	private function render()
+	public function renderListing()
 	{
-		$error = "";
+		$settingsModel = $this->getModel();
+		$template = $this->getTemplate();
+		$error = '';
 
-		$parameters = [
-			'cssDir'				=> CSS_DIR,
-			'jsDir'					=> JS_DIR,
-			'imgDir'				=> IMG_DIR,
-			'user'					=> $this->getSunlightUser($_SESSION[SESSION_PREFIX.'user']),
-			'meeting'				=> $this->getPlaceAndYear($_SESSION['meetingID']),
-			'menu'					=> $this->generateMenu(),
-			'error'					=> printError($this->error),
-			'todo'					=> $this->todo,
-			'cms'					=> $this->cms,
-			'mid'					=> $this->meetingId,
-			'page'					=> $this->page,
-			'heading'				=> $this->heading,
-			'payment_subject'		=> $this->Settings->getMailJSON('cost')->subject,
-			'payment_message'		=> $this->Settings->getMailJSON('cost')->message,
-			'payment_html_message'	=> html_entity_decode($this->Settings->getMailJSON('cost')->message),
-			'advance_subject'		=> $this->Settings->getMailJSON('advance')->subject,
-			'advance_message'		=> $this->Settings->getMailJSON('advance')->message,
-			'advance_html_message'	=> html_entity_decode($this->Settings->getMailJSON('advance')->message),
-			'tutor_subject'			=> $this->Settings->getMailJSON('tutor')->subject,
-			'tutor_message'			=> $this->Settings->getMailJSON('tutor')->message,
-			'tutor_html_message'	=> html_entity_decode($this->Settings->getMailJSON('tutor')->message),
-			'reg_subject'			=> $this->Settings->getMailJSON('post_reg')->subject,
-			'reg_message'			=> $this->Settings->getMailJSON('post_reg')->message,
-			'reg_html_message'		=> html_entity_decode($this->Settings->getMailJSON('post_reg')->message),
-		];
-
-		$this->latte->render(__DIR__ . '/../templates/' . $this->templateDir.'/'.$this->template . '.latte', $parameters);
+		$template->payment_subject = $settingsModel->getMailJSON('cost')->subject;
+		$template->payment_message = $settingsModel->getMailJSON('cost')->message;
+		$template->payment_html_message = html_entity_decode($settingsModel->getMailJSON('cost')->message);
+		$template->advance_subject = $settingsModel->getMailJSON('advance')->subject;
+		$template->advance_message = $settingsModel->getMailJSON('advance')->message;
+		$template->advance_html_message = html_entity_decode($settingsModel->getMailJSON('advance')->message);
+		$template->tutor_subject = $settingsModel->getMailJSON('tutor')->subject;
+		$template->tutor_message = $settingsModel->getMailJSON('tutor')->message;
+		$template->tutor_html_message = html_entity_decode($settingsModel->getMailJSON('tutor')->message);
+		$template->reg_subject = $settingsModel->getMailJSON('post_reg')->subject;
+		$template->reg_message = $settingsModel->getMailJSON('post_reg')->message;
+		$template->reg_html_message = html_entity_decode($settingsModel->getMailJSON('post_reg')->message);
 	}
+
+	/**
+	 * @return Emailer
+	 */
+	protected function getEmailer()
+	{
+		return $this->emailer;
+	}
+
+	/**
+	 * @param  Emailer $emailer
+	 * @return $this
+	 */
+	protected function setEmailer(Emailer $emailer)
+	{
+		$this->emailer = $emailer;
+		return $this;
+	}
+
 }

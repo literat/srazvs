@@ -2,8 +2,15 @@
 
 namespace App\Presenters;
 
-use Nette\Database\Context;
-use Nette\DI\Container;
+use App\Models\MeetingModel;
+use App\Models\VisitorModel;
+use App\Models\BlockModel;
+use App\Models\MealModel;
+use App\Services\Emailer;
+use App\Services\VisitorService;
+use Nette\Utils\Strings;
+use Tracy\Debugger;
+use Exception;
 
 /**
  * Visitor controller
@@ -16,197 +23,66 @@ use Nette\DI\Container;
  */
 class VisitorPresenter extends BasePresenter
 {
-	/**
-	 * Object farm container
-	 * @var Container
-	 */
-	private $container;
+
+	const TEMPLATE_DIR = __DIR__ . '/../templates/visitor/';
+	const TEMPLATE_EXT = 'latte';
 
 	/**
-	 * Visitor model
-	 * @var VisitorModel
-	 */
-	private $Visitor;
-
-	/**
-	 * Emailer class
 	 * @var Emailer
 	 */
-	private $Emailer;
+	protected $emailer;
 
 	/**
-	 * Export class
-	 * @var Export
+	 * @var MealModel
 	 */
-	private $Export;
+	protected $mealModel;
 
 	/**
-	 * Meeting class
-	 * @var Meeting
+	 * @var BlockModel
 	 */
-	private $Meeting;
+	protected $blockModel;
 
 	/**
-	 * Meal class
-	 * @var Meal
+	 * @var MeetingModel
 	 */
-	private $Meal;
+	protected $meetingModel;
 
 	/**
-	 * Category class
-	 * @var Category
+	 * @var VisitorSErvice
 	 */
-	private $Category;
+	protected $visitorService;
 
 	/**
-	 * Recipients
-	 * @var recipients
+	 * @param VisitorModel $visitors
+	 * @param MealModel    $meals
+	 * @param BlockModel   $blocks
+	 * @param MeetingModel $meetings
+	 * @param Emailer      $emailer
 	 */
-	private $recipients = NULL;
-
-	private $disabled;
-	private $mealData;
-
-	/**
-	 * Prepare model classes and get meeting id
-	 */
-	public function __construct(Context $database, Container $container)
-	{
-		$this->templateDir = 'visitor';
-		$this->template = "listing";
-		$this->page = 'visitor';
-
-		$this->database = $database;
-		$this->container = $container;
-		$this->router = $this->container->parameters['router'];
-		$this->Visitor = $this->container->createServiceVisitor();
-		$this->Emailer = $this->container->createServiceEmailer();
-		$this->Export = $this->container->createServiceExports();
-		$this->Meeting = $this->container->createServiceMeeting();
-		$this->Meal = $this->container->createServiceMeal();
-		$this->Category = $this->container->createServiceCategory();
-		$this->latte = $this->container->getService('latte');
-
-		if($this->meetingId = $this->requested('mid', '')) {
-			$_SESSION['meetingID'] = $this->meetingId;
-		} else {
-			$this->meetingId = $_SESSION['meetingID'];
-		}
-
-		$this->Visitor->setMeetingId($this->meetingId);
-		$this->Meeting->setMeetingId($this->meetingId);
-		$this->Meeting->setHttpEncoding($this->container->parameters['encoding']);
+	public function __construct(
+		VisitorModel $visitors,
+		MealModel $meals,
+		BlockModel $blocks,
+		MeetingModel $meetings,
+		Emailer $emailer,
+		VisitorService $visitor
+	) {
+		$this->setModel($visitors);
+		$this->setMealModel($meals);
+		$this->setBlockModel($blocks);
+		$this->setMeetingModel($meetings);
+		$this->setEmailer($emailer);
+		$this->setVisitorService($visitor);
 	}
 
 	/**
-	 * This is the default function that will be called by Router.php
-	 *
-	 * @param array $getVars the GET variables posted to index.php
-	 */
-	public function init()
-	{
-		$id = $this->requested('id', $this->itemId);
-		$this->cms = $this->requested('cms', '');
-		$this->error = $this->requested('error', '');
-		$this->page = $this->requested('page', '');
-		$search = $this->requested('search', '');
-		$this->disabled = $this->requested('disabled', '');
-
-		if($ids = $this->requested('checker')) {
-			$query_id = array();
-			foreach($ids as $key => $value) {
-				$query_id[] = $value;
-			}
-		} elseif($id) {
-			$query_id = $id;
-		} else {
-			$query_id = $ids;
-		}
-
-		switch($this->cms) {
-			case "delete":
-				$this->delete($query_id);
-				break;
-			case "new":
-				$this->__new();
-				break;
-			case "create":
-				$this->create();
-				break;
-			case "edit":
-				$this->edit($id);
-				break;
-			case "modify":
-				$this->update($id);
-				break;
-			case "massmail":
-				$this->massmail($query_id);
-				break;
-			case "send":
-				$this->send($this->requested('recipients', ''));
-			// pay full charge
-			case "pay":
-				$this->pay($query_id, 'cost');
-				break;
-			// pay advance
-			case "advance":
-				$this->pay($query_id, 'advance');
-				break;
-			// searching
-			case "search":
-				if(isset($search)){
-					$this->Visitor->setSearch($search);
-				}
-				break;
-			// export all visitors to excel
-			case "export":
-				$this->Export->printVisitorsExcel();
-				break;
-			case "checked":
-				$this->checked($id);
-				break;
-			case "unchecked":
-				$this->unchecked($id);
-				break;
-		}
-
-		$this->render();
-	}
-
-	/**
-	 * Prepare page for new item
-	 *
 	 * @return void
 	 */
-	private function __new()
+	public function startup()
 	{
-		$this->template = 'form';
+		parent::startup();
 
-		$this->heading = "nový účastník";
-		$this->todo = "create";
-
-		// requested for meals
-		foreach($this->Meal->dbColumns as $var_name) {
-			$$var_name = $this->requested($var_name, 'ne');
-			$this->mealData[$var_name] = $$var_name;
-		}
-
-		// requested for visitors fields
-		foreach($this->Visitor->dbColumns as $key) {
-			if($key == 'bill') $value = 0;
-			elseif($key == 'cost') $value = 0;
-			else $value = "";
-			$this->data[$key] = $this->requested($key, $value);
-		}
-	}
-
-	private function getblocks()
-	{
-		return $this->database
-			->table('kk_blocks')
-			->select('id')
-			->where('meeting ? AND program ? AND deleted ?', $this->meetingId, '1', '0')
-			->fetchAll();
+		$this->getMeetingModel()->setMeetingId($this->getMeetingId());
 	}
 
 	/**
@@ -214,143 +90,69 @@ class VisitorPresenter extends BasePresenter
 	 *
 	 * @return void
 	 */
-	private function create()
+	public function actionCreate()
 	{
-		// TODO
-		////ziskani zvolenych programu
-		$blocks = $this->getblocks();
+		try {
+			$postData = $this->getHttpRequest()->getPost();
+			$postData['meeting'] = $this->getMeetingId();
 
-		foreach($blocks as $blockData){
-			$$blockData['id'] = $this->requested($blockData['id'], 0);
-			$programs_data[$blockData['id']] = $$blockData['id'];
-			//echo $blockData['id'].":".$$blockData['id']."|";
+			$guid = $this->getVisitorService()->create($postData);
+			$result = $this->sendRegistrationSummary($postData, $guid);
+
+			Debugger::log('Creation of visitor('. $guid .') successfull, result: ' . json_encode($result), Debugger::INFO);
+			$this->flashMessage('Účastník(' . $guid . ') byl úspěšně vytvořen.', 'ok');
+		} catch(Exception $e) {
+			Debugger::log('Creation of visitor('. $guid .') failed, result: ' .  $e->getMessage(), Debugger::ERROR);
+			$this->flashMessage('Creation of visitor failed, result: ' . $e->getMessage(), 'error');
 		}
 
-		// requested for visitors
-		foreach($this->Visitor->dbColumns as $key) {
-				if($key == 'bill') $$key = $this->requested($key, 0);
-				elseif($key == 'cost') $$key = $this->requested($key, 0);
-				else $$key = $this->requested($key, null);
-				$DB_data[$key] = $$key;
-		}
-
-		// i must add visitor's ID because it is empty
-		$DB_data['meeting'] = $this->meetingId;
-		$DB_data['hash'] = hash('sha1', microtime());
-
-		// requested for meals
-		foreach($this->Meal->dbColumns as $var_name) {
-			$$var_name = $this->requested($var_name, null);
-			$meals_data[$var_name] = $$var_name;
-		}
-		// create
-		if($vid = $this->Visitor->create($DB_data, $meals_data, $programs_data)){
-			######################## ODESILAM EMAIL ##########################
-
-			// zaheshovane udaje, aby se nedali jen tak ziskat data z databaze
-			$code4bank = $this->code4Bank($DB_data);
-			$hash = ((int)$vid.$this->meetingId) * 147 + 49873;
-
-			$recipient_mail = $DB_data['email'];
-			$recipient_name = $DB_data['name']." ".$DB_data['surname'];
-			$recipient = [$recipient_mail => $recipient_name];
-
-			if($return = $this->Emailer->sendRegistrationSummary($recipient, $hash, $code4bank)) {
-				if(is_int($vid)) {
-					$vid = "ok";
-				}
-				redirect("?page=".$this->page."&error=ok");
-			} else {
-				redirect("?page=".$this->page."&error=error");
-			}
-		} else {
-			redirect("?page=".$this->page."&error=error");
-		}
+		$this->redirect('Visitor:listing');
 	}
 
 	/**
 	 * Process data from editing
 	 *
-	 * @param  int 	$id 	of item
+	 * @param  integer 	$id
 	 * @return void
 	 */
-	private function update($id = NULL)
+	public function actionUpdate($id)
 	{
-		// TODO
-		////ziskani zvolenych programu
-		$blocks = $this->getblocks();
+		try {
+			$postData = $this->getHttpRequest()->getPost();
+			$postData['meeting'] = $this->getMeetingId();
+			$postData['visitor'] = $id;
 
-		foreach($blocks as $blockData){
-			$$blockData['id'] = $this->requested('blck_' . $blockData['id'], 0);
-			$programs_data[$blockData['id']] = $$blockData['id'];
+			$result = $this->getVisitorService()->update($id, $postData);
+
+			//$result = $this->sendRegistrationSummary($visitor, $guid);
+
+			Debugger::log('Modification of visitor('. $id .') successfull, result: ' . json_encode($result), Debugger::INFO);
+			$this->flashMessage('Účastník(' . $id . ') byl úspěšně upraven.', 'ok');
+		} catch(Exception $e) {
+			Debugger::log('Modification of visitor('. $id .') failed, result: ' .  $e->getMessage(), Debugger::ERROR);
+			$this->flashMessage('Modification of visitor failed, result: ' . $e->getMessage(), 'error');
 		}
 
-		foreach($this->Visitor->dbColumns as $key) {
-				if($key == 'bill') $$key = $this->requested($key, 0);
-				else $$key = $this->requested($key, null);
-				$DB_data[$key] = $$key;
-		}
-
-		// i must add visitor's ID because it is empty
-		$DB_data['meeting'] = $this->meetingId;
-
-		foreach($this->Meal->dbColumns as $var_name) {
-			$$var_name = $this->requested($var_name, null);
-			$meals_data[$var_name] = $$var_name;
-		}
-		// i must add visitor's ID because it is empty
-		$meals_data['visitor'] = $id;
-
-		if($this->Visitor->modify($id, $DB_data, $meals_data, $programs_data)){
-			redirect("?page=".$this->page."&error=ok");
-		} else {
-			redirect("?page=".$this->page."&error=error");
-		}
+		$this->redirect('Visitor:listing');
 	}
 
 	/**
-	 * Prepare data for editing
-	 *
-	 * @param  int $id of item
+	 * @param  int  $id
 	 * @return void
 	 */
-	private function edit($id)
+	public function actionDelete($id)
 	{
-		$this->template = 'form';
+		try {
+			$result = $this->getVisitorService()->delete($id);
 
-		$this->heading = "úprava účastníka";
-		$this->todo = "modify";
-
-		$this->itemId = $id;
-
-		$dbData = $this->Visitor->getData($id);
-		foreach($this->Visitor->dbColumns as $key) {
-			$this->data[$key] = $this->requested($key, $dbData[$key]);
+			Debugger::log('Destroying of visitor('. $id .') successfull, result: ' . json_encode($result), Debugger::INFO);
+			$this->flashMessage('Položka byla úspěšně smazána', 'ok');
+		} catch(Exception $e) {
+			Debugger::log('Destroying of visitor('. $id .') failed, result: ' .  $e->getMessage(), Debugger::ERROR);
+			$this->flashMessage('Destroying of visitor failed, result: ' . $e->getMessage(), 'error');
 		}
 
-		$data = $this->database
-			->table('kk_meals')
-			->where('visitor', $this->itemId)
-			->limit(1)
-			->fetch();
-
-		foreach($this->Meal->dbColumns as $var_name) {
-			$$var_name = $this->requested($var_name, $data[$var_name]);
-			$this->mealData[$var_name] = $$var_name;
-		}
-	}
-
-	/**
-	 * Delete item by id
-	 *
-	 * @param  int $id of item
-	 * @return void
-	 */
-	private function delete($id)
-	{
-		if($this->Visitor->delete($id)) {
-			  redirect("?error=del");
-		}
+		$this->redirect('Visitor:listing');
 	}
 
 	/**
@@ -358,156 +160,329 @@ class VisitorPresenter extends BasePresenter
 	 *
 	 * @return void
 	 */
-	private function massmail($query_id)
+	public function actionSend()
 	{
-		$this->template = 'mail';
+		try {
+			$request = $this->getHttpRequest();
+			$subject = $request->getPost('subject', '');
+			$message = $request->getPost('message', '');
+			$bcc = explode(',', preg_replace("/\s+/", "", $request->getPost('recipients', '')));
+			// fill bcc name and address
+			$bcc = array_combine($bcc, $bcc);
 
-		$recipient_mails = $this->Visitor->getMail($query_id);
-		$this->recipients = rtrim($recipient_mails, "\n,");
+			$mailParameters = $this->getContainer()->parameters['mail'];
+			$recipient = [
+				$mailParameters['senderAddress'] => $mailParameters['senderName'],
+			];
+
+			$template = $this->createMailTemplate();
+			$template->subject = $subject;
+			$template->message = $message;
+
+			$result = $this->getEmailer()->sendMail($recipient, $subject, (string) $template, $bcc);
+
+			Debugger::log('E-mail was send successfully, result: ' . json_encode($result), Debugger::INFO);
+			$this->flashMessage('E-mail byl úspěšně odeslán', 'ok');
+		} catch(Exception $e) {
+			Debugger::log('Sending of e-mail failed, result: ' .  $e->getMessage(), Debugger::ERROR);
+			$this->flashMessage('Sending of e-mail failed, result: ' . $e->getMessage(), 'error');
+		}
+
+		$this->redirect('Visitor:listing');
 	}
 
 	/**
-	 * Prepare mass mail form
-	 *
+	 * @param  integer|string $ids
 	 * @return void
 	 */
-	private function send($recipients)
+	public function actionPay($id)
 	{
-		$bcc_mail = preg_replace("/\n/", "", $this->requested('recipients', ''));
+		try {
+			$visitor = $this->getModel();
+			$visitor->payCharge($id, 'cost');
+			$recipients = $visitor->getRecipients($id);
+			$this->getEmailer()->sendPaymentInfo($recipients, 'advance');
 
-		$recipient_name = $this->Visitor->configuration['mail-sender-name'];
-		$recipient_mail = $this->Visitor->configuration['mail-sender-address'];
-
-		$subject = $this->requested('subject', '');
-
-		// space to &nbsp;
-		$message = str_replace(" ","&nbsp;", $this->requested('message', ''));
-		// new line to <br> and tags stripping
-		$message = nl2br(strip_tags($message));
-
-		$message = "<html><head><title>".$subject."</title></head><body>\n".$message."\n</body>\n</html>";
-
-		$return = $this->Emailer->sendMail($recipient_mail, $recipient_name, $subject, $message, $bcc_mail);
-
-		if($return){
-			$error = 'E_MAIL_NOTICE';
-			$error = 'mail_send';
-			redirect("?error=".$error);
+			Debugger::log('Visitor: Action pay for id ' . $id . ' successfull, result: ' . $e->getMessage(), Debugger::INFO);
+			$this->flashMessage('Platba byla zaplacena.', 'ok');
+		} catch(Exception $e) {
+			Debugger::log('Visitor: Action pay for id ' . $id . ' failed, result: ' . $e->getMessage(), Debugger::ERROR);
+			$this->flashMessage('Visitor: Action pay for id ' . $id . ' failed, result: ' . $e->getMessage(), 'error');
 		}
-		else {
-			$error = 'E_MAIL_ERROR';
-		}
+
+		$this->redirect('Visitor:listing');
 	}
 
 	/**
-	 * Pay charge
-	 *
-	 * @param  int 		$query_id     of visitors
-	 * @param  string 	$payment_type cost|advance
+	 * @param  string|interger $ids
 	 * @return void
 	 */
-	private function pay($query_id, $payment_type)
+	public function actionAdvance($id)
 	{
-		$return = $this->Visitor->payCharge($query_id, $payment_type);
+		try {
+			$visitor = $this->getModel();
+			$visitor->payCharge($id, 'advance');
+			$recipients = $visitor->getRecipients($id);
+			$this->getEmailer()->sendPaymentInfo($recipients, 'advance');
 
-		if($return != 'already_paid') {
-			$recipients = $this->Visitor->getRecipients($query_id);
-			$this->Emailer->sendPaymentInfo($recipients, $payment_type);
-			redirect("?".$this->page."&error=mail_send");
-		} else {
-			echo 'Došlo k chybě při odeslání e-mailu.';
-			echo 'Chybová hláška: ' . $return;
+			Debugger::log('Visitor: Action advance for id ' . $id . ' successfull, result: ' . $e->getMessage(), Debugger::INFO);
+			$this->flashMessage('Záloha byla zaplacena.', 'ok');
+		} catch(Exception $e) {
+			Debugger::log('Visitor: Action advance for id ' . $id . ' failed, result: ' . $e->getMessage(), Debugger::ERROR);
+			$this->flashMessage('Visitor: Action advance for id ' . $id . ' failed, result: ' . $e->getMessage(), 'error');
 		}
+
+		$this->redirect('Visitor:listing');
 	}
 
 	/**
 	 * Set item as checked by id
 	 *
-	 * @param  int $id of item
+	 * @param  integer $id
 	 * @return void
 	 */
-	private function checked($id)
+	public function actionChecked($id)
 	{
-		if($this->Visitor->checked($id, '1')) {
-			  redirect("?error=checked");
+		try {
+			$result = $this->getModel()->checked($id, '1');
+			Debugger::log('Check of visitor('. $id .') successfull, result: ' . json_encode($result), Debugger::INFO);
+			$this->flashMessage('Položka byla úspěšně zkontrolována', 'ok');
+		} catch(Exception $e) {
+			Debugger::log('Check of visitor('. $id .') failed, result: ' .  $e->getMessage(), Debugger::ERROR);
+			$this->flashMessage('Check of visitor failed, result: ' . $e->getMessage(), 'error');
 		}
+
+		$this->redirect('Visitor:listing');
 	}
 
 	/**
 	 * Set item as unchecked by id
 	 *
-	 * @param  int $id of item
+	 * @param  integer $id
 	 * @return void
 	 */
-	private function unchecked($id)
+	public function actionUnchecked($id)
 	{
-		if($this->Visitor->checked($id, 0)) {
-			  redirect("?error=unchecked");
+		try {
+			$result = $this->getModel()->checked($id, 0);
+			Debugger::log('Uncheck of visitor('. $id .') successfull, result: ' . json_encode($result), Debugger::INFO);
+			$this->flashMessage('Položka byla nastavena jako nekontrolována', 'ok');
+		} catch(Exception $e) {
+			Debugger::log('Uncheck of visitor('. $id .') failed, result: ' .  $e->getMessage(), Debugger::ERROR);
+			$this->flashMessage('Uncheck of visitor failed, result: ' . $e->getMessage(), 'error');
 		}
+
+		$this->redirect('Visitor:listing');
 	}
 
 	/**
-	 * Render all page
+	 * Prepare page for new item
 	 *
 	 * @return void
 	 */
-	public function render()
+	public function renderNew()
 	{
-		$error = "";
-		$disabled = NULL;
-		if(!empty($this->data)) {
-			$error_name = "";
-			$error_surname = "";
-			$error_nick = "";
-			$error_email = "";
-			$error_postal_code = "";
-			$error_group_num = "";
-			$error_bill = "";
-			$error_cost = "";
-		}
+		$template = $this->getTemplate();
 
-		$parameters = [
-			'cssDir'			=> CSS_DIR,
-			'jsDir'				=> JS_DIR,
-			'imgDir'			=> IMG_DIR,
-			'visitDir'			=> VISIT_DIR,
-			'expDir'			=> EXP_DIR,
-			'style'				=> $this->Category->getStyles(),
-			'user'				=> $this->getSunlightUser($_SESSION[SESSION_PREFIX.'user']),
-			'meeting'			=> $this->getPlaceAndYear($_SESSION['meetingID']),
-			'menu'				=> $this->generateMenu(),
-			'error'				=> printError($this->error),
-			'todo'				=> $this->todo,
-			'cms'				=> $this->cms,
-			'render'			=> $this->Visitor->getData(),
-			'mid'				=> $this->meetingId,
-			'page'				=> $this->page,
-			'heading'			=> $this->heading,
-			'visitorCount'		=> $this->Visitor->getCount(),
-			'meetingPrice'		=> $this->Visitor->meeting_price,
-			'search'			=> $this->Visitor->search,
-			'recipient_mails'	=> $this->recipients,
+		$template->heading = 'nový účastník';
+		$template->error_name = '';
+		$template->error_surname = '';
+		$template->error_nick = '';
+		$template->error_email = '';
+		$template->error_postal_code = '';
+		$template->error_group_num = '';
+		$template->error_bill = '';
+		$template->error_cost = '';
+		$template->province = $this->getMeetingModel()->renderHtmlProvinceSelect(null);
+		$template->meals = $this->getMealModel()->renderHtmlMealsSelect(null, null);
+		$template->cost = $this->getMeetingModel()->getPrice('cost');
+		$template->programSwitcher = $this->getModel()->renderProgramSwitcher($this->getMeetingId(), null);
+	}
+
+	/**
+	 * @param  integer $id
+	 * @return void
+	 */
+	public function renderEdit($id)
+	{
+		$visitor = $this->getModel()->findById($id);
+		$meals = $this->getMealModel()->findByVisitorId($id);
+
+		$template = $this->getTemplate();
+
+		$template->heading = 'úprava účastníka';
+		$template->error_name = '';
+		$template->error_surname = '';
+		$template->error_nick = '';
+		$template->error_email = '';
+		$template->error_postal_code = '';
+		$template->error_group_num = '';
+		$template->error_bill = '';
+		$template->error_cost = '';
+		$template->province = $this->getMeetingModel()->renderHtmlProvinceSelect($visitor->province);
+		$template->meals = $this->getMealModel()->renderHtmlMealsSelect($meals, null);
+		$template->cost = $this->getMeetingModel()->getPrice('cost');
+		$template->programSwitcher = $this->getModel()->renderProgramSwitcher($this->getMeetingId(), $id);
+		$template->data = $visitor;
+	}
+
+	/**
+	 * Prepare mass mail form
+	 *
+	 * @return void
+	 */
+	public function renderMail()
+	{
+		$ids = $this->getHttpRequest()->getPost('checker');
+
+		$template = $this->getTemplate();
+		$template->recipientMailAddresses = $this->getModel()->getSerializedMailAddress($ids);
+	}
+
+
+	/**
+	 * @return void
+	 */
+	public function renderListing()
+	{
+		$search = $this->getHttpRequest()->getQuery('search');
+
+		$model = $this->getModel();
+
+		$template = $this->getTemplate();
+		$template->render = $model->setSearch($search)->all();
+		$template->visitorCount = $model->getCount();
+		$template->meetingPrice	= $this->getMeetingModel()->getPrice('cost');
+		$template->search = $search;
+	}
+
+	/**
+	 * @return Latte
+	 */
+	protected function createMailTemplate()
+	{
+		$template = $this->createTemplate();
+		$template->setFile(
+			sprintf(
+				'%s%s.%s',
+				self::TEMPLATE_DIR,
+				'mail_body',
+				self::TEMPLATE_EXT
+			)
+		);
+
+		return $template;
+	}
+
+	/**
+	 * @param  array   $visitor
+	 * @return boolean
+	 */
+	protected function sendRegistrationSummary(array $visitor, $guid)
+	{
+		$recipient = [
+			$visitor['email'] => $visitor['name']. ' ' . $visitor['surname'],
 		];
 
-		if(!empty($this->data)) {
-			$parameters['id'] = $this->itemId;
-			$parameters['data'] = $this->data;
-			$parameters['birthday'] = (empty($this->data['birthday'])) ? '' : $this->data['birthday']->format('Y-m-d');
-			$parameters['province'] = $this->Meeting->renderHtmlProvinceSelect($this->data['province']);
-			$parameters['meals'] = $this->Meal->renderHtmlMealsSelect($this->mealData, $this->disabled);
-			$parameters['program_switcher'] = $this->Visitor->renderProgramSwitcher($this->meetingId, $this->itemId);
-			$parameters['error_name'] = printError($error_name);
-			$parameters['error_surname'] = printError($error_surname);
-			$parameters['error_nick'] = printError($error_nick);
-			$parameters['error_email'] = printError($error_email);
-			$parameters['error_postal_code'] = printError($error_postal_code);
-			$parameters['error_surname'] = printError($error_surname);
-			$parameters['error_group_num'] = printError($error_group_num);
-			$parameters['error_bill'] = printError($error_bill);
-			$parameters['error_cost'] = printError($error_cost);
+		$code4bank = $this->getVisitorService()->calculateCode4Bank($visitor);
+		$result = $this->getEmailer()->sendRegistrationSummary($recipient, $guid, $code4bank);
 
-		}
-
-		$this->latte->render(__DIR__ . '/../templates/' . $this->templateDir.'/'.$this->template . '.latte', $parameters);
+		return $result;
 	}
+
+	/**
+	 * @return MeetingModel
+	 */
+	protected function getMeetingModel()
+	{
+		return $this->meetingModel;
+	}
+
+	/**
+	 * @param  MeetingModel $model
+	 * @return $this
+	 */
+	protected function setMeetingModel(MeetingModel $model)
+	{
+		$this->meetingModel = $model;
+
+		return $this;
+	}
+
+	/**
+	 * @return Emailer
+	 */
+	protected function getEmailer()
+	{
+		return $this->emailer;
+	}
+
+	/**
+	 * @param  Emailer $emailer
+	 * @return $this
+	 */
+	protected function setEmailer(Emailer $emailer)
+	{
+		$this->emailer = $emailer;
+
+		return $this;
+	}
+
+	/**
+	 * @return MealModel
+	 */
+	protected function getMealModel()
+	{
+		return $this->mealModel;
+	}
+
+	/**
+	 * @param  MealModel $model
+	 * @return $this
+	 */
+	protected function setMealModel(MealModel $model)
+	{
+		$this->mealModel = $model;
+
+		return $this;
+	}
+
+	/**
+	 * @return BlockModel
+	 */
+	protected function getBlockModel()
+	{
+		return $this->blockModel;
+	}
+
+	/**
+	 * @param  BlockModel $model
+	 * @return $this
+	 */
+	protected function setBlockModel(BlockModel $model)
+	{
+		$this->blockModel = $model;
+
+		return $this;
+	}
+
+	/**
+	 * @return VisitorService
+	 */
+	protected function getVisitorService()
+	{
+		return $this->visitorService;
+	}
+
+	/**
+	 * @param  VisitorService $service
+	 * @return $this
+	 */
+	protected function setVisitorService(VisitorService $service)
+	{
+		$this->visitorService = $service;
+
+		return $this;
+	}
+
 }

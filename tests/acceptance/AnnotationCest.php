@@ -38,10 +38,10 @@ class AnnotationCest extends CestCase
 	{
 		$I->wantTo('Ensure that blocks annotation works');
 		$I = $this->logIn($I);
-		$I->amOnPage('/srazvs/block/?id=2&cms=edit&page=block');
+		$I->amOnPage('/srazvs/block/edit/2?page=block');
 		$I->see('úprava bloku');
 		$I->click('Náhled anotace', '#content');
-		$I->seeInCurrentUrl('/srazvs/block/annotation/b16343baaecb05de0ce3b551e4944993');
+		$I->seeInCurrentUrl('/srazvs/block/annotation/382ff1c792c7980aa0b1950259a518e8');
 		foreach ($this->annotationBlock['fields'] as $field => $value) {
 			$I->seeInField($field, $value);
 		}
@@ -51,10 +51,10 @@ class AnnotationCest extends CestCase
 	{
 		$I->wantTo('Ensure that programs annotation works');
 		$I = $this->logIn($I);
-		$I->amOnPage('/srazvs/program/?id=1&cms=edit&page=program');
+		$I->amOnPage('/srazvs/program/edit/1?page=program');
 		$I->see('úprava programu');
 		$I->click('Náhled anotace', '#content');
-		$I->seeInCurrentUrl('/srazvs/program/annotation/d295d29771b5f104270bad365e5e4107');
+		$I->seeInCurrentUrl('/srazvs/program/annotation/524888c93f896f388d563f68682cf41c');
 		foreach ($this->annotationProgram['fields'] as $field => $value) {
 			$I->seeInField($field, $value);
 		}
@@ -63,7 +63,7 @@ class AnnotationCest extends CestCase
 	public function block_annotation_should_be_accessible_by_public(\AcceptanceTester $I)
 	{
 		$I->wantTo('Ensure that blocks annotation is accesible by public');
-		$I->amOnPage('/srazvs/block/annotation/b16343baaecb05de0ce3b551e4944993');
+		$I->amOnPage('/srazvs/block/annotation/382ff1c792c7980aa0b1950259a518e8');
 		foreach ($this->annotationBlock['fields'] as $field => $value) {
 			$I->seeInField($field, $value);
 		}
@@ -72,7 +72,7 @@ class AnnotationCest extends CestCase
 	public function program_annotation_should_be_accessible_by_public(\AcceptanceTester $I)
 	{
 		$I->wantTo('Ensure that programs annotation is accesible by public');
-		$I->amOnPage('/srazvs/program/annotation/d295d29771b5f104270bad365e5e4107');
+		$I->amOnPage('/srazvs/program/annotation/524888c93f896f388d563f68682cf41c');
 		foreach ($this->annotationProgram['fields'] as $field => $value) {
 			$I->seeInField($field, $value);
 		}

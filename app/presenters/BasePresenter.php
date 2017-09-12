@@ -5,6 +5,9 @@ namespace App\Presenters;
 use Nette,
 	App\Model;
 use Nette\Utils\Strings;
+use Nette\Http\Request;
+use App\Models\SunlightModel;
+use Nette\Caching\Cache;
 
 /**
  * Base presenter for all application presenters.
@@ -12,11 +15,59 @@ use Nette\Utils\Strings;
 abstract class BasePresenter extends Nette\Application\UI\Presenter
 {
 
-	/**
-	 * backlink
-	 */
-	protected $backlink;
+	const FLASH_TYPE_OK    = 'success';
+	const FLASH_TYPE_ERROR = 'alert';
 
+	/**
+	 * @var string
+	 */
+	public $backlink = '';
+
+	/** @var Model */
+	protected $model;
+
+	/** @var Nette\DI\Container */
+	protected $container;
+
+	/** @var Latte */
+	protected $latte;
+
+	/** @var Router */
+	protected $router;
+
+	/** @var string */
+	protected $action;
+
+	/** @var Nette\Http\Request */
+	protected $request;
+
+	/** @var integer */
+	protected $meetingId;
+
+	protected $days = [
+		'pátek'		=> 'pátek',
+		'sobota'	=> 'sobota',
+		'neděle'	=> 'neděle',
+	];
+
+	protected $hours = [
+		0 => "00","01","02","03","04","05","06","07","08","09","10","11","12","13","14","15","16","17","18","19","20","21","22","23"
+	];
+
+	protected $minutes = [
+		00 => "00",
+		05 => "05",
+		10 => "10",
+		15 => "15",
+		20 => "20",
+		25 => "25",
+		30 => "30",
+		35 => "35",
+		40 => "40",
+		45 => "45",
+		50 => "50",
+		55 => "55",
+	];
 
 	/**
 	 * Startup
@@ -24,7 +75,29 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 	protected function startup()
 	{
 		parent::startup();
-		$this->template->backlink = $this->getParameter("backlink");
+
+		$meetingId = $this->getHttpRequest()->getQuery('mid', '');
+
+		$backlink = $this->getHttpRequest()->getQuery('backlink');
+		if(!empty($backlink)) {
+			$this->setBacklink($backlink);
+		}
+
+		if($meetingId){
+			$_SESSION['meetingID'] = $meetingId;
+		} elseif(!isset($_SESSION['meetingID'])) {
+			$meeting = $this->getContainer()->getService('meeting');
+			$_SESSION['meetingID'] = $meeting->getLastMeetingId();
+		}
+
+		$this->setMeetingId($_SESSION['meetingID']);
+
+		$model = $this->getModel();
+		if($model) {
+			$model->setMeetingId($_SESSION['meetingID']);
+		}
+
+		$this->debugMode = $this->getContainer()->getParameters()['debugMode'];
 	}
 
 
@@ -36,8 +109,38 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 	{
 		parent::beforeRender();
 
-		$this->template->production = $this->context->parameters['environment'] === 'production' ? 1 : 0;
-		$this->template->version = $this->context->parameters['site']['version'];
+		$template = $this->getTemplate();
+		$meeting = $this->getContainer()->getService('meeting');
+
+		$template->baseDir = ROOT_DIR;
+		$template->wwwDir = HTTP_DIR;
+		$template->cssDir = CSS_DIR;
+		$template->jsDir = JS_DIR;
+		$template->imgDir = IMG_DIR;
+		$template->catDir = CAT_DIR;
+		$template->blockDir = BLOCK_DIR;
+		$template->progDir = PROG_DIR;
+		$template->visitDir = VISIT_DIR;
+		$template->expDir = EXP_DIR;
+		$template->meetDir = MEET_DIR;
+
+		$template->categories = $this->remember('categories:all', 10, function () {
+			return $this->getContainer()->getService('category')->all();
+		});
+
+		if(isset($_SESSION[SESSION_PREFIX.'user'])) {
+			$template->user = $this->getSunlight()->findUser($_SESSION[SESSION_PREFIX.'user']);
+		}
+		$template->meeting = $meeting->getPlaceAndYear($_SESSION['meetingID']);
+		$template->menuItems = $meeting->getMenuItems();
+		$template->meeting_heading	= $meeting->getRegHeading();
+		$template->meetingId = $this->getMeetingId();
+		$template->backlinkUrl = $this->getBacklinkUrl();
+		$template->backlink = $this->getBacklink();
+		//$this->template->backlink = $this->getParameter("backlink");
+
+		//$this->template->production = $this->context->parameters['environment'] === 'production' ? 1 : 0;
+		//$this->template->version = $this->context->parameters['site']['version'];
 	}
 
 	/**
@@ -45,19 +148,12 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 	 * @var string
 	 */
 	protected $template = 'listing';
-	protected $latte;
 
 	/**
 	 * template directory
 	 * @var string
 	 */
 	protected $templateDir = '';
-
-	/**
-	 * meeting ID
-	 * @var integer
-	 */
-	protected $meetingId = 0;
 
 	/**
 	 * category ID
@@ -102,12 +198,6 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 	protected $error = '';
 
 	/**
-	 * error handler
-	 * @var string
-	 */
-	protected $router = '';
-
-	/**
 	 * database connection
 	 * @var string
 	 */
@@ -119,111 +209,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 	 */
 	protected $debugMode = false;
 
-	/**
-	 * This is the default function that will be called by Router.php
-	 *
-	 * @param array $getVars the GET variables posted to index.php
-	 */
-	public function init()
-	{
-		$id = $this->requested("id",$this->itemId);
-		$this->cms = $this->requested("cms","");
-		$this->error = $this->requested("error","");
-		$this->page = $this->requested("page","");
-
-
-		switch($this->cms) {
-			case "delete":
-				$this->delete($id);
-				break;
-			case "new":
-				$this->__new();
-				break;
-			case "create":
-				$this->create();
-				break;
-			case "edit":
-				$this->edit($id);
-				break;
-			case "modify":
-				$this->update($id);
-				break;
-			case "mail":
-				$this->mail();
-				break;
-			case 'export-visitors':
-				$this->Export->renderProgramVisitors($id);
-				break;
-
-		}
-
-		$this->render();
-	}
-
-	public function setRouter($router)
-	{
-		$this->router = $router;
-	}
-
-	protected function code4Bank($data)
-	{
-		return Strings::toAscii(
-			mb_substr($data['name'], 0, 1, 'utf-8')
-			. mb_substr($data['surname'], 0, 1, 'utf-8')
-			. mb_substr($data['birthday'], 2, 2)
-		);
-	}
-
-	/**
-	 * requested()
-	 * - ziska promenne z GET
-	 *
-	 * @author tomasliterahotmail.com
-	 *
-	 * @param string $var - nazev pole GET
-	 * @param $default - defaultni hodnota v pripade neexistence GET
-	 */
-	protected function requested($var, $default = NULL)
-	{
-		if($this->router->getParameter($var)) $out = $this->clearString($this->router->getParameter($var));
-		elseif($this->router->getPost($var)) $out = $this->clearString($this->router->getPost($var));
-		else $out = $default;
-
-		return $out;
-	}
-
-	protected function processClearString($string)
-	{
-		//specialni znaky
-		$string = htmlspecialchars($string);
-		//html tagy
-		$string = strip_tags($string);
-		//slashes
-		$string = stripslashes($string);
-
-		return $string;
-	}
-
-	/**
-	 * clearString()
-	 * - ocisti retezec od html, backslashu a specialnich znaku
-	 *
-	 * @author tomas.litera@gmail.com
-	 *
-	 * @param string $string - retezec znaku
-	 * @return string $string - ocisteny retezec
-	 */
-	protected function clearString($string)
-	{
-		if(is_array($string)) {
-			foreach ($string as $key => $value) {
-				$string[$key] = $this->processClearString($value);
-			}
-		} else {
-			$string = $this->processClearString($string);
-		}
-		return $string;
-	}
+	protected $sunlight;
 
 	/**
 	 * Render check box
@@ -268,60 +254,226 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 	}
 
 	/**
-	 *
-	 *
+	 * @return Model
 	 */
-	protected function getSunlightUser($uid)
+	protected function getModel()
 	{
-		return $this->database
-			->table('sunlight-users')
-			->where('id', $uid)
-			->fetch();
+		return $this->model;
 	}
 
-	protected function generateMenu()
+	/**
+	 * @param  Model $model
+	 * @return $this
+	 */
+	protected function setModel($model)
 	{
-		$menuItems = $this->database->query(
-			'SELECT id AS mid,
-					place,
-					DATE_FORMAT(start_date, "%Y") AS year
-			FROM kk_meetings
-			WHERE deleted = ?
-			ORDER BY id DESC',
-			'0')->fetchAll();
+		$this->model = $model;
+		return $this;
+	}
 
-		$menu = "<!-- start of menuCanvas -->\n";
-		$menu .= "<div id='menuCanvas'>\n";
-		$menu .= " <div id='menuContent'>\n";
+	/**
+	 * @return Container
+	 */
+	protected function getContainer()
+	{
+		return $this->context;
+	}
 
-		$menu .= "  <div class='menuItem'>všechny srazy</div>\n";
-		$menu .= "   <ul>";
-		$menu .= "    <li><a href='".MEET_DIR."/?cms=list-view'>seznam srazů</a></li>\n";
-		$menu .= "   </ul>";
+	/**
+	 * @param  Container $container
+	 * @return $this
+	 */
+	protected function setContainer($container)
+	{
+		$this->context = $container;
+		return $this;
+	}
 
-		$menu .= "  <div class='menuItem'>jednotlivé srazy</div>\n";
-		$menu .= "   <ul>";
+	/**
+	 * @return Router
+	 */
+	protected function getRouter()
+	{
+		return $this->router;
+	}
 
-		foreach($menuItems as $item) {
-			$menu .= "    <li><a href='?mid=".$item['mid']."'>".$item['place']." ".$item['year']."</a></li>\n";
+	/**
+	 * @param  Router $router
+	 * @return $this
+	 */
+	protected function setRouter($router)
+	{
+		$this->router = $router;
+		return $this;
+	}
+
+	/**
+	 * @return Latte
+	 */
+	protected function getLatte()
+	{
+		return $this->latte;
+	}
+
+	/**
+	 * @param  Latte $latte
+	 * @return $this
+	 */
+	protected function setLatte($latte)
+	{
+		$this->latte = $latte;
+		return $this;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getAction($fullyQualified = false)
+	{
+		return $this->action;
+	}
+
+	/**
+	 * @param  string $action
+	 * @return $this
+	 */
+	public function setAction($action)
+	{
+		$this->action = $action;
+		return $this;
+	}
+
+	/**
+	 * @return SunlightModel
+	 */
+	public function getSunlight()
+	{
+		if(empty($this->sunlight)) {
+			$this->setSunlight($this->getContainer()->getService('sunlight'));
 		}
 
-		$menu .= "   </ul>";
-		$menu .= " </div>\n";
-		$menu .= "</div>\n";
-		$menu .= "<!-- end of menuCanvas -->\n";
-
-		return $menu;
+		return $this->sunlight;
 	}
 
-	protected function getPlaceAndYear($meetingId)
+	/**
+	 * @param  SunlightModel $sunlight
+	 * @return $this
+	 */
+	public function setSunlight(SunlightModel $sunlight)
 	{
-		return $this->database->query(
-			'SELECT	place, DATE_FORMAT(start_date, "%Y") AS year
-			FROM kk_meetings
-			WHERE id = ? AND deleted = ?
-			LIMIT 1', $meetingId, '0')
-			->fetch();
+		$this->sunlight = $sunlight;
+		return $this;
+	}
+
+	/**
+	 * @return integer
+	 */
+	protected function getMeetingId()
+	{
+		return $this->meetingId;
+	}
+
+	/**
+	 * @param  integer  $meetingId
+	 * @return $this
+	 */
+	protected function setMeetingId($meetingId)
+	{
+		$this->meetingId = $meetingId;
+		return $this;
+	}
+
+	/**
+	 * @param  string $guid
+	 * @param  array  $data
+	 * @return ActiveRow
+	 */
+	protected function updateByGuid($guid, array $data)
+	{
+		return $this->getModel()->updateBy('guid', $guid, $data);
+	}
+
+	public function remember($key, $minutes, \Closure $callback)
+	{
+		// If the item exists in the cache we will just return this immediately
+		// otherwise we will execute the given Closure and cache the result
+		// of that execution for the given number of minutes in storage.
+		if (! is_null($data = $this->getCache()->load($key))) {
+			$items = [];
+
+			foreach($data as $item) {
+				$object = new \stdClass();
+				foreach ($item as $key => $value) {
+					$object->$key = $value;
+				}
+				$items[] = $object;
+			}
+
+			return $items;
+		}
+
+		$data = $callback();
+		$serialized = [];
+		foreach ($data as $item) {
+			$serialized[] = $item->toArray();
+		}
+
+		$this->getCache()->save(
+			$key,
+			$serialized,
+			[
+				Cache::EXPIRE => $minutes . ' minutes',
+			]
+		);
+
+		return $data;
+	}
+
+	protected function getCache()
+	{
+		return $this->getContainer()->getService('cache');
+	}
+
+	/**
+	 * @return string
+	 */
+	protected function getDebugMode()
+	{
+		return $this->debugMode;
+	}
+
+	/**
+	 * @return string
+	 */
+	protected function getBacklink()
+	{
+		return $this->backlink;
+	}
+
+	/**
+	 * @param  string $backlink
+	 * @return $this
+	 */
+	protected function setBacklink($backlink)
+	{
+		$this->backlink = $backlink;
+
+		return $this;
+	}
+
+	/**
+	 * @return string
+	 */
+	protected function getBacklinkUrl()
+	{
+		if($this->getBacklink()) {
+			return $this->link(
+				$this->getBacklink(),
+				[
+					'backlink' => null
+				]
+			);
+		}
 	}
 
 }

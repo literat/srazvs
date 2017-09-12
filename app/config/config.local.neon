@@ -19,6 +19,26 @@ parameters:
         category: 'Export dat'
     encoding: utf-8
     prefix: sunlight
+    mail:
+        senderName: 'Srazy VS'
+        senderAddress: srazyvs@hkvs.cz
+
+application:
+    errorPresenter: Error
+    mapping:
+        *: App\*Module\Presenters\*Presenter
+    debugger: true
+    catchExceptions: false
+
+database:
+    dsn: '%database.driver%:host=%database.host%;dbname=%database.name%'
+    user: %database.user%
+    password: %database.password%
+    options:
+        lazy: yes
+    debugger: true
+    explain: true
+    autowired: true
 
 session:
     autoStart: smart
@@ -26,99 +46,59 @@ session:
     savePath: '%tempDir%/session'
 
 services:
-    connection:
-        class: Nette\Database\Connection
-        arguments: [
-            '%database.driver%:host=%database.host%;dbname=%database.dbname%',
-            %database.user%,
-            %database.password%
-        ]
+    database: @Nette\Database\Connection
+    mail.mailer:
+        class: Nette\Mail\SendmailMailer
+    - App\Routers\RouterFactory
+    router: @App\Routers\RouterFactory::createRouter
+    nette.latteFactory:
+        setup:
+            - addFilter(invoiceNumber, @invoiceFilter)
+            - addFilter(number2word, @number2wordFilter)
+    invoiceFilter: App\Services\Filters\InvoiceFilter
+    number2wordFilter: App\Services\Filters\Number2WordFilter
+
     cacheStorage:
         class: Nette\Caching\Storages\FileStorage
         arguments: [
             %cacheDir%
         ]
-    structure:
-        class: Nette\Database\Structure
-        arguments: [
-            @connection,
-            @cacheStorage
-        ]
-    database:
-        class: Nette\Database\Context
-        arguments: [
-            @connection,
-            @structure
-        ]
-    settings:
-        class: App\SettingsModel
-        arguments: [
-            @database
-        ]
-    emailer:
-        class: App\Emailer
-        arguments: [
-            @settings,
-            @imailer
-        ]
     pdffactory:
-        class: App\PdfFactory
+        class: App\Factories\PdfFactory
         arguments: [
             %pdf%
         ]
     excelfactory:
-        class: App\ExcelFactory
+        class: App\Factories\ExcelFactory
         arguments: [
             %excel%
         ]
-    exports:
-        class: App\ExportModel
-        arguments: [
-            @database,
-            @category,
-            %debugMode%
-        ]
-    category:
-        class: App\CategoryModel
-        arguments: [
-            @database
-        ]
-    block:
-        class: App\BlockModel
-        arguments: [
-            @database
-        ]
-    program:
-        class: App\ProgramModel
-        arguments: [
-            @database
-        ]
-    meal:
-        class: App\MealModel
-        arguments: [
-            @database
-        ]
-    meeting:
-        class: App\MeetingModel
-        arguments: [
-            @database,
-            @program
-        ]
-    visitor:
-        class: App\VisitorModel
-        arguments: [
-            @meeting,
-            @meal,
-            @program,
-            @block,
-            @database
-        ]
-    authService:
-        class: AuthService
-    userService:
-        class: UserService
-    eventService:
-        class: EventService
+
+    - App\Services\AuthService
+    - App\Services\UserService
+    category: App\Models\CategoryModel
+    meeting: App\Models\MeetingModel
+    program: App\Models\ProgramModel
+    block: App\Models\BlockModel
+    sunlight: App\Models\SunlightModel
+    emailer: App\Services\Emailer
+    settings: App\Models\SettingsModel
+    cache: Nette\Caching\Cache
+    export: App\Models\ExportModel
+    visitor: App\Models\VisitorModel
+    meal: App\Models\MealModel
+    province: App\Models\ProvinceModel
+    - App\Components\ProgramOverviewControl
+    - App\Components\BlocksByDayControl
+    - App\Components\ProgramsControl
+    - App\Components\RegistrationGraphControl
+    - App\Components\MaterialsControl
+    - App\Components\MealControl
+    - App\Services\VisitorService
+    - App\Services\ProgramService
+    - App\Components\Forms\Factories\IRegistrationFormFactory
+    - App\Services\Translators\CsTranslator
 
 extensions:
     skautis: Skautis\Nette\SkautisExtension
+    DateTimePicker: RadekDostal\NetteComponents\DateTimePicker\DateTimePicker\DI\DateTimePickerExtension

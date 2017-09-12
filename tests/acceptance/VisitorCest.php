@@ -26,9 +26,10 @@ class VisitorCest
 		$I->wantTo('Check visitor');
 		$I->amOnPage('/srazvs/visitor/?mid=1');
 		$I->seeInCurrentUrl('/srazvs/visitor/');
-		$I->click('#visitor-1 .checker');
-		$I->see('Položka byla zkontrolována!', '.error');
-		$I->seeInCurrentUrl('/srazvs/visitor/?error=checked');
+		$I->click('#visitor-10 .checker');
+		//$I->seeInCurrentUrl('/srazvs/visitor/check/10');
+		$I->see('Položka byla úspěšně zkontrolována', '.flash');
+		$I->seeInCurrentUrl('/srazvs/visitor');
 		$I->seeElement('.checked');
 	}
 
@@ -37,9 +38,10 @@ class VisitorCest
 		$I->wantTo('Uncheck visitor');
 		$I->amOnPage('/srazvs/visitor/?mid=1');
 		$I->seeInCurrentUrl('/srazvs/visitor/');
-		$I->click('#visitor-1 .checker');
-		$I->see('Položce byl odebrán příznak!', '.error');
-		$I->seeInCurrentUrl('/srazvs/visitor/?error=unchecked');
+		$I->click('#visitor-10 .checker');
+		//$I->seeInCurrentUrl('/srazvs/visitor/uncheck/10');
+		$I->see('Položka byla nastavena jako nekontrolována', '.flash');
+		$I->seeInCurrentUrl('/srazvs/visitor');
 		$I->canSeeElement('.checked');
 	}
 

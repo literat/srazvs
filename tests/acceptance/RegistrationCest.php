@@ -38,7 +38,8 @@ class RegistrationCest extends CestCase
 	];
 
 	private $successRegistrationUri;
-	private $succeededRegistrationUrl = '~/srazvs/registration/\?hash=[a-z0-9]*&error=\d+|ok&cms=check~';
+	private $succeededRegistrationUrl = '~/srazvs/registration/check/[a-z0-9]*~';
+	private $updatedRegistrationUrl = '~/srazvs/registration/update/[a-z0-9]*~';
 
 	public function _before(AcceptanceTester $I)
 	{
@@ -54,24 +55,26 @@ class RegistrationCest extends CestCase
 		$I->wantTo('ensure that registration works');
 		$I->amOnPage('srazvs/registration/');
 		$I->see('Registrace na srazy VS');
-		$I->see('Třebíč - podzim 2015');
+		$I->see('Třebíč - jaro 2010');
 	}
 
-	/**
-	 * @skipTest
-	 */
+	public function ensure_that_registrace_works(\AcceptanceTester $I)
+	{
+		$I->wantTo('ensure that registrace works');
+		$I->amOnPage('srazvs/registrace/');
+		$I->see('Registrace na srazy VS');
+		$I->see('Třebíč - jaro 2010');
+		$I->seeInCurrentUrl('/srazvs/registration/');
+	}
+
 	public function it_should_fail_registrate_new_visitor(AcceptanceTester $I)
 	{
 		$I->amOnPage('/srazvs/registration/');
 		$I->see('Registrace na srazy VS');
 		$I->wantTo('Fail registration of new visitor');
-		$I->click('Uložit', '#registration');
+		$I->click('Uložit', 'form');
 		$I->seeInCurrentUrl('/srazvs/registration/');
-		//$I->see('Jméno musí být vyplněno (max 20 znaků)!');
-		/* TODO:
-			- test fail messages
-			- controlling data without javascript needed
-		*/
+		$I->see('Hodnota musí být vyplněna!');
 	}
 
 	public function it_should_registrate_new_visitor(AcceptanceTester $I)
@@ -80,10 +83,10 @@ class RegistrationCest extends CestCase
 		$I->see('Registrace na srazy VS');
 		$I->wantTo('Registrate new visitor');
 		$this->fillForm($I, $this->successVisitor);
-		$I->click('Uložit', '#registration');
+		$I->click('Uložit', 'form');
 		$this->successRegistrationUri = $I->grabFromCurrentUrl();
 		$I->seeCurrentUrlMatches($this->succeededRegistrationUrl);
-		$I->see('Údaje byly úspěšně nahrány!');
+		$I->see('úspěšně vytvořen');
 		$I->see('Registrace na srazy K + K');
 		foreach ($this->successVisitor['fields'] as $field => $value) {
 			$I->see($value);
@@ -101,7 +104,7 @@ class RegistrationCest extends CestCase
 		$I->click('Uložit', '#registration');
 		$this->successRegistrationUri = $I->grabFromCurrentUrl();
 		$I->seeCurrentUrlMatches($this->succeededRegistrationUrl);
-		$I->see('Údaje byly úspěšně nahrány!');
+		$I->see('úspěšně upravena');
 		$I->see('Registrace na srazy K + K');
 		$I->see('Metro');
 		$I->dontSee('robo', '#name');
@@ -109,6 +112,7 @@ class RegistrationCest extends CestCase
 
 	public function visitor_should_change_its_programs(AcceptanceTester $I)
 	{
+		$this->successRegistrationUri = str_replace('update', 'check', $this->successRegistrationUri);
 		$I->amOnPage($this->successRegistrationUri);
 		$I->wantTo('Change programs by visitor');
 		$I->click('Upravit', '#button-line');
@@ -117,7 +121,7 @@ class RegistrationCest extends CestCase
 		$I->selectOption('blck_6', '1');
 		$I->click('Uložit', '#registration');
 		$I->seeCurrentUrlMatches($this->succeededRegistrationUrl);
-		$I->see('Údaje byly úspěšně nahrány!');
+		$I->see('úspěšně upravena');
 		$I->see('Registrace na srazy K + K');
 		$I->see('- Hry a hříčky');
 	}

@@ -1,9 +1,11 @@
 <?php
 
-namespace App;
+namespace App\Models;
 
 use Tracy\Debugger;
 use Nette\Utils\Strings;
+use Nette\Database\Context;
+use Nette\Caching\Cache;
 
 /**
  * Category
@@ -15,130 +17,84 @@ use Nette\Utils\Strings;
  */
 class CategoryModel extends BaseModel
 {
-	/**
-	 * Array of database block table columns
-	 *
-	 * @var array	DB_columns[]
-	 */
-	public $dbColumns = array();
+	/** @var array */
+	public $dbColumns = [
+		'name',
+		'bgcolor',
+		'bocolor',
+		'focolor',
+	];
 
-	/** Constructor */
-	public function __construct($database)
+	/** @var string */
+	protected $table = 'kk_categories';
+
+	/**
+	 * @param Nette\Database\Context $database
+	 */
+	public function __construct(Context $database, Cache $cache)
 	{
-		$this->dbColumns = array("name", "bgcolor", "bocolor", "focolor");
-		$this->dbTable = "kk_categories";
-		$this->database = $database;
+		$this->setDatabase($database);
+		$this->setCache($cache);
 	}
 
 	/**
-	 * Render a table of categories
-	 *
-	 * @return	string	html table
+	 * @param	array  $data
+	 * @return	boolean
 	 */
-	public function getData()
+	public function create(array $data)
 	{
-		$data = $this->database
-			->table($this->dbTable)
+		$data['style'] = $this->getStyleFromName($data['name']);
+
+		return parent::create($data);
+	}
+
+	/**
+	 * @param	integer $id
+	 * @param	array  $data
+	 * @return	boolean
+	 */
+	public function update($id, array $data)
+	{
+		$data['style'] = $this->getStyleFromName($data['name']);
+
+		return parent::update($id, $data);
+	}
+
+	/**
+	 * @param  integer $id
+	 * @return Nette\Database\Table\ActiveRow
+	 */
+	public function find($id)
+	{
+		return $this->getDatabase()
+			->table($this->getTable())
+			->where('id', $id)
+			->limit(1)
+			->fetch();
+	}
+
+	/**
+	 * @return Nette\Database\Table\ActiveRow
+	 */
+	public function all()
+	{
+		return $this->getDatabase()
+			->table($this->getTable())
 			->where('deleted', '0')
 			->order('name')
 			->fetchAll();
-
-		if(!$data) {
-			Debugger::log('Category: no data found!', Debugger::ERROR);
-			return NULL;
-		} else {
-			return $data;
-		}
 	}
 
 	/**
-	 * Create new category
-	 *
-	 * @param	array	Data to DB
-	 * @return	boolean
+	 * @param  string $name
+	 * @return string
 	 */
-	public function create(array $dbData)
+	protected function getStyleFromName($name)
 	{
-		$style = Strings::toAscii($dbData['name']);
-		$dbData['style'] = $style;
-		$result = $this->database
-			->table($this->dbTable)
-			->insert($dbData);
-
-		return $result;
-	}
-
-	/**
-	 * Modify category details
-	 *
-	 * @param	int		ID of category
-	 * @param	array	Data to DB
-	 * @return	boolean
-	 */
-	public function modify($id, array $dbData)
-	{
-		$style = Strings::toAscii($dbData['name']);
+		$style = Strings::toAscii($name);
 		$style = str_replace(" ", "_", $style);
-		$dbData['style'] = $style;
-		$result = $this->database
-			->table($this->dbTable)
-			->where('id', $id)
-			->update($dbData);
-
-		return $result;
-	}
-
-	/**
-	 * Render CSS coding of styles
-	 *
-	 * @return	string	CSS
-	 */
-	public function getStyles()
-	{
-		$style = "";
-
-		$data = $this->database
-			->table($this->dbTable)
-			->where('deleted', '0')
-			->fetchAll();
-
-		foreach($data as $id => $category) {
-			$style .= "
-				.cat-" . $category->style . " {
-					border: 2px solid #" . $category->bocolor . ";
-					background-color: #" . $category->bgcolor . ";
-					color: #" . $category->focolor . ";
-				}
-			";
-		}
 
 		return $style;
 	}
 
-	/**
-	 * Render HTML <select>
-	 *
-	 * @param	int	ID of selected category
-	 * @return	string	html <select>
-	 */
-	public function renderHtmlSelect($selectedCategory)
-	{
-		$html_select = "<select style='width: 225px; font-size: 10px' class='field' name='category'>\n";
-
-		$result = $this->database
-			->table('kk_categories')
-			->where(1)
-			->fetchAll();
-
-		foreach($result as $data){
-			if($data['id'] == $selectedCategory) $selected = "selected";
-			else $selected = "";
-
-			$html_select .= "<option ".$selected." class='category cat-".$data['style']."' value='".$data['id']."'>".$data['name']."</option>\n";
-		}
-
-		$html_select .= "</select>\n";
-
-		return $html_select;
-	}
 }

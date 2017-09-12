@@ -1,0 +1,95 @@
+{layout '../@layout.latte'}
+
+{block content}
+		<div class='siteContentRibbon'>Správa bloků</div>
+
+		{foreach $flashes as $flash}
+		<div class="flash {$flash->type}">{$flash->message}</div>
+		{/foreach}
+
+		<div class='pageRibbon'>seznam bloků</div>
+		<div class='link'>
+			<a class='link' href='{$blockDir}/new?page=block'>
+				<img src='{$imgDir}icons/new.png' />NOVÝ BLOK
+			</a>
+		</div>
+
+		<script src='{$jsDir}jquery/jquery.tablesorter.min.js' type='text/javascript'></script>
+		<script>
+		$(document).ready(function() {
+			$("#BlocksTable").tablesorter( {
+				headers: {
+					0: { sorter: false},
+					1: { sorter: false},
+					7: { sorter: false},
+					10: { sorter: false},
+				}
+			} );
+		} );
+		</script>
+
+		<table id='BlocksTable' class='list tablesorter'>
+			<thead>
+				<tr>
+					<th></th>
+					<th></th>
+					<th class='tab1'>ID</th>
+					<th class='tab1'>den</th>
+					<th class='tab1'>od</th>
+					<th class='tab1'>do</th>
+					<th class='tab1'>název</th>
+					<th class='tab1'>popis</th>
+					<th class='tab1'>lektor</th>
+					<th class='tab1'>e-mail</th>
+					<th class='tab1'>kategorie</th>
+				</tr>
+			</thead>
+			<tfoot>
+				<tr>
+					<th></th>
+					<th></th>
+					<th class='tab1'>ID</th>
+					<th class='tab1'>den</th>
+					<th class='tab1'>od</th>
+					<th class='tab1'>do</th>
+					<th class='tab1'>název</th>
+					<th class='tab1'>popis</th>
+					<th class='tab1'>lektor</th>
+					<th class='tab1'>e-mail</th>
+					<th class='tab1'>kategorie</th>
+				</tr>
+			</tfoot>
+			<tbody>
+				{if $blocks == 0}
+				<tr class='radek1'>
+					<td><img class='edit' src='{$imgDir}icons/edit2.gif' /></td>
+					<td><img class='edit' src='{$imgDir}icons/delete2.gif' /></td>
+					<td colspan='11' class='emptyTable'>Nejsou k dispozici žádné položky.</td>
+				</tr>
+				{else}
+					{foreach $blocks as $row}
+				<tr class='radek1'>
+					<td>
+						<a href='{$blockDir}/edit/{$row['id']}?page=block' title='Upravit'>
+							<img class='edit' src='{$imgDir}icons/edit.gif' />
+						</a>
+					</td>
+					<td>
+						<a href="javascript:confirmation('{$blockDir}/delete/{$row['id']}', 'blok: {$row['name']} {$row['from']} -> Opravdu SMAZAT tento blok? Jste si jisti?')" title='Odstranit'>
+							<img class='edit' src='{$imgDir}icons/delete.gif' />
+						</a>
+					</td>
+					<td class='text'>{$row['id']}</td>
+					<td class='text'>{$row['day']}</td>
+					<td class='text'>{$row['from']}</td>
+					<td class='text'>{$row['to']}</td>
+					<td class='text'>{$row['name']}</td>
+					<td class='text'>{$row['description']|truncate:70}</td>
+					<td class='text'>{$row['tutor']}</td>
+					<td class='text'>{$row['email']}</td>
+					<td class='text'><div class='category cat-{$row['style']}'>{$row['cat_name']}</div></td>
+				</tr>
+					{/foreach}
+				{/if}
+			</tbody>
+		</table>

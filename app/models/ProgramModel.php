@@ -1,6 +1,8 @@
 <?php
 
-namespace App;
+namespace App\Models;
+
+use Nette\Database\Context;
 
 /**
  * Program model
@@ -12,15 +14,22 @@ namespace App;
  */
 class ProgramModel extends BaseModel
 {
-	/** @var int meeting ID */
-	private $meetingId;
 
 	/**
-	 * Array of database programs table columns
-	 *
-	 * @var array	DB_columns[]
+	 * @var array
 	 */
-	public $dbColumns = array();
+	public $columns = [
+		'guid',
+		'name',
+		'block',
+		'display_in_reg',
+		'description',
+		'tutor',
+		'email',
+		'category',
+		'material',
+		'capacity',
+	];
 
 	/**
 	 * Array of form names
@@ -29,18 +38,16 @@ class ProgramModel extends BaseModel
 	 */
 	public $formNames = array();
 
-	/** Constructor */
-	public function __construct($database)
-	{
-		$this->dbColumns = array('guid', "name", "block", "display_in_reg", "description", "tutor", "email", "category", "material", "capacity");
-		$this->formNames = array('guid', "name", "description", "material", "tutor", "email", "capacity", "display_in_reg", "block", "category");
-		$this->dbTable = "kk_programs";
-		$this->database = $database;
-	}
+	protected $table = 'kk_programs';
 
-	public function setMeetingId($id)
+	private static $connection;
+
+	/** Constructor */
+	public function __construct(Context $database)
 	{
-		$this->meetingId = $id;
+		$this->formNames = array('guid', "name", "description", "material", "tutor", "email", "capacity", "display_in_reg", "block", "category");
+		$this->setDatabase($database);
+		self::$connection = $this->getDatabase();
 	}
 
 	/**
@@ -53,7 +60,7 @@ class ProgramModel extends BaseModel
 	public function getPrograms($blockId, $vid)
 	{
 		$blocks = $this->database
-			->table($this->dbTable)
+			->table($this->getTable())
 			->where('block ? AND deleted ?', $blockId, '0')
 			->limit(10)
 			->fetchAll();
@@ -122,7 +129,7 @@ class ProgramModel extends BaseModel
 	public function getExportPrograms($blockId)
 	{
 		$exportPrograms = $this->database
-			->table($this->dbTable)
+			->table($this->getTable())
 			->where('block ? AND deleted ?', $blockId, '0')
 			->limit(10)
 			->fetchAll();
@@ -216,7 +223,7 @@ class ProgramModel extends BaseModel
 	{
 		if(isset($program_id)) {
 			$data = $this->database
-				->table($this->dbTable)
+				->table($this->getTable())
 				->where('id ? AND deleted ?', $program_id, '0')
 				->limit(1)
 				->fetch();
@@ -242,10 +249,37 @@ class ProgramModel extends BaseModel
 		return $data;
 	}
 
+	/**
+	 * @return Nette\Database\Table\ActiveRow
+	 */
+	public function all()
+	{
+		return $this->getDatabase()
+				->query('SELECT programs.id AS id,
+						programs.name AS name,
+						programs.description AS description,
+						programs.tutor AS tutor,
+						programs.email AS email,
+						blocks.name AS block,
+						programs.capacity AS capacity,
+						style,
+						cat.name AS cat_name
+				FROM kk_programs AS programs
+				LEFT JOIN kk_blocks AS blocks ON blocks.id = programs.block
+				LEFT JOIN kk_categories AS cat ON cat.id = programs.category
+				WHERE blocks.meeting = ? AND programs.deleted = ? AND blocks.deleted = ?
+				ORDER BY programs.id ASC',
+				$this->getMeetingId(), '0', '0')->fetchAll();
+	}
+
+	/**
+	 * @param  string $guid
+	 * @return Nette\Database\Table\ActiveRow
+	 */
 	public function annotation($guid)
 	{
-		return $this->database
-				->table($this->dbTable)
+		return $this->getDatabase()
+				->table($this->getTable())
 				->where('guid ? AND deleted ?', $guid, '0')
 				->limit(1)
 				->fetch();
@@ -261,7 +295,7 @@ class ProgramModel extends BaseModel
 	public function getProgramsRegistration ($id, $disabled)
 	{
 		$result = $this->database
-			->table($this->dbTable)
+			->table($this->getTable())
 			->where('block ? AND deleted ?', $id, '0')
 			->limit(10)
 			->fetchAll();
@@ -359,6 +393,27 @@ class ProgramModel extends BaseModel
 		return $programs;
 	}
 
+	/**
+	 * @param  int    $visitorId
+	 * @return array
+	 */
+	public function findByVisitorId(int $visitorId): array
+	{
+		return $this->getDatabase()
+			->query('SELECT progs.name AS prog_name,
+							day,
+							DATE_FORMAT(`from`, "%H:%i") AS `from`,
+							DATE_FORMAT(`to`, "%H:%i") AS `to`
+					FROM kk_programs AS progs
+					LEFT JOIN `kk_visitor-program` AS visprog ON progs.id = visprog.program
+					LEFT JOIN kk_visitors AS vis ON vis.id = visprog.visitor
+					LEFT JOIN kk_blocks AS blocks ON progs.block = blocks.id
+					WHERE vis.id = ?
+					ORDER BY `day`, `from` ASC',
+					$visitorId)
+			->fetchAll();
+	}
+
 	public static function getPdfPrograms($id, $vid, $database){
 		$result = $database
 			->table('kk_programs')
@@ -377,10 +432,11 @@ class ProgramModel extends BaseModel
 					->table('kk_visitor-program')
 					->where('program ? AND visitor ?', $data->id, $vid)
 					->fetchAll();
-				if($rows == 1) $html .= $data['name'];
+				if($rows) $html .= $data['name'];
 			}
 			$html .= "</div>\n";
 		}
+
 		return $html;
 	}
 
@@ -407,9 +463,9 @@ class ProgramModel extends BaseModel
 		return $html;
 	}
 
-	public static function getProgramNames($block_id, $database)
+	public static function getProgramNames($block_id)
 	{
-		$result = $database
+		$result = self::$connection
 			->table('kk_programs')
 			->select('name')
 			->where('block ? AND deleted ?', $block_id, '0')
@@ -435,13 +491,13 @@ class ProgramModel extends BaseModel
 			->limit(1)
 			->fetch();
 
-		$name = $data['name']; //requested("name",$data['name']);
-		$description = $data['description'];//requested("description",$data['description']);
-		$tutor = $data['tutor'];//requested("tutor",$data['tutor']);
-		$email = $data['email'];//requested("email",$data['email']);
+		$name = $data['name'];
+		$description = $data['description'];
+		$tutor = $data['tutor'];
+		$email = $data['email'];
 
 		if($type == "program"){
-			$capacity = $data['capacity'];//requested("capacity",$data['capacity']);
+			$capacity = $data['capacity'];
 
 			$countData = $this->database
 				->query('SELECT COUNT(visitor) AS visitors
@@ -471,10 +527,72 @@ class ProgramModel extends BaseModel
 	public function getTutor($id)
 	{
 		return $this->database
-			->table($this->dbTable)
+			->table($this->getTable())
 			->select('guid, email, tutor')
 			->where('id ? AND deleted ?', $id, '0')
 			->limit(1)
 			->fetch();
 	}
+
+	/**
+	 * @param  integer $blockId
+	 * @return Row
+	 */
+	public function findByBlockId($blockId = null)
+	{
+		return $this->getDatabase()
+			->query('SELECT	progs.id AS id,
+						progs.name AS name,
+						style
+				FROM kk_programs AS progs
+				LEFT JOIN kk_categories AS cat ON cat.id = progs.category
+				WHERE block = ? AND progs.deleted = ?
+				LIMIT 10',
+				$blockId, '0')
+			->fetchAll();
+	}
+
+	/**
+	 * @param  int  $programId
+	 * @return Row
+	 */
+	public function findByProgramId(int $programId)
+	{
+		return $this->getDatabase()
+			->table($this->getTable())
+			->where('id ? AND deleted ?', $programId, '0')
+			->limit(1)
+			->fetch();
+	}
+
+	/**
+	 * @param  int  $programId
+	 * @return Row
+	 */
+	public function findProgramVisitors(int $programId)
+	{
+		return $this->getDatabase()
+				->query('SELECT vis.name AS name,
+								vis.surname AS surname,
+								vis.nick AS nick
+						FROM kk_visitors AS vis
+						LEFT JOIN `kk_visitor-program` AS visprog ON vis.id = visprog.visitor
+						WHERE visprog.program = ? AND vis.deleted = ?',
+						$programId, '0')->fetchAll();
+	}
+
+	/**
+	 * @param  int  $programId
+	 * @return Row
+	 */
+	public function countProgramVisitors(int $programId)
+	{
+		return $this->getDatabase()
+				->query('SELECT COUNT(*)
+						FROM kk_visitors AS vis
+						LEFT JOIN `kk_visitor-program` AS visprog ON vis.id = visprog.visitor
+						WHERE visprog.program = ? AND vis.deleted = ?',
+						$programId, '0')->fetch()[0];
+	}
+
 }

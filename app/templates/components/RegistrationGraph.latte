@@ -1,0 +1,15 @@
+<table style='width:100%;'>
+
+{foreach $graph as $graphRow}
+	{var $width = ceil($graphWidth / $graphMax * $graphRow['reg_count'])}
+	<tr>
+		<td align='right' style='width:60px;'>{$graphRow['day']}</td>
+		<td>
+			<img src='{$imgDir}graph.png' alt='{$graphRow['reg_count']}' style='width:{$width}%;' height='12' border='0'>
+			{$graphRow['reg_count']}
+		</td>
+
+		{php $graphHeight += $graphHeightStep}
+{/foreach}
+
+</table>

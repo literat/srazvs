@@ -2,9 +2,10 @@
 
 use Tester\Assert;
 use Mockery\MockInterface;
-use App\ExportModel;
+use App\Models\ExportModel;
 
 require_once __DIR__ . '/../bootstrap.php';
+require_once __DIR__ . '/../../../app/models/BaseModel.php';
 require_once __DIR__ . '/../../../app/models/ExportModel.php';
 
 class ExportSettersGettersTest extends Tester\TestCase
@@ -25,25 +26,35 @@ class ExportSettersGettersTest extends Tester\TestCase
 
 	public function testSettingMeetingId()
 	{
-		$this->export->setMeetingId(321);
-		Assert::same(321, $this->export->getMeetingId());
+		$this->invokeMethod($this->export, 'setMeetingId', [321]);
+		Assert::same(321, $this->invokeMethod($this->export, 'getMeetingId'));
+	}
+
+	/**
+	 * Call protected/private method of a class.
+	 *
+	 * @param object &$object    Instantiated object that we will run method on.
+	 * @param string $methodName Method name to call
+	 * @param array  $parameters Array of parameters to pass into method.
+	 *
+	 * @return mixed Method return.
+	 */
+	public function invokeMethod(&$object, $methodName, array $parameters = [])
+	{
+		$reflection = new \ReflectionClass(get_class($object));
+		$method = $reflection->getMethod($methodName);
+		$method->setAccessible(true);
+
+		return $method->invokeArgs($object, $parameters);
 	}
 }
 
 $mockedDatabase = Mockery::mock(Nette\Database\Context::class);
-$mockedPdf = Mockery::mock(App\PdfFactory::class);
-$mockedExcel = Mockery::mock(App\ExcelFactory::class);
-$mockedView = Mockery::mock(App\View::class);
-$mockedCategory = Mockery::mock(App\CategoryModel::class);
-$mockedDebug = true;
+$mockedCategory = Mockery::mock(App\Models\CategoryModel::class);
 
 $ExportModel = new ExportModel(
 	$mockedDatabase,
-	$mockedPdf,
-	$mockedExcel,
-	$mockedView,
-	$mockedCategory,
-	$mockedDebug
+	$mockedCategory
 );
 
 $ExportSettersGettersTest = new ExportSettersGettersTest($ExportModel);

@@ -6,16 +6,16 @@
 		<div id='headerCanvas'>
 			<div id="headerContent">
 				<div id="headerProfileLogout">
-					<a href="<?php echo HTTP_DIR."srazvs/"; ?>index.php" title="domů"><span>Domů</span></a>&nbsp;|&nbsp;
-					<a href="<?php echo SET_DIR; ?>/" title="nastavení"><span>Nastavení</span></a>&nbsp;|&nbsp;
-					<a href="<?php echo HTTP_DIR."admin/"; ?>" title="administrace"><span>Administrace</span></a>&nbsp;|&nbsp;
-					<a href="<?php echo HTTP_DIR."srazvs/registration/"; ?>" title="registrace" target="_blank"><span>Registrace</span></a>&nbsp;|&nbsp;
-					<a href="<?php echo HTTP_DIR."srazvs/program/public"; ?>" title="program" target="_blank"><span>Veřejný program</span></a>&nbsp;|&nbsp;
-					<a href="<?php echo HTTP_DIR."remote/logout.php?_return=admin/"; ?>" title="odhlásit se"><span>Odhlásit se</span></a>
+					<a href="{php echo HTTP_DIR."srazvs/"; }index.php" title="domů"><span>Domů</span></a>&nbsp;|&nbsp;
+					<a href="{php echo SET_DIR; }/" title="nastavení"><span>Nastavení</span></a>&nbsp;|&nbsp;
+					<a href="{php echo HTTP_DIR."admin/"; }" title="administrace"><span>Administrace</span></a>&nbsp;|&nbsp;
+					<a href="{php echo HTTP_DIR."srazvs/registration/"; }" title="registrace" target="_blank"><span>Registrace</span></a>&nbsp;|&nbsp;
+					<a href="{php echo HTTP_DIR."srazvs/program/public"; }" title="program" target="_blank"><span>Veřejný program</span></a>&nbsp;|&nbsp;
+					<a href="{php echo HTTP_DIR."remote/logout.php?_return=admin/"; }" title="odhlásit se"><span>Odhlásit se</span></a>
 					<div style="margin-top:5px;">
-			   uživatel: <span style="font-weight:bold;">{$user['publicname']}</span><br />
-			   poslední přihlášení: <?php echo date("j. n. Y H:i:s",$user['activitytime']); ?> |
-			   ip adresa: <?php echo gethostbyname($_SERVER['HTTP_HOST'])." - ".$_SERVER['HTTP_HOST']; ?> |
+			   uživatel: <span style="font-weight:bold;">{$user->publicname}</span><br />
+			   poslední přihlášení: {$user->activitytime|date:'j. n. Y H:i:s'} |
+			   ip adresa: {php echo gethostbyname($_SERVER['HTTP_HOST'])." - ".$_SERVER['HTTP_HOST']; } |
 			   počet přihlášení: {$user['logincounter']}
 					</div>
 				</div>
@@ -28,20 +28,36 @@
 				<h1>Srazy VS :::: {$meeting['place']} {$meeting['year']}</h1>
 			</div>
 			<div id="siteNavbar">
-				<a href="<?php echo MEET_DIR."/?mid=".$_SESSION['meetingID']; ?>" title="sraz">
-					<img src="<?php echo IMG_DIR; ?>home.png" alt="home" /> sraz</a> |
-				<a href="<?php echo BLOCK_DIR; ?>" title="bloky">
-					<img src="<?php echo IMG_DIR; ?>blocks.png" alt="blok" /> bloky</a> |
-				<a href="<?php echo PROG_DIR; ?>" title="programy">
-					<img src="<?php echo IMG_DIR; ?>programs.png" alt="program" /> programy</a> |
-				<a href="<?php echo VISIT_DIR; ?>" title="účastníci">
-					<img src="<?php echo IMG_DIR; ?>users.png" alt="ucastnik" /> účastníci</a> |
-				<a href="<?php echo EXP_DIR; ?>" title="exporty">
-					<img src="<?php echo IMG_DIR; ?>exports.png" alt="exporty" /> exporty</a> |
-				<a href="<?php echo CAT_DIR; ?>" title="kategorie">
-					<img src="<?php echo IMG_DIR; ?>categories.png" alt="kategorie" /> kategorie</a>
+				<a href="{php echo PRJ_DIR."?mid=".$_SESSION['meetingID']; }" title="nástěnka">
+					<img src="{php echo IMG_DIR; }home.png" alt="dashboard" /> nástěnka</a> |
+				<a href="{php echo MEET_DIR."/?mid=".$_SESSION['meetingID']; }" title="sraz">
+					<img src="{php echo IMG_DIR; }home.png" alt="home" /> srazy</a> |
+				<a href="{php echo BLOCK_DIR; }" title="bloky">
+					<img src="{php echo IMG_DIR; }blocks.png" alt="blok" /> bloky</a> |
+				<a href="{php echo PROG_DIR; }" title="programy">
+					<img src="{php echo IMG_DIR; }programs.png" alt="program" /> programy</a> |
+				<a href="{php echo VISIT_DIR; }" title="účastníci">
+					<img src="{php echo IMG_DIR; }users.png" alt="ucastnik" /> účastníci</a> |
+				<a href="{php echo EXP_DIR; }" title="exporty">
+					<img src="{php echo IMG_DIR; }exports.png" alt="exporty" /> exporty</a> |
+				<a href="{php echo CAT_DIR; }" title="kategorie">
+					<img src="{php echo IMG_DIR; }categories.png" alt="kategorie" /> kategorie</a>
 			</div>
-			{$menu|noescape}
+
+			<!-- start of menuCanvas -->
+			<div id='menuCanvas'>
+				<div id='menuContent'>
+					<div class='menuItem'>jednotlivé srazy</div>
+					<ul>
+					{cache "meetings/all", expire => '10 minutes', tags => ["meetings/all", "menu"]}
+					{foreach $menuItems as $item}
+						<li><a href='?mid={$item->mid}'>{$item->place} {$item->year}</a></li>
+					{/foreach}
+					{/cache}
+					</ul>
+				</div>
+			</div>
+			<!-- end of menuCanvas -->
    			<!-- start of siteContent -->
    			<div id='siteContent'>
 				<div id='content'>
