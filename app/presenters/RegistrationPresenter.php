@@ -15,6 +15,7 @@ use App\Services\ProgramService;
 use Tracy\Debugger;
 use App\Components\Forms\RegistrationForm;
 use App\Components\Forms\Factories\IRegistrationFormFactory;
+use App\Services\SkautIS\EventService;
 
 /**
  * Registration controller
@@ -59,6 +60,11 @@ class RegistrationPresenter extends VisitorPresenter
 	private $registrationFormFactory;
 
 	/**
+	 * @var EventService
+	 */
+	protected $skautisEventService;
+
+	/**
 	 * @param MeetingModel   $meetingModel
 	 * @param UserService    $userService
 	 * @param VisitorModel   $visitorModel
@@ -74,7 +80,8 @@ class RegistrationPresenter extends VisitorPresenter
 		ProgramModel $programModel,
 		Emailer $emailer,
 		VisitorService $visitorService,
-		ProgramService $programService
+		ProgramService $programService,
+		EventService $skautisEvent
 	) {
 		$this->setMeetingModel($meetingModel);
 		$this->setUserService($userService);
@@ -84,6 +91,7 @@ class RegistrationPresenter extends VisitorPresenter
 		$this->setEmailer($emailer);
 		$this->setVisitorService($visitorService);
 		$this->setProgramService($programService);
+		$this->setEventService($skautisEvent);
 	}
 
 	/**
@@ -238,14 +246,6 @@ class RegistrationPresenter extends VisitorPresenter
 		$template->loggedIn = $this->getUserService()->isLoggedIn();
 		$template->disabled = $this->getMeetingModel()->isRegOpen($this->getDebugMode()) ? "" : "disabled";
 
-			// create
-			// if($vid = $this->Visitor->create($db_data, $meals_data, $programs_data)) {
-			// 	//dd($this->user->isLoggedIn(), $this->Meeting->getEventId(), $this->Meeting->getCourseId());
-			// 	if($this->user->isLoggedIn() && $this->Meeting->getEventId() && $this->Meeting->getCourseId()) {
-			// 		$personId = $this->user->getUserDetail()->ID_Person;
-			// 		dd($this->event->insertParticipant($personId, $this->Meeting->eventId, $this->Meeting->courseId));
-			// 	}
-
 		$this['registrationForm']->setDefaults($visitor);
 	}
 
@@ -259,6 +259,16 @@ class RegistrationPresenter extends VisitorPresenter
 		$control->onRegistrationSave[] = function(RegistrationForm $control, $newVisitor) {
 			try {
 				$guid = $this->getVisitorService()->create((array) $newVisitor);
+
+				if($this->getUserService()->isLoggedIn() && $this->getMeetingModel()->getCourseId()) {
+					$this->getEventService()->insertEnroll(
+						$this->getUserService()->getSkautis()->getUser()->getLoginId(),
+						$this->getMeetingModel()->getCourseId(),
+						// TODO: get real phone number
+						'123456789'
+					);
+				}
+
 				$result = $this->sendRegistrationSummary((array) $newVisitor, $guid);
 
 				Debugger::log('Storage of visitor('. $guid .') successfull, result: ' . json_encode($result), Debugger::INFO);
@@ -417,6 +427,26 @@ class RegistrationPresenter extends VisitorPresenter
 	protected function setProgramService(ProgramService $service)
 	{
 		$this->programService = $service;
+
+		return $this;
+	}
+
+	/**
+	 * @return EventService
+	 */
+	protected function getEventService(): EventService
+	{
+		return $this->skautisEventService;
+	}
+
+	/**
+	 * @param EventService $skautisEvent
+	 *
+	 * @return self
+	 */
+	protected function setEventService(EventService $service): self
+	{
+		$this->skautisEventService = $service;
 
 		return $this;
 	}
