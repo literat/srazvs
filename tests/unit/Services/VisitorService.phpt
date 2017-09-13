@@ -6,7 +6,6 @@ use Tester\TestCase;
 use App\Services\VisitorService;
 
 require_once __DIR__ . '/../bootstrap.php';
-require_once __DIR__ . '/../../../app/services/BaseService.php';
 require_once __DIR__ . '/../../../app/services/VisitorService.php';
 
 class VisitorServiceTest extends TestCase
