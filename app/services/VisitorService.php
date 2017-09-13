@@ -8,7 +8,7 @@ use App\Models\BlockModel;
 use App\Services\ProgramService;
 use Nette\Utils\Strings;
 
-class VisitorService extends BaseService
+class VisitorService
 {
 
 	/**

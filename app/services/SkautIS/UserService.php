@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Services;
-
+namespace App\Services\SkautIS;
 
 /**
  * User service
  */
-class UserService extends BaseService
+class UserService extends SkautisService
 {
 
 	/**
@@ -17,7 +16,7 @@ class UserService extends BaseService
 	 */
 	public function getRoleId()
 	{
-		return $this->skautis->getRoleId();
+		return $this->getSkautis()->getRoleId();
 	}
 
 
@@ -29,7 +28,12 @@ class UserService extends BaseService
 	 */
 	public function getAllSkautISRoles($activeOnly = true)
 	{
-		return $this->skautis->user->UserRoleAll(array("ID_User" => $this->getUserDetail()->ID, "IsActive" => $activeOnly));
+		return $this->getSkautis()
+			->user
+			->UserRoleAll([
+				'ID_User'  => $this->getUserDetail()->ID,
+				'IsActive' => $activeOnly,
+			]);
 	}
 
 
@@ -44,7 +48,7 @@ class UserService extends BaseService
 		$id = __FUNCTION__;
 		// cache by the request
 		if (!($res = $this->load($id))) {
-			$res = $this->save($id, $this->skautis->user->UserDetail());
+			$res = $this->save($id, $this->getSkautis()->user->UserDetail());
 		}
 		return $res;
 	}
@@ -58,10 +62,18 @@ class UserService extends BaseService
 	 */
 	public function updateSkautISRole($id)
 	{
-		$unitId = $this->skautis->user->LoginUpdate(array("ID_UserRole" => $id, "ID" => $this->skautis->getToken()));
+		$skautis = $this->getSkautis();
+
+		$unitId = $this->getSkautis()
+			->user
+			->LoginUpdate([
+				'ID_UserRole' => $id,
+				'ID'          => $skautis->getToken(),
+			]);
+
 		if ($unitId) {
-			$this->skautis->setRoleId($id);
-			$this->skautis->setUnitId($unitId->ID_Unit);
+			$skautis->setRoleId($id);
+			$skautis->setUnitId($unitId->ID_Unit);
 		}
 	}
 
@@ -78,7 +90,7 @@ class UserService extends BaseService
 			$personId = $this->getUserDetail()->ID_Person;
 		}
 
-		return $this->skautis->org->personDetail((["ID" => $personId]));
+		return $this->getSkautis()->org->personDetail((["ID" => $personId]));
 	}
 
 	/**
@@ -89,7 +101,7 @@ class UserService extends BaseService
 	 */
 	public function getParentUnitDetail($unitId)
 	{
-		return $this->skautis->org->unitAll((array("ID_UnitChild" => $unitId)));
+		return $this->getSkautis()->org->unitAll((["ID_UnitChild" => $unitId]));
 	}
 
 	/**
@@ -100,7 +112,7 @@ class UserService extends BaseService
 	 */
 	public function getUnitDetail($unitId)
 	{
-		return $this->skautis->org->unitDetail((array("ID" => $unitId)));
+		return $this->getSkautis()->org->unitDetail((["ID" => $unitId]));
 	}
 
 	/**
@@ -111,7 +123,12 @@ class UserService extends BaseService
 	 */
 	public function getPersonUnitDetail($personId)
 	{
-		$membership = $this->skautis->org->membershipAllPerson((array('ID_Person' => $personId, "ID_MembershipType" => "radne")));
+		$membership = $this->getSkautis()
+			->org
+			->membershipAllPerson(([
+				'ID_Person'         => $personId,
+				'ID_MembershipType' => 'radne'
+			]));
 
 		return $membership->MembershipAllOutput;
 	}
@@ -124,7 +141,7 @@ class UserService extends BaseService
 	 */
 	public function isLoggedIn()
 	{
-		return $this->skautis->getUser()->isLoggedIn();
+		return $this->getSkautis()->getUser()->isLoggedIn();
 	}
 
 
@@ -136,7 +153,7 @@ class UserService extends BaseService
 	 */
 	public function resetLoginData()
 	{
-		$this->skautis->resetLoginData();
+		$this->getSkautis()->resetLoginData();
 	}
 
 
@@ -150,11 +167,11 @@ class UserService extends BaseService
 	 */
 	public function actionVerify($table, $id = NULL, $ID_Action = NULL)
 	{
-		$res = $this->skautis->user->ActionVerify(array(
-			"ID" => $id,
-			"ID_Table" => $table,
-			"ID_Action" => $ID_Action,
-		));
+		$res = $this->getSkautis()->user->ActionVerify([
+			'ID'        => $id,
+			'ID_Table'  => $table,
+			'ID_Action' => $ID_Action,
+		]);
 
 		// returns boolean if certain function for verifying is set
 		if ($ID_Action !== NULL) {

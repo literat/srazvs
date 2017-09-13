@@ -11,7 +11,7 @@ use App\Models\MealModel;
 use App\Models\MeetingModel;
 use Nette\Application\UI\Form;
 use Nette\Forms\Controls;
-use App\Services\UserService;
+use App\Services\SkautIS\UserService;
 
 class RegistrationForm extends BaseForm
 {

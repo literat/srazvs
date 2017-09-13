@@ -8,7 +8,7 @@ use App\Models\MeetingModel;
 use App\Models\VisitorModel;
 use App\Models\ProgramModel;
 use App\Models\MealModel;
-use App\Services\UserService;
+use App\Services\SkautIS\UserService;
 use App\Services\Emailer;
 use App\Services\VisitorService;
 use App\Services\ProgramService;

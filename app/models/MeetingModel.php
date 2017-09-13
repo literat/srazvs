@@ -482,20 +482,28 @@ class MeetingModel extends BaseModel
 			->fetchField('province_name');
 	}
 
-	public function getEventId() {
-		return $this->database
-			->table('kk_meetings')
+	/**
+	 * @return Row
+	 */
+	public function getEventId()
+	{
+		return $this->getDatabase()
+			->table($this->getTable())
 			->select('skautis_event_id')
-			->where('id', $this->meetingId)
+			->where('id', $this->getMeetingId())
 			->limit(1)
 			->fetchField('skautis_event_id');
 	}
 
-	public function getCourseId() {
-		return $this->database
-			->table('kk_meetings')
+	/**
+	 * @return Row
+	 */
+	public function getCourseId()
+	{
+		return $this->getDatabase()
+			->table($this->getTable())
 			->select('skautis_course_id')
-			->where('id', $this->meetingId)
+			->where('id', $this->getMeetingId())
 			->limit(1)
 			->fetchField('skautis_course_id');
 	}

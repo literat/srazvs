@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Models\VisitorModel;
 use App\Models\ProgramModel;
 
-class ProgramService extends BaseService
+class ProgramService
 {
 
 	/**
