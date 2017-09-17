@@ -162,7 +162,7 @@ class RegistrationForm extends BaseForm
 				->addRule(Form::MAX_LENGTH, static::MESSAGE_MAX_LENGTH, 50);
 
 		$form->addSelect('province', 'Kraj:', $provinces)
-			->setPrompt('Zvolte kraj');
+			->setPrompt('zvolte kraj');
 
 		$form = $this->buildMealSwitcher($form);
 

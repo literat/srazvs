@@ -16,6 +16,7 @@ use Tracy\Debugger;
 use App\Components\Forms\RegistrationForm;
 use App\Components\Forms\Factories\IRegistrationFormFactory;
 use App\Services\SkautIS\EventService;
+use Skautis\Wsdl\WsdlException;
 
 /**
  * Registration controller
@@ -260,10 +261,10 @@ class RegistrationPresenter extends VisitorPresenter
 			try {
 				$guid = $this->getVisitorService()->create((array) $newVisitor);
 
-				if($this->getUserService()->isLoggedIn() && $this->getMeetingModel()->getCourseId()) {
+				if($this->getUserService()->isLoggedIn() && $this->getMeetingModel()->findCourseId()) {
 					$this->getEventService()->insertEnroll(
 						$this->getUserService()->getSkautis()->getUser()->getLoginId(),
-						$this->getMeetingModel()->getCourseId(),
+						$this->getMeetingModel()->findCourseId(),
 						// TODO: get real phone number
 						'123456789'
 					);
@@ -273,6 +274,9 @@ class RegistrationPresenter extends VisitorPresenter
 
 				Debugger::log('Storage of visitor('. $guid .') successfull, result: ' . json_encode($result), Debugger::INFO);
 				$this->flashMessage('Účastník(' . $guid . ') byl úspěšně uložen.', self::FLASH_TYPE_OK);
+			} catch(WsdlException $e) {
+				Debugger::log('Storage of visitor('. $guid .') failed, result: ' . $e->getMessage(), Debugger::WARNING);
+				$this->flashMessage('Uložení účastníka (' . $guid . ') selhalo. Účastník je již zaregistrován.', self::FLASH_TYPE_ERROR);
 			} catch(Exception $e) {
 				Debugger::log('Storage of visitor('. $guid .') failed, result: ' .  $e->getMessage(), Debugger::ERROR);
 				$this->flashMessage('Uložení účastníka selhalo, chyba: ' . $e->getMessage(), self::FLASH_TYPE_ERROR);

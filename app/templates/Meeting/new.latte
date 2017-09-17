@@ -11,12 +11,7 @@
 
 <form action='{$meetDir}/create' method='post'>
 
-<div class='button-line'>
- <button type='submit' onClick=\"this.form.submit()\">
-  <img src='{$imgDir}icons/save.png' /> Uložit</button>
- <button type='button' onclick="window.location.replace('?cms=list-view')">
-  <img src='{$imgDir}icons/storno.png'  /> Storno</button>
-</div>
+{include 'button-line.latte'}
 
 <script src='{$jsDir}jquery/jquery-ui.min.js' type='text/javascript'></script>
 <script src='{$jsDir}jquery/jquery-ui-timepicker-addon.js' type='text/javascript'></script>
@@ -98,6 +93,22 @@ $(function() {
   <td class='label'><label>Číslování dokladů:</label></td>
   <td><input type='text' size='30' name='numbering' value="" /></td>
  </tr>
+	<tr>
+		<td class='label'>
+			<label>SkautIS - ID VzA:</label>
+		</td>
+		<td>
+			<input type='text' size='30' name='skautis_event_id' value="" />
+		</td>
+	</tr>
+	<tr>
+		<td class='label'>
+			<label>SkautIS - ID kurzu:</label>
+		</td>
+		<td>
+			<input type='text' size='30' name='skautis_source_id' value="" />
+		</td>
+	</tr>
  <tr>
   <td class='label'><label>Kontaktní osoba:</label></td>
   <td><input type='text' size='30' name='contact' value="" />{$error_close_reg}</td>
