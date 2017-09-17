@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\SkautIS;
 
 /**
  * Authentication service
  */
-class AuthService extends BaseService
+class AuthService extends SkautisService
 {
 
 	/**
@@ -16,7 +16,7 @@ class AuthService extends BaseService
 	 */
 	public function getLoginUrl($backlink)
 	{
-		return $this->skautis->getLoginUrl($backlink);
+		return $this->getSkautis()->getLoginUrl($backlink);
 	}
 
 
@@ -29,7 +29,7 @@ class AuthService extends BaseService
 	public function setInit(array $arr)
 	{
 		//$this->skautis->setLoginData($arr['skautIS_Token'], $arr['skautIS_IDRole'], $arr['skautIS_IDUnit']);
-		$this->skautis->setLoginData($arr);
+		$this->getSkautis()->setLoginData($arr);
 	}
 
 
@@ -41,7 +41,7 @@ class AuthService extends BaseService
 	 */
 	public function getLogoutUrl()
 	{
-		return $this->skautis->getLogoutUrl();
+		return $this->getSkautis()->getLogoutUrl();
 	}
 
 }

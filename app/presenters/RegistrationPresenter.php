@@ -8,13 +8,15 @@ use App\Models\MeetingModel;
 use App\Models\VisitorModel;
 use App\Models\ProgramModel;
 use App\Models\MealModel;
-use App\Services\UserService;
+use App\Services\SkautIS\UserService;
 use App\Services\Emailer;
 use App\Services\VisitorService;
 use App\Services\ProgramService;
 use Tracy\Debugger;
 use App\Components\Forms\RegistrationForm;
 use App\Components\Forms\Factories\IRegistrationFormFactory;
+use App\Services\SkautIS\EventService;
+use Skautis\Wsdl\WsdlException;
 
 /**
  * Registration controller
@@ -59,6 +61,11 @@ class RegistrationPresenter extends VisitorPresenter
 	private $registrationFormFactory;
 
 	/**
+	 * @var EventService
+	 */
+	protected $skautisEventService;
+
+	/**
 	 * @param MeetingModel   $meetingModel
 	 * @param UserService    $userService
 	 * @param VisitorModel   $visitorModel
@@ -74,7 +81,8 @@ class RegistrationPresenter extends VisitorPresenter
 		ProgramModel $programModel,
 		Emailer $emailer,
 		VisitorService $visitorService,
-		ProgramService $programService
+		ProgramService $programService,
+		EventService $skautisEvent
 	) {
 		$this->setMeetingModel($meetingModel);
 		$this->setUserService($userService);
@@ -84,6 +92,7 @@ class RegistrationPresenter extends VisitorPresenter
 		$this->setEmailer($emailer);
 		$this->setVisitorService($visitorService);
 		$this->setProgramService($programService);
+		$this->setEventService($skautisEvent);
 	}
 
 	/**
@@ -99,6 +108,15 @@ class RegistrationPresenter extends VisitorPresenter
 	 *
 	 * @param  IRegistrationFormFactory $factory
 	 */
+
+	protected $error = FALSE;
+
+	protected $hash = NULL;
+	private $item;
+	private $mealData;
+	private $user;
+	private $event;
+
 	public function injectRegistrationFormFactory(IRegistrationFormFactory $factory)
 	{
 		$this->registrationFormFactory = $factory;
@@ -119,6 +137,9 @@ class RegistrationPresenter extends VisitorPresenter
 		} else {
 			$this->getMeetingModel()->setRegistrationHandlers($this->getMeetingId());
 		}
+
+		//$this->user = $this->container->getService('userService');
+		//$this->event = $this->container->getService('eventService');
 
 		$template = $this->getTemplate();
 
@@ -239,10 +260,23 @@ class RegistrationPresenter extends VisitorPresenter
 		$control->onRegistrationSave[] = function(RegistrationForm $control, $newVisitor) {
 			try {
 				$guid = $this->getVisitorService()->create((array) $newVisitor);
+
+				if($this->getUserService()->isLoggedIn() && $this->getMeetingModel()->findCourseId()) {
+					$this->getEventService()->insertEnroll(
+						$this->getUserService()->getSkautis()->getUser()->getLoginId(),
+						$this->getMeetingModel()->findCourseId(),
+						// TODO: get real phone number
+						'123456789'
+					);
+				}
+
 				$result = $this->sendRegistrationSummary((array) $newVisitor, $guid);
 
 				Debugger::log('Storage of visitor('. $guid .') successfull, result: ' . json_encode($result), Debugger::INFO);
 				$this->flashMessage('Účastník(' . $guid . ') byl úspěšně uložen.', self::FLASH_TYPE_OK);
+			} catch(WsdlException $e) {
+				Debugger::log('Storage of visitor('. $guid .') failed, result: ' . $e->getMessage(), Debugger::WARNING);
+				$this->flashMessage('Uložení účastníka (' . $guid . ') selhalo. Účastník je již zaregistrován.', self::FLASH_TYPE_ERROR);
 			} catch(Exception $e) {
 				Debugger::log('Storage of visitor('. $guid .') failed, result: ' .  $e->getMessage(), Debugger::ERROR);
 				$this->flashMessage('Uložení účastníka selhalo, chyba: ' . $e->getMessage(), self::FLASH_TYPE_ERROR);
@@ -397,6 +431,26 @@ class RegistrationPresenter extends VisitorPresenter
 	protected function setProgramService(ProgramService $service)
 	{
 		$this->programService = $service;
+
+		return $this;
+	}
+
+	/**
+	 * @return EventService
+	 */
+	protected function getEventService(): EventService
+	{
+		return $this->skautisEventService;
+	}
+
+	/**
+	 * @param EventService $skautisEvent
+	 *
+	 * @return self
+	 */
+	protected function setEventService(EventService $service): self
+	{
+		$this->skautisEventService = $service;
 
 		return $this;
 	}
