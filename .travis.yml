@@ -34,6 +34,11 @@ after_script:
       && php coveralls.phar --verbose --config tests/.coveralls.yml
       || true; fi
 
+    - >
+    if [ "$coverage" == "on" ]; then
+    wget https://scrutinizer-ci.com/ocular.phar
+    && php ocular.phar code-coverage:upload --access-token="$SCRUTINIZER_API_TOKEN" --format=php-clover ./coverage.xml
+
 after_success:
   - coveralls
 
