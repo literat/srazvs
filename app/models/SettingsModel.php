@@ -58,11 +58,7 @@ class SettingsModel extends BaseModel
 			'message' => $message
 		];
 
-		$data = [
-			'value' => Json::encode($mailData)
-		];
-
-		$result = $this->updateByName($data, 'mail_' . $type);
+		$result = $this->updateByName($mailData, 'mail_' . $type);
 
 		if(!$result) {
 			throw new Exception('Mail modification failed!');
@@ -106,16 +102,37 @@ class SettingsModel extends BaseModel
 	}
 
 	/**
-	 * @param  array  $data
+	 * @param  mixed  $value
 	 * @param  string $name
 	 * @return ActiveRow
 	 */
-	public function updateByName(array $data, $name)
+	public function updateByName($value, $name)
 	{
+		//dd($value, $this->encodeValue($value));
 		return $this->getDatabase()
 			->table($this->getTable())
 			->where('name', $name)
-			->update($data);
+			->update($this->encodeValue($value));
+	}
+
+	/**
+	 * @param  mixed $data
+	 * @return Row
+	 */
+	public function updateDebugRegime($data)
+	{
+		return $this->updateByName($data, 'debug');
+	}
+
+	/**
+	 * @param  mixed $value
+	 * @return array
+	 */
+	protected function encodeValue($value): array
+	{
+		return [
+			'value' => Json::encode($value)
+		];
 	}
 
 }

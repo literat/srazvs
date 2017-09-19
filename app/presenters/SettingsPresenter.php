@@ -45,6 +45,31 @@ class SettingsPresenter extends BasePresenter
 	}
 
 	/**
+	 * @return 	void
+	 */
+	public function actionDebug()
+	{
+		try {
+			$activate = false;
+			$data = $this->getHttpRequest()->getPost();
+
+			if(array_key_exists('debug', $data)) {
+				$activate = true;
+			}
+
+			$this->getModel()->updateDebugRegime($activate);
+
+			Debugger::log('Settings: debug regime update succesfull.', Debugger::INFO);
+			$this->flashMessage('Settings: debug regime update succesfull.', 'ok');
+		} catch(Exception $e) {
+			Debugger::log('Settings: debug update update failed, result: ' . $e->getMessage(), Debugger::ERROR);
+			$this->flashMessage('Settings: debug regime update failed, result: ' . $e->getMessage(), 'error');
+		}
+
+		$this->redirect('Settings:listing');
+	}
+
+	/**
 	 * @param 	string 	$id
 	 * @return 	void
 	 */
@@ -92,6 +117,7 @@ class SettingsPresenter extends BasePresenter
 		$template->reg_subject = $settingsModel->getMailJSON('post_reg')->subject;
 		$template->reg_message = $settingsModel->getMailJSON('post_reg')->message;
 		$template->reg_html_message = html_entity_decode($settingsModel->getMailJSON('post_reg')->message);
+		$template->debugRegime = (bool) json_decode(($settingsModel->findByName('debug'))->value);
 	}
 
 	/**

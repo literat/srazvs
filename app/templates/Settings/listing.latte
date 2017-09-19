@@ -144,4 +144,16 @@
 	</form>
 </div>
 
+<div class='pageContentRibbon'>Režim pro odhalování chyb</div>
+<div>
+	<form action='/srazvs/settings/debug' method='post'>
+		<label>Zapnout režim</label><br />
+		<input type="checkbox" name="debug" value="1" {if $debugRegime}checked="checked"{/if} />
+		<div class='button-line'>
+			<button type='submit' onclick=\"this.form.submit()\">
+				<img src='{$imgDir}icons/save.png' /> Uložit</button>
+		</div>
+	</form>
+</div>
+
 <div class="cleaner">&nbsp;</div>
