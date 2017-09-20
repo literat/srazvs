@@ -117,7 +117,7 @@ class SettingsPresenter extends BasePresenter
 		$template->reg_subject = $settingsModel->getMailJSON('post_reg')->subject;
 		$template->reg_message = $settingsModel->getMailJSON('post_reg')->message;
 		$template->reg_html_message = html_entity_decode($settingsModel->getMailJSON('post_reg')->message);
-		$template->debugRegime = (bool) json_decode(($settingsModel->findByName('debug'))->value);
+		$template->debugRegime = $settingsModel->findDebugRegime();
 	}
 
 	/**

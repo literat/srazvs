@@ -73,9 +73,7 @@ class SettingsModel extends BaseModel
 	 */
 	public function getMailJSON($type)
 	{
-		$data = $this->findByName('mail_' . $type);
-
-		return Json::decode($data->value);
+		return $this->findByName('mail_' . $type);
 	}
 
 	/**
@@ -95,10 +93,12 @@ class SettingsModel extends BaseModel
 	 */
 	public function findByName($name)
 	{
-		return $this->getDatabase()
+		$result = $this->getDatabase()
 			->table($this->getTable())
 			->where('name', $name)
 			->fetch();
+
+		return Json::decode($result->value);
 	}
 
 	/**
@@ -108,7 +108,6 @@ class SettingsModel extends BaseModel
 	 */
 	public function updateByName($value, $name)
 	{
-		//dd($value, $this->encodeValue($value));
 		return $this->getDatabase()
 			->table($this->getTable())
 			->where('name', $name)
@@ -122,6 +121,14 @@ class SettingsModel extends BaseModel
 	public function updateDebugRegime($data)
 	{
 		return $this->updateByName($data, 'debug');
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function findDebugRegime()
+	{
+		return (bool) $this->findByName('debug');
 	}
 
 	/**
