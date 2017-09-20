@@ -17,6 +17,7 @@ use App\Components\Forms\RegistrationForm;
 use App\Components\Forms\Factories\IRegistrationFormFactory;
 use App\Services\SkautIS\EventService;
 use Skautis\Wsdl\WsdlException;
+use App\Models\SettingsModel;
 
 /**
  * Registration controller
@@ -51,6 +52,11 @@ class RegistrationPresenter extends VisitorPresenter
 	private $programService;
 
 	/**
+	 * @var SettingsModel
+	 */
+	protected $settingsModel;
+
+	/**
 	 * @var boolean
 	 */
 	private $disabled = false;
@@ -72,6 +78,7 @@ class RegistrationPresenter extends VisitorPresenter
 	 * @param MealModel      $mealModel
 	 * @param ProgramModel   $programModel
 	 * @param VisitorService $visitorService
+	 * @param SettingsModel  $settingsModel
 	 */
 	public function __construct(
 		MeetingModel $meetingModel,
@@ -82,7 +89,8 @@ class RegistrationPresenter extends VisitorPresenter
 		Emailer $emailer,
 		VisitorService $visitorService,
 		ProgramService $programService,
-		EventService $skautisEvent
+		EventService $skautisEvent,
+		SettingsModel $settingsModel
 	) {
 		$this->setMeetingModel($meetingModel);
 		$this->setUserService($userService);
@@ -93,6 +101,7 @@ class RegistrationPresenter extends VisitorPresenter
 		$this->setVisitorService($visitorService);
 		$this->setProgramService($programService);
 		$this->setEventService($skautisEvent);
+		$this->setSettingsModel($settingsModel);
 	}
 
 	/**
@@ -131,7 +140,7 @@ class RegistrationPresenter extends VisitorPresenter
 
 		$this->getMeetingModel()->setMeetingId($this->getMeetingId());
 
-		if($this->getDebugMode()) {
+		if($this->getDebugMode() || $this->getSettingsModel()->findDebugRegime()) {
 			$this->getMeetingModel()->setRegistrationHandlers(1);
 			$this->setMeetingId(1);
 		} else {
@@ -260,7 +269,7 @@ class RegistrationPresenter extends VisitorPresenter
 		$control->onRegistrationSave[] = function(RegistrationForm $control, $newVisitor) {
 			try {
 				$guid = $this->getVisitorService()->create((array) $newVisitor);
-
+/*
 				if($this->getUserService()->isLoggedIn() && $this->getMeetingModel()->findCourseId()) {
 					$this->getEventService()->insertEnroll(
 						$this->getUserService()->getSkautis()->getUser()->getLoginId(),
@@ -269,7 +278,7 @@ class RegistrationPresenter extends VisitorPresenter
 						'123456789'
 					);
 				}
-
+*/
 				$result = $this->sendRegistrationSummary((array) $newVisitor, $guid);
 
 				Debugger::log('Storage of visitor('. $guid .') successfull, result: ' . json_encode($result), Debugger::INFO);
@@ -451,6 +460,27 @@ class RegistrationPresenter extends VisitorPresenter
 	protected function setEventService(EventService $service): self
 	{
 		$this->skautisEventService = $service;
+
+		return $this;
+	}
+
+
+	/**
+	 * @return SettingsModel
+	 */
+	public function getSettingsModel()
+	{
+		return $this->settingsModel;
+	}
+
+	/**
+	 * @param SettingsModel $model
+	 *
+	 * @return self
+	 */
+	public function setSettingsModel(SettingsModel $model): self
+	{
+		$this->settingsModel = $model;
 
 		return $this;
 	}

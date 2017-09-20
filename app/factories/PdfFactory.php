@@ -2,6 +2,8 @@
 
 namespace App\Factories;
 
+use Mpdf\Mpdf;
+
 /**
  * PdfFactory
  *
@@ -47,7 +49,7 @@ class PdfFactory
 	 */
 	public function create()
 	{
-		$this->pdf = new \mPDF(
+		$this->pdf = new Mpdf([
 			$this->encoding,
 			$this->paperFormat,
 			$this->fontSize,
@@ -56,6 +58,7 @@ class PdfFactory
 			$this->marginRight,
 			$this->marginTop,
 			$this->marginBottom
+			]
 		);
 
 		// debugging on demand
