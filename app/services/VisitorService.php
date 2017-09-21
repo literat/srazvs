@@ -56,7 +56,11 @@ class VisitorService
 	public function create(array $data = [])
 	{
 		$visitor = $this->filterFields($data, $this->getVisitorModel()->getColumns());
-		$visitor['code'] = $this->calculateCode4Bank($visitor);
+		$visitor['code'] = $this->calculateCode4Bank(
+			$visitor['name'],
+			$visitor['surname'],
+			$visitor['birthday']->format('d. m. Y')
+		);
 		$meals = $this->filterFields($data, $this->getMealModel()->getColumns());
 		$programs = $this->filterProgramFields($data);
 
@@ -73,7 +77,11 @@ class VisitorService
 	public function update($id, array $data)
 	{
 		$visitor = $this->filterFields($data, $this->getVisitorModel()->getColumns());
-		$visitor['code'] = $this->calculateCode4Bank($visitor);
+		$visitor['code'] = $this->calculateCode4Bank(
+			$visitor['name'],
+			$visitor['surname'],
+			$visitor['birthday']->format('d. m. Y')
+		);
 		$meals = $this->filterFields($data, $this->getMealModel()->getColumns());
 		$programs = $this->filterProgramFields($data);
 
@@ -96,14 +104,16 @@ class VisitorService
 	}
 
 	/**
-	 * @param  array $data
+	 * @param  string $name
+	 * @param  string $surname
+	 * @param  string $birthday
 	 * @return string
 	 */
-	public function calculateCode4Bank(array $data)
+	public function calculateCode4Bank(string $name, string $surname, string $birthday): string
 	{
-		return Strings::substring($data['name'], 0, 1)
-			. Strings::substring($data['surname'], 0, 1)
-			. Strings::substring($data['birthday'], -2);
+		return Strings::substring($name, 0, 1)
+			. Strings::substring($surname, 0, 1)
+			. Strings::substring($birthday, -2);
 	}
 
 	/**
