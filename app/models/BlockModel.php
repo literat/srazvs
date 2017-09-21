@@ -80,18 +80,30 @@ class BlockModel extends BaseModel
 	 */
 	public function renderHtmlSelect($blockId)
 	{
-		$result = $this->findByMeeting($this->getMeetingId());
+		$blocks = $this->findByMeeting($this->getMeetingId());
 
-		$html_select = "<select style='width: 300px; font-size: 10px' name='block'>\n";
+		$htmlSelect = "<select style='width: 300px; font-size: 10px' name='block'>\n";
 
-		foreach($result as $data){
-			if($data['id'] == $blockId) $selected = "selected";
-			else $selected = "";
-			$html_select .= "<option ".$selected." value='".$data['id']."'>".$data['day'].", ".$data->from->format('%H:%I:%S')." - ".$data->to->format('%H:%I:%S')." : ".$data['name']."</option>\n";
+		foreach($blocks as $block){
+			if($block->id == $blockId) {
+				$selected = 'selected';
+			} else {
+				$selected = '';
+			}
+			$htmlSelect .= sprintf(
+				"<option %s value='%d'>%s, %s - %s : %s</option>\n",
+				$selected,
+				$block->id,
+				$block->day,
+				$block->from->format('%H:%I:%S'),
+				$block->to->format('%H:%I:%S'),
+				$block->name
+			);
 		}
-		$html_select .= "</select>\n";
 
-		return $html_select;
+		$htmlSelect .= "</select>\n";
+
+		return $htmlSelect;
 	}
 
 	/**
@@ -181,7 +193,7 @@ class BlockModel extends BaseModel
 	{
 		return $this->getDatabase()
 			->table($this->getTable())
-			->select('id')
+			->select('id, day, from, to, name')
 			->where('meeting ? AND program ? AND deleted ?', $meetingId, '1', '0')
 			->fetchAll();
 	}

@@ -38,7 +38,14 @@ class VisitorServiceTest extends TestCase
 	 */
 	public function testCalculationOfCodeForBank($visitor, $expected)
 	{
-		Assert::same($expected, $this->service->calculateCode4Bank($visitor));
+		Assert::same(
+			$expected,
+			$this->service->calculateCode4Bank(
+				$visitor['name'],
+				$visitor['surname'],
+				$visitor['birthday']
+			)
+		);
 	}
 
 }
