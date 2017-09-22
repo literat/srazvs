@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\SkautIS;
 
 use Nette\Object;
 use Skautis\Skautis;
 
 /**
- * Base service
+ * SkautIS service
  */
-abstract class BaseService extends Object
+abstract class SkautisService extends Object
 {
 
 	/**
@@ -44,7 +44,7 @@ abstract class BaseService extends Object
 	 */
 	public function __construct(Skautis $skautIS = NULL)
 	{
-		$this->skautis = $skautIS;
+		$this->setSkautis($skautIS);
 		self::$storage = array();
 	}
 
@@ -57,11 +57,13 @@ abstract class BaseService extends Object
 	 */
 	public function getInfo()
 	{
-		return array(
-			"ID_Login" => $this->skautis->getUser()->getLoginId(),
-			"ID_Role" => $this->skautis->getUser()->getRoleId(),
-			"ID_Unit" => $this->skautis->getUser()->getUnitId(),
-		);
+		$skautis = $this->getSkautis();
+
+		return [
+			"ID_Login" => $skautis->getUser()->getLoginId(),
+			"ID_Role"  => $skautis->getUser()->getRoleId(),
+			"ID_Unit"  => $skautis->getUser()->getUnitId(),
+		];
 	}
 
 
@@ -93,6 +95,26 @@ abstract class BaseService extends Object
 			return self::$storage[$id];
 		}
 		return FALSE;
+	}
+
+	/**
+	 * @return Skautis\Skautis
+	 */
+	public function getSkautis(): Skautis
+	{
+		return $this->skautis;
+	}
+
+	/**
+	 * @param Skautis\Skautis $skautis
+	 *
+	 * @return self
+	 */
+	public function setSkautis(Skautis $skautis): self
+	{
+		$this->skautis = $skautis;
+
+		return $this;
 	}
 
 }

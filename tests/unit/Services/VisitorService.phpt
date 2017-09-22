@@ -6,7 +6,6 @@ use Tester\TestCase;
 use App\Services\VisitorService;
 
 require_once __DIR__ . '/../bootstrap.php';
-require_once __DIR__ . '/../../../app/services/BaseService.php';
 require_once __DIR__ . '/../../../app/services/VisitorService.php';
 
 class VisitorServiceTest extends TestCase
@@ -39,7 +38,14 @@ class VisitorServiceTest extends TestCase
 	 */
 	public function testCalculationOfCodeForBank($visitor, $expected)
 	{
-		Assert::same($expected, $this->service->calculateCode4Bank($visitor));
+		Assert::same(
+			$expected,
+			$this->service->calculateCode4Bank(
+				$visitor['name'],
+				$visitor['surname'],
+				$visitor['birthday']
+			)
+		);
 	}
 
 }

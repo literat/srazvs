@@ -384,7 +384,11 @@ class VisitorPresenter extends BasePresenter
 			$visitor['email'] => $visitor['name']. ' ' . $visitor['surname'],
 		];
 
-		$code4bank = $this->getVisitorService()->calculateCode4Bank($visitor);
+		$code4bank = $this->getVisitorService()->calculateCode4Bank(
+			$visitor['name'],
+			$visitor['surname'],
+			$visitor['birthday']->format('d. m. Y')
+		);
 		$result = $this->getEmailer()->sendRegistrationSummary($recipient, $guid, $code4bank);
 
 		return $result;

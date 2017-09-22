@@ -25,8 +25,9 @@
         "mockery/mockery": "^0.9.4",
         "codeception/codeception": "^2.2",
         "dg/ftp-deployment": "~2.1",
-        "phpunit/phpunit": "^5.7",
-        "doctrine/instantiator": "~1.0.0"
+        "phpunit/phpunit": "^6.0",
+        "doctrine/instantiator": "~1.0.0",
+        "php-coveralls/php-coveralls": "^1.0"
     },
     "autoload": {
         "files": [
@@ -35,7 +36,7 @@
     },
     "scripts": {
         "sa": "vendor/bin/phpstan analyze -l 4 -c phpstan.neon app",
-        "unit": "vendor/nette/tester/Tester/tester -c tests/php-unix.ini -j 10 tests/unit",
+        "unit": "vendor/nette/tester/Tester/tester -c tests/php-unix.ini -j 10 --coverage tests/unit/coverage.html --coverage-src app/ tests/unit",
         "acceptance": "vendor/codeception/codeception/codecept run acceptance",
         "clear": "find temp/cache ! -name 'placeholder.txt' -type f -exec rm -rf {} +",
         "deploy": "vendor/dg/ftp-deployment/deployment deployment.ini",

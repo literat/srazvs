@@ -4,8 +4,8 @@ namespace App\Presenters;
 
 use Skautis;
 use SkautisAuth;
-use App\Services\AuthService;
-use App\Services\UserService;
+use App\Services\SkautIS\AuthService;
+use App\Services\SkautIS\UserService;
 use Tracy\Debugger;
 
 /**

@@ -17,23 +17,38 @@ use App\Models\BaseModel;
 class MeetingModel extends BaseModel
 {
 
-	/** @var array days of weekend */
-	private $weekendDays = array();
+	/**
+	 * @var array
+	 */
+	private $weekendDays = [];
 
-	/** @var array of form names */
-	public $form_names = array();
+	/**
+	 * @var array
+	 */
+	public $form_names = [];
 
-	/** @var array of database programs table columns */
-	public $dbColumns = array();
+	/**
+	 * @var array
+	 */
+	public $dbColumns = [];
 
-	/** @var datetime at what registration opens */
+	/**
+	 * @var DateTime
+	 */
 	public $regOpening = NULL;
 
-	/** @var datetime at what registration ends*/
+	/**
+	 * @var DateTime
+	 */
 	public $regClosing = NULL;
 
 	/** @var string registration heading text */
 	public $regHeading = '';
+
+	public $eventId;
+	public $courseId;
+
+	private $configuration;
 
 	private $program;
 	private $httpEncoding;
@@ -56,7 +71,9 @@ class MeetingModel extends BaseModel
 			"gsm",
 			"cost",
 			"advance",
-			"numbering"
+			"numbering",
+			'skautis_event_id',
+			'skautis_course_id',
 		);
 		$this->dbColumns = array(
 			"place",
@@ -69,13 +86,18 @@ class MeetingModel extends BaseModel
 			"gsm",
 			"cost",
 			"advance",
-			"numbering"
+			"numbering",
+			'skautis_event_id',
+			'skautis_course_id',
 		);
 		$this->dbTable = "kk_meetings";
 		$this->setDatabase($database);
 		$this->program = $program;
 	}
 
+	/**
+	 * @param string $encoding
+	 */
 	public function setHttpEncoding($encoding)
 	{
 		$this->httpEncoding = $encoding;
@@ -92,6 +114,29 @@ class MeetingModel extends BaseModel
 			self::$instance = new self();
 		}
 		return self::$instance;
+	}
+
+	/**
+	 * @return Nette\Database\Table\IRow
+	 */
+	public function all()
+	{
+		return $this->getDatabase()
+				->table($this->getTable())
+				->where('deleted', '0')
+				->fetchAll();
+	}
+
+	/**
+	 * @param  int $id
+	 * @return Nette\Database\Table\IRow
+	 */
+	public function find($id)
+	{
+		return $this->getDatabase()
+				->table($this->getTable())
+				->where('deleted ? AND id ?', '0', $id)
+				->fetch();
 	}
 
 	/**
@@ -139,20 +184,14 @@ class MeetingModel extends BaseModel
 	/**
 	 * Return meeting data
 	 *
-	 * @return	string	html table
+	 * @return  Nette\Database\Table\IRow
 	 */
 	public function getData($meetingId = null)
 	{
 		if(isset($meetingId)) {
-			$data = $this->getDatabase()
-				->table($this->getTable())
-				->where('deleted ? AND id ?', '0', $meetingId)
-				->fetch();
+			$data = $this->find($meetingId);
 		} else {
-			$data = $this->getDatabase()
-				->table($this->getTable())
-				->where('deleted', '0')
-				->fetchAll();
+			$data = $this->all();
 		}
 
 		if(!$data) {
@@ -288,90 +327,6 @@ class MeetingModel extends BaseModel
 	}
 
 	/**
-	 * @deprecated
-	 *
-	 * Render data in a table
-	 *
-	 * @return	string	html of a table
-	 */
-	public function renderData()
-	{
-		$result = $this->database
-			->table($this->dbTable)
-			->select('id,
-					place,
-					DATE_FORMAT(start_date, "%d. %m. %Y") AS start_date,
-					DATE_FORMAT(end_date, "%d. %m. %Y") AS end_date,
-					DATE_FORMAT(open_reg, "%d. %m. %Y %H:%i:%s") AS open_reg,
-					DATE_FORMAT(close_reg, "%d. %m. %Y %H:%i:%s") AS close_reg,
-					contact,
-					email,
-					gsm')
-			->where('deleted', '0')
-			->limit(30)
-			->fetchAll();
-
-		$html_row = "";
-
-		if(!$result) {
-			$html_row .= "<tr class='radek1'>";
-			$html_row .= "<td><img class='edit' src='" . IMG_DIR . "icons/edit2.gif' /></td>\n";
-			$html_row .= "<td><img class='edit' src='" . IMG_DIR . "icons/delete2.gif' /></td>\n";
-			$html_row .= "<td colspan='11' class='emptyTable'>Nejsou k dispozici žádné položky.</td>";
-			$html_row .= "</tr>";
-		} else {
-			foreach($result as $data) {
-				$html_row .= "<tr class='radek1'>";
-				$html_row .= "\t\t\t<td><a href='process.php?id=".$data['id']."&cms=edit&page=meetings' title='Upravit'><img class='edit' src='".IMG_DIR."icons/edit.gif' /></a></td>\n";
-				$html_row .= "\t\t\t<td><a href=\"javascript:confirmation('?id=".$data['id']."&amp;cms=del', 'sraz: ".$data['place']." ".$data['start_date']." -> Opravdu SMAZAT tento sraz? Jste si jisti?')\" title='Odstranit'><img class='edit' src='".IMG_DIR."icons/delete.gif' /></a></td>\n";
-				$html_row .= "\t\t\t<td class='text'>".$data['id']."</td>\n";
-				$html_row .= "\t\t\t<td class='text'>".$data['place']."</td>\n";
-				$html_row .= "\t\t\t<td class='text'>".$data['start_date']."</td>\n";
-				$html_row .= "\t\t\t<td class='text'>".$data['end_date']."</td>\n";
-				$html_row .= "\t\t\t<td class='text'>".$data['open_reg']."</td>\n";
-				$html_row .= "\t\t\t<td class='text'>".$data['close_reg']."</td>\n";
-				$html_row .= "\t\t\t<td class='text'>".$data['contact']."</td>\n";
-				$html_row .= "\t\t\t<td class='text'>".$data['email']."</td>\n";
-				$html_row .= "\t\t\t<td class='text'>".$data['gsm']."</td>\n";
-				$html_row .= "</tr>";
-			}
-		}
-
-		// table head
-		$html_thead = "\t<tr>\n";
-		$html_thead .= "\t\t<th></th>\n";
-		$html_thead .= "\t\t<th></th>\n";
-		$html_thead .= "\t\t<th class='tab1'>id</th>\n";
-		$html_thead .= "\t\t<th class='tab1'>místo</th>\n";
-		$html_thead .= "\t\t<th class='tab1'>začátek</th>\n";
-		$html_thead .= "\t\t<th class='tab1'>konec</th>\n";
-		$html_thead .= "\t\t<th class='tab1'>otevření registrace</th>\n";
-		$html_thead .= "\t\t<th class='tab1'>uzavření registrace</th>\n";
-		$html_thead .= "\t\t<th class='tab1'>kontakt</th>\n";
-		$html_thead .= "\t\t<th class='tab1'>e-mail</th>\n";
-		$html_thead .= "\t\t<th class='tab1'>telefon</th>\n";
-		$html_thead .= "\t</tr>\n";
-
-		// table foot
-		$html_tfoot = $html_thead;
-
-		// table
-		$html_table = "<table id='MeetingsTable' class='list tablesorter'>\n";
-		$html_table .= "\t<thead>\n";
-		$html_table .= $html_thead;
-		$html_table .= "\t</thead>\n";
-		$html_table .= "\t<tfoot>\n";
-		$html_table .= $html_tfoot;
-		$html_table .= "\t</tfoot>\n";
-		$html_table .= "\t<tbody>\n";
-		$html_table .= $html_row;
-		$html_table .= "\t</tbody>\n";
-		$html_table .= "</table>\n";
-
-		return $html_table;
-	}
-
-	/**
 	 * @param  integer $meetingId
 	 * @return $this
 	 */
@@ -475,6 +430,30 @@ class MeetingModel extends BaseModel
 			->where('id', $id)
 			->limit(1)
 			->fetchField('province_name');
+	}
+
+	/**
+	 * @return Row
+	 */
+	public function findEventId()
+	{
+		return $this->getDatabase()
+			->table($this->getTable())
+			->where('id', $this->getMeetingId())
+			->limit(1)
+			->fetchField('skautis_event_id');
+	}
+
+	/**
+	 * @return Row
+	 */
+	public function findCourseId()
+	{
+		return $this->getDatabase()
+			->table($this->getTable())
+			->where('id', $this->getMeetingId())
+			->limit(1)
+			->fetchField('skautis_course_id');
 	}
 
 	/**

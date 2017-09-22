@@ -13,6 +13,7 @@ use App\Components\MaterialsControl;
 use App\Components\MealControl;
 use Nette\Utils\Strings;
 use Tracy\Debugger;
+use Mpdf\Mpdf;
 
 /**
  * Export Controller
@@ -33,7 +34,7 @@ class ExportPresenter extends BasePresenter
 	protected $blockModel;
 
 	/**
-	 * @var mPDF
+	 * @var Mpdf\Mpdf
 	 */
 	protected $pdf;
 
@@ -752,10 +753,10 @@ class ExportPresenter extends BasePresenter
 	}
 
 	/**
-	 * @param  mPDF $pdf
+	 * @param  Mpdf $pdf
 	 * @return self
 	 */
-	protected function setPdf(\mPDF $pdf)
+	protected function setPdf(Mpdf $pdf)
 	{
 		$this->pdf = $pdf;
 		return $this;

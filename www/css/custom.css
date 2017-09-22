@@ -38,3 +38,20 @@
 .btn-reset:hover {
 	text-decoration: underline;
 }
+
+.navbar .logo {
+	float: left;
+	background: url(../images/logo.png) center left no-repeat;
+	background-size: cover;
+	display: inline-block;
+	width: 42px;
+	height: 42px;
+	margin-right: 20px;
+	margin-top: 5px;
+}
+
+.navbar .heading {
+	margin-left: 65px;
+    margin-top: 14px;
+    margin-botom: 15px;
+}

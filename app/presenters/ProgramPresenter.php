@@ -60,8 +60,11 @@ class ProgramPresenter extends BasePresenter
 	public function startup()
 	{
 		parent::startup();
-		$this->getModel()->setMeetingId($this->getMeetingId());
-		$this->getMeetingModel()->setMeetingId($this->getMeetingId());
+
+		$meetingId = $this->getMeetingId();
+		$this->getModel()->setMeetingId($meetingId);
+		$this->getMeetingModel()->setMeetingId($meetingId);
+		$this->getBlockModel()->setMeetingId($meetingId);
 	}
 
 	/**

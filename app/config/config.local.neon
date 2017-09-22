@@ -73,8 +73,10 @@ services:
         arguments: [
             %excel%
         ]
-    - App\Services\AuthService
-    - App\Services\UserService
+
+    - App\Services\SkautIS\AuthService
+    - App\Services\SkautIS\UserService
+    - App\Services\SkautIS\EventService
     category: App\Models\CategoryModel
     meeting: App\Models\MeetingModel
     program: App\Models\ProgramModel

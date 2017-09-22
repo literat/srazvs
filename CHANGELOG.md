@@ -1,3 +1,26 @@
+<a name="2.8.0"></a>
+# [2.8.0](https://github.com/literat/srazvs/compare/v2.7.0...v2.8.0) (2017-09-22)
+
+
+### Bug Fixes
+
+* Calculation of code for bank (refs #111) ([9354bbf](https://github.com/literat/srazvs/commit/9354bbf))
+* Missing set of meeting id for block model (refs #111) ([d2d3ad4](https://github.com/literat/srazvs/commit/d2d3ad4))
+* Namespace of Mpdf library (refs #107) ([3c2dde8](https://github.com/literat/srazvs/commit/3c2dde8))
+
+### Features
+
+* **Debug regime:** Updating settings option (refs #107) ([c7332e9](https://github.com/literat/srazvs/commit/c7332e9))
+* **edu sautis:** Get event and course id (refs #70) ([38d0a64](https://github.com/literat/srazvs/commit/38d0a64))
+* **edu skautis:** Inserting participant in registration (refs #70) ([90c0e4b](https://github.com/literat/srazvs/commit/90c0e4b))
+* **edu skautis:** Service for skautis events (refs #70) ([ff117d4](https://github.com/literat/srazvs/commit/ff117d4))
+* **edu skautis:** Startup event service (refs #70) ([10d86e4](https://github.com/literat/srazvs/commit/10d86e4))
+* **skautis:** Insert participant into Skautis VzA (refs #70) ([3d97005](https://github.com/literat/srazvs/commit/3d97005))
+* Activate debug regime on demand (refs #107) ([c66c718](https://github.com/literat/srazvs/commit/c66c718))
+* Added simple logo (refs #108) ([e0db4ce](https://github.com/literat/srazvs/commit/e0db4ce))
+
+
+
 <a name="2.7.0"></a>
 # [2.7.0](https://github.com/literat/srazvs/compare/v2.6.0...v2.7.0) (2017-09-12)
 
