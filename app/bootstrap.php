@@ -116,7 +116,9 @@ $container->parameters['router'] = $appRequest;
 
 $publicPages = [
 	'Block.annotation',
+	'Block.annotationupdate',
 	'Program.annotation',
+	'Program.annotationupdate',
 	'Program.public',
 	'Export.program',
 	'Export.program',
