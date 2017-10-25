@@ -5,6 +5,7 @@ namespace App\Models;
 use Nette\Database\Context;
 use Nette\Utils\Strings;
 use \Exception;
+use DateTime;
 
 /**
  * Visitor
@@ -204,7 +205,7 @@ class VisitorModel extends BaseModel
 		// for returning specific error
 		$error = array('visitor' => true, 'meal' => true, 'program' => true);
 
-		$DB_data['birthday'] = new \DateTime($DB_data['birthday']);
+		$DB_data['birthday'] = $this->convertToDateTime($DB_data['birthday']);
 
 		$result = $this->database
 			->table($this->getTable())
@@ -423,6 +424,19 @@ class VisitorModel extends BaseModel
 			->select('id, program')
 			->where('visitor', $visitorId)
 			->fetchAll();
+	}
+
+	/**
+	 * @param  string|DateTime $datetime
+	 * @return DateTime
+	 */
+	protected function convertToDateTime($datetime): DateTime
+	{
+		if (is_string($datetime)) {
+			$datetime = new DateTime($datetime);
+		}
+
+		return $datetime;
 	}
 
 	/**
