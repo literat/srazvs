@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use DateTime;
 use App\Models\VisitorModel;
 use App\Models\MealModel;
 use App\Models\BlockModel;
@@ -77,6 +78,9 @@ class VisitorService
 	public function update($id, array $data)
 	{
 		$visitor = $this->filterFields($data, $this->getVisitorModel()->getColumns());
+
+		$visitor['birthday'] = $this->convertToDateTime($visitor['birthday']);
+
 		$visitor['code'] = $this->calculateCode4Bank(
 			$visitor['name'],
 			$visitor['surname'],
@@ -156,6 +160,19 @@ class VisitorService
 		}, $blocks);
 
 		return $programs;
+	}
+
+	/**
+	 * @param  string|DateTime $datetime
+	 * @return DateTime
+	 */
+	protected function convertToDateTime($datetime): DateTime
+	{
+		if (is_string($datetime)) {
+			$datetime = new DateTime($datetime);
+		}
+
+		return $datetime;
 	}
 
 	/**
