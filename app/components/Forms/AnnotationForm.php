@@ -80,6 +80,8 @@ class AnnotationForm extends BaseForm
 		$form->addEmail('email', 'E-mail:');
 		$form->addText('capacity', 'Kapacita:');
 
+		$form->addHidden('guid');
+
 		$form->addSubmit('save', 'Uložit')
 			->setAttribute('class', 'btn-primary');
 		$form->addSubmit('reset', 'storno')
@@ -99,7 +101,6 @@ class AnnotationForm extends BaseForm
 	public function processForm(Form $form)
 	{
 		$annotation = $form->getValues();
-		$annotation['meeting'] = $this->getMeetingId();
 
 		$this->onAnnotationSave($this, $annotation);
 	}

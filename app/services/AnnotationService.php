@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Nette\Utils\ArrayHash;
 use App\Models\BlockModel;
 use App\Models\ProgramModel;
 use Nette\Database\Table\ActiveRow;
@@ -34,21 +35,9 @@ class AnnotationService
 	 * @param  string $type
 	 * @return Row
 	 */
-	public function findByType(string $id, string $type)
+	public function findByType(string $guid, string $type)
 	{
-		switch ($type) {
-			case 'block':
-				$annotation = $this->getBlockModel()->find($id);
-				break;
-			case 'program':
-				$annotation = $this->getProgramModel()->find($id);
-				break;
-			default:
-				throw new Exception('Annotation model not found!');
-				break;
-		}
-
-		return $annotation;
+		return $this->getModelByType($type)->findBy('guid', $guid);
 	}
 
 	/**
@@ -57,7 +46,7 @@ class AnnotationService
 	 */
 	public function findParentProgram(ActiveRow $annotation): ActiveRow
 	{
-		if($annotation->block) {
+		if(array_key_exists('block', $annotation->toArray())) {
 			$parentProgram = $this->getBlockModel()->find($annotation->block);
 		} else {
 			$parentProgram = $annotation;
@@ -66,9 +55,35 @@ class AnnotationService
 		return $parentProgram;
 	}
 
-	public function update($updatedItems)
+	/**
+	 * @param  string    $type
+	 * @param  ArrayHash $annotation
+	 * @return Row
+	 */
+	public function updateByType(string $type, ArrayHash $annotation)
 	{
-		dd($updatedItems);
+		return $this->getModelByType($type)->updateBy('guid', $annotation->guid, (array) $annotation);
+	}
+
+	/**
+	 * @param  string $type
+	 * @return ProgramModel | BLockModel
+	 */
+	protected function getModelByType(string $type)
+	{
+		switch ($type) {
+			case 'block':
+				$model = $this->getBlockModel();
+				break;
+			case 'program':
+				$model = $this->getProgramModel();
+				break;
+			default:
+				throw new Exception('Annotation model not found!');
+				break;
+		}
+
+		return $model;
 	}
 
 	/**

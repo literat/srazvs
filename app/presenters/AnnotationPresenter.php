@@ -49,13 +49,13 @@ class AnnotationPresenter extends BasePresenter
 	 * @param  string $id
 	 * @param  string $type
 	 */
-	public function renderEdit(string $id, string $type)
+	public function renderEdit(string $guid, string $type)
 	{
 		$template = $this->getTemplate();
 
-		$annotation = $this->getAnnotationService()->findByType($id, $type);
+		$annotation = $this->getAnnotationService()->findByType($guid, $type);
 
-		$template->id = $id;
+		$template->guid = $guid;
 		$template->annotation = $annotation;
 		$template->meeting = $this->getMeetingModel()->find($this->getMeetingId());
 		$template->program = $this->getAnnotationService()->findParentProgram($annotation);
@@ -70,17 +70,18 @@ class AnnotationPresenter extends BasePresenter
 	{
 		$control = $this->annotationFormFactory->create();
 		$control->setMeetingId($this->getMeetingId());
-		$control->onAnnotationSave[] = function(AnnotationForm $control, $updatedAnnotation) {
+		$type = $this->getParameter('type');
+		$control->onAnnotationSave[] = function(AnnotationForm $control, $annotation) use ($type) {
 			try {
-				$result = $this->getAnnotationService()->update($updatedAnnotation);
+				$result = $this->getAnnotationService()->updateByType($type, $annotation);
 
-				Debugger::log('Modification of annotation id ' . $id . ' with data ' . json_encode($updatedAnnotation) . ' successfull, result: ' . json_encode($result), Debugger::INFO);
+				Debugger::log('Modification of annotation id ' . $annotation->guid . ' with data ' . json_encode($annotation) . ' successfull, result: ' . json_encode($result), Debugger::INFO);
 
 				$this->flashMessage('Položka byla úspěšně upravena', 'ok');
 			} catch(Exception $e) {
-				Debugger::log('Modification of annotation id ' . $id . ' failed, result: ' . $e->getMessage(), Debugger::ERROR);
+				Debugger::log('Modification of annotation id ' . $annotation->guid . ' failed, result: ' . $e->getMessage(), Debugger::ERROR);
 
-				$this->flashMessage('Modification of annotation id ' . $id . ' failed, result: ' . $e->getMessage(), 'error');
+				$this->flashMessage('Modification of annotation id ' . $annotation->guid . ' failed, result: ' . $e->getMessage(), 'error');
 			}
 		};
 
