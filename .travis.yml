@@ -1,11 +1,14 @@
 language: php
 
+env:
 matrix:
     include:
         - php: 7.0
           env: coverage=on
         - php: 7.1
           env: coverage=on
+        - php: 7.2
+          env: coverage=off
 
     allow_failures:
         - php: 7.2
