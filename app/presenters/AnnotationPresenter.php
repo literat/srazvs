@@ -6,7 +6,6 @@ use App\Components\Forms\AnnotationForm;
 use App\Components\Forms\Factories\IAnnotationFormFactory;
 use App\Models\MeetingModel;
 use App\Services\AnnotationService;
-use Tracy\Debugger;
 use \Exception;
 
 class AnnotationPresenter extends BasePresenter
@@ -75,13 +74,17 @@ class AnnotationPresenter extends BasePresenter
 			try {
 				$result = $this->getAnnotationService()->updateByType($type, $annotation);
 
-				Debugger::log('Modification of annotation id ' . $annotation->guid . ' with data ' . json_encode($annotation) . ' successfull, result: ' . json_encode($result), Debugger::INFO);
+				$this->logInfo('Modification of annotation id %s with data %s successfull, result: %s',	[
+					$annotation->guid,
+					json_encode($annotation),
+					json_encode($result),
+				]);
 
-				$this->flashMessage('Položka byla úspěšně upravena', 'ok');
+				$this->flashSuccess('Položka byla úspěšně upravena');
 			} catch(Exception $e) {
-				Debugger::log('Modification of annotation id ' . $annotation->guid . ' failed, result: ' . $e->getMessage(), Debugger::ERROR);
+				$this->logError("Modification of annotation id {$annotation->guid} failed, result: {$e->getMessage()}");
 
-				$this->flashMessage('Modification of annotation id ' . $annotation->guid . ' failed, result: ' . $e->getMessage(), 'error');
+				$this->flashError("Modification of annotation id {$annotation->guid} failed, result: {$e->getMessage()}");
 			}
 		};
 
