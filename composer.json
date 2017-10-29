@@ -34,6 +34,11 @@
             "app/helpers.php"
         ]
     },
+    "autoload-dev": {
+        "classmap": [
+            "tests/"
+        ]
+    },
     "scripts": {
         "sa": "vendor/bin/phpstan analyze -l 4 -c phpstan.neon app",
         "test:unit": "vendor/nette/tester/Tester/tester -c tests/php-unix.ini -j 10 --coverage tests/unit/coverage.html --coverage-src app/ tests/unit",
