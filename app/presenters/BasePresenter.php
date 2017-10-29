@@ -509,6 +509,17 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 	}
 
 	/**
+	 * Logs warning message
+	 *
+	 * @param  string $message   Formatted message
+	 * @param  array  $arguments Message arguments
+	 */
+	protected function logWarning(string $message = '', array $arguments = [])
+	{
+		Debugger::log(vsprintf($message, $arguments), Debugger::WARNING);
+	}
+
+	/**
 	 * Logs error message
 	 *
 	 * @param  string $message   Formatted message
