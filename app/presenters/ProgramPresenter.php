@@ -147,28 +147,6 @@ class ProgramPresenter extends BasePresenter
 	}
 
 	/**
-	 * @param  integer $id
-	 * @return void
-	 */
-	public function actionAnnotationupdate($id)
-	{
-		try {
-			$data = $this->getHttpRequest()->getPost();
-			$result = $this->updateByGuid($id, $data);
-
-			Debugger::log('Modification of program annotation id ' . $id . ' with data ' . json_encode($data) . ' successfull, result: ' . json_encode($result), Debugger::INFO);
-
-			$this->flashMessage('Položka byla úspěšně upravena.', 'ok');
-		} catch(Exception $e) {
-			Debugger::log('Modification of program annotation guid ' . $id . ' failed, result: ' . $e->getMessage(), Debugger::ERROR);
-
-			$this->flashMessage('Modification of program annotation guid ' . $id . ' failed, result: ' . $e->getMessage(), 'error');
-		}
-
-		$this->redirect('Program:annotation', $id);
-	}
-
-	/**
 	 * @return void
 	 */
 	public function actionMail($id)
@@ -267,33 +245,6 @@ class ProgramPresenter extends BasePresenter
 		$template->selectedCategory	= $program->category;
 		$template->program_visitors = $this->getModel()->getProgramVisitors($id);
 		$template->program = $program;
-		$template->id = $id;
-	}
-
-	/**
-	 * @param  integer $id
-	 * @return void
-	 */
-	public function renderAnnotation($id)
-	{
-		$template = $this->getTemplate();
-
-		$template->page_title = 'Registrace programů pro lektory';
-		$template->page = $this->getHttpRequest()->getQuery('page');
-		$template->error_name = "";
-		$template->error_description = "";
-		$template->error_tutor = "";
-		$template->error_email = "";
-		$template->error_material = "";
-
-		$program = $this->getModel()->findBy('guid', $id);
-		$block = $this->getBlockModel()->find($program->block);
-		$meeting = $this->getMeetingModel()->find($this->getMeetingId());
-
-		$this->programId = $program->id;
-		$template->program = $program;
-		$template->block = $block;
-		$template->meeting = $meeting;
 		$template->id = $id;
 	}
 

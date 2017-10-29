@@ -102,7 +102,7 @@ class Emailer
 		$lang['block']['cs'] = "bloku";
 		$lang['program']['cs'] = "programu";
 
-		$tutorFormUrl = PRJ_DIR . $type . "/annotation/" . $guid;
+		$tutorFormUrl = PRJ_DIR . "annotation/edit/{$type}/{$guid}";
 
 		// e-mail templates
 		$template = $this->getTemplate('tutor');

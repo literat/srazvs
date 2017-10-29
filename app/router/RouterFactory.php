@@ -26,6 +26,17 @@ class RouterFactory
 		$router[] = new Route('registrace/[<action>/[<guid>/]]', 'Registration:default', Route::ONE_WAY);
 		$router[] = new Route('registration/[<action>/[<guid>/]]', 'Registration:default');
 		$router[] = new Route('export/[<action>/[<type>/[<id>/]]]', 'Export:default');
+		$router[] = new Route('block/annotation/<guid>', [
+			'presenter' => 'Annotation',
+			'action'    => 'edit',
+			'type'      => 'block',
+		], Route::ONE_WAY);
+		$router[] = new Route('program/annotation/<guid>', [
+			'presenter' => 'Annotation',
+			'action'    => 'edit',
+			'type'      => 'program',
+		], Route::ONE_WAY);
+		$router[] = new Route('annotation/<action>/<type>/<guid>/', 'Annotation:default');
 		$router[] = new Route('<presenter>/[<action>/[<id>/]]', 'Dashboard:listing');
 
 		return $router;

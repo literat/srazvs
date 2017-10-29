@@ -171,11 +171,17 @@ class RegistrationPresenter extends VisitorPresenter
 			$guid = $this->getVisitorService()->create($postData);
 			$result = $this->sendRegistrationSummary($postData, $guid);
 
-			Debugger::log('Creation of registration('. $guid .') successfull, result: ' . json_encode($result), Debugger::INFO);
-			$this->flashMessage('Registrace(' . $guid . ') byla úspěšně založena.', self::FLASH_TYPE_OK);
+			$this->logInfo('Creation of registration(%s) successfull, result: %s', [
+				$guid,
+				json_encode($result),
+			]);
+			$this->flashSuccess("Registrace({$guid}) byla úspěšně založena.");
 		} catch(Exception $e) {
-			Debugger::log('Creation of registration('. $guid .') failed, result: ' .  $e->getMessage(), Debugger::ERROR);
-			$this->flashMessage('Creation of registration failed, result: ' . $e->getMessage(), self::FLASH_TYPE_ERROR);
+			$this->logError('Creation of registration(%s) failed, result: %s', [
+				$guid,
+				$e->getMessage(),
+			]);
+			$this->flashError('Creation of registration failed, result: ' . $e->getMessage());
 		}
 
 		$this->redirect('Registration:check', $guid);
@@ -193,24 +199,28 @@ class RegistrationPresenter extends VisitorPresenter
 			$result = $this->getVisitorService()->update($guid, $postData);
 			$result = $this->sendRegistrationSummary($postData, $guid);
 
-			Debugger::log('Modification of registration('. $guid .') successfull, result: ' . json_encode($result), Debugger::INFO);
-			$this->flashMessage('Registrace(' . $guid . ') byla úspěšně upravena.', self::FLASH_TYPE_OK);
+			$this->logInfo('Modification of registration(%s) successfull, result: %s', [
+				$guid,
+				json_encode($result),
+			]);
+			$this->flashSuccess("Registrace({$guid}) byla úspěšně upravena.");
 		} catch(Exception $e) {
-			Debugger::log('Modification of registration('. $guid .') failed, result: ' .  $e->getMessage(), Debugger::ERROR);
-			$this->flashMessage('Modification of registration(' . $guid . ') failed, result: ' . $e->getMessage(), self::FLASH_TYPE_ERROR);
+			$this->logError('Modification of registration(%s) failed, result: %s', [
+				$guid,
+				$e->getMessage(),
+			]);
+			$this->flashError("Modification of registration({$guid}) failed, result: " . $e->getMessage());
 		}
 
 		$this->redirect('Registration:check', $guid);
 	}
 
 	/**
-	 * @return void
+	 * Renders default template
 	 */
 	public function renderDefault()
 	{
 		$template = $this->getTemplate();
-
-		////otevirani a uzavirani prihlasovani
 		$disabled = $this->getMeetingModel()->isRegOpen($this->getDebugMode()) ? "" : "disabled";
 		$template->disabled = $disabled;
 		$template->loggedIn = $this->getUserService()->isLoggedIn();
@@ -218,6 +228,17 @@ class RegistrationPresenter extends VisitorPresenter
 		if($this->getUserService()->isLoggedIn()) {
 			$this['registrationForm']->setDefaults(($this->useLoggedVisitor())->toArray());
 		}
+	}
+
+	/**
+	 * Renders new template
+	 */
+	public function renderNew()
+	{
+		$template = $this->getTemplate();
+		$disabled = $this->getMeetingModel()->isRegOpen($this->getDebugMode()) ? "" : "disabled";
+		$template->disabled = $disabled;
+		$template->loggedIn = false;
 	}
 
 	/**
@@ -268,7 +289,13 @@ class RegistrationPresenter extends VisitorPresenter
 		$control->setMeetingId($this->getMeetingId());
 		$control->onRegistrationSave[] = function(RegistrationForm $control, $newVisitor) {
 			try {
-				$guid = $this->getVisitorService()->create((array) $newVisitor);
+				$guid = $this->getParameter('guid');
+
+				if($guid) {
+					$guid = $this->getVisitorService()->update($guid, (array) $newVisitor);
+				} else {
+					$guid = $this->getVisitorService()->create((array) $newVisitor);
+				}
 /*
 				if($this->getUserService()->isLoggedIn() && $this->getMeetingModel()->findCourseId()) {
 					$this->getEventService()->insertEnroll(
@@ -281,14 +308,23 @@ class RegistrationPresenter extends VisitorPresenter
 */
 				$result = $this->sendRegistrationSummary((array) $newVisitor, $guid);
 
-				Debugger::log('Storage of visitor('. $guid .') successfull, result: ' . json_encode($result), Debugger::INFO);
-				$this->flashMessage('Účastník(' . $guid . ') byl úspěšně uložen.', self::FLASH_TYPE_OK);
+				$this->logInfo('Storage of visitor(%s) successfull, result: %s', [
+					$guid,
+					json_encode($result),
+				]);
+				$this->flashSuccess("Účastník({$guid}) byl úspěšně uložen.");
 			} catch(WsdlException $e) {
-				Debugger::log('Storage of visitor('. $guid .') failed, result: ' . $e->getMessage(), Debugger::WARNING);
-				$this->flashMessage('Uložení účastníka (' . $guid . ') selhalo. Účastník je již zaregistrován.', self::FLASH_TYPE_ERROR);
+				$this->logWarning('Storage of visitor(%s) failed, result: %s', [
+					$guid,
+					$e->getMessage(),
+				]);
+				$this->flashError("Uložení účastníka ({$guid}) selhalo. Účastník je již zaregistrován.");
 			} catch(Exception $e) {
-				Debugger::log('Storage of visitor('. $guid .') failed, result: ' .  $e->getMessage(), Debugger::ERROR);
-				$this->flashMessage('Uložení účastníka selhalo, chyba: ' . $e->getMessage(), self::FLASH_TYPE_ERROR);
+				$this->logError('Storage of visitor(%s) failed, result: %s', [
+					$guid,
+					$e->getMessage(),
+				]);
+				$this->flashError('Uložení účastníka selhalo, chyba: ' . $e->getMessage());
 			}
 
 			$this->redirect('Registration:check', $guid);
