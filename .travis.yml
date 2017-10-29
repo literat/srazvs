@@ -11,16 +11,10 @@ matrix:
           env: coverage=on
         - php: 7.1
           env: coverage=on
-        - php: 7.2
-          env: coverage=on
 
     allow_failures:
-        - php: 7.0
-          env: coverage=on
-        - php: 7.1
-          env: coverage=on
         - php: 7.2
-          env: coverage=on
+          env: coverage=off
 
 before_script:
   # Install Nette Tester & Code Checker
