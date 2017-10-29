@@ -1,3 +1,23 @@
+<a name="2.9.0"></a>
+# [2.9.0](https://github.com/literat/srazvs/compare/v2.8.0...v2.9.0) (2017-10-29)
+
+
+### Bug Fixes
+
+* Added public page and action (refs #116) ([306690d](https://github.com/literat/srazvs/commit/306690d))
+* Convert birthday always into DateTime (refs #122) ([e478831](https://github.com/literat/srazvs/commit/e478831))
+* Organization name formatting in footer (refs #120) ([b7ae8ec](https://github.com/literat/srazvs/commit/b7ae8ec))
+* Organization name formatting in registration check (refs #121) ([f78527d](https://github.com/literat/srazvs/commit/f78527d))
+
+### Features
+
+* **Annotation Form:** Create new form and refactor setupRendering (refs #114) ([01afdc1](https://github.com/literat/srazvs/commit/01afdc1))
+* **Annotation Form:** Presenter and templates (refs #114) ([f427c98](https://github.com/literat/srazvs/commit/f427c98))
+* Create empty registration on demand (refs #126) ([d532d4c](https://github.com/literat/srazvs/commit/d532d4c))
+* Disable ships count and type input in registration (refs #118) ([a6614df](https://github.com/literat/srazvs/commit/a6614df))
+
+
+
 <a name="2.8.0"></a>
 # [2.8.0](https://github.com/literat/srazvs/compare/v2.7.0...v2.8.0) (2017-09-22)
 
