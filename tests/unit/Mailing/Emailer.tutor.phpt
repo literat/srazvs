@@ -61,7 +61,7 @@ Content-Transfer-Encoding: 8bit
 
 		Ahoj,
 		jako přednášející/ho bychom Tě chtěli požádat o vyplnění anotace k Tvému bloku nejpozději do 18. 10.
-		Údaje můžeš doplnit a dále měnit a upravovat na adrese: http://vodni.skauting.cz/srazvs/block/annotation/12345
+		Údaje můžeš doplnit a dále měnit a upravovat na adrese: http://vodni.skauting.cz/srazvs/annotation/edit/block/12345
 
 
 		Popis, Tvé jméno a Tvůj e-mail se bude zobrazovat účastníkům srazu na webu, aby věděli, co je čeká. Můžeš změnit i název programu a stanov také maximální počet lidí, kteří se můžou programu zúčastnit.
@@ -84,7 +84,7 @@ Content-Transfer-Encoding: 8bit
 	<body>
 		Ahoj,<br /><br />
 		jako přednášející/ho bychom Tě chtěli požádat o vyplnění anotace k Tvému bloku nejpozději do 18. 10.<br />
-		Údaje můžeš doplnit a dále měnit a upravovat na adrese: <a href='http://vodni.skauting.cz/srazvs/block/annotation/12345'>http://vodni.skauting.cz/srazvs/block/annotation/12345</a>
+		Údaje můžeš doplnit a dále měnit a upravovat na adrese: <a href='http://vodni.skauting.cz/srazvs/annotation/edit/block/12345'>http://vodni.skauting.cz/srazvs/annotation/edit/block/12345</a>
 		<br />
 		<br />
 		Popis, Tvé jméno a Tvůj e-mail se bude zobrazovat účastníkům srazu na webu, aby věděli, co je čeká. Můžeš změnit i název programu a stanov také maximální počet lidí, kteří se můžou programu zúčastnit.
@@ -138,7 +138,7 @@ Content-Transfer-Encoding: 8bit
 
 		Ahoj,
 		jako přednášející/ho bychom Tě chtěli požádat o vyplnění anotace k Tvému bloku nejpozději do 18. 10.
-		Údaje můžeš doplnit a dále měnit a upravovat na adrese: http://vodni.skauting.cz/srazvs/block/annotation/12345
+		Údaje můžeš doplnit a dále měnit a upravovat na adrese: http://vodni.skauting.cz/srazvs/annotation/edit/block/12345
 
 
 		Popis, Tvé jméno a Tvůj e-mail se bude zobrazovat účastníkům srazu na webu, aby věděli, co je čeká. Můžeš změnit i název programu a stanov také maximální počet lidí, kteří se můžou programu zúčastnit.
@@ -161,7 +161,7 @@ Content-Transfer-Encoding: 8bit
 	<body>
 		Ahoj,<br /><br />
 		jako přednášející/ho bychom Tě chtěli požádat o vyplnění anotace k Tvému bloku nejpozději do 18. 10.<br />
-		Údaje můžeš doplnit a dále měnit a upravovat na adrese: <a href='http://vodni.skauting.cz/srazvs/block/annotation/12345'>http://vodni.skauting.cz/srazvs/block/annotation/12345</a>
+		Údaje můžeš doplnit a dále měnit a upravovat na adrese: <a href='http://vodni.skauting.cz/srazvs/annotation/edit/block/12345'>http://vodni.skauting.cz/srazvs/annotation/edit/block/12345</a>
 		<br />
 		<br />
 		Popis, Tvé jméno a Tvůj e-mail se bude zobrazovat účastníkům srazu na webu, aby věděli, co je čeká. Můžeš změnit i název programu a stanov také maximální počet lidí, kteří se můžou programu zúčastnit.
@@ -212,7 +212,7 @@ Content-Transfer-Encoding: 8bit
 
 		Ahoj,
 		jako přednášející/ho bychom Tě chtěli požádat o vyplnění anotace k Tvému bloku nejpozději do 18. 10.
-		Údaje můžeš doplnit a dále měnit a upravovat na adrese: http://vodni.skauting.cz/srazvs/block/annotation/12345
+		Údaje můžeš doplnit a dále měnit a upravovat na adrese: http://vodni.skauting.cz/srazvs/annotation/edit/block/12345
 
 
 		Popis, Tvé jméno a Tvůj e-mail se bude zobrazovat účastníkům srazu na webu, aby věděli, co je čeká. Můžeš změnit i název programu a stanov také maximální počet lidí, kteří se můžou programu zúčastnit.
@@ -235,7 +235,7 @@ Content-Transfer-Encoding: 8bit
 	<body>
 		Ahoj,<br /><br />
 		jako přednášející/ho bychom Tě chtěli požádat o vyplnění anotace k Tvému bloku nejpozději do 18. 10.<br />
-		Údaje můžeš doplnit a dále měnit a upravovat na adrese: <a href='http://vodni.skauting.cz/srazvs/block/annotation/12345'>http://vodni.skauting.cz/srazvs/block/annotation/12345</a>
+		Údaje můžeš doplnit a dále měnit a upravovat na adrese: <a href='http://vodni.skauting.cz/srazvs/annotation/edit/block/12345'>http://vodni.skauting.cz/srazvs/annotation/edit/block/12345</a>
 		<br />
 		<br />
 		Popis, Tvé jméno a Tvůj e-mail se bude zobrazovat účastníkům srazu na webu, aby věděli, co je čeká. Můžeš změnit i název programu a stanov také maximální počet lidí, kteří se můžou programu zúčastnit.

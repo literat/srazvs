@@ -1,0 +1,53 @@
+{layout '../@layout_new.latte'}
+
+{block content}
+
+<main role="main" class="site-content">
+
+	<section class="section-header section-header-condensed">
+		<div class="container text-center">
+
+			<h1 class="section-header-title">
+				Anotace programu na Sraz VS
+			</h1>
+			<h2>
+				{$meeting->start_date|date:'j. n. Y'} - {$meeting->end_date|date:'j. n. Y'}
+			</h2>
+			<h3>
+				{$program->day}, {$program->from|date:'%H:%M'} - {$program->to|date:'%H:%M'}
+			</h3>
+
+		</div><!-- .container -->
+	</section>
+
+	<section class="section-content">
+		<div class="container">
+
+			{foreach $flashes as $flash}
+			<div role="alert" class="flash alert alert-{$flash->type} alert-dismissible alert-full fade in">
+				<button type="button" class="close" data-dismiss="alert">&times;</button>
+				<div class="container">
+					<span class="glyphicon glyphicon-ok-sign offset-right" aria-hidden="true"></span>
+					{$flash->message}
+				</div>
+			</div>
+			{/foreach}
+
+			{*if $isMeetingOpen*}
+
+			<div class="row">
+				<div class="col-md-10 col-md-offset-1">
+
+					{control annotationForm}
+
+				</div>
+			</div><!-- .row -->
+
+			{*else}
+				<div>Sraz je uzavřen!</div>
+			{/if*}
+
+		</div>
+	</section>
+
+</main>

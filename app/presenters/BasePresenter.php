@@ -8,6 +8,7 @@ use Nette\Utils\Strings;
 use Nette\Http\Request;
 use App\Models\SunlightModel;
 use Nette\Caching\Cache;
+use Tracy\Debugger;
 
 /**
  * Base presenter for all application presenters.
@@ -474,6 +475,48 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 				]
 			);
 		}
+	}
+
+	/**
+	 * Flashes success message
+	 *
+	 * @param  string $message Message
+	 */
+	protected function flashSuccess(string $message = '')
+	{
+		$this->flashMessage($message, self::FLASH_TYPE_OK);
+	}
+
+	/**
+	 * Flashes error message
+	 *
+	 * @param  string $message Message
+	 */
+	protected function flashError(string $message = '')
+	{
+		$this->flashMessage($message, self::FLASH_TYPE_ERROR);
+	}
+
+	/**
+	 * Logs info message
+	 *
+	 * @param  string $message   Formatted message
+	 * @param  array  $arguments Message arguments
+	 */
+	protected function logInfo(string $message = '', array $arguments = [])
+	{
+		Debugger::log(vsprintf($message, $arguments), Debugger::INFO);
+	}
+
+	/**
+	 * Logs error message
+	 *
+	 * @param  string $message   Formatted message
+	 * @param  array  $arguments Message arguments
+	 */
+	protected function logError(string $message = '', array $arguments = [])
+	{
+		Debugger::log(vsprintf($message, $arguments), Debugger::ERROR);
 	}
 
 }

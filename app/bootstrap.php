@@ -115,10 +115,7 @@ $target = $parameters['appDir'] . '/presenters/' . $controllerName . 'Presenter.
 $container->parameters['router'] = $appRequest;
 
 $publicPages = [
-	'Block.annotation',
-	'Block.annotationupdate',
-	'Program.annotation',
-	'Program.annotationupdate',
+	'Annotation.edit',
 	'Program.public',
 	'Export.program',
 	'Export.program',
