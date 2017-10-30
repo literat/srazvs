@@ -75,8 +75,10 @@ class ProgramPresenter extends BasePresenter
 		$model = $this->getModel();
 		$data = $this->getHttpRequest()->getPost();
 
-		$this->setBacklink($data['backlink']);
-		unset($data['backlink']);
+		if (isset($data['backlink'])) {
+			$this->setBacklink($data['backlink']);
+			unset($data['backlink']);		
+		}
 
 		if(!array_key_exists('display_in_reg', $data)) {
 			$data['display_in_reg'] = 1;
