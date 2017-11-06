@@ -2,9 +2,11 @@
 
 namespace App\Presenters;
 
-use App\Models\ProgramModel;
+use App\Components\PublicProgramOverviewControl;
+use App\Components\IProgramOverviewControl;
 use App\Models\BlockModel;
 use App\Models\MeetingModel;
+use App\Models\ProgramModel;
 use App\Services\Emailer;
 use Tracy\Debugger;
 
@@ -40,18 +42,25 @@ class ProgramPresenter extends BasePresenter
 	private $meetingModel;
 
 	/**
+	 * @var ProgramOverviewControl
+	 */
+	private $programOverview;
+
+	/**
 	 * Prepare model classes and get meeting id
 	 */
 	public function __construct(
 		ProgramModel $model,
 		Emailer $emailer,
 		BlockModel $blockModel,
-		MeetingModel $meetingModel
+		MeetingModel $meetingModel,
+		PublicProgramOverviewControl $control
 	) {
 		$this->setModel($model);
 		$this->setEmailer($emailer);
 		$this->setBlockModel($blockModel);
 		$this->setMeetingModel($meetingModel);
+		$this->setProgramOverviewControl($control);
 	}
 
 	/**
@@ -280,6 +289,25 @@ class ProgramPresenter extends BasePresenter
 		$template->program_visitors = $this->getModel()->getProgramVisitors($id);
 		$template->program = $program;
 		$template->id = $id;
+	}
+
+	/**
+	 * @return ProgramOverviewControl
+	 */
+	protected function createComponentProgramOverview()
+	{
+		return $this->programOverview->setMeetingId($this->getMeetingId());
+	}
+
+	/**
+	 * @param  ProgramOverviewControl $control
+	 * @return $this
+	 */
+	protected function setProgramOverviewControl(IProgramOverviewControl $control)
+	{
+		$this->programOverview = $control;
+
+		return $this;
 	}
 
 	/**

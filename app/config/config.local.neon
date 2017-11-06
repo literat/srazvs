@@ -90,8 +90,9 @@ services:
     meal: App\Models\MealModel
     province: App\Models\ProvinceModel
     - App\Components\ProgramOverviewControl
-    - App\Components\BlocksByDayControl
+    - App\Components\PublicProgramOverviewControl
     - App\Components\ProgramsControl
+    - App\Components\PublicProgramsControl
     - App\Components\RegistrationGraphControl
     - App\Components\MaterialsControl
     - App\Components\MealControl

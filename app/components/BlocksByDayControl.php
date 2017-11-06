@@ -22,7 +22,7 @@ class BlocksByDayControl extends BaseControl
 	/**
 	 * @param BlockModel $model
 	 */
-	public function __construct(BlockModel $model, ProgramsControl $control)
+	public function __construct(BlockModel $model, IProgramsControl $control)
 	{
 		$this->setBlockModel($model);
 		$this->setProgramsControl($control);
@@ -52,10 +52,10 @@ class BlocksByDayControl extends BaseControl
 	}
 
 	/**
-	 * @param  ProgramsControl $control
+	 * @param  IProgramsControl $control
 	 * @return $this
 	 */
-	protected function setProgramsControl(ProgramsControl $control)
+	protected function setProgramsControl(IProgramsControl $control)
 	{
 		$this->programs = $control;
 
