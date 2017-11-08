@@ -93,6 +93,8 @@ services:
     - App\Components\PublicProgramOverviewControl
     - App\Components\ProgramsControl
     - App\Components\PublicProgramsControl
+    - App\Components\PublicProgramDetailControl
+    - App\Components\PublicBlockDetailControl
     - App\Components\RegistrationGraphControl
     - App\Components\MaterialsControl
     - App\Components\MealControl

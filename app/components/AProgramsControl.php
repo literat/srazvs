@@ -28,11 +28,9 @@ abstract class AProgramsControl extends BaseControl implements IProgramsControl
 	 */
 	public function render($blockId)
 	{
-		$programs = $this->getProgramModel()->findByBlockId($blockId);
-
 		$template = $this->getTemplate();
 		$template->setFile($this->buildTemplatePath());
-		$template->programs = $programs;
+		$template->programs = $this->getProgramModel()->findByBlockId($blockId);
 		$template->render();
 	}
 

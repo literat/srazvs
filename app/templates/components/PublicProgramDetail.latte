@@ -1,0 +1,36 @@
+<html>
+	<head>
+		<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />
+	</head>
+	<body>
+		<style>
+			td.text {
+				text-align:left;
+			}
+		</style>
+		<table class='form'>
+			<tr>
+				<td class='label'>Program:</td>
+				<td class='text'>{$program->name}</td>
+			</tr>
+			<tr>
+				<td class='label'>Popis:</td>
+				<td class='text'>{$program->description}</td>
+			</tr>
+			<tr>
+				<td class='label'>Lektor:</td>
+				<td class='text'>{$program->tutor}</td>
+			</tr>
+			<tr>
+				<td class='label'>E-mail:</td>
+				<td class='text'>
+					<a href='mailto:{$program->email}' title='e-mail'>{$program->email}</a>
+				</td>
+			</tr>
+			<tr>
+				<td class='label'>Obsazenost programu:</td>
+				<td class='text'>{$visitorsOnProgram}/{$program->capacity}</td>
+		    </tr>
+		</table>
+	</body>
+</html>

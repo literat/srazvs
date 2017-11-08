@@ -11,11 +11,13 @@ class PublicProgramOverviewControl extends AProgramOverviewControl
 	const TEMPLATE_NAME = 'ProgramOverview';
 
 	/**
-	 * @param BlocksByDayControl $control
+	 * @param BlockModel               $model
+	 * @param PublicProgramsControl    $programsControl
+	 * @param PublicBlockDetailControl $blockDetailControl
 	 */
-	public function __construct(BlockModel $model, PublicProgramsControl $control)
+	public function __construct(BlockModel $model, PublicProgramsControl $programsControl, PublicBlockDetailControl $blockDetailControl)
 	{
-		$this->setBlocksBayControl(new BlocksByDayControl($model, $control));
+		$this->setBlocksBayControl(new PublicBlocksByDayControl($model, $programsControl, $blockDetailControl));
 	}
 
 }

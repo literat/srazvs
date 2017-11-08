@@ -1,9 +1,9 @@
 {if $programs}
-<table class='programs'>
+<table>
 	<tr>
 		{foreach $programs as $program}
 		<td class='category cat-{$program->style}' style='text-align:center;'>
-			<a class='program' href="{plink Program:edit $program->id, backlink => 'Dashboard:default'}" title='{$program->name}'>{$program->name}</a>
+			<a class="programLink" href="#" rel="programDetail" title="{control publicProgramDetail $program->id}">{$program->name}</a>
 		</td>
 		{/foreach}
 	</tr>

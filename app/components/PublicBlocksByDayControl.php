@@ -4,10 +4,10 @@ namespace App\Components;
 
 use App\Models\BlockModel;
 
-class BlocksByDayControl extends BaseControl implements IBlocksByDayControl
+class PublicBlocksByDayControl extends BaseControl implements IBlocksByDayControl
 {
 
-	const TEMPLATE_NAME = 'BlocksByDay';
+	const TEMPLATE_NAME = 'PublicBlocksByDay';
 
 	/**
 	 * @var ProgramsControl
@@ -20,12 +20,20 @@ class BlocksByDayControl extends BaseControl implements IBlocksByDayControl
 	private $blockModel;
 
 	/**
-	 * @param BlockModel $model
+	 * @var PublicBlockDetailControl
 	 */
-	public function __construct(BlockModel $model, IProgramsControl $control)
+	private $publicBlockDetailControl;
+
+	/**
+	 * @param BlockModel               $model
+	 * @param PublicProgramsControl    $programsControl
+	 * @param PublicBlockDetailControl $blockDetailControl
+	 */
+	public function __construct(BlockModel $model, PublicProgramsControl $programsControl, PublicBlockDetailControl $blockDetailControl)
 	{
 		$this->setBlockModel($model);
-		$this->setProgramsControl($control);
+		$this->setProgramsControl($programsControl);
+		$this->setPublicBlockDetailControl($blockDetail);
 	}
 
 	/**
@@ -46,7 +54,7 @@ class BlocksByDayControl extends BaseControl implements IBlocksByDayControl
 	/**
 	 * @return ProgramsControl
 	 */
-	protected function createComponentPrograms()
+	protected function createComponentPublicPrograms()
 	{
 		return $this->programs;
 	}
@@ -58,6 +66,25 @@ class BlocksByDayControl extends BaseControl implements IBlocksByDayControl
 	protected function setProgramsControl(IProgramsControl $control)
 	{
 		$this->programs = $control;
+
+		return $this;
+	}
+
+	/**
+	 * @return PublicBlockDetailControl
+	 */
+	protected function createComponentPublicBlockDetail()
+	{
+		return $this->publicBlockDetailControl;
+	}
+
+	/**
+	 * @param  IProgramsControl $control
+	 * @return $this
+	 */
+	protected function setPublicBlockDetailControl(PublicBlockDetailControl $control)
+	{
+		$this->publicBlockDetailControl = $control;
 
 		return $this;
 	}

@@ -526,7 +526,7 @@ class ProgramModel extends BaseModel
 	 */
 	public function getTutor($id)
 	{
-		return $this->database
+		return $this->getDatabase()
 			->table($this->getTable())
 			->select('guid, email, tutor')
 			->where('id ? AND deleted ?', $id, '0')
