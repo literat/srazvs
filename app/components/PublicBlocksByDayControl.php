@@ -33,7 +33,7 @@ class PublicBlocksByDayControl extends BaseControl implements IBlocksByDayContro
 	{
 		$this->setBlockModel($model);
 		$this->setProgramsControl($programsControl);
-		$this->setPublicBlockDetailControl($blockDetail);
+		$this->setPublicBlockDetailControl($blockDetailControl);
 	}
 
 	/**
