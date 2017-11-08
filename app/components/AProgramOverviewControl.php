@@ -32,16 +32,16 @@ abstract class AProgramOverviewControl extends BaseControl implements IProgramOv
 	/**
 	 * @return BlocksByDayControl
 	 */
-	protected function createComponentBlocksByDay()
+	protected function createComponentBlocksByDay(): IBlocksByDayControl
 	{
 		return $this->blocksByDay->setMeetingId($this->getMeetingId());
 	}
 
 	/**
 	 * @param  BlocksByDayControl $control
-	 * @return $this
+	 * @return self
 	 */
-	protected function setBlocksBayControl(IBlocksByDayControl $control)
+	protected function setBlocksBayControl(IBlocksByDayControl $control): self
 	{
 		$this->blocksByDay = $control;
 

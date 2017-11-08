@@ -91,6 +91,8 @@ services:
     province: App\Models\ProvinceModel
     - App\Components\ProgramOverviewControl
     - App\Components\PublicProgramOverviewControl
+    - App\Components\BlocksByDayControl
+    - App\Components\PublicBlocksByDayControl
     - App\Components\ProgramsControl
     - App\Components\PublicProgramsControl
     - App\Components\PublicProgramDetailControl

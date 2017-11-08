@@ -8,16 +8,15 @@ use App\Models\BlockModel;
 class PublicProgramOverviewControl extends AProgramOverviewControl
 {
 
-	const TEMPLATE_NAME = 'ProgramOverview';
+	const TEMPLATE_NAME = 'PublicProgramOverview';
 
 	/**
 	 * @param BlockModel               $model
-	 * @param PublicProgramsControl    $programsControl
 	 * @param PublicBlockDetailControl $blockDetailControl
 	 */
-	public function __construct(BlockModel $model, PublicProgramsControl $programsControl, PublicBlockDetailControl $blockDetailControl)
+	public function __construct(BlockModel $model, PublicBlocksByDayControl $control)
 	{
-		$this->setBlocksBayControl(new PublicBlocksByDayControl($model, $programsControl, $blockDetailControl));
+		$this->setBlocksBayControl($control);
 	}
 
 }
