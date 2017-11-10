@@ -1,50 +1,69 @@
-{layout '../@vodni_layout.latte'}
+{layout '../@layout_new.latte'}
 
 {block content}
-	<!-- content -->
-	<div id="content-program">
-	<div id="content-pad-program">
-	<h1>Program srazu vodních skautů</h1>
-	<br />
-	<h2>{$meeting_heading}</h2>
-	<br />
-	<p>info: Po rozkliknutí programu se Vám zobrazí jeho detail.</p>
 
-	<!-- PROGRAM SRAZU -->
+<main role="main" class="site-content">
 
-{if $display_program}
+	<section class="section-header section-header-condensed">
+		<div class="container text-center">
 
-	<script type="text/javascript">
-	$(document).ready(function() {
-		$('a.programLink').tinyTips('light', 'title');
-	});
-	</script>
+			<h1 class="section-header-title">Program srazu vodních skautů</h1>
+			<h2>{$meeting_heading}</h2>
 
-	{control programOverview}
+		</div><!-- .container -->
+	</section>
 
-	<br />
-	<div>
-		<a style="text-decoration:none; padding-right:4px;" href="{$expDir}/program/public">
-			<img style='border:none;' align='absbottom' src='{$imgDir}icons/pdf.png' />
-			Stáhněte si program srazu ve formátu PDF
-		</a>
-	</div>
-	<br />
-	<a style="text-decoration:none; padding-right:4px;" href="{$expDir}/program/details">
-		<img style='border:none;' align='absbottom' src='{$imgDir}icons/pdf.png' />
-	</a>
-	<a href="{$expDir}/program/details">Stáhněte si detaily programů srazu ve formátu PDF</a>
-	<p style="text-align:center; font-size:medium;">Změna programu vyhrazena!</p>
+	<section class="section-content">
+		<div class="container">
 
-	<!-- PROGRAM SRAZU -->
+			<div class="row">
+				<div class="col-md-10 col-md-offset-1">
 
-{else}
-		<div>Registrace není otevřena, sraz se stále ještě připravuje!</div>
-{/if}
-				<p></p>
-				<p style="text-align: center; "></p>
-			</div>
+					<!-- PROGRAM SRAZU -->
+
+					{if $display_program}
+
+						<script type="text/javascript">
+						$(document).ready(function() {
+							$('a.programLink').tinyTips('light', 'title');
+						});
+						</script>
+
+						<p>info: Po rozkliknutí programu se Vám zobrazí jeho detail.</p>
+
+						{control programOverview}
+
+						<br />
+						<div>
+							<a style="text-decoration:none; padding-right:4px;" href="{$expDir}/program/public">
+								<img style='border:none;' align='absbottom' src='{$imgDir}icons/pdf.png' />
+								Stáhněte si program srazu ve formátu PDF
+							</a>
+						</div>
+						<br />
+						<a style="text-decoration:none; padding-right:4px;" href="{$expDir}/program/details">
+							<img style='border:none;' align='absbottom' src='{$imgDir}icons/pdf.png' />
+						</a>
+						<a href="{$expDir}/program/details">Stáhněte si detaily programů srazu ve formátu PDF</a>
+						<p style="text-align:center; font-size:medium;">Změna programu vyhrazena!</p>
+
+						<!-- PROGRAM SRAZU -->
+
+					{else}
+						<div>Registrace není otevřena, sraz se stále ještě připravuje!</div>
+					{/if}
+									<p></p>
+									<p style="text-align: center; "></p>
+								</div>
+							</div>
+							<div class="cleaner"></div>
+						</div>
+					</div>
+
+				</div>
+			</div><!-- .row -->
+
 		</div>
-		<div class="cleaner"></div>
-	</div>
-</div>
+	</section>
+
+</main>
