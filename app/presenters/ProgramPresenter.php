@@ -3,6 +3,7 @@
 namespace App\Presenters;
 
 use App\Components\PublicProgramOverviewControl;
+use App\Components\CategoryStylesControl;
 use App\Components\IProgramOverviewControl;
 use App\Models\BlockModel;
 use App\Models\MeetingModel;
@@ -47,6 +48,11 @@ class ProgramPresenter extends BasePresenter
 	private $programOverview;
 
 	/**
+	 * @var CategoryStylesControl
+	 */
+	private $categoryStyles;
+
+	/**
 	 * Prepare model classes and get meeting id
 	 */
 	public function __construct(
@@ -54,13 +60,15 @@ class ProgramPresenter extends BasePresenter
 		Emailer $emailer,
 		BlockModel $blockModel,
 		MeetingModel $meetingModel,
-		PublicProgramOverviewControl $control
+		PublicProgramOverviewControl $publicProgramOverview,
+		CategoryStylesControl $categoryStyles
 	) {
 		$this->setModel($model);
 		$this->setEmailer($emailer);
 		$this->setBlockModel($blockModel);
 		$this->setMeetingModel($meetingModel);
-		$this->setProgramOverviewControl($control);
+		$this->setProgramOverviewControl($publicProgramOverview);
+		$this->setCategoryStylesControl($categoryStyles);
 	}
 
 	/**
@@ -299,6 +307,14 @@ class ProgramPresenter extends BasePresenter
 	}
 
 	/**
+	 * @return CategoryStylesControl
+	 */
+	protected function createComponentCategoryStyles(): CategoryStylesControl
+	{
+		return $this->categoryStyles;
+	}
+
+	/**
 	 * @param  ProgramOverviewControl $control
 	 * @return $this
 	 */
@@ -360,6 +376,18 @@ class ProgramPresenter extends BasePresenter
 	protected function setMeetingModel(MeetingModel $model)
 	{
 		$this->meetingModel = $model;
+		return $this;
+	}
+
+	/**
+	 * @param CategoryStylesControl $categoryStyles
+	 *
+	 * @return self
+	 */
+	public function setCategoryStylesControl(CategoryStylesControl $categoryStyles): self
+	{
+		$this->categoryStyles = $categoryStyles;
+
 		return $this;
 	}
 

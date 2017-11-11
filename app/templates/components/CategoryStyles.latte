@@ -1,0 +1,9 @@
+<style type="text/css">
+{foreach $categories as $categoryId => $categoryCssItem}
+	.cat-{$categoryCssItem->style} {
+		border: 2px solid #{$categoryCssItem->bocolor};
+		background-color: #{$categoryCssItem->bgcolor};
+		color: #{$categoryCssItem->focolor};
+	}
+{/foreach}
+</style>

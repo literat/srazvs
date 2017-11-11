@@ -1,28 +1,4 @@
-<!doctype html>
-<html lang="en">
-<head>
-	<meta charset="utf-8" />
-	<link rel="dns-prefetch" href="//fonts.googleapis.com" />
-	<link rel="dns-prefetch" href="//themes.googleusercontent.com" />
-	<link rel="dns-prefetch" href="https://www.google-analytics.com" />
-
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-	<title>Sraz VS | Registrace</title>
-	<meta name="description" content="Registrace na sraz vs" />
-	<meta name="author" content="Tomas Litera <tomas@litera.me>" />
-
-	<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Titillium+Web:400,300,700&amp;subset=latin,latin-ext" type="text/css" />
-	<link rel="stylesheet" href="{$basePath}/www/css/bootstrap-ui.min.css" />
-	<link rel="stylesheet" href="{$basePath}/www/css/tinytips/tinyTips.css" />
-	<link rel="stylesheet" href="{$basePath}/www/css/custom.css?v{php echo appVersion()}" />
-	<script type="text/javascript" src="{$basePath}/www/js/jquery.min.js?v2.2.4"></script>
-
-</head>
-
-<body class="site has-navbar-static-top">
-
-	<header role="banner" id="top" class="site-header">
+<header role="banner" id="top" class="site-header">
 
 	<!-- Main navigation -->
 	<nav class="navbar navbar-static-top navbar-primary">
@@ -36,9 +12,9 @@
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
 				</button>
-				<a href="/orders/new" class="navbar-brand offset-right-large">
+				<a href="{$basePath}" class="navbar-brand offset-right-large">
 					<span class="logo"></span>
-					<span class="visible-xs visible-md visible-lg text-bold text-letterspacing heading">Sraz VS | Registrace</span>
+					<span class="visible-xs visible-md visible-lg text-bold text-letterspacing heading">Sraz VS</span>
 					<span class="visible-sm heading" aria-hidden="true">Sraz VS</span>
 				</a>
 			</div>
@@ -46,20 +22,18 @@
 			<!-- Collapsible menu -->
 			<div class="collapse navbar-collapse" id="mainMenu">
 
-				{* <ul class="nav navbar-nav">
+				<ul class="nav navbar-nav">
 					<li>
-						<a href="/orders/new">
-							<span class="glyphicon glyphicon-inbox offset-right" aria-hidden="true"></span>
-							<span class="hidden-sm">Orders</span>
+						<a n:href="Program:public">
+							<span>Harmonogram</span>
 						</a>
 					</li>
-					<li class="active">
-						<a href="/pages">
-							<span class="glyphicon glyphicon-align-left offset-right" aria-hidden="true"></span>
-							<span class="hidden-sm">Pages</span>
+					<li>
+						<a n:href="Registration:default">
+							<span>Registrace</span>
 						</a>
 					</li>
-				</ul> *}
+				</ul>
 
 				{* <ul class="nav navbar-nav navbar-right">
 					<li class="navbar-icon">

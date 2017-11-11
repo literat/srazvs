@@ -1,13 +1,29 @@
 {layout '../@layout_new.latte'}
 
+{block title}
+	Harmonogram
+{/block}
+
+{block headCss}
+	<link rel="stylesheet" href="{$basePath}/www/css/tinytips/tinyTips.css" />
+{/block}
+
+{block headInlineCss}
+	{control categoryStyles}
+{/block}
+
+{block footerJs}
+	<script type="text/javascript" src="{$basePath}/www/js/jquery/jquery.tinytips.js"></script>
+{/block}
+
 {block content}
 
-<main role="main" class="site-content">
+<main role="main" class="site-content public shedule">
 
 	<section class="section-header section-header-condensed">
 		<div class="container text-center">
 
-			<h1 class="section-header-title">Program srazu vodních skautů</h1>
+			<h1 class="section-header-title">HARMONOGRAM</h1>
 			<h2>{$meeting_heading}</h2>
 
 		</div><!-- .container -->
@@ -16,52 +32,58 @@
 	<section class="section-content">
 		<div class="container">
 
+		<!-- PROGRAM SRAZU -->
+
+		{if $display_program}
+
 			<div class="row">
 				<div class="col-md-10 col-md-offset-1">
+					<p>info: Po rozkliknutí programu se Vám zobrazí jeho detail.</p>
+				</div>
+			</div><!-- .row -->
 
-					<!-- PROGRAM SRAZU -->
-
-					{if $display_program}
-
-						<script type="text/javascript">
+			<div class="row">
+				<div class="col-md-10 col-md-offset-1">
+					<script type="text/javascript">
 						$(document).ready(function() {
 							$('a.programLink').tinyTips('light', 'title');
 						});
-						</script>
+					</script>
 
-						<p>info: Po rozkliknutí programu se Vám zobrazí jeho detail.</p>
-
-						{control programOverview}
-
-						<br />
-						<div>
-							<a style="text-decoration:none; padding-right:4px;" href="{$expDir}/program/public">
-								<img style='border:none;' align='absbottom' src='{$imgDir}icons/pdf.png' />
-								Stáhněte si program srazu ve formátu PDF
-							</a>
-						</div>
-						<br />
-						<a style="text-decoration:none; padding-right:4px;" href="{$expDir}/program/details">
-							<img style='border:none;' align='absbottom' src='{$imgDir}icons/pdf.png' />
-						</a>
-						<a href="{$expDir}/program/details">Stáhněte si detaily programů srazu ve formátu PDF</a>
-						<p style="text-align:center; font-size:medium;">Změna programu vyhrazena!</p>
-
-						<!-- PROGRAM SRAZU -->
-
-					{else}
-						<div>Registrace není otevřena, sraz se stále ještě připravuje!</div>
-					{/if}
-									<p></p>
-									<p style="text-align: center; "></p>
-								</div>
-							</div>
-							<div class="cleaner"></div>
-						</div>
-					</div>
-
+					{control programOverview}
 				</div>
 			</div><!-- .row -->
+
+			<div class="row download">
+				<div class="col-md-10 col-md-offset-1">
+					<div>
+						<a href="{$expDir}/program/public">
+							<span class="glyphicon glyphicon-save-file"></span>Stáhněte si program srazu ve formátu PDF
+						</a>
+					</div>
+					<div>
+						<a href="{$expDir}/program/details">
+							<span class="glyphicon glyphicon-save-file"></span>Stáhněte si detaily programů srazu ve formátu PDF
+						</a>
+					</div>
+				</div>
+			</div><!-- .row -->
+
+			<div class="row">
+				<div class="col-md-10 col-md-offset-1">
+					<p style="text-align:center; font-size:medium;">Změna programu vyhrazena!</p>
+				</div>
+			</div><!-- .row -->
+
+			<!-- PROGRAM SRAZU -->
+
+		{else}
+			<div class="row">
+				<div class="col-md-10 col-md-offset-1">
+					<div>Registrace není otevřena, sraz se stále ještě připravuje!</div>
+				</div>
+			</div><!-- .row -->
+		{/if}
 
 		</div>
 	</section>

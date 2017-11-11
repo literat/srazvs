@@ -100,8 +100,10 @@ services:
     - App\Components\RegistrationGraphControl
     - App\Components\MaterialsControl
     - App\Components\MealControl
+    - App\Components\CategoryStylesControl
     - App\Services\VisitorService
     - App\Services\ProgramService
+    - App\Services\CategoryService
     - App\Services\AnnotationService
     - App\Components\Forms\Factories\IRegistrationFormFactory
     - App\Components\Forms\Factories\IAnnotationFormFactory
