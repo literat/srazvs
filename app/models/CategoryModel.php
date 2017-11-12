@@ -74,9 +74,9 @@ class CategoryModel extends BaseModel
 	}
 
 	/**
-	 * @return Nette\Database\Table\ActiveRow
+	 * @return array
 	 */
-	public function all()
+	public function all(): array
 	{
 		return $this->getDatabase()
 			->table($this->getTable())

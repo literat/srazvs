@@ -1,3 +1,26 @@
+h1,
+h2 {
+	font-weight: lighter;
+	letter-spacing: 4px;
+}
+
+a,
+a:hover {
+	color: #000;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+a span {
+	margin-right: 5px;
+}
+
+a:hover span {
+	text-decoration: none;
+}
+
 .navbar-primary {
 	background-color: transparent;
 	border-color: #fff;
@@ -39,6 +62,14 @@
 	text-decoration: underline;
 }
 
+.alert {
+	margin-bottom: 20px;
+}
+
+/*-------------------------------------------------------------------------------------------------------------
+		5) Navigation
+-------------------------------------------------------------------------------------------------------------*/
+
 .navbar .logo {
 	float: left;
 	background: url(../images/logo.png) center left no-repeat;
@@ -52,10 +83,151 @@
 
 .navbar .heading {
 	margin-left: 65px;
-    margin-top: 14px;
-    margin-botom: 15px;
+	margin-top: 14px;
+	margin-botom: 15px;
 }
 
-.alert {
-	margin-bottom: 20px;
+.navbar-primary .navbar-nav>li>a,
+.navbar-primary .navbar-nav>li>a:focus,
+.navbar-primary .navbar-nav>li>a:hover {
+	color: #545454;
+	font-size: 14px;
+}
+
+.navbar-nav>li>a {
+	padding-top: 28px;
+}
+
+.nav>li>a,
+.sortable-table-nav ul>li>a {
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+/*-------------------------------------------------------------------------------------------------------------
+		6) Public Schedule
+-------------------------------------------------------------------------------------------------------------*/
+
+.row.download {
+	padding-top: 20px;
+	font-size: larger;
+}
+
+.row.download div {
+	margin-bottom: 10px;
+}
+
+table.public.schedule {
+	border-collapse:separate;
+	border-spacing: 2px;
+}
+
+table.public.schedule table {
+	width: 100%;
+	border:0px solid black
+}
+
+table.public.schedule table td {
+	border:0px solid black
+}
+
+table.public.schedule tr.radek1 {
+	background-color: #f5f5f5;
+}
+
+table.public.schedule tr.radek1:hover,
+table.public.schedule tr.radek2:hover,
+table.public.schedule tr.radek1.checked:hover {
+	background-color: silver;
+}
+
+table.public.schedule tr.radek1.checked {
+	background-color: #add8e6;
+}
+
+table.public.schedule td.text {
+	text-align:left;
+	margin:0px;
+	padding:2px;
+}
+
+table.public.schedule td.emptyTable {
+	text-align:center;
+	border:1px dashed #000000;
+}
+
+table.public.schedule td.time {
+	width:110px;
+	text-align:center;
+	background-color:#cccccc;
+	font-size:12px;
+	padding-bottom:3px;
+	padding-top:3px;
+}
+
+table.public.schedule td.day {
+	background-color: #a9a9a9;
+	background-color:#999;
+	font-size: 15px;
+	font-weight: bold;
+	padding:3px 10px 3px 3px;
+	color:white;
+	text-align:right;
+}
+
+table.public.schedule a.program,
+table.public.schedule a.block {
+	display:block;
+	padding:2px;
+	color:black;
+}
+
+table.public.schedule a.block {
+	padding-left:30px;
+}
+
+table.public.schedule .block:hover,
+table.public.schedule .program:hover {
+	background-color: silver;
+	color:#ce8b10;
+}
+
+table.public.schedule a.programLink {
+	color: black;
+}
+
+table.public.schedule a.programLink:hover {
+	color: #ce8b10;
+}
+
+table.public.schedule .category {
+	padding: 0px;
+	margin-bottom: 1px;
+	min-width:125px;
+}
+
+table.public.schedule td.label {
+	width:120px;
+}
+
+table.public.schedule a,
+table.public.schedule a:link,
+table.public.schedule a:visited,
+table.program.detail a,
+table.program.detail a:link,
+table.program.detail a:visited {
+	color:#3e62a6;
+	cursor:pointer;
+	text-decoration:none;
+}
+
+table.public.schedule a:hover {
+	color:#ce8b10;
+	text-decoration:none;
+}
+
+table.program.detail,
+table.program.detail .label,
+table.program.detail .text {
+	color: #000000;
 }
