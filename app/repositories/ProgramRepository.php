@@ -33,9 +33,9 @@ class ProgramRepository
 	public function create($program)
 	{
 		if(array_key_exists('display_in_reg', $program) && empty($program['display_in_reg'])) {
-			$program['display_in_reg'] = '1';
-		} else {
 			$program['display_in_reg'] = '0';
+		} else {
+			$program['display_in_reg'] = '1';
 		}
 
 		return $this->getProgramModel()->create((array) $program);

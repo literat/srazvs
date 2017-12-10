@@ -90,7 +90,7 @@ class ProgramForm extends BaseForm
 			->setDefaultValue(0)
 			->setAttribute('size', 10)
 			->setAttribute('placeholder', 0);
-		$form->addCheckboxList('display_in_reg', 'Nezobrazovat v registraci:', [0 => '']);
+		$form->addCheckboxList('display_in_reg', 'Nezobrazovat v registraci:', [1 => '']);
 		$form->addSelect('block', 'Blok:', $this->buildBlockSelect());
 		$form->addSelect('category', 'Kategorie:', $this->buildCategorySelect());
 
