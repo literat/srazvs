@@ -7,6 +7,9 @@ use App\Models\BlockModel;
 use App\Models\MeetingModel;
 use App\Services\Emailer;
 use Tracy\Debugger;
+use App\Repositories\ProgramRepository;
+use App\Components\Forms\Factories\IProgramFormFactory;
+use App\Components\Forms\ProgramForm;
 
 /**
  * Program controller
@@ -40,18 +43,38 @@ class ProgramPresenter extends BasePresenter
 	private $meetingModel;
 
 	/**
+	 * @var ProgramRepository
+	 */
+	private $programRepository;
+
+	/**
+	 * @var IProgramFormFactory
+	 */
+	private $programFormFactory;
+
+	/**
 	 * Prepare model classes and get meeting id
 	 */
 	public function __construct(
 		ProgramModel $model,
 		Emailer $emailer,
 		BlockModel $blockModel,
-		MeetingModel $meetingModel
+		MeetingModel $meetingModel,
+		ProgramRepository $programRepository
 	) {
 		$this->setModel($model);
 		$this->setEmailer($emailer);
 		$this->setBlockModel($blockModel);
 		$this->setMeetingModel($meetingModel);
+		$this->setProgramRepository($programRepository);
+	}
+
+	/**
+	 * @param  IProgramFormFactory $factory
+	 */
+	public function injectProgramFormFactory(IProgramFormFactory $factory)
+	{
+		$this->programFormFactory = $factory;
 	}
 
 	/**
@@ -249,6 +272,46 @@ class ProgramPresenter extends BasePresenter
 	}
 
 	/**
+	 * @return ProgramForm
+	 */
+	protected function createComponentProgramForm(): ProgramForm
+	{
+		$control = $this->programFormFactory->create();
+		$control->setMeetingId($this->getMeetingId());
+		$type = $this->getParameter('type');
+		$control->onProgramSave[] = function(ProgramForm $control, $program) use ($type) {
+			try {
+				$guid = $this->getParameter('guid');
+
+				$this->setBacklink($program['backlink']);
+				unset($program['backlink']);
+
+				if($guid) {
+					$result = $this->getProgramRespository()->update($program);
+				} else {
+					$result = $this->getProgramRepository()->create($program);
+				}
+
+				$this->logInfo('Modification of program id %s with data %s successfull, result: %s',	[
+					$program->guid,
+					json_encode($program),
+					json_encode($result),
+				]);
+
+				$this->flashSuccess('Položka byla úspěšně upravena');
+			} catch(Exception $e) {
+				$this->logError("Modification of program id {$program->guid} failed, result: {$e->getMessage()}");
+
+				$this->flashError("Modification of program id {$program->guid} failed, result: {$e->getMessage()}");
+			}
+
+			$this->redirect($this->getBacklink() ?: 'Program:listing');
+		};
+
+		return $control;
+	}
+
+	/**
 	 * @return Emailer
 	 */
 	protected function getEmailer()
@@ -287,7 +350,7 @@ class ProgramPresenter extends BasePresenter
 	/**
 	 * @return MeetingModel
 	 */
-	protected function getMeetingModel()
+	protected function getMeetingModel(): MeetingModel
 	{
 		return $this->meetingModel;
 	}
@@ -296,9 +359,29 @@ class ProgramPresenter extends BasePresenter
 	 * @param  MeetingModel $model
 	 * @return $this
 	 */
-	protected function setMeetingModel(MeetingModel $model)
+	protected function setMeetingModel(MeetingModel $model): self
 	{
 		$this->meetingModel = $model;
+
+		return $this;
+	}
+
+	/**
+	 * @return ProgramRepository
+	 */
+	protected function getProgramRepository(): ProgramRepository
+	{
+		return $this->programRepository;
+	}
+
+	/**
+	 * @param  ProgramRepository $model
+	 * @return $this
+	 */
+	protected function setProgramRepository(ProgramRepository $repository):self
+	{
+		$this->programRepository = $repository;
+
 		return $this;
 	}
 

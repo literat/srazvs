@@ -226,7 +226,8 @@ class RegistrationForm extends BaseForm
 			}
 
 			$form->addRadioList(
-				'blck_' . $block->id, $block->day . ', ' . $block->from .' - ' . $block->to .' : ' . $block->name,
+				'blck_' . $block->id,
+				$block->day . ', ' . $block->from .' - ' . $block->to .' : ' . $block->name,
 				$programs
 			)->setDefaultValue(0)
 			->setDisabled($this->filterFilledCapacity($programs));
