@@ -2,8 +2,10 @@
 
 namespace App\Repositories;
 
-use App\Models\VisitorModel;
 use App\Models\ProgramModel;
+use App\Models\VisitorModel;
+use Nette\Database\Table\ActiveRow;
+use Nette\Utils\ArrayHash;
 
 class ProgramRepository
 {
@@ -30,20 +32,43 @@ class ProgramRepository
 		$this->setProgramModel($programModel);
 	}
 
-	public function create($program)
+	/**
+	 * @return Nette\Database\Table\ActiveRow
+	 */
+	public function all(): ActiveRow
 	{
-		if(array_key_exists('display_in_reg', $program) && empty($program['display_in_reg'])) {
-			$program['display_in_reg'] = '0';
-		} else {
-			$program['display_in_reg'] = '1';
-		}
+		return $this->getProgramModel()->all();
+	}
+
+	/**
+	 * @param  int  $id
+	 * @return Nette\Database\Table\ActiveRow
+	 */
+	public function find(int $id): ActiveRow
+	{
+		return $this->getProgramModel()->find($id);
+	}
+
+	/**
+	 * @param  Nette\Utils\ArrayHash $program
+	 * @return boolean
+	 */
+	public function create(ArrayHash $program)
+	{
+		$program = $this->transformDisplayInRegValue($program);
 
 		return $this->getProgramModel()->create((array) $program);
 	}
 
-	public function update($program)
+	/**
+	 * @param  Nette\Utils\ArrayHash $program
+	 * @return boolean
+	 */
+	public function update(int $id, ArrayHash $program)
 	{
-		return $this->getProgramModel()->update($program);
+		$program = $this->transformDisplayInRegValue($program);
+
+		return $this->getProgramModel()->update($id, (array) $program);
 	}
 
 	/**
@@ -64,6 +89,21 @@ class ProgramRepository
 		}
 
 		return $formPrograms;
+	}
+
+	/**
+	 * @param  Nette\Utils\ArrayHash $program
+	 * @return Nette\Utils\ArrayHash
+	 */
+	protected function transformDisplayInRegValue(ArrayHash $program): ArrayHash
+	{
+		if(array_key_exists('display_in_reg', $program) && empty($program['display_in_reg'])) {
+			$program['display_in_reg'] = '0';
+		} else {
+			$program['display_in_reg'] = '1';
+		}
+
+		return $program;
 	}
 
 	/**

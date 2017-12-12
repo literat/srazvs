@@ -10,6 +10,7 @@ use Tracy\Debugger;
 use App\Repositories\ProgramRepository;
 use App\Components\Forms\Factories\IProgramFormFactory;
 use App\Components\Forms\ProgramForm;
+use Nette\Utils\ArrayHash;
 
 /**
  * Program controller
@@ -91,67 +92,6 @@ class ProgramPresenter extends BasePresenter
 	}
 
 	/**
-	 * @return void
-	 */
-	public function actionCreate()
-	{
-		$model = $this->getModel();
-		$data = $this->getHttpRequest()->getPost();
-
-		$this->setBacklink($data['backlink']);
-		unset($data['backlink']);
-
-		if(!array_key_exists('display_in_reg', $data)) {
-			$data['display_in_reg'] = 1;
-		}
-
-		try {
-			$result = $this->getModel()->create($data);
-
-			Debugger::log('Creation of program successfull, result: ' . json_encode($result), Debugger::INFO);
-
-			$this->flashMessage('Položka byla úspěšně vytvořena', 'ok');
-		} catch(Exception $e) {
-			Debugger::log('Creation of program with data ' . json_encode($data) . ' failed, result: ' . $e->getMessage(), Debugger::ERROR);
-
-			$this->flashMessage('Záznam se nepodařilo uložit, result: ' . $e->getMessage(), 'error');
-		}
-
-		$this->redirect($this->getBacklink() ?: 'Program:listing');
-	}
-
-	/**
-	 * @param  integer $id
-	 * @return void
-	 */
-	public function actionUpdate($id)
-	{
-		$model = $this->getModel();
-		$data = $this->getHttpRequest()->getPost();
-
-		$this->setBacklink($data['backlink']);
-		unset($data['backlink']);
-
-		if(!array_key_exists('display_in_reg', $data)) {
-			$data['display_in_reg'] = 1;
-		}
-
-		try {
-			$result = $this->getModel()->update($id, $data);
-
-			Debugger::log('Modification of program id ' . $id . ' with data ' . json_encode($data) . ' successfull, result: ' . json_encode($result), Debugger::INFO);
-
-			$this->flashMessage('Položka byla úspěšně upravena.', 'ok');
-		} catch(Exception $e) {
-			Debugger::log('Modification of program id ' . $id . ' failed, result: ' . $e->getMessage(), Debugger::ERROR);
-
-			$this->flashMessage('Modification of program id ' . $id . ' failed, result: ' . $e->getMessage(), 'error');
-		}
-
-		$this->redirect($this->getBacklink() ?: 'Program:listing');
-	}
-
-	/**
 	 * @param  integer  $id
 	 * @return void
 	 */
@@ -220,10 +160,8 @@ class ProgramPresenter extends BasePresenter
 	 */
 	public function renderListing()
 	{
-		$model = $this->getModel();
 		$template = $this->getTemplate();
-
-		$template->programs = $model->all();
+		$template->programs = $this->getProgramRepository()->all();
 		$template->mid = $this->meetingId;
 		$template->heading = $this->heading;
 	}
@@ -234,17 +172,7 @@ class ProgramPresenter extends BasePresenter
 	public function renderNew()
 	{
 		$template = $this->getTemplate();
-
 		$template->heading = 'nový program';
-		$template->page = $this->getHttpRequest()->getQuery('page');
-		$template->error_name = '';
-		$template->error_description = '';
-		$template->error_tutor = '';
-		$template->error_email = '';
-		$template->error_material = '';
-		$template->display_in_reg_checkbox = $this->renderHtmlCheckBox('display_in_reg', 0, 1);
-		$template->block_select = $this->getBlockModel()->renderHtmlSelect(null);
-		$template->selectedCategory	= null;
 	}
 
 	/**
@@ -254,21 +182,74 @@ class ProgramPresenter extends BasePresenter
 	public function renderEdit($id)
 	{
 		$this->programId = $id;
-		$program = $this->getModel()->find($id);
+		$program = $this->getProgramRepository()->find($id);
 
 		$template = $this->getTemplate();
 		$template->heading = 'úprava programu';
-		$template->error_name = '';
-		$template->error_description = '';
-		$template->error_tutor = '';
-		$template->error_email = '';
-		$template->error_material = '';
-		$template->display_in_reg_checkbox = $this->renderHtmlCheckBox('display_in_reg', 1, $program->display_in_reg);
-		$template->block_select = $this->getBlockModel()->renderHtmlSelect($program->block);
-		$template->selectedCategory	= $program->category;
 		$template->program_visitors = $this->getModel()->getProgramVisitors($id);
 		$template->program = $program;
 		$template->id = $id;
+
+		$this['programForm']->setDefaults($program);
+	}
+
+	/**
+	 * Stores program into storage
+	 *
+	 * @param  Nette\Utils\ArrayHash  $program
+	 * @return boolean
+	 */
+	protected function store(ArrayHash $program)
+	{
+		try {
+			$this->logInfo('Storing new program.');
+
+			$result = $this->getProgramRepository()->create($program);
+
+			$this->logInfo('Storing of new program with data %s successfull, result: %s', [
+				json_encode($program),
+				json_encode($result),
+			]);
+
+			$this->flashSuccess('Položka byla úspěšně vytvořena');
+		} catch(Exception $e) {
+			$this->logError("Storing of new program failed, result: {$e->getMessage()}");
+			$this->flashError('Položku se nepodařilo vytvořit.');
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Updates program in storage
+	 *
+	 * @param  int                    $id
+	 * @param  Nette\Utils\ArrayHash  $program
+	 * @return boolean
+	 */
+	protected function update(int $id, ArrayHash $program)
+	{
+		try {
+			$this->logInfo('Updating program(%s).', [$id]);
+
+			$result = $this->getProgramRepository()->update($id, $program);
+
+			$this->logInfo('Updating of program(%s) with data %s successfull, result: %s', [
+				$id,
+				json_encode($program),
+				json_encode($result),
+			]);
+
+			$this->flashSuccess('Položka byla úspěšně upravena');
+		} catch(Exception $e) {
+			$this->logError('Updating of program(%s) failed, result: %s', [
+				$program->guid,
+				$e->getMessage(),
+			]);
+			$this->flashError('Položku se nepodařilo upravit.');
+		}
+
+		return $result;
 	}
 
 	/**
@@ -278,31 +259,17 @@ class ProgramPresenter extends BasePresenter
 	{
 		$control = $this->programFormFactory->create();
 		$control->setMeetingId($this->getMeetingId());
-		$type = $this->getParameter('type');
-		$control->onProgramSave[] = function(ProgramForm $control, $program) use ($type) {
-			try {
-				$guid = $this->getParameter('guid');
+		$control->onProgramSave[] = function(ProgramForm $control, $program) {
+			//$guid = $this->getParameter('guid');
+			$id = $this->getParameter('id');
 
-				$this->setBacklink($program['backlink']);
-				unset($program['backlink']);
+			$this->setBacklink($program['backlink']);
+			unset($program['backlink']);
 
-				if($guid) {
-					$result = $this->getProgramRespository()->update($program);
-				} else {
-					$result = $this->getProgramRepository()->create($program);
-				}
-
-				$this->logInfo('Modification of program id %s with data %s successfull, result: %s',	[
-					$program->guid,
-					json_encode($program),
-					json_encode($result),
-				]);
-
-				$this->flashSuccess('Položka byla úspěšně upravena');
-			} catch(Exception $e) {
-				$this->logError("Modification of program id {$program->guid} failed, result: {$e->getMessage()}");
-
-				$this->flashError("Modification of program id {$program->guid} failed, result: {$e->getMessage()}");
+			if($id) {
+				$this->update($id, $program);
+			} else {
+				$this->store($program);
 			}
 
 			$this->redirect($this->getBacklink() ?: 'Program:listing');

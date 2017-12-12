@@ -260,6 +260,7 @@ class ProgramModel extends BaseModel
 						programs.description AS description,
 						programs.tutor AS tutor,
 						programs.email AS email,
+						programs.guid AS guid,
 						blocks.name AS block,
 						programs.capacity AS capacity,
 						style,

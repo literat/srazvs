@@ -6,6 +6,7 @@ use App\Models\MeetingModel;
 use App\Repositories\BlockRepository;
 use App\Repositories\CategoryRepository;
 use Nette\Application\UI\Form;
+use Nette\Database\Table\ActiveRow;
 
 class ProgramForm extends BaseForm
 {
@@ -57,7 +58,7 @@ class ProgramForm extends BaseForm
 	 * @param  array $defaults
 	 * @return AnnotationForm
 	 */
-	public function setDefaults(array $defaults = []): ProgramForm
+	public function setDefaults(ActiveRow $defaults): ProgramForm
 	{
 		$this['programForm']->setDefaults($defaults);
 
@@ -90,21 +91,23 @@ class ProgramForm extends BaseForm
 			->setDefaultValue(0)
 			->setAttribute('size', 10)
 			->setAttribute('placeholder', 0);
-		$form->addCheckboxList('display_in_reg', 'Nezobrazovat v registraci:', [1 => '']);
+		$form->addRadioList('display_in_reg', 'Zobrazit v registraci:', [0 => 'Ano', 1 => 'Ne'])
+			->getSeparatorPrototype()->setName(null);
 		$form->addSelect('block', 'Blok:', $this->buildBlockSelect());
 		$form->addSelect('category', 'Kategorie:', $this->buildCategorySelect());
 
+		$form->addHidden('id');
 		$form->addHidden('guid');
 		$form->addHidden('backlink');
 
 		$form->addSubmit('save', 'Uložit')
-			->setAttribute('class', 'btn-primary');
-		$form->addSubmit('reset', 'storno')
-			->setAttribute('class', 'btn-reset');
+			->setAttribute('class', 'btn-primary')
+			->onClick[] = [$this, 'processForm'];
+		$form->addSubmit('reset', 'Storno')
+			->setAttribute('class', 'btn-reset')
+			->onClick[] = [$form, 'reset'];
 
 		$form = $this->setupRendering($form);
-
-		$form->onSuccess[] = [$this, 'processForm'];
 
 		return $form;
 	}

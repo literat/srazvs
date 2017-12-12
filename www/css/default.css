@@ -356,14 +356,15 @@ a.pageIndexControl:hover {color:#ce8b10;}
  display:block;
 }
 
-.ok {
- color: #00bb00;
- font-weight:bold;
- padding:2px;
- margin:2px 0px 2px 0px;
- border:1px solid #00bb00;
- background-color: #eeffee;
- display:block;
+.ok,
+.success {
+	color: #00bb00;
+	font-weight:bold;
+	padding:2px;
+	margin:2px 0px 2px 0px;
+	border:1px solid #00bb00;
+	background-color: #eeffee;
+	display:block;
 }
 
 /* ----------------------------------------------------------------------------------------------------------
@@ -507,6 +508,7 @@ input[type="submit"] {
 	border:none;
 	font-size: 13px;
 	background-color: inherit;
+	margin-left: 4px;
 }
 
 a.link:hover,

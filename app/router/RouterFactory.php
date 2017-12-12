@@ -38,6 +38,7 @@ class RouterFactory
 		], Route::ONE_WAY);
 		$router[] = new Route('annotation/<action>/<type>/<guid>/', 'Annotation:default');
 		$router[] = new Route('<presenter>/[<action>/[<id>/]]', 'Dashboard:listing');
+		$router[] = new Route('<presenter>/[<action>/[<guid>/]]', 'Dashboard:listing');
 
 		return $router;
 	}
