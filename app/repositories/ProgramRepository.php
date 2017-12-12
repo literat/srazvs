@@ -33,9 +33,9 @@ class ProgramRepository
 	}
 
 	/**
-	 * @return Nette\Database\Table\ActiveRow
+	 * @return array
 	 */
-	public function all(): ActiveRow
+	public function all(): array
 	{
 		return $this->getProgramModel()->all();
 	}
