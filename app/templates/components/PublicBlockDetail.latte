@@ -1,0 +1,32 @@
+<html>
+	<head>
+		<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />
+	</head>
+	<body>
+		<style>
+			td.text {
+				text-align:left;
+			}
+		</style>
+		<table class='program detail'>
+			<tr>
+				<td class='label'>Blok:</td>
+				<td class='text'>{$block->name}</td>
+			</tr>
+			<tr>
+				<td class='label'>Popis:</td>
+				<td class='text'>{$block->description}</td>
+			</tr>
+			<tr>
+				<td class='label'>Lektor:</td>
+				<td class='text'>{$block->tutor}</td>
+			</tr>
+			<tr>
+				<td class='label'>E-mail:</td>
+				<td class='text'>
+					<a href='mailto:{$block->email}' title='e-mail'>{$block->email}</a>
+				</td>
+			</tr>
+		</table>
+	</body>
+</html>

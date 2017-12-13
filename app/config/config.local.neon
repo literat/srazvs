@@ -90,13 +90,20 @@ services:
     meal: App\Models\MealModel
     province: App\Models\ProvinceModel
     - App\Components\ProgramOverviewControl
+    - App\Components\PublicProgramOverviewControl
     - App\Components\BlocksByDayControl
+    - App\Components\PublicBlocksByDayControl
     - App\Components\ProgramsControl
+    - App\Components\PublicProgramsControl
+    - App\Components\PublicProgramDetailControl
+    - App\Components\PublicBlockDetailControl
     - App\Components\RegistrationGraphControl
     - App\Components\MaterialsControl
     - App\Components\MealControl
+    - App\Components\CategoryStylesControl
     - App\Services\VisitorService
     - App\Services\ProgramService
+    - App\Services\CategoryService
     - App\Services\AnnotationService
     - App\Components\Forms\Factories\IRegistrationFormFactory
     - App\Components\Forms\Factories\IAnnotationFormFactory

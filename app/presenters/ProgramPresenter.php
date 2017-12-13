@@ -2,9 +2,12 @@
 
 namespace App\Presenters;
 
-use App\Models\ProgramModel;
+use App\Components\PublicProgramOverviewControl;
+use App\Components\CategoryStylesControl;
+use App\Components\IProgramOverviewControl;
 use App\Models\BlockModel;
 use App\Models\MeetingModel;
+use App\Models\ProgramModel;
 use App\Services\Emailer;
 use Tracy\Debugger;
 
@@ -40,18 +43,32 @@ class ProgramPresenter extends BasePresenter
 	private $meetingModel;
 
 	/**
+	 * @var ProgramOverviewControl
+	 */
+	private $programOverview;
+
+	/**
+	 * @var CategoryStylesControl
+	 */
+	private $categoryStyles;
+
+	/**
 	 * Prepare model classes and get meeting id
 	 */
 	public function __construct(
 		ProgramModel $model,
 		Emailer $emailer,
 		BlockModel $blockModel,
-		MeetingModel $meetingModel
+		MeetingModel $meetingModel,
+		PublicProgramOverviewControl $publicProgramOverview,
+		CategoryStylesControl $categoryStyles
 	) {
 		$this->setModel($model);
 		$this->setEmailer($emailer);
 		$this->setBlockModel($blockModel);
 		$this->setMeetingModel($meetingModel);
+		$this->setProgramOverviewControl($publicProgramOverview);
+		$this->setCategoryStylesControl($categoryStyles);
 	}
 
 	/**
@@ -75,23 +92,32 @@ class ProgramPresenter extends BasePresenter
 		$model = $this->getModel();
 		$data = $this->getHttpRequest()->getPost();
 
-		$this->setBacklink($data['backlink']);
-		unset($data['backlink']);
-
-		if(!array_key_exists('display_in_reg', $data)) {
-			$data['display_in_reg'] = 1;
-		}
-
 		try {
+			if(array_key_exists('backlink', $data) && isset($data['backlink'])) {
+				$this->setBacklink($data['backlink']);
+				unset($data['backlink']);
+			}
+
+			if(!array_key_exists('display_in_reg', $data)) {
+				$data['display_in_reg'] = 1;
+			}
+
 			$result = $this->getModel()->create($data);
 
-			Debugger::log('Creation of program successfull, result: ' . json_encode($result), Debugger::INFO);
+			$this->logInfo('Creation of program successfull, result: %s', [
+				json_encode($result)
+			]);
 
-			$this->flashMessage('Položka byla úspěšně vytvořena', 'ok');
+			$this->flashSuccess('Položka byla úspěšně vytvořena');
 		} catch(Exception $e) {
-			Debugger::log('Creation of program with data ' . json_encode($data) . ' failed, result: ' . $e->getMessage(), Debugger::ERROR);
+			$this->logError('Creation of program with data %s failed, result: %s', [
+				json_encode($data),
+				$e->getMessage()
+			]);
 
-			$this->flashMessage('Záznam se nepodařilo uložit, result: ' . $e->getMessage(), 'error');
+			$this->flashError('Záznam se nepodařilo uložit, result: %s', [
+				$e->getMessage()
+			]);
 		}
 
 		$this->redirect($this->getBacklink() ?: 'Program:listing');
@@ -106,23 +132,35 @@ class ProgramPresenter extends BasePresenter
 		$model = $this->getModel();
 		$data = $this->getHttpRequest()->getPost();
 
-		$this->setBacklink($data['backlink']);
-		unset($data['backlink']);
-
-		if(!array_key_exists('display_in_reg', $data)) {
-			$data['display_in_reg'] = 1;
-		}
-
 		try {
+			if(array_key_exists('backlink', $data) && isset($data['backlink'])) {
+				$this->setBacklink($data['backlink']);
+				unset($data['backlink']);
+			}
+
+			if(!array_key_exists('display_in_reg', $data)) {
+				$data['display_in_reg'] = 1;
+			}
+
 			$result = $this->getModel()->update($id, $data);
 
-			Debugger::log('Modification of program id ' . $id . ' with data ' . json_encode($data) . ' successfull, result: ' . json_encode($result), Debugger::INFO);
+			$this->logInfo('Modification of program id %s with data %s successfull, result: %s', [
+				$id,
+				json_encode($data),
+				json_encode($result)
+			]);
 
-			$this->flashMessage('Položka byla úspěšně upravena.', 'ok');
+			$this->flashSuccess('Položka byla úspěšně upravena.');
 		} catch(Exception $e) {
-			Debugger::log('Modification of program id ' . $id . ' failed, result: ' . $e->getMessage(), Debugger::ERROR);
+			$this->logError('Modification of program id %s failed, result: %s', [
+				$id,
+				$e->getMessage()
+			]);
 
-			$this->flashMessage('Modification of program id ' . $id . ' failed, result: ' . $e->getMessage(), 'error');
+			$this->flashError('Modification of program id %s failed, result: %s', [
+				$id,
+				$e->getMessage()
+			]);
 		}
 
 		$this->redirect($this->getBacklink() ?: 'Program:listing');
@@ -136,11 +174,17 @@ class ProgramPresenter extends BasePresenter
 	{
 		try {
 			$result = $this->getModel()->delete($id);
-			Debugger::log('Destroying of program successfull, result: ' . json_encode($result), Debugger::INFO);
-			$this->flashMessage('Položka byla úspěšně smazána.', 'ok');
+			$this->logInfo('Destroying of program successfull, result: %s', [
+				json_encode($result)
+			]);
+			$this->flashSuccess('Položka byla úspěšně smazána.');
 		} catch(Exception $e) {
-			Debugger::log('Destroying of program failed, result: ' .  $e->getMessage(), Debugger::ERROR);
-			$this->flashMessage('Smazání programu se nezdařilo, result: ' . $e->getMessage(), 'error');
+			$this->logError('Destroying of program failed, result: %s', [
+				$e->getMessage()
+			]);
+			$this->flashError('Smazání programu se nezdařilo, result: %s', [
+				$e->getMessage()
+			]);
 		}
 
 		$this->redirect('Program:listing');
@@ -157,11 +201,18 @@ class ProgramPresenter extends BasePresenter
 
 			$this->getEmailer()->tutor($recipients, $tutors->guid, 'program');
 
-			Debugger::log('Sending email to program tutor successfull, result: ' . json_encode($recipients) . ', ' . $tutors->guid, Debugger::INFO);
-			$this->flashMessage('Email lektorovi byl odeslán..', 'ok');
+			$this->logInfo('Sending email to program tutor successfull, result: %s, %s', [
+				json_encode($recipients),
+				$tutors->guid
+			]);
+			$this->flashSuccess('Email lektorovi byl odeslán..');
 		} catch(Exception $e) {
-			Debugger::log('Sending email to program tutor failed, result: ' .  $e->getMessage(), Debugger::ERROR);
-			$this->flashMessage('Email lektorovi nebyl odeslán, result: ' . $e->getMessage(), 'error');
+			$this->logError('Sending email to program tutor failed, result: %s', [
+				$e->getMessage()
+			]);
+			$this->flashError('Email lektorovi nebyl odeslán, result: %s', [
+				$e->getMessage()
+			]);
 		}
 
 		$this->redirect('Program:edit', $id);
@@ -184,7 +235,6 @@ class ProgramPresenter extends BasePresenter
 		} else {
 			$template->display_program = false;
 		}
-		$template->public_program = $this->getMeetingModel()->renderPublicProgramOverview($this->getMeetingId());
 		$template->page_title = 'Srazy VS - veřejný program';
 		$template->style = 'table { border-collapse:separate; width:100%; }
 				td { .width:100%; text-align:center; padding:0px; }
@@ -249,6 +299,33 @@ class ProgramPresenter extends BasePresenter
 	}
 
 	/**
+	 * @return ProgramOverviewControl
+	 */
+	protected function createComponentProgramOverview()
+	{
+		return $this->programOverview->setMeetingId($this->getMeetingId());
+	}
+
+	/**
+	 * @return CategoryStylesControl
+	 */
+	protected function createComponentCategoryStyles(): CategoryStylesControl
+	{
+		return $this->categoryStyles;
+	}
+
+	/**
+	 * @param  ProgramOverviewControl $control
+	 * @return $this
+	 */
+	protected function setProgramOverviewControl(IProgramOverviewControl $control)
+	{
+		$this->programOverview = $control;
+
+		return $this;
+	}
+
+	/**
 	 * @return Emailer
 	 */
 	protected function getEmailer()
@@ -299,6 +376,18 @@ class ProgramPresenter extends BasePresenter
 	protected function setMeetingModel(MeetingModel $model)
 	{
 		$this->meetingModel = $model;
+		return $this;
+	}
+
+	/**
+	 * @param CategoryStylesControl $categoryStyles
+	 *
+	 * @return self
+	 */
+	public function setCategoryStylesControl(CategoryStylesControl $categoryStyles): self
+	{
+		$this->categoryStyles = $categoryStyles;
+
 		return $this;
 	}
 

@@ -1,0 +1,10 @@
+{foreach $weekendDays as $day}
+<table class="public schedule" style="width:100%;">
+	<tr>
+		<td class='day' colspan='2' >{$day}</td>
+	</tr>
+
+	{control blocksByDay $day}
+
+</table>
+{/foreach}
