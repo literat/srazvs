@@ -7,6 +7,7 @@ use App\Repositories\BlockRepository;
 use App\Repositories\CategoryRepository;
 use Nette\Application\UI\Form;
 use Nette\Database\Table\ActiveRow;
+use Nette\Forms\Controls\SubmitButton;
 
 class ProgramForm extends BaseForm
 {
@@ -20,6 +21,11 @@ class ProgramForm extends BaseForm
 	 * @var Closure
 	 */
 	public $onProgramSave;
+
+	/**
+	 * @var Closure
+	 */
+	public $onProgramReset;
 
 	/**
 	 * @var BlockRepository
@@ -85,7 +91,7 @@ class ProgramForm extends BaseForm
 			->setAttribute('cols', 80);
 		$form->addText('tutor', 'Lektor:')
 			->setAttribute('size', 30);
-		$form->addEmail('email', 'E-mail:')
+		$form->addText('email', 'E-mail:')
 			->setAttribute('size', 30);
 		$form->addText('capacity', 'Kapacita:')
 			->setDefaultValue(0)
@@ -105,7 +111,7 @@ class ProgramForm extends BaseForm
 			->onClick[] = [$this, 'processForm'];
 		$form->addSubmit('reset', 'Storno')
 			->setAttribute('class', 'btn-reset')
-			->onClick[] = [$form, 'reset'];
+			->onClick[] = [$this, 'processReset'];
 
 		$form = $this->setupRendering($form);
 
@@ -113,14 +119,25 @@ class ProgramForm extends BaseForm
 	}
 
 	/**
-	 * @param  Form $form
+	 * @param  SubmitButton $button
 	 * @return void
 	 */
-	public function processForm(Form $form)
+	public function processForm(SubmitButton $button)
 	{
-		$program = $form->getValues();
+		$program = $button->getForm()->getValues();
 
 		$this->onProgramSave($this, $program);
+	}
+
+	/**
+	 * @param  SubmitButton $button
+	 * @return void
+	 */
+	public function processReset(SubmitButton $button)
+	{
+		$program = $button->getForm()->getValues();
+
+		$this->onProgramReset($this, $program);
 	}
 
 	/**

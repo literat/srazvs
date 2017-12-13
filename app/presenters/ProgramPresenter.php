@@ -92,6 +92,65 @@ class ProgramPresenter extends BasePresenter
 	}
 
 	/**
+	 * Stores program into storage
+	 *
+	 * @param  Nette\Utils\ArrayHash  $program
+	 * @return boolean
+	 */
+	protected function actionCreate(ArrayHash $program)
+	{
+		try {
+			$this->logInfo('Storing new program.');
+
+			$result = $this->getProgramRepository()->create($program);
+
+			$this->logInfo('Storing of new program with data %s successfull, result: %s', [
+				json_encode($program),
+				json_encode($result),
+			]);
+
+			$this->flashSuccess('Položka byla úspěšně vytvořena');
+		} catch(Exception $e) {
+			$this->logError("Storing of new program failed, result: {$e->getMessage()}");
+			$this->flashError('Položku se nepodařilo vytvořit.');
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Updates program in storage
+	 *
+	 * @param  int                    $id
+	 * @param  Nette\Utils\ArrayHash  $program
+	 * @return boolean
+	 */
+	protected function actionUpdate(int $id, ArrayHash $program)
+	{
+		try {
+			$this->logInfo('Updating program(%s).', [$id]);
+
+			$result = $this->getProgramRepository()->update($id, $program);
+
+			$this->logInfo('Updating of program(%s) with data %s successfull, result: %s', [
+				$id,
+				json_encode($program),
+				json_encode($result),
+			]);
+
+			$this->flashSuccess('Položka byla úspěšně upravena');
+		} catch(Exception $e) {
+			$this->logError('Updating of program(%s) failed, result: %s', [
+				$program->guid,
+				$e->getMessage(),
+			]);
+			$this->flashError('Položku se nepodařilo upravit.');
+		}
+
+		return $result;
+	}
+
+	/**
 	 * @param  integer  $id
 	 * @return void
 	 */
@@ -99,11 +158,11 @@ class ProgramPresenter extends BasePresenter
 	{
 		try {
 			$result = $this->getModel()->delete($id);
-			Debugger::log('Destroying of program successfull, result: ' . json_encode($result), Debugger::INFO);
-			$this->flashMessage('Položka byla úspěšně smazána.', 'ok');
+			$this->logInfo('Destroying of program successfull, result: ' . json_encode($result));
+			$this->flashSuccess('Položka byla úspěšně smazána.');
 		} catch(Exception $e) {
-			Debugger::log('Destroying of program failed, result: ' .  $e->getMessage(), Debugger::ERROR);
-			$this->flashMessage('Smazání programu se nezdařilo, result: ' . $e->getMessage(), 'error');
+			$this->logError('Destroying of program failed, result: ' .  $e->getMessage());
+			$this->flashError('Smazání programu se nezdařilo, result: ' . $e->getMessage());
 		}
 
 		$this->redirect('Program:listing');
@@ -120,11 +179,11 @@ class ProgramPresenter extends BasePresenter
 
 			$this->getEmailer()->tutor($recipients, $tutors->guid, 'program');
 
-			Debugger::log('Sending email to program tutor successfull, result: ' . json_encode($recipients) . ', ' . $tutors->guid, Debugger::INFO);
-			$this->flashMessage('Email lektorovi byl odeslán..', 'ok');
+			$this->logInfo('Sending email to program tutor successfull, result: ' . json_encode($recipients) . ', ' . $tutors->guid);
+			$this->flashSuccess('Email lektorovi byl odeslán..');
 		} catch(Exception $e) {
-			Debugger::log('Sending email to program tutor failed, result: ' .  $e->getMessage(), Debugger::ERROR);
-			$this->flashMessage('Email lektorovi nebyl odeslán, result: ' . $e->getMessage(), 'error');
+			$this->logError('Sending email to program tutor failed, result: ' .  $e->getMessage());
+			$this->flashError('Email lektorovi nebyl odeslán, result: ' . $e->getMessage());
 		}
 
 		$this->redirect('Program:edit', $id);
@@ -194,65 +253,6 @@ class ProgramPresenter extends BasePresenter
 	}
 
 	/**
-	 * Stores program into storage
-	 *
-	 * @param  Nette\Utils\ArrayHash  $program
-	 * @return boolean
-	 */
-	protected function store(ArrayHash $program)
-	{
-		try {
-			$this->logInfo('Storing new program.');
-
-			$result = $this->getProgramRepository()->create($program);
-
-			$this->logInfo('Storing of new program with data %s successfull, result: %s', [
-				json_encode($program),
-				json_encode($result),
-			]);
-
-			$this->flashSuccess('Položka byla úspěšně vytvořena');
-		} catch(Exception $e) {
-			$this->logError("Storing of new program failed, result: {$e->getMessage()}");
-			$this->flashError('Položku se nepodařilo vytvořit.');
-		}
-
-		return $result;
-	}
-
-	/**
-	 * Updates program in storage
-	 *
-	 * @param  int                    $id
-	 * @param  Nette\Utils\ArrayHash  $program
-	 * @return boolean
-	 */
-	protected function update(int $id, ArrayHash $program)
-	{
-		try {
-			$this->logInfo('Updating program(%s).', [$id]);
-
-			$result = $this->getProgramRepository()->update($id, $program);
-
-			$this->logInfo('Updating of program(%s) with data %s successfull, result: %s', [
-				$id,
-				json_encode($program),
-				json_encode($result),
-			]);
-
-			$this->flashSuccess('Položka byla úspěšně upravena');
-		} catch(Exception $e) {
-			$this->logError('Updating of program(%s) failed, result: %s', [
-				$program->guid,
-				$e->getMessage(),
-			]);
-			$this->flashError('Položku se nepodařilo upravit.');
-		}
-
-		return $result;
-	}
-
-	/**
 	 * @return ProgramForm
 	 */
 	protected function createComponentProgramForm(): ProgramForm
@@ -267,10 +267,17 @@ class ProgramPresenter extends BasePresenter
 			unset($program['backlink']);
 
 			if($id) {
-				$this->update($id, $program);
+				$this->actionUpdate($id, $program);
 			} else {
-				$this->store($program);
+				$this->actionCreate($program);
 			}
+
+			$this->redirect($this->getBacklink() ?: 'Program:listing');
+		};
+
+		$control->onProgramReset[] = function(ProgramForm $control, $program) {
+			$this->setBacklink($program['backlink']);
+			unset($program['backlink']);
 
 			$this->redirect($this->getBacklink() ?: 'Program:listing');
 		};
@@ -281,36 +288,38 @@ class ProgramPresenter extends BasePresenter
 	/**
 	 * @return Emailer
 	 */
-	protected function getEmailer()
+	protected function getEmailer(): Emailer
 	{
 		return $this->emailer;
 	}
 
 	/**
 	 * @param  Emailer $emailer
-	 * @return $this
+	 * @return self
 	 */
-	protected function setEmailer(Emailer $emailer)
+	protected function setEmailer(Emailer $emailer): self
 	{
 		$this->emailer = $emailer;
+
 		return $this;
 	}
 
 	/**
 	 * @return BlockModel
 	 */
-	protected function getBlockModel()
+	protected function getBlockModel(): BlockModel
 	{
 		return $this->blockModel;
 	}
 
 	/**
 	 * @param  BlockModel $blockModel
-	 * @return $this
+	 * @return self
 	 */
-	protected function setBlockModel(BlockModel $blockModel)
+	protected function setBlockModel(BlockModel $blockModel): self
 	{
 		$this->blockModel = $blockModel;
+
 		return $this;
 	}
 
