@@ -80,11 +80,11 @@ class ProgramRepository
 
 	/**
 	 * @param  int   $programId
-	 * @return string
+	 * @return array
 	 */
-	public function findVisitors(int $programId): string
+	public function findVisitors(int $programId): array
 	{
-		return $this->getProgramModel()->getProgramVisitors($programId);
+		return $this->getProgramModel()->findProgramVisitors($programId);
 	}
 
 	/**

@@ -8,6 +8,7 @@ use App\Components\Forms\ProgramForm;
 use App\Components\IProgramOverviewControl;
 use App\Components\ProgramOverviewControl;
 use App\Components\PublicProgramOverviewControl;
+use App\Components\ProgramVisitorsControl;
 use App\Models\BlockModel;
 use App\Models\MeetingModel;
 use App\Repositories\ProgramRepository;
@@ -67,6 +68,11 @@ class ProgramPresenter extends BasePresenter
 	private $categoryStyles;
 
 	/**
+	 * @var ProgramVisitorsControl
+	 */
+	private $programVisitors;
+
+	/**
 	 * Prepare model classes and get meeting id
 	 */
 	public function __construct(
@@ -75,7 +81,8 @@ class ProgramPresenter extends BasePresenter
 		MeetingModel $meetingModel,
 		ProgramRepository $programRepository,
 		PublicProgramOverviewControl $publicProgramOverview,
-		CategoryStylesControl $categoryStyles
+		CategoryStylesControl $categoryStyles,
+		ProgramVisitorsControl $programVisitors
 	) {
 		$this->setEmailer($emailer);
 		$this->setBlockModel($blockModel);
@@ -83,6 +90,7 @@ class ProgramPresenter extends BasePresenter
 		$this->setProgramRepository($programRepository);
 		$this->setProgramOverviewControl($publicProgramOverview);
 		$this->setCategoryStylesControl($categoryStyles);
+		$this->setProgramVisitorsControl($programVisitors);
 	}
 
 	/**
@@ -278,7 +286,6 @@ class ProgramPresenter extends BasePresenter
 
 		$template = $this->getTemplate();
 		$template->heading = 'úprava programu';
-		$template->program_visitors = $this->getProgramRepository()->findProgramVisitors($id);
 		$template->program = $program;
 		$template->id = $id;
 
@@ -332,6 +339,14 @@ class ProgramPresenter extends BasePresenter
 	protected function createComponentCategoryStyles(): CategoryStylesControl
 	{
 		return $this->categoryStyles;
+	}
+
+	/**
+	 * @return ProgramVisitorsControl
+	 */
+	protected function createComponentProgramVisitors(): ProgramVisitorsControl
+	{
+		return $this->programVisitors;
 	}
 
 	/**
@@ -422,13 +437,24 @@ class ProgramPresenter extends BasePresenter
 	}
 
 	/**
-	 * @param CategoryStylesControl $categoryStyles
+	 * @param CategoryStylesControl $control
 	 *
 	 * @return self
 	 */
-	public function setCategoryStylesControl(CategoryStylesControl $categoryStyles): self
+	public function setCategoryStylesControl(CategoryStylesControl $control): self
 	{
-		$this->categoryStyles = $categoryStyles;
+		$this->categoryStyles = $control;
+
+		return $this;
+	}
+
+	/**
+	 * @param  ProgramVisitorsControl $control
+	 * @return self
+	 */
+	public function setProgramVisitorsControl(ProgramVisitorsControl $control): self
+	{
+		$this->programVisitors = $control;
 
 		return $this;
 	}
