@@ -114,7 +114,7 @@ class ProgramPresenter extends BasePresenter
 	 * @param  Nette\Utils\ArrayHash  $program
 	 * @return boolean
 	 */
-	protected function actionCreate(ArrayHash $program)
+	public function actionCreate(ArrayHash $program)
 	{
 		try {
 			$this->logInfo('Storing new program.');
@@ -146,7 +146,7 @@ class ProgramPresenter extends BasePresenter
 	 * @param  Nette\Utils\ArrayHash  $program
 	 * @return boolean
 	 */
-	protected function actionUpdate(int $id, ArrayHash $program)
+	public function actionUpdate(int $id, ArrayHash $program)
 	{
 		try {
 			$this->logInfo('Updating program(%s).', [$id]);
