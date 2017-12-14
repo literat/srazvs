@@ -33,6 +33,17 @@ class ProgramRepository
 	}
 
 	/**
+	 * @param int $meetingId
+	 */
+	public function setMeetingId(int $meetingId): self
+	{
+		$this->getProgramModel()->setMeetingId($meetingId);
+		$this->getVisitorModel()->setMeetingId($meetingId);
+
+		return $this;
+	}
+
+	/**
 	 * @return array
 	 */
 	public function all(): array
@@ -47,6 +58,33 @@ class ProgramRepository
 	public function find(int $id): ActiveRow
 	{
 		return $this->getProgramModel()->find($id);
+	}
+
+	/**
+	 * @param  int  $VisitorId
+	 * @return array
+	 */
+	public function findByVisitorId(int $VisitorId): array
+	{
+		return $this->getProgramModels()->findByVisitorId($visitorId);
+	}
+
+	/**
+	 * @param  int    $programId
+	 * @return array
+	 */
+	public function findTutor(int $programId): ActiveRow
+	{
+		return $this->getProgramModel()->getTutor($programId);
+	}
+
+	/**
+	 * @param  int   $programId
+	 * @return string
+	 */
+	public function findVisitors(int $programId): string
+	{
+		return $this->getProgramModel()->getProgramVisitors($programId);
 	}
 
 	/**
@@ -69,6 +107,15 @@ class ProgramRepository
 		$program = $this->transformDisplayInRegValue($program);
 
 		return $this->getProgramModel()->update($id, (array) $program);
+	}
+
+	/**
+	 * @param  int    $id
+	 * @return boolean
+	 */
+	public function delete(int $id)
+	{
+		return $this->getProgramModel()->delete($id);
 	}
 
 	/**
