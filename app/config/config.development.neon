@@ -5,7 +5,7 @@ parameters:
         name: vodni
         user: root
         password: root
-    cacheDir: D:\home\literat\web\wwwroot\skauting\vodni\srazvs/temp/cache
+    cacheDir: D:\home\literat\work\skauting\vodni\srazvs/temp/cache
 
 services:
     mail.mailer:

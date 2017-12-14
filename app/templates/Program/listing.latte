@@ -9,7 +9,7 @@
 
 		<div class='pageRibbon'>seznam programů</div>
 		<div class='link'>
-			<a class='link' href='{$progDir}/new?page=program'>
+			<a class='link' href="{plink Program:new, backlink => 'Program:listing'}">
 				<img src='{$imgDir}icons/new.png' />NOVÝ PROGRAM
 			</a>
 		</div>
@@ -72,7 +72,7 @@
 					{foreach $programs as $row}
 				<tr class='radek1'>
 					<td>
-						<a href='{$progDir}/edit/{$row['id']}?page=program' title='Upravit'>
+						<a href='{$progDir}/edit/{$row['id']}?backlink=Program:listing' title='Upravit'>
 							<img class='edit' src='{$imgDir}icons/edit.gif' />
 						</a>
 					</td>

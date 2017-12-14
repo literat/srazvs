@@ -10,6 +10,10 @@ use App\Models\MeetingModel;
 use App\Models\ProgramModel;
 use App\Services\Emailer;
 use Tracy\Debugger;
+use App\Repositories\ProgramRepository;
+use App\Components\Forms\Factories\IProgramFormFactory;
+use App\Components\Forms\ProgramForm;
+use Nette\Utils\ArrayHash;
 
 /**
  * Program controller
@@ -43,6 +47,16 @@ class ProgramPresenter extends BasePresenter
 	private $meetingModel;
 
 	/**
+	 * @var ProgramRepository
+	 */
+	private $programRepository;
+
+	/**
+	 * @var IProgramFormFactory
+	 */
+	private $programFormFactory;
+
+	/**
 	 * @var ProgramOverviewControl
 	 */
 	private $programOverview;
@@ -60,6 +74,7 @@ class ProgramPresenter extends BasePresenter
 		Emailer $emailer,
 		BlockModel $blockModel,
 		MeetingModel $meetingModel,
+		ProgramRepository $programRepository,
 		PublicProgramOverviewControl $publicProgramOverview,
 		CategoryStylesControl $categoryStyles
 	) {
@@ -67,8 +82,17 @@ class ProgramPresenter extends BasePresenter
 		$this->setEmailer($emailer);
 		$this->setBlockModel($blockModel);
 		$this->setMeetingModel($meetingModel);
+		$this->setProgramRepository($programRepository);
 		$this->setProgramOverviewControl($publicProgramOverview);
 		$this->setCategoryStylesControl($categoryStyles);
+	}
+
+	/**
+	 * @param  IProgramFormFactory $factory
+	 */
+	public function injectProgramFormFactory(IProgramFormFactory $factory)
+	{
+		$this->programFormFactory = $factory;
 	}
 
 	/**
@@ -85,27 +109,21 @@ class ProgramPresenter extends BasePresenter
 	}
 
 	/**
-	 * @return void
+	 * Stores program into storage
+	 *
+	 * @param  Nette\Utils\ArrayHash  $program
+	 * @return boolean
 	 */
-	public function actionCreate()
+	public function actionCreate(ArrayHash $program)
 	{
-		$model = $this->getModel();
-		$data = $this->getHttpRequest()->getPost();
-
 		try {
-			if(array_key_exists('backlink', $data) && isset($data['backlink'])) {
-				$this->setBacklink($data['backlink']);
-				unset($data['backlink']);
-			}
+			$this->logInfo('Storing new program.');
 
-			if(!array_key_exists('display_in_reg', $data)) {
-				$data['display_in_reg'] = 1;
-			}
+			$result = $this->getProgramRepository()->create($program);
 
-			$result = $this->getModel()->create($data);
-
-			$this->logInfo('Creation of program successfull, result: %s', [
-				json_encode($result)
+			$this->logInfo('Storing of new program with data %s successfull, result: %s', [
+				json_encode($program),
+				json_encode($result),
 			]);
 
 			$this->flashSuccess('Položka byla úspěšně vytvořena');
@@ -115,55 +133,43 @@ class ProgramPresenter extends BasePresenter
 				$e->getMessage()
 			]);
 
-			$this->flashError('Záznam se nepodařilo uložit, result: %s', [
-				$e->getMessage()
-			]);
+			$this->flashError('Položku se nepodařilo vytvořit.');
 		}
 
-		$this->redirect($this->getBacklink() ?: 'Program:listing');
+		return $result;
 	}
 
 	/**
-	 * @param  integer $id
-	 * @return void
+	 * Updates program in storage
+	 *
+	 * @param  int                    $id
+	 * @param  Nette\Utils\ArrayHash  $program
+	 * @return boolean
 	 */
-	public function actionUpdate($id)
+	public function actionUpdate(int $id, ArrayHash $program)
 	{
-		$model = $this->getModel();
-		$data = $this->getHttpRequest()->getPost();
-
 		try {
-			if(array_key_exists('backlink', $data) && isset($data['backlink'])) {
-				$this->setBacklink($data['backlink']);
-				unset($data['backlink']);
-			}
+			$this->logInfo('Updating program(%s).', [$id]);
 
-			if(!array_key_exists('display_in_reg', $data)) {
-				$data['display_in_reg'] = 1;
-			}
+			$result = $this->getProgramRepository()->update($id, $program);
 
-			$result = $this->getModel()->update($id, $data);
-
-			$this->logInfo('Modification of program id %s with data %s successfull, result: %s', [
+			$this->logInfo('Updating of program(%s) with data %s successfull, result: %s', [
 				$id,
-				json_encode($data),
-				json_encode($result)
+				json_encode($program),
+				json_encode($result),
 			]);
 
-			$this->flashSuccess('Položka byla úspěšně upravena.');
+			$this->flashSuccess('Položka byla úspěšně upravena');
 		} catch(Exception $e) {
-			$this->logError('Modification of program id %s failed, result: %s', [
-				$id,
-				$e->getMessage()
+			$this->logError('Updating of program(%s) failed, result: %s', [
+				$program->guid,
+				$e->getMessage(),
 			]);
 
-			$this->flashError('Modification of program id %s failed, result: %s', [
-				$id,
-				$e->getMessage()
-			]);
+			$this->flashError('Položku se nepodařilo upravit.');
 		}
 
-		$this->redirect($this->getBacklink() ?: 'Program:listing');
+		return $result;
 	}
 
 	/**
@@ -174,6 +180,7 @@ class ProgramPresenter extends BasePresenter
 	{
 		try {
 			$result = $this->getModel()->delete($id);
+
 			$this->logInfo('Destroying of program successfull, result: %s', [
 				json_encode($result)
 			]);
@@ -205,7 +212,7 @@ class ProgramPresenter extends BasePresenter
 				json_encode($recipients),
 				$tutors->guid
 			]);
-			$this->flashSuccess('Email lektorovi byl odeslán..');
+			$this->flashSuccess('Email lektorovi byl odeslán.');
 		} catch(Exception $e) {
 			$this->logError('Sending email to program tutor failed, result: %s', [
 				$e->getMessage()
@@ -247,10 +254,8 @@ class ProgramPresenter extends BasePresenter
 	 */
 	public function renderListing()
 	{
-		$model = $this->getModel();
 		$template = $this->getTemplate();
-
-		$template->programs = $model->all();
+		$template->programs = $this->getProgramRepository()->all();
 		$template->mid = $this->meetingId;
 		$template->heading = $this->heading;
 	}
@@ -261,17 +266,7 @@ class ProgramPresenter extends BasePresenter
 	public function renderNew()
 	{
 		$template = $this->getTemplate();
-
 		$template->heading = 'nový program';
-		$template->page = $this->getHttpRequest()->getQuery('page');
-		$template->error_name = '';
-		$template->error_description = '';
-		$template->error_tutor = '';
-		$template->error_email = '';
-		$template->error_material = '';
-		$template->display_in_reg_checkbox = $this->renderHtmlCheckBox('display_in_reg', 0, 1);
-		$template->block_select = $this->getBlockModel()->renderHtmlSelect(null);
-		$template->selectedCategory	= null;
 	}
 
 	/**
@@ -281,21 +276,48 @@ class ProgramPresenter extends BasePresenter
 	public function renderEdit($id)
 	{
 		$this->programId = $id;
-		$program = $this->getModel()->find($id);
+		$program = $this->getProgramRepository()->find($id);
 
 		$template = $this->getTemplate();
 		$template->heading = 'úprava programu';
-		$template->error_name = '';
-		$template->error_description = '';
-		$template->error_tutor = '';
-		$template->error_email = '';
-		$template->error_material = '';
-		$template->display_in_reg_checkbox = $this->renderHtmlCheckBox('display_in_reg', 1, $program->display_in_reg);
-		$template->block_select = $this->getBlockModel()->renderHtmlSelect($program->block);
-		$template->selectedCategory	= $program->category;
 		$template->program_visitors = $this->getModel()->getProgramVisitors($id);
 		$template->program = $program;
 		$template->id = $id;
+
+		$this['programForm']->setDefaults($program);
+	}
+
+	/**
+	 * @return ProgramForm
+	 */
+	protected function createComponentProgramForm(): ProgramForm
+	{
+		$control = $this->programFormFactory->create();
+		$control->setMeetingId($this->getMeetingId());
+		$control->onProgramSave[] = function(ProgramForm $control, $program) {
+			//$guid = $this->getParameter('guid');
+			$id = $this->getParameter('id');
+
+			$this->setBacklink($program['backlink']);
+			unset($program['backlink']);
+
+			if($id) {
+				$this->actionUpdate($id, $program);
+			} else {
+				$this->actionCreate($program);
+			}
+
+			$this->redirect($this->getBacklink() ?: 'Program:listing');
+		};
+
+		$control->onProgramReset[] = function(ProgramForm $control, $program) {
+			$this->setBacklink($program['backlink']);
+			unset($program['backlink']);
+
+			$this->redirect($this->getBacklink() ?: 'Program:listing');
+		};
+
+		return $control;
 	}
 
 	/**
@@ -328,43 +350,45 @@ class ProgramPresenter extends BasePresenter
 	/**
 	 * @return Emailer
 	 */
-	protected function getEmailer()
+	protected function getEmailer(): Emailer
 	{
 		return $this->emailer;
 	}
 
 	/**
 	 * @param  Emailer $emailer
-	 * @return $this
+	 * @return self
 	 */
-	protected function setEmailer(Emailer $emailer)
+	protected function setEmailer(Emailer $emailer): self
 	{
 		$this->emailer = $emailer;
+
 		return $this;
 	}
 
 	/**
 	 * @return BlockModel
 	 */
-	protected function getBlockModel()
+	protected function getBlockModel(): BlockModel
 	{
 		return $this->blockModel;
 	}
 
 	/**
 	 * @param  BlockModel $blockModel
-	 * @return $this
+	 * @return self
 	 */
-	protected function setBlockModel(BlockModel $blockModel)
+	protected function setBlockModel(BlockModel $blockModel): self
 	{
 		$this->blockModel = $blockModel;
+
 		return $this;
 	}
 
 	/**
 	 * @return MeetingModel
 	 */
-	protected function getMeetingModel()
+	protected function getMeetingModel(): MeetingModel
 	{
 		return $this->meetingModel;
 	}
@@ -373,9 +397,29 @@ class ProgramPresenter extends BasePresenter
 	 * @param  MeetingModel $model
 	 * @return $this
 	 */
-	protected function setMeetingModel(MeetingModel $model)
+	protected function setMeetingModel(MeetingModel $model): self
 	{
 		$this->meetingModel = $model;
+
+		return $this;
+	}
+
+	/**
+	 * @return ProgramRepository
+	 */
+	protected function getProgramRepository(): ProgramRepository
+	{
+		return $this->programRepository;
+	}
+
+	/**
+	 * @param  ProgramRepository $model
+	 * @return $this
+	 */
+	protected function setProgramRepository(ProgramRepository $repository):self
+	{
+		$this->programRepository = $repository;
+
 		return $this;
 	}
 

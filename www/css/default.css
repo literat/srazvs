@@ -356,14 +356,15 @@ a.pageIndexControl:hover {color:#ce8b10;}
  display:block;
 }
 
-.ok {
- color: #00bb00;
- font-weight:bold;
- padding:2px;
- margin:2px 0px 2px 0px;
- border:1px solid #00bb00;
- background-color: #eeffee;
- display:block;
+.ok,
+.success {
+	color: #00bb00;
+	font-weight:bold;
+	padding:2px;
+	margin:2px 0px 2px 0px;
+	border:1px solid #00bb00;
+	background-color: #eeffee;
+	display:block;
 }
 
 /* ----------------------------------------------------------------------------------------------------------
@@ -442,7 +443,11 @@ select {
 	padding:3px;
 	min-width:50px;}
 
-table.form {width:100%;}
+table.form {
+	width:100%;
+	padding-bottom: 5px;
+}
+
 td.label {width:120px;}
 
 .picker {
@@ -481,7 +486,8 @@ td.label {width:120px;}
 
 .button:hover {color:#ce8b10;}
 
-a.link, button {
+a.link,
+button {
 	padding:3px 7px 3px 3px;
 	margin-bottom:2px;
 	display:inline-block;
@@ -493,7 +499,20 @@ a.link, button {
 	font-size: 13px;
 }
 
-a.link:hover, button:hover {
+input[type="submit"] {
+	padding:3px 7px 3px 3px;
+	margin-bottom:2px;
+	display:inline-block;
+	font-weight:bold;
+	cursor:pointer;
+	border:none;
+	font-size: 13px;
+	background-color: inherit;
+	margin-left: 4px;
+}
+
+a.link:hover,
+button:hover {
 	background-color:#7DB9FF;
 	color:#000000;
 }
@@ -530,6 +549,39 @@ div.programs.patek.pomoc-s-plachtenim {
 	display: none;
 }
 */
+
+.button-line {
+
+}
+
+.button-line div {
+	display: inline;
+	padding: 4px;
+}
+
+.button-line div:hover {
+	display: inline;
+	background-color:#7DB9FF;
+	color:#000000;
+}
+
+span.save-icon,
+span.reset-icon {
+	display: inline-block;
+	width: 17px;
+	height: 17px;
+	background-repeat: no-repeat;
+	margin-bottom: 2px;
+	vertical-align: middle;
+}
+
+span.save-icon {
+	background-image: url('../images/icons/save.png')
+}
+
+span.reset-icon {
+	background-image: url('../images/icons/storno.png')
+}
 
 /*---------------------------------------------------------------------------------------------------------
 		8) Help

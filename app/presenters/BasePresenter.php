@@ -8,13 +8,15 @@ use Nette\Utils\Strings;
 use Nette\Http\Request;
 use App\Models\SunlightModel;
 use Nette\Caching\Cache;
-use Tracy\Debugger;
+use App\Traits\Loggable;
 
 /**
  * Base presenter for all application presenters.
  */
 abstract class BasePresenter extends Nette\Application\UI\Presenter
 {
+
+	use Loggable;
 
 	const FLASH_TYPE_OK    = 'success';
 	const FLASH_TYPE_ERROR = 'error';
@@ -495,39 +497,6 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 	protected function flashError(string $message = '')
 	{
 		$this->flashMessage($message, self::FLASH_TYPE_ERROR);
-	}
-
-	/**
-	 * Logs info message
-	 *
-	 * @param  string $message   Formatted message
-	 * @param  array  $arguments Message arguments
-	 */
-	protected function logInfo(string $message = '', array $arguments = [])
-	{
-		Debugger::log(vsprintf($message, $arguments), Debugger::INFO);
-	}
-
-	/**
-	 * Logs warning message
-	 *
-	 * @param  string $message   Formatted message
-	 * @param  array  $arguments Message arguments
-	 */
-	protected function logWarning(string $message = '', array $arguments = [])
-	{
-		Debugger::log(vsprintf($message, $arguments), Debugger::WARNING);
-	}
-
-	/**
-	 * Logs error message
-	 *
-	 * @param  string $message   Formatted message
-	 * @param  array  $arguments Message arguments
-	 */
-	protected function logError(string $message = '', array $arguments = [])
-	{
-		Debugger::log(vsprintf($message, $arguments), Debugger::ERROR);
 	}
 
 }

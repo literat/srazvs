@@ -73,40 +73,6 @@ class BlockModel extends BaseModel
 	}
 
 	/**
-	 * Render select box of blocks
-	 *
-	 * @param	int		selected option
-	 * @return	string	html select box
-	 */
-	public function renderHtmlSelect($blockId)
-	{
-		$blocks = $this->findByMeeting($this->getMeetingId());
-
-		$htmlSelect = "<select style='width: 300px; font-size: 10px' name='block'>\n";
-
-		foreach($blocks as $block){
-			if($block->id == $blockId) {
-				$selected = 'selected';
-			} else {
-				$selected = '';
-			}
-			$htmlSelect .= sprintf(
-				"<option %s value='%d'>%s, %s - %s : %s</option>\n",
-				$selected,
-				$block->id,
-				$block->day,
-				$block->from->format('%H:%I:%S'),
-				$block->to->format('%H:%I:%S'),
-				$block->name
-			);
-		}
-
-		$htmlSelect .= "</select>\n";
-
-		return $htmlSelect;
-	}
-
-	/**
 	 * Return blocks that contents programs
 	 *
 	 * @param	int		meeting ID

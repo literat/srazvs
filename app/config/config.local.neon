@@ -105,8 +105,12 @@ services:
     - App\Services\ProgramService
     - App\Services\CategoryService
     - App\Services\AnnotationService
+    - App\Repositories\ProgramRepository
+    - App\Repositories\BlockRepository
+    - App\Repositories\CategoryRepository
     - App\Components\Forms\Factories\IRegistrationFormFactory
     - App\Components\Forms\Factories\IAnnotationFormFactory
+    - App\Components\Forms\Factories\IProgramFormFactory
     - App\Services\Translators\CsTranslator
 
 extensions:
