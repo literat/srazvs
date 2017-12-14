@@ -10,7 +10,7 @@ abstract class AProgramOverviewControl extends BaseControl implements IProgramOv
 	const TEMPLATE_NAME = '';
 
 	/**
-	 * @var BlocksByDayControl
+	 * @var IBlocksByDayControl
 	 */
 	private $blocksByDay;
 
@@ -30,7 +30,7 @@ abstract class AProgramOverviewControl extends BaseControl implements IProgramOv
 	}
 
 	/**
-	 * @return BlocksByDayControl
+	 * @return IBlocksByDayControl
 	 */
 	protected function createComponentBlocksByDay(): IBlocksByDayControl
 	{
@@ -38,7 +38,7 @@ abstract class AProgramOverviewControl extends BaseControl implements IProgramOv
 	}
 
 	/**
-	 * @param  BlocksByDayControl $control
+	 * @param  IBlocksByDayControl $control
 	 * @return self
 	 */
 	protected function setBlocksBayControl(IBlocksByDayControl $control): self

@@ -10,7 +10,7 @@ abstract class ABlocksByDayControl extends BaseControl implements IBlocksByDayCo
 	const TEMPLATE_NAME = '';
 
 	/**
-	 * @var ProgramsControl
+	 * @var IProgramsControl
 	 */
 	private $programsControl;
 

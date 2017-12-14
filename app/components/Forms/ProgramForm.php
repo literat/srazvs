@@ -80,7 +80,7 @@ class ProgramForm extends BaseForm
 
 		$form->addText('name', 'Název:')
 			->setRequired(static::MESSAGE_REQUIRED)
-			->addRule(Form::MAX_LENGTH, static::MESSAGE_MAX_LENGTH, 30)
+			->addRule(Form::MAX_LENGTH, static::MESSAGE_MAX_LENGTH, 50)
 			->setAttribute('size', 50)
 			->getLabelPrototype()->setAttribute('class', 'required');
 		$form->addTextArea('description', 'Popis:')
