@@ -1,0 +1,11 @@
+{if $programs}
+<table>
+	<tr>
+		{foreach $programs as $program}
+		<td class='category cat-{$program->style}' style='text-align:center;'>
+			<a class="programLink" href="#" rel="programDetail" title="{control publicProgramDetail $program->id}">{$program->name}</a>
+		</td>
+		{/foreach}
+	</tr>
+</table>
+{/if}

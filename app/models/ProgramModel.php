@@ -484,41 +484,6 @@ class ProgramModel extends BaseModel
 		return $html;
 	}
 
-	public function getDetail($id, $type, $httpEncoding)
-	{
-		$data = $this->database
-			->table('kk_' . $type . 's')
-			->where('id ? AND deleted ?', $id, '0')
-			->limit(1)
-			->fetch();
-
-		$name = $data['name'];
-		$description = $data['description'];
-		$tutor = $data['tutor'];
-		$email = $data['email'];
-
-		if($type == "program"){
-			$capacity = $data['capacity'];
-
-			$countData = $this->database
-				->query('SELECT COUNT(visitor) AS visitors
-						 FROM `kk_visitor-program` AS visprog
-						 LEFT JOIN kk_visitors AS vis ON vis.id = visprog.visitor
-						 WHERE program = ? AND vis.deleted = ?',
-						 $data->id, '0')->fetch();
-
-			$inner_html = "<tr>\n";
-			$inner_html .= " <td class=\"label\">Obsazenost programu:</td>\n";
-			$inner_html .= " <td class=\"text\">".$countData['visitors']."/".$capacity."</td>\n";
-		    $inner_html .= "</tr>\n";
-		}
-		else $inner_html = "";
-
-		$html = '<html><head><meta http-equiv="Content-Type" content="text/html; charset='.$httpEncoding.'" /></head><body><style>td.text {text-align:left;}</style><table class="form"><tr><td class="label">Program:</td><td class="text">'.$name.'</td></tr><tr><td class="label">Popis:</td><td class="text">'.$description.'</td></tr><tr><td class="label">Lektor:</td><td class="text">'.$tutor.'</td></tr><tr><td class="label">E-mail:</td><td class="text"><a href="mailto:'.$email.'" title="e-mail">'.$email.'</a></td></tr>'.$inner_html.'</table></body></html>';
-
-		return $html;
-	}
-
 	/**
 	 * Get tutor e-mail address
 	 *
@@ -527,7 +492,7 @@ class ProgramModel extends BaseModel
 	 */
 	public function getTutor($id)
 	{
-		return $this->database
+		return $this->getDatabase()
 			->table($this->getTable())
 			->select('guid, email, tutor')
 			->where('id ? AND deleted ?', $id, '0')

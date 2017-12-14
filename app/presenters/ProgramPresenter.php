@@ -2,9 +2,12 @@
 
 namespace App\Presenters;
 
-use App\Models\ProgramModel;
+use App\Components\PublicProgramOverviewControl;
+use App\Components\CategoryStylesControl;
+use App\Components\IProgramOverviewControl;
 use App\Models\BlockModel;
 use App\Models\MeetingModel;
+use App\Models\ProgramModel;
 use App\Services\Emailer;
 use Tracy\Debugger;
 use App\Repositories\ProgramRepository;
@@ -54,6 +57,16 @@ class ProgramPresenter extends BasePresenter
 	private $programFormFactory;
 
 	/**
+	 * @var ProgramOverviewControl
+	 */
+	private $programOverview;
+
+	/**
+	 * @var CategoryStylesControl
+	 */
+	private $categoryStyles;
+
+	/**
 	 * Prepare model classes and get meeting id
 	 */
 	public function __construct(
@@ -61,13 +74,17 @@ class ProgramPresenter extends BasePresenter
 		Emailer $emailer,
 		BlockModel $blockModel,
 		MeetingModel $meetingModel,
-		ProgramRepository $programRepository
+		ProgramRepository $programRepository,
+		PublicProgramOverviewControl $publicProgramOverview,
+		CategoryStylesControl $categoryStyles
 	) {
 		$this->setModel($model);
 		$this->setEmailer($emailer);
 		$this->setBlockModel($blockModel);
 		$this->setMeetingModel($meetingModel);
 		$this->setProgramRepository($programRepository);
+		$this->setProgramOverviewControl($publicProgramOverview);
+		$this->setCategoryStylesControl($categoryStyles);
 	}
 
 	/**
@@ -111,7 +128,11 @@ class ProgramPresenter extends BasePresenter
 
 			$this->flashSuccess('Položka byla úspěšně vytvořena');
 		} catch(Exception $e) {
-			$this->logError("Storing of new program failed, result: {$e->getMessage()}");
+			$this->logError('Creation of program with data %s failed, result: %s', [
+				json_encode($data),
+				$e->getMessage()
+			]);
+
 			$this->flashError('Položku se nepodařilo vytvořit.');
 		}
 
@@ -144,6 +165,7 @@ class ProgramPresenter extends BasePresenter
 				$program->guid,
 				$e->getMessage(),
 			]);
+
 			$this->flashError('Položku se nepodařilo upravit.');
 		}
 
@@ -158,11 +180,18 @@ class ProgramPresenter extends BasePresenter
 	{
 		try {
 			$result = $this->getModel()->delete($id);
-			$this->logInfo('Destroying of program successfull, result: ' . json_encode($result));
+
+			$this->logInfo('Destroying of program successfull, result: %s', [
+				json_encode($result)
+			]);
 			$this->flashSuccess('Položka byla úspěšně smazána.');
 		} catch(Exception $e) {
-			$this->logError('Destroying of program failed, result: ' .  $e->getMessage());
-			$this->flashError('Smazání programu se nezdařilo, result: ' . $e->getMessage());
+			$this->logError('Destroying of program failed, result: %s', [
+				$e->getMessage()
+			]);
+			$this->flashError('Smazání programu se nezdařilo, result: %s', [
+				$e->getMessage()
+			]);
 		}
 
 		$this->redirect('Program:listing');
@@ -179,11 +208,18 @@ class ProgramPresenter extends BasePresenter
 
 			$this->getEmailer()->tutor($recipients, $tutors->guid, 'program');
 
-			$this->logInfo('Sending email to program tutor successfull, result: ' . json_encode($recipients) . ', ' . $tutors->guid);
-			$this->flashSuccess('Email lektorovi byl odeslán..');
+			$this->logInfo('Sending email to program tutor successfull, result: %s, %s', [
+				json_encode($recipients),
+				$tutors->guid
+			]);
+			$this->flashSuccess('Email lektorovi byl odeslán.');
 		} catch(Exception $e) {
-			$this->logError('Sending email to program tutor failed, result: ' .  $e->getMessage());
-			$this->flashError('Email lektorovi nebyl odeslán, result: ' . $e->getMessage());
+			$this->logError('Sending email to program tutor failed, result: %s', [
+				$e->getMessage()
+			]);
+			$this->flashError('Email lektorovi nebyl odeslán, result: %s', [
+				$e->getMessage()
+			]);
 		}
 
 		$this->redirect('Program:edit', $id);
@@ -206,7 +242,6 @@ class ProgramPresenter extends BasePresenter
 		} else {
 			$template->display_program = false;
 		}
-		$template->public_program = $this->getMeetingModel()->renderPublicProgramOverview($this->getMeetingId());
 		$template->page_title = 'Srazy VS - veřejný program';
 		$template->style = 'table { border-collapse:separate; width:100%; }
 				td { .width:100%; text-align:center; padding:0px; }
@@ -286,6 +321,33 @@ class ProgramPresenter extends BasePresenter
 	}
 
 	/**
+	 * @return ProgramOverviewControl
+	 */
+	protected function createComponentProgramOverview()
+	{
+		return $this->programOverview->setMeetingId($this->getMeetingId());
+	}
+
+	/**
+	 * @return CategoryStylesControl
+	 */
+	protected function createComponentCategoryStyles(): CategoryStylesControl
+	{
+		return $this->categoryStyles;
+	}
+
+	/**
+	 * @param  ProgramOverviewControl $control
+	 * @return $this
+	 */
+	protected function setProgramOverviewControl(IProgramOverviewControl $control)
+	{
+		$this->programOverview = $control;
+
+		return $this;
+	}
+
+	/**
 	 * @return Emailer
 	 */
 	protected function getEmailer(): Emailer
@@ -357,6 +419,18 @@ class ProgramPresenter extends BasePresenter
 	protected function setProgramRepository(ProgramRepository $repository):self
 	{
 		$this->programRepository = $repository;
+
+		return $this;
+	}
+
+	/**
+	 * @param CategoryStylesControl $categoryStyles
+	 *
+	 * @return self
+	 */
+	public function setCategoryStylesControl(CategoryStylesControl $categoryStyles): self
+	{
+		$this->categoryStyles = $categoryStyles;
 
 		return $this;
 	}

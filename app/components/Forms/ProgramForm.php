@@ -97,7 +97,7 @@ class ProgramForm extends BaseForm
 			->setDefaultValue(0)
 			->setAttribute('size', 10)
 			->setAttribute('placeholder', 0);
-		$form->addRadioList('display_in_reg', 'Zobrazit v registraci:', [0 => 'Ano', 1 => 'Ne'])
+		$form->addRadioList('display_in_reg', 'Zobrazit v registraci:', [1 => 'Ano', 0 => 'Ne'])
 			->getSeparatorPrototype()->setName(null);
 		$form->addSelect('block', 'Blok:', $this->buildBlockSelect());
 		$form->addSelect('category', 'Kategorie:', $this->buildCategorySelect());
@@ -112,6 +112,8 @@ class ProgramForm extends BaseForm
 		$form->addSubmit('reset', 'Storno')
 			->setAttribute('class', 'btn-reset')
 			->onClick[] = [$this, 'processReset'];
+
+		$form->setDefaults(['display_in_reg' => 1]);
 
 		$form = $this->setupRendering($form);
 
