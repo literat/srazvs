@@ -1,3 +1,9 @@
 # .scrutinizer.yml
-tools:
-    external_code_coverage: true
+build:
+    tests:
+        override:
+            -
+                command: 'vendor/nette/tester/Tester/tester -c tests/php-unix.ini -j 10 --coverage tests/unit/coverage.xml --coverage-src app/ tests/unit'
+                coverage:
+                    file: 'tests/unit/coverage.xml'
+                    format: 'clover'
