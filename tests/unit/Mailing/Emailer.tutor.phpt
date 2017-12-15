@@ -4,10 +4,11 @@
  * Test: App\Emailer tutor.
  */
 
+use App\Services\Emailer;
 use Mockery\MockInterface;
 use Nette\Mail\Message;
+use Nette\Utils\ArrayHash;
 use Tester\Assert;
-use App\Services\Emailer;
 
 //require_once __DIR__ . '/../../inc/define.inc.php';
 require_once __DIR__ . '/../bootstrap.php';
@@ -29,9 +30,11 @@ class EmailerTutorTest extends Tester\TestCase
 
 	public function testSendingTutor()
 	{
-		$recipient = array(
-			'prilis.zlutoucky@kun.cz' => 'Příliš žluťoučký kůň',
-		);
+		$recipient = [
+			'email' => 'prilis.zlutoucky@kun.cz',
+			'name'  => 'Příliš žluťoučký kůň',
+		];
+		$recipient = [ArrayHash::from($recipient)];
 		$hash = 12345;
 		$type = 'block';
 
@@ -103,11 +106,19 @@ EOD
 
 	public function testSendingMultipleTutors()
 	{
-		$recipient = array(
-			'prilis.zlutoucky@kun.cz'	=> 'Příliš žluťoučký kůň',
-			'info@example.com'			=> 'Info',
-			'john@doe.com'				=> 'John Doe',
-		);
+		$recipient = [
+			[
+				'email' => 'prilis.zlutoucky@kun.cz',
+				'name'  => 'Příliš žluťoučký kůň',
+			], [
+				'email' => 'info@example.com',
+				'name'  => 'Info',
+			], [
+				'email' => 'john@doe.com',
+				'name'  => 'John Doe',
+			],
+		];
+		$recipient = ArrayHash::from($recipient);
 		$hash = 12345;
 		$type = 'block';
 
@@ -180,11 +191,20 @@ EOD
 
 	public function testSendingMultipleTutorsWithoutNames()
 	{
-		$recipient = array(
-			'prilis.zlutoucky@kun.cz'	=> '',
-			'info@example.com'			=> '',
-			'john@doe.com'				=> '',
-		);		$hash = 12345;
+		$recipient = [
+			[
+				'email' => 'prilis.zlutoucky@kun.cz',
+				'name'  => '',
+			], [
+				'email' => 'info@example.com',
+				'name'  => '',
+			], [
+				'email' => 'john@doe.com',
+				'name'  => '',
+			],
+		];
+		$recipient = ArrayHash::from($recipient);
+		$hash = 12345;
 		$type = 'block';
 
 		$this->mailer->tutor($recipient, $hash, $type);

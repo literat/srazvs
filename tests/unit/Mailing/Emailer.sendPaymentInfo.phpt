@@ -4,10 +4,11 @@
  * Test: App\Emailer sendPaymentInfo.
  */
 
+use App\Services\Emailer;
 use Mockery\MockInterface;
 use Nette\Mail\Message;
+use Nette\Utils\ArrayHash;
 use Tester\Assert;
-use App\Services\Emailer;
 
 require_once __DIR__ . '/../bootstrap.php';
 require_once __DIR__ . '/TestMailer.php';
@@ -25,9 +26,11 @@ class EmailerPaymentInfoTest extends Tester\TestCase
 
 	public function testSendingPaymentInfoAdvance()
 	{
-		$recipient = array(
-			'prilis.zlutoucky@kun.cz' => 'Příliš žluťoučký kůň',
-		);
+		$recipient = [
+			'email' => 'prilis.zlutoucky@kun.cz',
+			'name'  => 'Příliš žluťoučký kůň',
+		];
+		$recipient = [ArrayHash::from($recipient)];
 		$type = 'advance';
 
 		$this->mailer->sendPaymentInfo($recipient, $type);

@@ -4,10 +4,11 @@
  * Test: App\Services\Emailer sendRegistrationSummary.
  */
 
+use App\Emailer;
 use Mockery\MockInterface;
 use Nette\Mail\Message;
+use Nette\Utils\ArrayHash;
 use Tester\Assert;
-use App\Emailer;
 
 require_once __DIR__ . '/../bootstrap.php';
 require_once __DIR__ . '/TestMailer.php';
@@ -25,9 +26,11 @@ class EmailerRegistrationSummaryTest extends Tester\TestCase
 
 	public function testSendingRegistrationSummary()
 	{
-		$recipient = array(
-			'prilis.zlutoucky@kun.cz' => 'Příliš žluťoučký kůň',
-		);
+		$recipient = [
+			'email' => 'prilis.zlutoucky@kun.cz',
+			'name'  => 'Příliš žluťoučký kůň',
+		];
+		$recipient = [ArrayHash::from($recipient)];
 		$hash = 12345;
 		$code4bank = 'CD82';
 
