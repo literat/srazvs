@@ -490,6 +490,16 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 	}
 
 	/**
+	 * Flashes failure message
+	 *
+	 * @param  string $message Message
+	 */
+	protected function flashFailure(string $message = '')
+	{
+		$this->flashMessage($message, self::FLASH_TYPE_ERROR);
+	}
+
+	/**
 	 * Flashes error message
 	 *
 	 * @param  string $message Message

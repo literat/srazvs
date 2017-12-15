@@ -39,14 +39,14 @@ class Emailer
 	 * @param	array	bcc
 	 * @return	bool	true | false (log the exception)
 	 */
-	public function sendMail(array $recipient, $subject, $body, array $bccMail = NULL)
+	public function sendMail($recipients, $subject, $body, array $bccMail = NULL)
 	{
 		$message = new Message;
 		$message->setFrom('srazyvs@hkvs.cz', 'Srazy VS');
 
-		foreach($recipient as $mail => $name) {
+		foreach($recipients as $recipient) {
 			// add recipient address and name
-			$message->addTo($mail, $name);
+			$message->addTo($recipient->email, $recipient->name);
 		}
 		// add bcc
 		if(!empty($bccMail)) {
@@ -97,7 +97,7 @@ class Emailer
 	 * @param	string	program | block
 	 * @return	mixed	true | error information
 	 */
-	public function tutor(array $recipients, $guid, $type)
+	public function tutor($recipients, $guid, $type)
 	{
 		$lang['block']['cs'] = "bloku";
 		$lang['program']['cs'] = "programu";

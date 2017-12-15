@@ -182,7 +182,7 @@ class ProgramRepository
 
 	/**
 	 * @param  VisitorModel $model
-	 * @return VisitorService
+	 * @return self
 	 */
 	protected function setVisitorModel(VisitorModel $model): self
 	{

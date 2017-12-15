@@ -378,16 +378,17 @@ class VisitorModel extends BaseModel
 	 * @param	string	type of payment (pay | advance)
 	 * @return	string	error message or true
 	 */
-	public function payCharge($query_id, $type)
+	public function payCharge($ids, $type)
 	{
-		$billData = $this->getBill($query_id);
+		$bill = $this->getBill($ids)['bill'];
+		$cost = $this->Meeting->getPrice('cost');
 
-		if($billData['bill'] < $this->Meeting->getPrice('cost')) {
-			$bill = array('bill' => $this->Meeting->getPrice($type));
+		if($bill < $cost) {
+			$newBill = ['bill' => $this->Meeting->getPrice($type)];
 			$payResult = $this->getDatabase()
 				->table($this->getTable())
-				->where('id', $query_id)
-				->update($bill);
+				->where('id', $ids)
+				->update($newBill);
 
 			return $payResult;
 		} else {
@@ -405,7 +406,7 @@ class VisitorModel extends BaseModel
 	{
 		return $this->getDatabase()
 			->table($this->getTable())
-			->select('email', 'name', 'surname')
+			->select('email, name, surname')
 			->where('id', $ids)
 			->where('deleted', '0')
 			->fetchAll();
@@ -495,28 +496,6 @@ class VisitorModel extends BaseModel
 						WHERE meeting = ? AND vis.deleted = ? ' . $this->buildSearchQuery() . '
 						ORDER BY vis.id ASC',
 						$this->getMeetingId(), '0')->fetchAll();
-	}
-
-	/**
-	 * Return visitor by id
-	 *
-	 * @param  int    $id
-	 * @return ActiveRow
-	 */
-	public function findById($id)
-	{
-		return $this->find($id);
-	}
-
-	/**
-	 * Return visitor by guid
-	 *
-	 * @param  string  $guid
-	 * @return ActiveRow
-	 */
-	public function findByGuid($guid)
-	{
-		return $this->findBy('guid', $guid);
 	}
 
 	/**

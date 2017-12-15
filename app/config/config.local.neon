@@ -102,8 +102,7 @@ services:
     - App\Components\MaterialsControl
     - App\Components\MealControl
     - App\Components\CategoryStylesControl
-    - App\Services\VisitorService
-    - App\Services\ProgramService
+    - App\Repositories\VisitorRepository
     - App\Services\CategoryService
     - App\Services\AnnotationService
     - App\Repositories\ProgramRepository

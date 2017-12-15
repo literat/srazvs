@@ -10,7 +10,7 @@ use App\Models\VisitorModel;
 use App\Models\MealModel;
 use App\Services\SkautIS\UserService;
 use App\Services\Emailer;
-use App\Services\VisitorService;
+use App\Repositories\VisitorRepository;
 use App\Repositories\ProgramRepository;
 use Tracy\Debugger;
 use App\Components\Forms\RegistrationForm;
@@ -30,11 +30,6 @@ use App\Models\SettingsModel;
  */
 class RegistrationPresenter extends VisitorPresenter
 {
-
-	/**
-	 * @var VisitorModel
-	 */
-	private $visitorModel;
 
 	/**
 	 * @var UserService
@@ -69,29 +64,26 @@ class RegistrationPresenter extends VisitorPresenter
 	/**
 	 * @param MeetingModel       $meetingModel
 	 * @param UserService        $userService
-	 * @param VisitorModel       $visitorModel
 	 * @param MealModel          $mealModel
 	 * @param ProgramRepository  $programRepository
-	 * @param VisitorService     $visitorService
+	 * @param VisitorRepository  $visitorRepository
 	 * @param SettingsModel      $settingsModel
 	 */
 	public function __construct(
 		MeetingModel $meetingModel,
 		UserService $userService,
-		VisitorModel $visitorModel,
 		MealModel $mealModel,
 		Emailer $emailer,
-		VisitorService $visitorService,
+		VisitorRepository $visitorRepository,
 		ProgramRepository $programRepository,
 		EventService $skautisEvent,
 		SettingsModel $settingsModel
 	) {
 		$this->setMeetingModel($meetingModel);
 		$this->setUserService($userService);
-		$this->setVisitorModel($visitorModel);
 		$this->setMealModel($mealModel);
 		$this->setEmailer($emailer);
-		$this->setVisitorService($visitorService);
+		$this->setVisitorRepository($visitorRepository);
 		$this->setProgramRepository($programRepository);
 		$this->setEventService($skautisEvent);
 		$this->setSettingsModel($settingsModel);
@@ -161,7 +153,7 @@ class RegistrationPresenter extends VisitorPresenter
 			$postData = $this->getHttpRequest()->getPost();
 			$postData['meeting'] = $this->getMeetingId();
 
-			$guid = $this->getVisitorService()->create($postData);
+			$guid = $this->getVisitorRepository()->create($postData);
 			$result = $this->sendRegistrationSummary($postData, $guid);
 
 			$this->logInfo('Creation of registration(%s) successfull, result: %s', [
@@ -188,7 +180,7 @@ class RegistrationPresenter extends VisitorPresenter
 		try {
 			$postData = $this->getHttpRequest()->getPost();
 
-			$result = $this->getVisitorService()->update($guid, $postData);
+			$result = $this->getVisitorRepository()->update($guid, $postData);
 			$result = $this->sendRegistrationSummary($postData, $guid);
 
 			$this->logInfo('Modification of registration(%s) successfull, result: %s', [
@@ -239,7 +231,7 @@ class RegistrationPresenter extends VisitorPresenter
 	 */
 	public function renderCheck($guid)
 	{
-		$visitor = $this->getVisitorModel()->findByGuid($guid);
+		$visitor = $this->getVisitorRepository()->findByGuid($guid);
 
 		$this->getMeetingModel()->setRegistrationHandlers($visitor->meeting);
 
@@ -258,7 +250,7 @@ class RegistrationPresenter extends VisitorPresenter
 	 */
 	public function renderEdit($guid)
 	{
-		$visitor = $this->getVisitorService()->findByGuid($guid);
+		$visitor = $this->getVisitorRepository()->findExpandedByGuid($guid);
 		$meetingId = $visitor['meeting'];
 
 		$this->getMeetingModel()->setRegistrationHandlers($meetingId);
@@ -284,9 +276,9 @@ class RegistrationPresenter extends VisitorPresenter
 				$guid = $this->getParameter('guid');
 
 				if($guid) {
-					$guid = $this->getVisitorService()->update($guid, (array) $newVisitor);
+					$guid = $this->getVisitorRepository()->update($guid, (array) $newVisitor);
 				} else {
-					$guid = $this->getVisitorService()->create((array) $newVisitor);
+					$guid = $this->getVisitorRepository()->create((array) $newVisitor);
 				}
 /*
 				if($this->getUserService()->isLoggedIn() && $this->getMeetingModel()->findCourseId()) {
@@ -392,25 +384,6 @@ class RegistrationPresenter extends VisitorPresenter
 	protected function setMeetingModel(MeetingModel $model)
 	{
 		$this->meetingModel = $model;
-
-		return $this;
-	}
-
-	/**
-	 * @return VisitorModel
-	 */
-	protected function getVisitorModel()
-	{
-		return $this->visitorModel;
-	}
-
-	/**
-	 * @param  VisitorModel $model
-	 * @return $this
-	 */
-	protected function setVisitorModel(VisitorModel $model)
-	{
-		$this->visitorModel = $model;
 
 		return $this;
 	}

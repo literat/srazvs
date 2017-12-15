@@ -7,7 +7,7 @@ use App\Models\VisitorModel;
 use App\Models\BlockModel;
 use App\Models\MealModel;
 use App\Services\Emailer;
-use App\Services\VisitorService;
+use App\Repositories\VisitorRepository;
 use Nette\Utils\Strings;
 use Tracy\Debugger;
 use Exception;
@@ -48,31 +48,29 @@ class VisitorPresenter extends BasePresenter
 	protected $meetingModel;
 
 	/**
-	 * @var VisitorSErvice
+	 * @var VisitorRepository
 	 */
-	protected $visitorService;
+	protected $visitorRepository;
 
 	/**
-	 * @param VisitorModel $visitors
-	 * @param MealModel    $meals
-	 * @param BlockModel   $blocks
-	 * @param MeetingModel $meetings
-	 * @param Emailer      $emailer
+	 * @param MealModel         $meals
+	 * @param BlockModel        $blocks
+	 * @param MeetingModel      $meetings
+	 * @param Emailer           $emailer
+	 * @param VisitorRepository $visitor
 	 */
 	public function __construct(
-		VisitorModel $visitors,
 		MealModel $meals,
 		BlockModel $blocks,
 		MeetingModel $meetings,
 		Emailer $emailer,
-		VisitorService $visitor
+		VisitorRepository $visitor
 	) {
-		$this->setModel($visitors);
 		$this->setMealModel($meals);
 		$this->setBlockModel($blocks);
 		$this->setMeetingModel($meetings);
 		$this->setEmailer($emailer);
-		$this->setVisitorService($visitor);
+		$this->setVisitorRepository($visitor);
 	}
 
 	/**
@@ -83,7 +81,8 @@ class VisitorPresenter extends BasePresenter
 		parent::startup();
 
 		$this->getMeetingModel()->setMeetingId($this->getMeetingId());
-	}
+		$this->getVisitorRepository()->setMeeting($this->getMeetingId())
+;	}
 
 	/**
 	 * Process data from form
@@ -96,14 +95,14 @@ class VisitorPresenter extends BasePresenter
 			$postData = $this->getHttpRequest()->getPost();
 			$postData['meeting'] = $this->getMeetingId();
 
-			$guid = $this->getVisitorService()->create($postData);
+			$guid = $this->getVisitorRepository()->create($postData);
 			$result = $this->sendRegistrationSummary($postData, $guid);
 
-			Debugger::log('Creation of visitor('. $guid .') successfull, result: ' . json_encode($result), Debugger::INFO);
-			$this->flashMessage('Účastník(' . $guid . ') byl úspěšně vytvořen.', 'ok');
+			$this->logInfo('Creation of visitor('. $guid .') successfull, result: ' . json_encode($result));
+			$this->flashSuccess('Účastník(' . $guid . ') byl úspěšně vytvořen.');
 		} catch(Exception $e) {
-			Debugger::log('Creation of visitor('. $guid .') failed, result: ' .  $e->getMessage(), Debugger::ERROR);
-			$this->flashMessage('Creation of visitor failed, result: ' . $e->getMessage(), 'error');
+			$this->logError('Creation of visitor('. $guid .') failed, result: ' .  $e->getMessage());
+			$this->flashError('Creation of visitor failed, result: ' . $e->getMessage());
 		}
 
 		$this->redirect('Visitor:listing');
@@ -122,15 +121,15 @@ class VisitorPresenter extends BasePresenter
 			$postData['meeting'] = $this->getMeetingId();
 			$postData['visitor'] = $id;
 
-			$result = $this->getVisitorService()->update($id, $postData);
+			$result = $this->getVisitorRepository()->update($id, $postData);
 
 			//$result = $this->sendRegistrationSummary($visitor, $guid);
 
-			Debugger::log('Modification of visitor('. $id .') successfull, result: ' . json_encode($result), Debugger::INFO);
-			$this->flashMessage('Účastník(' . $id . ') byl úspěšně upraven.', 'ok');
+			$this->logInfo('Modification of visitor('. $id .') successfull, result: ' . json_encode($result));
+			$this->flashSuccess('Účastník(' . $id . ') byl úspěšně upraven.');
 		} catch(Exception $e) {
-			Debugger::log('Modification of visitor('. $id .') failed, result: ' .  $e->getMessage(), Debugger::ERROR);
-			$this->flashMessage('Modification of visitor failed, result: ' . $e->getMessage(), 'error');
+			$this->logError('Modification of visitor('. $id .') failed, result: ' .  $e->getMessage());
+			$this->flashFailure('Modification of visitor failed, result: ' . $e->getMessage());
 		}
 
 		$this->redirect('Visitor:listing');
@@ -143,13 +142,13 @@ class VisitorPresenter extends BasePresenter
 	public function actionDelete($id)
 	{
 		try {
-			$result = $this->getVisitorService()->delete($id);
+			$result = $this->getVisitorRepository()->delete($id);
 
-			Debugger::log('Destroying of visitor('. $id .') successfull, result: ' . json_encode($result), Debugger::INFO);
-			$this->flashMessage('Položka byla úspěšně smazána', 'ok');
+			$this->logInfo('Destroying of visitor('. $id .') successfull, result: ' . json_encode($result));
+			$this->flashSuccess('Položka byla úspěšně smazána');
 		} catch(Exception $e) {
-			Debugger::log('Destroying of visitor('. $id .') failed, result: ' .  $e->getMessage(), Debugger::ERROR);
-			$this->flashMessage('Destroying of visitor failed, result: ' . $e->getMessage(), 'error');
+			$this->logError('Destroying of visitor('. $id .') failed, result: ' .  $e->getMessage());
+			$this->flashFailure('Destroying of visitor failed, result: ' . $e->getMessage());
 		}
 
 		$this->redirect('Visitor:listing');
@@ -181,11 +180,11 @@ class VisitorPresenter extends BasePresenter
 
 			$result = $this->getEmailer()->sendMail($recipient, $subject, (string) $template, $bcc);
 
-			Debugger::log('E-mail was send successfully, result: ' . json_encode($result), Debugger::INFO);
-			$this->flashMessage('E-mail byl úspěšně odeslán', 'ok');
+			$this->logInfo('E-mail was send successfully, result: ' . json_encode($result));
+			$this->flashSuccess('E-mail byl úspěšně odeslán');
 		} catch(Exception $e) {
-			Debugger::log('Sending of e-mail failed, result: ' .  $e->getMessage(), Debugger::ERROR);
-			$this->flashMessage('Sending of e-mail failed, result: ' . $e->getMessage(), 'error');
+			$this->logError('Sending of e-mail failed, result: ' .  $e->getMessage());
+			$this->flashFailure('Sending of e-mail failed, result: ' . $e->getMessage());
 		}
 
 		$this->redirect('Visitor:listing');
@@ -198,16 +197,16 @@ class VisitorPresenter extends BasePresenter
 	public function actionPay($id)
 	{
 		try {
-			$visitor = $this->getModel();
-			$visitor->payCharge($id, 'cost');
-			$recipients = $visitor->getRecipients($id);
-			$this->getEmailer()->sendPaymentInfo($recipients, 'advance');
+			$visitor = $this->getVisitorRepository();
+			$visitor->payCostCharge($id);
+			$recipients = $visitor->findRecipients($id);
+			$this->getEmailer()->sendPaymentInfo($recipients, 'cost');
 
-			Debugger::log('Visitor: Action pay for id ' . $id . ' successfull, result: ' . $e->getMessage(), Debugger::INFO);
+			$this->logInfo('Visitor: Action pay cost for id ' . $id . ' executed successfully.');
 			$this->flashMessage('Platba byla zaplacena.', 'ok');
 		} catch(Exception $e) {
-			Debugger::log('Visitor: Action pay for id ' . $id . ' failed, result: ' . $e->getMessage(), Debugger::ERROR);
-			$this->flashMessage('Visitor: Action pay for id ' . $id . ' failed, result: ' . $e->getMessage(), 'error');
+			$this->logError('Visitor: Action pay for id ' . $id . ' failed, result: ' . $e->getMessage());
+			$this->flashFailure('Visitor: Action pay for id ' . $id . ' failed, result: ' . $e->getMessage());
 		}
 
 		$this->redirect('Visitor:listing');
@@ -220,16 +219,16 @@ class VisitorPresenter extends BasePresenter
 	public function actionAdvance($id)
 	{
 		try {
-			$visitor = $this->getModel();
-			$visitor->payCharge($id, 'advance');
-			$recipients = $visitor->getRecipients($id);
+			$visitor = $this->getVisitorRepository();
+			$visitor->payAdvanceCharge($id);
+			$recipients = $visitor->findRecipients($id);
 			$this->getEmailer()->sendPaymentInfo($recipients, 'advance');
 
-			Debugger::log('Visitor: Action advance for id ' . $id . ' successfull, result: ' . $e->getMessage(), Debugger::INFO);
-			$this->flashMessage('Záloha byla zaplacena.', 'ok');
+			$this->logInfo('Visitor: Action pay advance for id ' . $id . ' executed successfully.');
+			$this->flashSuccess('Záloha byla zaplacena.');
 		} catch(Exception $e) {
-			Debugger::log('Visitor: Action advance for id ' . $id . ' failed, result: ' . $e->getMessage(), Debugger::ERROR);
-			$this->flashMessage('Visitor: Action advance for id ' . $id . ' failed, result: ' . $e->getMessage(), 'error');
+			$this->logError('Visitor: Action pay advance for id ' . $id . ' failed, result: ' . $e->getMessage());
+			$this->flashFailure('Visitor: Action advance for id ' . $id . ' failed, result: ' . $e->getMessage());
 		}
 
 		$this->redirect('Visitor:listing');
@@ -244,12 +243,12 @@ class VisitorPresenter extends BasePresenter
 	public function actionChecked($id)
 	{
 		try {
-			$result = $this->getModel()->checked($id, '1');
-			Debugger::log('Check of visitor('. $id .') successfull, result: ' . json_encode($result), Debugger::INFO);
-			$this->flashMessage('Položka byla úspěšně zkontrolována', 'ok');
+			$result = $this->getVisitorRepository()->setChecked($id);
+			$this->logInfo('Check of visitor('. $id .') successfull, result: ' . json_encode($result));
+			$this->flashSuccess('Položka byla úspěšně zkontrolována');
 		} catch(Exception $e) {
-			Debugger::log('Check of visitor('. $id .') failed, result: ' .  $e->getMessage(), Debugger::ERROR);
-			$this->flashMessage('Check of visitor failed, result: ' . $e->getMessage(), 'error');
+			$this->logError('Check of visitor('. $id .') failed, result: ' .  $e->getMessage());
+			$this->flashFailure('Check of visitor failed, result: ' . $e->getMessage());
 		}
 
 		$this->redirect('Visitor:listing');
@@ -264,12 +263,12 @@ class VisitorPresenter extends BasePresenter
 	public function actionUnchecked($id)
 	{
 		try {
-			$result = $this->getModel()->checked($id, 0);
-			Debugger::log('Uncheck of visitor('. $id .') successfull, result: ' . json_encode($result), Debugger::INFO);
-			$this->flashMessage('Položka byla nastavena jako nekontrolována', 'ok');
+			$result = $this->getVisitorRepository()->setUnchecked($id);
+			$this->logInfo('Uncheck of visitor('. $id .') successfull, result: ' . json_encode($result));
+			$this->flashSuccess('Položka byla nastavena jako nekontrolována');
 		} catch(Exception $e) {
-			Debugger::log('Uncheck of visitor('. $id .') failed, result: ' .  $e->getMessage(), Debugger::ERROR);
-			$this->flashMessage('Uncheck of visitor failed, result: ' . $e->getMessage(), 'error');
+			$this->logError('Uncheck of visitor('. $id .') failed, result: ' .  $e->getMessage());
+			$this->flashFailure('Uncheck of visitor failed, result: ' . $e->getMessage());
 		}
 
 		$this->redirect('Visitor:listing');
@@ -296,7 +295,7 @@ class VisitorPresenter extends BasePresenter
 		$template->province = $this->getMeetingModel()->renderHtmlProvinceSelect(null);
 		$template->meals = $this->getMealModel()->renderHtmlMealsSelect(null, null);
 		$template->cost = $this->getMeetingModel()->getPrice('cost');
-		$template->programSwitcher = $this->getModel()->renderProgramSwitcher($this->getMeetingId(), null);
+		$template->programSwitcher = $this->getVisitorRepository()->renderProgramSwitcher($this->getMeetingId(), null);
 	}
 
 	/**
@@ -305,7 +304,7 @@ class VisitorPresenter extends BasePresenter
 	 */
 	public function renderEdit($id)
 	{
-		$visitor = $this->getModel()->findById($id);
+		$visitor = $this->getVisitorRepository()->findById($id);
 		$meals = $this->getMealModel()->findByVisitorId($id);
 
 		$template = $this->getTemplate();
@@ -322,7 +321,7 @@ class VisitorPresenter extends BasePresenter
 		$template->province = $this->getMeetingModel()->renderHtmlProvinceSelect($visitor->province);
 		$template->meals = $this->getMealModel()->renderHtmlMealsSelect($meals, null);
 		$template->cost = $this->getMeetingModel()->getPrice('cost');
-		$template->programSwitcher = $this->getModel()->renderProgramSwitcher($this->getMeetingId(), $id);
+		$template->programSwitcher = $this->getVisitorRepository()->renderProgramSwitcher($this->getMeetingId(), $id);
 		$template->data = $visitor;
 	}
 
@@ -336,7 +335,7 @@ class VisitorPresenter extends BasePresenter
 		$ids = $this->getHttpRequest()->getPost('checker');
 
 		$template = $this->getTemplate();
-		$template->recipientMailAddresses = $this->getModel()->getSerializedMailAddress($ids);
+		$template->recipientMailAddresses = $this->getVisitorRepository()->getSerializedMailAddress($ids);
 	}
 
 
@@ -345,13 +344,13 @@ class VisitorPresenter extends BasePresenter
 	 */
 	public function renderListing()
 	{
-		$search = $this->getHttpRequest()->getQuery('search');
+		$search = $this->getHttpRequest()->getQuery('search') ?: '';
 
-		$model = $this->getModel();
+		$visitorRepository = $this->getVisitorRepository();
 
 		$template = $this->getTemplate();
-		$template->render = $model->setSearch($search)->all();
-		$template->visitorCount = $model->getCount();
+		$template->render = $visitorRepository->findBySearch($search);
+		$template->visitorCount = $visitorRepository->count();
 		$template->meetingPrice	= $this->getMeetingModel()->getPrice('cost');
 		$template->search = $search;
 	}
@@ -384,7 +383,7 @@ class VisitorPresenter extends BasePresenter
 			$visitor['email'] => $visitor['name']. ' ' . $visitor['surname'],
 		];
 
-		$code4bank = $this->getVisitorService()->calculateCode4Bank(
+		$code4bank = $this->getVisitorRepository()->calculateCode4Bank(
 			$visitor['name'],
 			$visitor['surname'],
 			$visitor['birthday']->format('d. m. Y')
@@ -471,20 +470,20 @@ class VisitorPresenter extends BasePresenter
 	}
 
 	/**
-	 * @return VisitorService
+	 * @return VisitorRepository
 	 */
-	protected function getVisitorService()
+	protected function getVisitorRepository(): VisitorRepository
 	{
-		return $this->visitorService;
+		return $this->visitorRepository;
 	}
 
 	/**
-	 * @param  VisitorService $service
-	 * @return $this
+	 * @param  VisitorRepository $repository
+	 * @return self
 	 */
-	protected function setVisitorService(VisitorService $service)
+	protected function setVisitorRepository(VisitorRepository $repository): self
 	{
-		$this->visitorService = $service;
+		$this->visitorRepository = $repository;
 
 		return $this;
 	}
