@@ -2,18 +2,20 @@
 
 namespace App\Presenters;
 
-use App\Components\PublicProgramOverviewControl;
 use App\Components\CategoryStylesControl;
-use App\Components\IProgramOverviewControl;
-use App\Models\BlockModel;
-use App\Models\MeetingModel;
-use App\Models\ProgramModel;
-use App\Services\Emailer;
-use Tracy\Debugger;
-use App\Repositories\ProgramRepository;
 use App\Components\Forms\Factories\IProgramFormFactory;
 use App\Components\Forms\ProgramForm;
+use App\Components\IProgramOverviewControl;
+use App\Components\ProgramOverviewControl;
+use App\Components\PublicProgramOverviewControl;
+use App\Components\ProgramVisitorsControl;
+use App\Models\BlockModel;
+use App\Models\MeetingModel;
+use App\Repositories\ProgramRepository;
+use App\Services\Emailer;
 use Nette\Utils\ArrayHash;
+use Tracy\Debugger;
+use Exception;
 
 /**
  * Program controller
@@ -67,24 +69,29 @@ class ProgramPresenter extends BasePresenter
 	private $categoryStyles;
 
 	/**
+	 * @var ProgramVisitorsControl
+	 */
+	private $programVisitors;
+
+	/**
 	 * Prepare model classes and get meeting id
 	 */
 	public function __construct(
-		ProgramModel $model,
 		Emailer $emailer,
 		BlockModel $blockModel,
 		MeetingModel $meetingModel,
 		ProgramRepository $programRepository,
 		PublicProgramOverviewControl $publicProgramOverview,
-		CategoryStylesControl $categoryStyles
+		CategoryStylesControl $categoryStyles,
+		ProgramVisitorsControl $programVisitors
 	) {
-		$this->setModel($model);
 		$this->setEmailer($emailer);
 		$this->setBlockModel($blockModel);
 		$this->setMeetingModel($meetingModel);
 		$this->setProgramRepository($programRepository);
 		$this->setProgramOverviewControl($publicProgramOverview);
 		$this->setCategoryStylesControl($categoryStyles);
+		$this->setProgramVisitorsControl($programVisitors);
 	}
 
 	/**
@@ -103,7 +110,7 @@ class ProgramPresenter extends BasePresenter
 		parent::startup();
 
 		$meetingId = $this->getMeetingId();
-		$this->getModel()->setMeetingId($meetingId);
+		$this->getProgramRepository()->setMeetingId($meetingId);
 		$this->getMeetingModel()->setMeetingId($meetingId);
 		$this->getBlockModel()->setMeetingId($meetingId);
 	}
@@ -179,7 +186,7 @@ class ProgramPresenter extends BasePresenter
 	public function actionDelete($id)
 	{
 		try {
-			$result = $this->getModel()->delete($id);
+			$result = $this->getProgramRepository()->delete($id);
 
 			$this->logInfo('Destroying of program successfull, result: %s', [
 				json_encode($result)
@@ -203,7 +210,7 @@ class ProgramPresenter extends BasePresenter
 	public function actionMail($id)
 	{
 		try {
-			$tutors = $this->getModel()->getTutor($id);
+			$tutors = $this->getProgramRepository()->findTutor($id);
 			$recipients = $this->parseTutorEmail($tutors);
 
 			$this->getEmailer()->tutor($recipients, $tutors->guid, 'program');
@@ -280,7 +287,6 @@ class ProgramPresenter extends BasePresenter
 
 		$template = $this->getTemplate();
 		$template->heading = 'úprava programu';
-		$template->program_visitors = $this->getModel()->getProgramVisitors($id);
 		$template->program = $program;
 		$template->id = $id;
 
@@ -298,8 +304,7 @@ class ProgramPresenter extends BasePresenter
 			//$guid = $this->getParameter('guid');
 			$id = $this->getParameter('id');
 
-			$this->setBacklink($program['backlink']);
-			unset($program['backlink']);
+			$this->setBacklinkFromProgram($program);
 
 			if($id) {
 				$this->actionUpdate($id, $program);
@@ -311,8 +316,7 @@ class ProgramPresenter extends BasePresenter
 		};
 
 		$control->onProgramReset[] = function(ProgramForm $control, $program) {
-			$this->setBacklink($program['backlink']);
-			unset($program['backlink']);
+			$this->setBacklinkFromProgram($program);
 
 			$this->redirect($this->getBacklink() ?: 'Program:listing');
 		};
@@ -321,9 +325,23 @@ class ProgramPresenter extends BasePresenter
 	}
 
 	/**
+	 * @param  Nette\Utils\ArrayHash $program
+	 * @return self
+	 */
+	protected function setBacklinkFromProgram(ArrayHash $program): self
+	{
+		if(array_key_exists('backlink', $program) && !empty($program['backlink'])) {
+			$this->setBacklink($program['backlink']);
+			unset($program['backlink']);
+		}
+
+		return $this;
+	}
+
+	/**
 	 * @return ProgramOverviewControl
 	 */
-	protected function createComponentProgramOverview()
+	protected function createComponentProgramOverview(): ProgramOverviewControl
 	{
 		return $this->programOverview->setMeetingId($this->getMeetingId());
 	}
@@ -334,6 +352,14 @@ class ProgramPresenter extends BasePresenter
 	protected function createComponentCategoryStyles(): CategoryStylesControl
 	{
 		return $this->categoryStyles;
+	}
+
+	/**
+	 * @return ProgramVisitorsControl
+	 */
+	protected function createComponentProgramVisitors(): ProgramVisitorsControl
+	{
+		return $this->programVisitors;
 	}
 
 	/**
@@ -424,13 +450,24 @@ class ProgramPresenter extends BasePresenter
 	}
 
 	/**
-	 * @param CategoryStylesControl $categoryStyles
+	 * @param CategoryStylesControl $control
 	 *
 	 * @return self
 	 */
-	public function setCategoryStylesControl(CategoryStylesControl $categoryStyles): self
+	public function setCategoryStylesControl(CategoryStylesControl $control): self
 	{
-		$this->categoryStyles = $categoryStyles;
+		$this->categoryStyles = $control;
+
+		return $this;
+	}
+
+	/**
+	 * @param  ProgramVisitorsControl $control
+	 * @return self
+	 */
+	public function setProgramVisitorsControl(ProgramVisitorsControl $control): self
+	{
+		$this->programVisitors = $control;
 
 		return $this;
 	}

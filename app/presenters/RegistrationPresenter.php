@@ -3,15 +3,15 @@
 namespace App\Presenters;
 
 use DateTime;
+use Exception;
 use App\Entities\VisitorEntity;
 use App\Models\MeetingModel;
 use App\Models\VisitorModel;
-use App\Models\ProgramModel;
 use App\Models\MealModel;
 use App\Services\SkautIS\UserService;
 use App\Services\Emailer;
 use App\Services\VisitorService;
-use App\Services\ProgramService;
+use App\Repositories\ProgramRepository;
 use Tracy\Debugger;
 use App\Components\Forms\RegistrationForm;
 use App\Components\Forms\Factories\IRegistrationFormFactory;
@@ -37,19 +37,14 @@ class RegistrationPresenter extends VisitorPresenter
 	private $visitorModel;
 
 	/**
-	 * @var ProgramModel
-	 */
-	private $programModel;
-
-	/**
 	 * @var UserService
 	 */
 	private $userService;
 
 	/**
-	 * @var ProgramService
+	 * @var ProgramRepository
 	 */
-	private $programService;
+	private $programRepository;
 
 	/**
 	 * @var SettingsModel
@@ -72,23 +67,22 @@ class RegistrationPresenter extends VisitorPresenter
 	protected $skautisEventService;
 
 	/**
-	 * @param MeetingModel   $meetingModel
-	 * @param UserService    $userService
-	 * @param VisitorModel   $visitorModel
-	 * @param MealModel      $mealModel
-	 * @param ProgramModel   $programModel
-	 * @param VisitorService $visitorService
-	 * @param SettingsModel  $settingsModel
+	 * @param MeetingModel       $meetingModel
+	 * @param UserService        $userService
+	 * @param VisitorModel       $visitorModel
+	 * @param MealModel          $mealModel
+	 * @param ProgramRepository  $programRepository
+	 * @param VisitorService     $visitorService
+	 * @param SettingsModel      $settingsModel
 	 */
 	public function __construct(
 		MeetingModel $meetingModel,
 		UserService $userService,
 		VisitorModel $visitorModel,
 		MealModel $mealModel,
-		ProgramModel $programModel,
 		Emailer $emailer,
 		VisitorService $visitorService,
-		ProgramService $programService,
+		ProgramRepository $programRepository,
 		EventService $skautisEvent,
 		SettingsModel $settingsModel
 	) {
@@ -96,10 +90,9 @@ class RegistrationPresenter extends VisitorPresenter
 		$this->setUserService($userService);
 		$this->setVisitorModel($visitorModel);
 		$this->setMealModel($mealModel);
-		$this->setProgramModel($programModel);
 		$this->setEmailer($emailer);
 		$this->setVisitorService($visitorService);
-		$this->setProgramService($programService);
+		$this->setProgramRepository($programRepository);
 		$this->setEventService($skautisEvent);
 		$this->setSettingsModel($settingsModel);
 	}
@@ -176,15 +169,14 @@ class RegistrationPresenter extends VisitorPresenter
 				json_encode($result),
 			]);
 			$this->flashSuccess("Registrace({$guid}) byla úspěšně založena.");
+
+			$this->redirect('Registration:check', $guid);
 		} catch(Exception $e) {
-			$this->logError('Creation of registration(%s) failed, result: %s', [
-				$guid,
+			$this->logError('Creation of registration failed, result: %s', [
 				$e->getMessage(),
 			]);
 			$this->flashError('Creation of registration failed, result: ' . $e->getMessage());
 		}
-
-		$this->redirect('Registration:check', $guid);
 	}
 
 	/**
@@ -257,7 +249,7 @@ class RegistrationPresenter extends VisitorPresenter
 		$template->meetingId = $visitor->meeting;
 		$template->meals = $this->getMealModel()->findByVisitorId($visitor->id);
 		$template->province = $this->getMeetingModel()->getProvinceNameById($visitor->province);
-		$template->programs = $this->getProgramModel()->findByVisitorId($visitor->id);
+		$template->programs = $this->getProgramRepository()->findByVisitorId($visitor->id);
 	}
 
 	/**
@@ -424,20 +416,20 @@ class RegistrationPresenter extends VisitorPresenter
 	}
 
 	/**
-	 * @return ProgramModel
+	 * @return ProgramRepository
 	 */
-	protected function getProgramModel()
+	protected function getProgramRepository(): ProgramRepository
 	{
-		return $this->programModel;
+		return $this->programRepository;
 	}
 
 	/**
-	 * @param  ProgramModel $model
+	 * @param  ProgramRepository $repository
 	 * @return $this
 	 */
-	protected function setProgramModel(ProgramModel $model)
+	protected function setProgramRepository(ProgramRepository $repository): self
 	{
-		$this->programModel = $model;
+		$this->programRepository = $repository;
 
 		return $this;
 	}
@@ -457,25 +449,6 @@ class RegistrationPresenter extends VisitorPresenter
 	protected function setUserService(UserService $service)
 	{
 		$this->userService = $service;
-
-		return $this;
-	}
-
-	/**
-	 * @return ProgramService
-	 */
-	protected function getProgramService()
-	{
-		return $this->programService;
-	}
-
-	/**
-	 * @param  ProgramService $service
-	 * @return $this
-	 */
-	protected function setProgramService(ProgramService $service)
-	{
-		$this->programService = $service;
 
 		return $this;
 	}

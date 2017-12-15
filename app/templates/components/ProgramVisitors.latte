@@ -1,0 +1,9 @@
+{if $visitors}
+	<div style='border-bottom:1px solid black;text-align:right;'>účastníci</div>
+	<br />
+	<a style='text-decoration:none; display:block; margin-bottom:4px;' href='?cms=export-visitors&id={$programId}'>
+	<img style='border:none;' align='absbottom' src='{$imgDir}icons/pdf.png' />Účastníci programu</a>
+	{foreach $visitors as $visitor}
+		{$iterator->counter}. {$visitor->name} {$visitor->surname} - {$visitor->nick}<br />
+	{/foreach}
+{/if}

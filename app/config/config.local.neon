@@ -94,6 +94,7 @@ services:
     - App\Components\BlocksByDayControl
     - App\Components\PublicBlocksByDayControl
     - App\Components\ProgramsControl
+    - App\Components\ProgramVisitorsControl
     - App\Components\PublicProgramsControl
     - App\Components\PublicProgramDetailControl
     - App\Components\PublicBlockDetailControl
