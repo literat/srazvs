@@ -61,12 +61,21 @@ class ProgramRepository
 	}
 
 	/**
-	 * @param  int  $VisitorId
+	 * @param  int  $visitorId
 	 * @return array
 	 */
-	public function findByVisitorId(int $VisitorId): array
+	public function findByVisitorId(int $visitorId): array
 	{
-		return $this->getProgramModels()->findByVisitorId($visitorId);
+		return $this->getProgramModel()->findByVisitorId($visitorId);
+	}
+
+    /**
+     * @param int $blockId
+     * @return array
+     */
+    public function findByBlockId(int $blockId): array
+    {
+        return $this->getProgramModel()->findByBlockId($blockId);
 	}
 
 	/**
@@ -116,6 +125,15 @@ class ProgramRepository
 	public function delete(int $id)
 	{
 		return $this->getProgramModel()->delete($id);
+	}
+
+    /**
+     * @param  int $programId
+     * @return int
+     */
+    public function countVisitors(int $programId): int
+    {
+        return $this->getProgramModel()->countProgramVisitors($programId);
 	}
 
 	/**

@@ -4,6 +4,7 @@ namespace App\Presenters;
 
 use Nette,
 	App\Model;
+use Nette\Utils\ArrayHash;
 use Nette\Utils\Strings;
 use Nette\Http\Request;
 use App\Models\SunlightModel;
@@ -478,6 +479,20 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 			);
 		}
 	}
+
+    /**
+     * @param  Nette\Utils\ArrayHash $array
+     * @return self
+     */
+    protected function setBacklinkFromArray(ArrayHash $array): self
+    {
+        if(array_key_exists('backlink', $array) && !empty($array['backlink'])) {
+            $this->setBacklink($array['backlink']);
+            unset($array['backlink']);
+        }
+
+        return $this;
+    }
 
 	/**
 	 * Flashes success message

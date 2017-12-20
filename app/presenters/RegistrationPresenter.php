@@ -136,7 +136,7 @@ class RegistrationPresenter extends VisitorPresenter
 	 *
 	 * @return void
 	 */
-	public function actionCreate()
+	public function actionCreate($visitor)
 	{
 		try {
 			$postData = $this->getHttpRequest()->getPost();
@@ -164,12 +164,12 @@ class RegistrationPresenter extends VisitorPresenter
 	 * @param  string  $guid
 	 * @return void
 	 */
-	public function actionUpdate($guid)
+	public function actionUpdate($guid, $visitor)
 	{
 		try {
 			$postData = $this->getHttpRequest()->getPost();
 
-			$result = $this->getVisitorRepository()->update($guid, $postData);
+			$result = $this->getVisitorRepository()->updateByGuid($guid, $postData);
 			$result = $this->sendRegistrationSummary($postData, $guid);
 
 			$this->logInfo('Modification of registration(%s) successfull, result: %s', [
