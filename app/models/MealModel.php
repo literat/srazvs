@@ -79,13 +79,30 @@ class MealModel extends BaseModel
 	 * @param  array   $data
 	 * @return ActiveRow
 	 */
-	public function update($visitorId, array $data)
+	public function updateByVisitor($visitorId, array $data)
 	{
 		return $this->getDatabase()
 			->table($this->getTable())
 			->where('visitor', $visitorId)
 			->update($data);
 	}
+
+    /**
+     * @param  int   $visitorId
+     * @param  array $values
+     * @return ActiveRow|bool
+     */
+	public function updateOrCreate(int $visitorId, array $values)
+    {
+        $result = $this->updateByVisitor($visitorId, $values);
+
+        if(!$result) {
+            $values['visitor'] = $visitorId;
+            $result = $this->create($values);
+        }
+
+        return $result;
+    }
 
 	/**
 	 * @deprecated
@@ -140,7 +157,7 @@ class MealModel extends BaseModel
 			$htmlSelect .= "<select ".$disabled." style='width:195px; font-size:11px;margin-left:5px;' name='".$varName."'>\n";
 
 			foreach ($yesNoArray as $key){
-				if($key == $mealsValue[$varName]){
+				if(array_key_exists($key, $mealsValue) && $key == $mealsValue[$varName]){
 					$selected = "selected";
 				}
 				else $selected = "";
@@ -156,15 +173,24 @@ class MealModel extends BaseModel
 	 * Get meals data by visitor id
 	 *
 	 * @param	integer	visitor id
-	 * @return	mixed
+	 * @return	array
 	 */
-	public function findByVisitorId($visitorId)
+	public function findByVisitorId($visitorId): array
 	{
-		return $this->getDatabase()
+		$meals = $this->getDatabase()
 			->table($this->getTable())
 			->where('visitor', $visitorId)
 			->limit(1)
 			->fetch();
+
+		if(!$meals) {
+		    $meals = [];
+        } else {
+		    $meals = $meals->toArray();
+        }
+
+        return $meals;
+
 	}
 
 }
