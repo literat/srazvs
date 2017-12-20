@@ -5,9 +5,6 @@ namespace App\Presenters;
 use App\Components\Forms\Factories\IVisitorFormFactory;
 use App\Components\Forms\VisitorForm;
 use App\Models\MeetingModel;
-use App\Models\BlockModel;
-use App\Models\MealModel;
-use App\Repositories\ProgramRepository;
 use App\Services\Emailer;
 use App\Repositories\VisitorRepository;
 use Exception;
@@ -26,21 +23,12 @@ class VisitorPresenter extends BasePresenter
 
 	const TEMPLATE_DIR = __DIR__ . '/../templates/visitor/';
 	const TEMPLATE_EXT = 'latte';
+	const REDIRECT_DEFAULT = 'Visitor:listing';
 
 	/**
 	 * @var Emailer
 	 */
 	protected $emailer;
-
-	/**
-	 * @var MealModel
-	 */
-	protected $mealModel;
-
-	/**
-	 * @var BlockModel
-	 */
-	protected $blockModel;
 
 	/**
 	 * @var MeetingModel
@@ -52,56 +40,43 @@ class VisitorPresenter extends BasePresenter
 	 */
 	protected $visitorRepository;
 
-    /**
-     * @var ProgramRepository
-     */
-	protected $programRepository;
-
-    /**
-     * @var IVisitorFormFactory
-     */
-    private $visitorFormFactory;
+	/**
+	 * @var IVisitorFormFactory
+	 */
+	private $visitorFormFactory;
 
 	/**
-	 * @param MealModel         $meals
-	 * @param BlockModel        $blocks
 	 * @param MeetingModel      $meetings
 	 * @param Emailer           $emailer
 	 * @param VisitorRepository $visitor
 	 */
 	public function __construct(
-		MealModel $meals,
-		BlockModel $blocks,
 		MeetingModel $meetings,
 		Emailer $emailer,
-		VisitorRepository $visitor,
-        ProgramRepository $program
+		VisitorRepository $visitor
 	) {
-		$this->setMealModel($meals);
-		$this->setBlockModel($blocks);
 		$this->setMeetingModel($meetings);
 		$this->setEmailer($emailer);
 		$this->setVisitorRepository($visitor);
-		$this->setProgramRepository($program);
 	}
 
-    /**
-     * @return IVisitorFormFactory
-     */
-    public function getVisitorFormFactory(): IVisitorFormFactory
-    {
-        return $this->visitorFormFactory;
-    }
+	/**
+	 * @return IVisitorFormFactory
+	 */
+	public function getVisitorFormFactory(): IVisitorFormFactory
+	{
+		return $this->visitorFormFactory;
+	}
 
-    /**
-     * Injector
-     *
-     * @param  IVisitorFormFactory $factory
-     */
-    public function injectVisitorFormFactory(IVisitorFormFactory $factory)
-    {
-        $this->visitorFormFactory = $factory;
-    }
+	/**
+	 * Injector
+	 *
+	 * @param  IVisitorFormFactory $factory
+	 */
+	public function injectVisitorFormFactory(IVisitorFormFactory $factory)
+	{
+		$this->visitorFormFactory = $factory;
+	}
 
 	/**
 	 * @return void
@@ -174,7 +149,7 @@ class VisitorPresenter extends BasePresenter
 			$this->flashFailure('Destroying of visitor failed, result: ' . $e->getMessage());
 		}
 
-		$this->redirect('Visitor:listing');
+		$this->redirect(self::REDIRECT_DEFAULT);
 	}
 
 	/**
@@ -210,7 +185,7 @@ class VisitorPresenter extends BasePresenter
 			$this->flashFailure('Sending of e-mail failed, result: ' . $e->getMessage());
 		}
 
-		$this->redirect('Visitor:listing');
+		$this->redirect(self::REDIRECT_DEFAULT);
 	}
 
 	/**
@@ -232,7 +207,7 @@ class VisitorPresenter extends BasePresenter
 			$this->flashFailure('Visitor: Action pay for id ' . $id . ' failed, result: ' . $e->getMessage());
 		}
 
-		$this->redirect('Visitor:listing');
+		$this->redirect(self::REDIRECT_DEFAULT);
 	}
 
 	/**
@@ -254,7 +229,7 @@ class VisitorPresenter extends BasePresenter
 			$this->flashFailure('Visitor: Action advance for id ' . $id . ' failed, result: ' . $e->getMessage());
 		}
 
-		$this->redirect('Visitor:listing');
+		$this->redirect(self::REDIRECT_DEFAULT);
 	}
 
 	/**
@@ -274,7 +249,7 @@ class VisitorPresenter extends BasePresenter
 			$this->flashFailure('Check of visitor failed, result: ' . $e->getMessage());
 		}
 
-		$this->redirect('Visitor:listing');
+		$this->redirect(self::REDIRECT_DEFAULT);
 	}
 
 	/**
@@ -294,7 +269,7 @@ class VisitorPresenter extends BasePresenter
 			$this->flashFailure('Uncheck of visitor failed, result: ' . $e->getMessage());
 		}
 
-		$this->redirect('Visitor:listing');
+		$this->redirect(self::REDIRECT_DEFAULT);
 	}
 
 	/**
@@ -319,7 +294,7 @@ class VisitorPresenter extends BasePresenter
 		$template = $this->getTemplate();
 		$template->heading = 'úprava účastníka';
 
-        $this['visitorForm']->setDefaults($visitor);
+		$this['visitorForm']->setDefaults($visitor);
 	}
 
 	/**
@@ -352,35 +327,35 @@ class VisitorPresenter extends BasePresenter
 		$template->search = $search;
 	}
 
-    /**
-     * @return VisitorFormControl
-     */
-    protected function createComponentVisitorForm(): VisitorForm
-    {
-        $control = $this->visitorFormFactory->create();
-        $control->setMeetingId($this->getMeetingId());
+	/**
+	 * @return VisitorFormControl
+	 */
+	protected function createComponentVisitorForm(): VisitorForm
+	{
+		$control = $this->visitorFormFactory->create();
+		$control->setMeetingId($this->getMeetingId());
 
-        $control->onVisitorSave[] = function(VisitorForm $control, $visitor) {
-            $id = $this->getParameter('id');
-            $this->setBacklinkFromArray($visitor);
+		$control->onVisitorSave[] = function(VisitorForm $control, $visitor) {
+			$id = $this->getParameter('id');
+			$this->setBacklinkFromArray($visitor);
 
-            if($id) {
-                $this->actionUpdate($id, $visitor);
-            } else {
-                $this->actionCreate($visitor);
-            }
+			if($id) {
+				$this->actionUpdate($id, $visitor);
+			} else {
+				$this->actionCreate($visitor);
+			}
 
-            $this->redirect($this->getBacklink() ?: 'Visitor:listing');
-        };
+			$this->redirect($this->getBacklink() ?: self::REDIRECT_DEFAULT);
+		};
 
-        $control->onVisitorReset[] = function(VisitorForm $control, $visitor) {
-            $this->setBacklinkFromArray($visitor);
+		$control->onVisitorReset[] = function(VisitorForm $control, $visitor) {
+			$this->setBacklinkFromArray($visitor);
 
-            $this->redirect($this->getBacklink() ?: 'Visitor:listing');
-        };
+			$this->redirect($this->getBacklink() ?: self::REDIRECT_DEFAULT);
+		};
 
-        return $control;
-    }
+		return $control;
+	}
 
 	/**
 	 * @return Latte
@@ -459,44 +434,6 @@ class VisitorPresenter extends BasePresenter
 	}
 
 	/**
-	 * @return MealModel
-	 */
-	protected function getMealModel()
-	{
-		return $this->mealModel;
-	}
-
-	/**
-	 * @param  MealModel $model
-	 * @return $this
-	 */
-	protected function setMealModel(MealModel $model)
-	{
-		$this->mealModel = $model;
-
-		return $this;
-	}
-
-	/**
-	 * @return BlockModel
-	 */
-	protected function getBlockModel()
-	{
-		return $this->blockModel;
-	}
-
-	/**
-	 * @param  BlockModel $model
-	 * @return $this
-	 */
-	protected function setBlockModel(BlockModel $model)
-	{
-		$this->blockModel = $model;
-
-		return $this;
-	}
-
-	/**
 	 * @return VisitorRepository
 	 */
 	protected function getVisitorRepository(): VisitorRepository
@@ -514,23 +451,5 @@ class VisitorPresenter extends BasePresenter
 
 		return $this;
 	}
-
-    /**
-     * @return ProgramRepository
-     */
-    protected function getProgramRepository(): ProgramRepository
-    {
-        return $this->programRepository;
-    }
-
-    /**
-     * @param ProgramRepository $repository
-     */
-    protected function setProgramRepository(ProgramRepository $repository): self
-    {
-        $this->programRepository = $repository;
-
-        return $this;
-    }
 
 }
