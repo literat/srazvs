@@ -9,6 +9,7 @@ use App\Models\MealModel;
 use App\Models\MeetingModel;
 use Nette\Application\UI\Form;
 use App\Services\SkautIS\UserService;
+use Nette\Forms\Controls\SubmitButton;
 use Nette\Utils\ArrayHash;
 
 class VisitorForm extends BaseForm
@@ -23,6 +24,11 @@ class VisitorForm extends BaseForm
 	 * @var Closure
 	 */
 	public $onVisitorSave;
+
+    /**
+     * @var Closure
+     */
+    public $onVisitorReset;
 
 	/**
 	 * @var ProvinceModel
@@ -181,31 +187,45 @@ class VisitorForm extends BaseForm
 		$form = $this->buildProgramSwitcher($form);
 
 		$form->addHidden('mid', $this->getMeetingId());
+        $form->addHidden('meeting', $this->getMeetingId());
 		$form->addHidden('backlink');
 
-		$form->addSubmit('save', 'Uložit')
-			->setAttribute('class', 'btn-primary');
-		$form->addSubmit('reset', 'storno')
-			->setAttribute('class', 'btn-reset');
+        $form->addSubmit('save', 'Uložit')
+            ->setAttribute('class', 'btn-primary')
+            ->onClick[] = [$this, 'processForm'];
+        $form->addSubmit('reset', 'Storno')
+            ->setAttribute('class', 'btn-reset')
+            ->onClick[] = [$this, 'processReset'];
 
-		$form = $this->setupRendering($form);
+
+        $form = $this->setupRendering($form);
 
 		$form->onSuccess[] = [$this, 'processForm'];
 
 		return $form;
 	}
 
-	/**
-	 * @param  Form $form
-	 * @return void
-	 */
-	public function processForm(Form $form)
-	{
-		$visitor = $form->getValues();
-		$visitor['meeting'] = $this->getMeetingId();
+    /**
+     * @param  SubmitButton $button
+     * @return void
+     */
+    public function processForm(SubmitButton $button)
+    {
+        $visitor = $button->getForm()->getValues();
 
-		$this->onVisitorSave($this, $visitor);
-	}
+        $this->onVisitorSave($this, $visitor);
+    }
+
+    /**
+     * @param  SubmitButton $button
+     * @return void
+     */
+    public function processReset(SubmitButton $button)
+    {
+        $visitor = $button->getForm()->getValues();
+
+        $this->onVisitorReset($this, $visitor);
+    }
 
 	/**
 	 * @param  Form   $form

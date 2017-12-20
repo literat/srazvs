@@ -2,14 +2,14 @@
 
 namespace App\Presenters;
 
+use App\Components\Forms\Factories\IVisitorFormFactory;
+use App\Components\Forms\VisitorForm;
 use App\Models\MeetingModel;
-use App\Models\VisitorModel;
 use App\Models\BlockModel;
 use App\Models\MealModel;
+use App\Repositories\ProgramRepository;
 use App\Services\Emailer;
 use App\Repositories\VisitorRepository;
-use Nette\Utils\Strings;
-use Tracy\Debugger;
 use Exception;
 
 /**
@@ -52,6 +52,16 @@ class VisitorPresenter extends BasePresenter
 	 */
 	protected $visitorRepository;
 
+    /**
+     * @var ProgramRepository
+     */
+	protected $programRepository;
+
+    /**
+     * @var IVisitorFormFactory
+     */
+    private $visitorFormFactory;
+
 	/**
 	 * @param MealModel         $meals
 	 * @param BlockModel        $blocks
@@ -64,14 +74,34 @@ class VisitorPresenter extends BasePresenter
 		BlockModel $blocks,
 		MeetingModel $meetings,
 		Emailer $emailer,
-		VisitorRepository $visitor
+		VisitorRepository $visitor,
+        ProgramRepository $program
 	) {
 		$this->setMealModel($meals);
 		$this->setBlockModel($blocks);
 		$this->setMeetingModel($meetings);
 		$this->setEmailer($emailer);
 		$this->setVisitorRepository($visitor);
+		$this->setProgramRepository($program);
 	}
+
+    /**
+     * @return IVisitorFormFactory
+     */
+    public function getVisitorFormFactory(): IVisitorFormFactory
+    {
+        return $this->visitorFormFactory;
+    }
+
+    /**
+     * Injector
+     *
+     * @param  IVisitorFormFactory $factory
+     */
+    public function injectVisitorFormFactory(IVisitorFormFactory $factory)
+    {
+        $this->visitorFormFactory = $factory;
+    }
 
 	/**
 	 * @return void
@@ -89,14 +119,11 @@ class VisitorPresenter extends BasePresenter
 	 *
 	 * @return void
 	 */
-	public function actionCreate()
+	public function actionCreate($visitor)
 	{
 		try {
-			$postData = $this->getHttpRequest()->getPost();
-			$postData['meeting'] = $this->getMeetingId();
-
-			$guid = $this->getVisitorRepository()->create($postData);
-			$result = $this->sendRegistrationSummary($postData, $guid);
+			$guid = $this->getVisitorRepository()->create($visitor);
+			$result = $this->sendRegistrationSummary($visitor, $guid);
 
 			$this->logInfo('Creation of visitor('. $guid .') successfull, result: ' . json_encode($result));
 			$this->flashSuccess('Účastník(' . $guid . ') byl úspěšně vytvořen.');
@@ -105,7 +132,7 @@ class VisitorPresenter extends BasePresenter
 			$this->flashError('Creation of visitor failed, result: ' . $e->getMessage());
 		}
 
-		$this->redirect('Visitor:listing');
+		return $result;
 	}
 
 	/**
@@ -114,25 +141,21 @@ class VisitorPresenter extends BasePresenter
 	 * @param  integer 	$id
 	 * @return void
 	 */
-	public function actionUpdate($id)
+	public function actionUpdate($id, $visitor)
 	{
 		try {
-			$postData = $this->getHttpRequest()->getPost();
-			$postData['meeting'] = $this->getMeetingId();
-			$postData['visitor'] = $id;
-
-			$result = $this->getVisitorRepository()->update($id, $postData);
-
-			//$result = $this->sendRegistrationSummary($visitor, $guid);
+			$result = $this->getVisitorRepository()->update($id, $visitor);
+			$result = $this->sendRegistrationSummary($visitor, $id);
 
 			$this->logInfo('Modification of visitor('. $id .') successfull, result: ' . json_encode($result));
 			$this->flashSuccess('Účastník(' . $id . ') byl úspěšně upraven.');
 		} catch(Exception $e) {
 			$this->logError('Modification of visitor('. $id .') failed, result: ' .  $e->getMessage());
 			$this->flashFailure('Modification of visitor failed, result: ' . $e->getMessage());
+			$result = false;
 		}
 
-		$this->redirect('Visitor:listing');
+		return $result;
 	}
 
 	/**
@@ -282,20 +305,7 @@ class VisitorPresenter extends BasePresenter
 	public function renderNew()
 	{
 		$template = $this->getTemplate();
-
 		$template->heading = 'nový účastník';
-		$template->error_name = '';
-		$template->error_surname = '';
-		$template->error_nick = '';
-		$template->error_email = '';
-		$template->error_postal_code = '';
-		$template->error_group_num = '';
-		$template->error_bill = '';
-		$template->error_cost = '';
-		$template->province = $this->getMeetingModel()->renderHtmlProvinceSelect(null);
-		$template->meals = $this->getMealModel()->renderHtmlMealsSelect(null, null);
-		$template->cost = $this->getMeetingModel()->getPrice('cost');
-		$template->programSwitcher = $this->getVisitorRepository()->renderProgramSwitcher($this->getMeetingId(), null);
 	}
 
 	/**
@@ -304,25 +314,12 @@ class VisitorPresenter extends BasePresenter
 	 */
 	public function renderEdit($id)
 	{
-		$visitor = $this->getVisitorRepository()->findById($id);
-		$meals = $this->getMealModel()->findByVisitorId($id);
+		$visitor = $this->getVisitorRepository()->findExpandedById($id);
 
 		$template = $this->getTemplate();
-
 		$template->heading = 'úprava účastníka';
-		$template->error_name = '';
-		$template->error_surname = '';
-		$template->error_nick = '';
-		$template->error_email = '';
-		$template->error_postal_code = '';
-		$template->error_group_num = '';
-		$template->error_bill = '';
-		$template->error_cost = '';
-		$template->province = $this->getMeetingModel()->renderHtmlProvinceSelect($visitor->province);
-		$template->meals = $this->getMealModel()->renderHtmlMealsSelect($meals, null);
-		$template->cost = $this->getMeetingModel()->getPrice('cost');
-		$template->programSwitcher = $this->getVisitorRepository()->renderProgramSwitcher($this->getMeetingId(), $id);
-		$template->data = $visitor;
+
+        $this['visitorForm']->setDefaults($visitor);
 	}
 
 	/**
@@ -355,6 +352,36 @@ class VisitorPresenter extends BasePresenter
 		$template->search = $search;
 	}
 
+    /**
+     * @return VisitorFormControl
+     */
+    protected function createComponentVisitorForm(): VisitorForm
+    {
+        $control = $this->visitorFormFactory->create();
+        $control->setMeetingId($this->getMeetingId());
+
+        $control->onVisitorSave[] = function(VisitorForm $control, $visitor) {
+            $id = $this->getParameter('id');
+            $this->setBacklinkFromArray($visitor);
+
+            if($id) {
+                $this->actionUpdate($id, $visitor);
+            } else {
+                $this->actionCreate($visitor);
+            }
+
+            $this->redirect($this->getBacklink() ?: 'Visitor:listing');
+        };
+
+        $control->onVisitorReset[] = function(VisitorForm $control, $visitor) {
+            $this->setBacklinkFromArray($visitor);
+
+            $this->redirect($this->getBacklink() ?: 'Visitor:listing');
+        };
+
+        return $control;
+    }
+
 	/**
 	 * @return Latte
 	 */
@@ -377,10 +404,10 @@ class VisitorPresenter extends BasePresenter
 	 * @param  array   $visitor
 	 * @return boolean
 	 */
-	protected function sendRegistrationSummary(array $visitor, $guid)
+	protected function sendRegistrationSummary($visitor, $guid)
 	{
 		$recipient = [
-			$visitor['email'] => $visitor['name']. ' ' . $visitor['surname'],
+			$visitor,
 		];
 
 		$code4bank = $this->getVisitorRepository()->calculateCode4Bank(
@@ -487,5 +514,23 @@ class VisitorPresenter extends BasePresenter
 
 		return $this;
 	}
+
+    /**
+     * @return ProgramRepository
+     */
+    protected function getProgramRepository(): ProgramRepository
+    {
+        return $this->programRepository;
+    }
+
+    /**
+     * @param ProgramRepository $repository
+     */
+    protected function setProgramRepository(ProgramRepository $repository): self
+    {
+        $this->programRepository = $repository;
+
+        return $this;
+    }
 
 }

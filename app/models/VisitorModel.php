@@ -6,6 +6,7 @@ use Nette\Database\Context;
 use Nette\Utils\Strings;
 use \Exception;
 use DateTime;
+use Tracy\Debugger;
 
 /**
  * Visitor
@@ -200,41 +201,37 @@ class VisitorModel extends BaseModel
 	 * @param	array	$programs_data	Program's data
 	 * @return	mixed					TRUE or array of errors
 	 */
-	public function modify($ID_visitor, $DB_data, $meals_data, $programs_data)
+	public function modify(int $visitorId, array $visitor, array $meals, array $programs)
 	{
-		// for returning specific error
-		$error = array('visitor' => true, 'meal' => true, 'program' => true);
+		$visitor['birthday'] = $this->convertToDateTime($visitor['birthday']);
 
-		$DB_data['birthday'] = $this->convertToDateTime($DB_data['birthday']);
-
-		$result = $this->database
+		$result = $this->getDatabase()
 			->table($this->getTable())
-			->where('id', $ID_visitor)
-			->update($DB_data);
+			->where('id', $visitorId)
+			->update($visitor);
 
 		// change meals
-		$result = $this->Meals->updateOrCreate($ID_visitor, $meals_data);
-		$error['meal'] = $result;
+		$result = $this->Meals->updateOrCreate($visitorId, $meals);
 
 		// gets data from database
-		$programBlocks = $this->Blocks->getProgramBlocks($DB_data['meeting']);
+		$programBlocks = $this->Blocks->getProgramBlocks($visitor['meeting']);
 
 		// get program of visitor
-		$oldPrograms = $this->getVisitorPrograms($ID_visitor);
+		$oldPrograms = $this->findVisitorPrograms($visitorId);
 
 		// update old data to new existing
 		foreach($programBlocks as $programBlock) {
-			$data = array('program' => $programs_data[$programBlock->id]);
 			// read first value from array and shift it to the end
 			$oldProgram = array_shift($oldPrograms);
 
-			$result = $this->database
-				->table('kk_visitor-program')
-				->where('visitor ? AND id ?', $ID_visitor, (empty($oldProgram)) ? $oldProgram : $oldProgram->id)
-				->update($data);
+			$this->updateOrCreateProgram(
+				$visitorId,
+				(empty($oldProgram)) ? $oldProgram : $oldProgram->id,
+				$programs[$programBlock->id]
+			);
 		}
 
-		return $ID_visitor;
+		return $visitorId;
 	}
 
 	/**
@@ -246,44 +243,69 @@ class VisitorModel extends BaseModel
 	 * @param	array	$programs_data	Program's data
 	 * @return	mixed					TRUE or array of errors
 	 */
-	public function modifyByGuid($guid, $DB_data, $meals_data, $programs_data)
+	public function modifyByGuid($guid, $visitor, $meals, $programs)
 	{
-		// for returning specific error
-		$error = array('visitor' => true, 'meal' => true, 'program' => true);
-
-		$DB_data['birthday'] = new \DateTime($DB_data['birthday']);
+        $visitor['birthday'] = $this->convertToDateTime($visitor['birthday']);
 
 		$result = $this->database
 			->table($this->getTable())
 			->where('guid', $guid)
-			->update($DB_data);
+			->update($visitor);
 
 		$visitor = $this->findByGuid($guid);
 
 		// change meals
-		$result = $this->Meals->updateOrCreate($visitor->id, $meals_data);
-		$error['meal'] = $result;
+		$result = $this->Meals->updateOrCreate($visitor->id, $meals);
 
 		// gets data from database
-		$programBlocks = $this->Blocks->getProgramBlocks($DB_data['meeting']);
+		$programBlocks = $this->Blocks->getProgramBlocks($visitor['meeting']);
 
 		// get program of visitor
-		$oldPrograms = $this->getVisitorPrograms($visitor->id);
+		$oldPrograms = $this->findVisitorPrograms($visitor->id);
 
 		// update old data to new existing
 		foreach($programBlocks as $programBlock) {
-			$data = array('program' => $programs_data[$programBlock->id]);
 			// read first value from array and shift it to the end
 			$oldProgram = array_shift($oldPrograms);
 
-			$result = $this->getDatabase()
-				->table('kk_visitor-program')
-				->where('visitor ? AND id ?', $visitor->id, (empty($oldProgram)) ? $oldProgram : $oldProgram->id)
-				->update($data);
+            $this->updateOrCreateProgram(
+                $visitorId,
+                (empty($oldProgram)) ? $oldProgram : $oldProgram->id,
+                $programs[$programBlock->id]
+            );
 		}
 
 		return $guid;
 	}
+
+    /**
+     * @param int $visitorId
+     * @param int $oldProgramId
+     * @param int $newProgramId
+     * @return mixed
+     */
+    public function updateOrCreateProgram(int $visitorId, int $oldProgramId, int $newProgramId)
+    {
+        $result = $this->getDatabase()
+            ->table('kk_visitor-program')
+            ->where('visitor ? AND id ?', $visitorId, $oldProgramId)
+            ->update([
+                'program' => $newProgramId,
+            ]);
+
+        if(!$result) {
+            $result = $this->getDatabase()
+                ->table('kk_visitor-program')
+                ->where('visitor ? AND id ?', $visitorId, $oldProgramId)
+                ->insert([
+                    'guid'    => $this->generateGuid(),
+                    'visitor' => $visitorId,
+                    'program' => $newProgramId,
+                ]);
+        }
+
+        return $result;
+    }
 
 	/**
 	 * Delete one or multiple record/s
@@ -409,21 +431,6 @@ class VisitorModel extends BaseModel
 			->select('email, name, surname')
 			->where('id', $ids)
 			->where('deleted', '0')
-			->fetchAll();
-	}
-
-	/**
-	 * Get visitor's programs
-	 *
-	 * @param	int		ID of visitor
-	 * @return	mixed	result
-	 */
-	public function getVisitorPrograms($visitorId)
-	{
-		return $this->getDatabase()
-			->table('kk_visitor-program')
-			->select('id, program')
-			->where('visitor', $visitorId)
 			->fetchAll();
 	}
 

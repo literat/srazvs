@@ -91,6 +91,25 @@ class VisitorRepository
 		return $this->getVisitorModel()->find($id);
 	}
 
+    /**
+     * @param  int $id
+     * @return ArrayHash
+     */
+    public function findExpandedById(int $id): ArrayHash
+    {
+        $visitor = $this->findById($id);
+        $meals = $this->getMealModel()->findByVisitorId($id);
+        $programs = $this->assembleFormPrograms($id);
+
+        return ArrayHash::from(
+            array_merge(
+                $visitor->toArray(),
+                $meals,
+                $programs
+            )
+        );
+    }
+
 	/**
 	 * Return visitor by guid
 	 *
@@ -137,7 +156,7 @@ class VisitorRepository
 	 * @param  array   $data
 	 * @return string
 	 */
-	public function create(array $data = [])
+	public function create($data)
 	{
 		$visitor = $this->filterFields($data, $this->getVisitorModel()->getColumns());
 		$visitor['code'] = $this->calculateCode4Bank(
@@ -158,7 +177,7 @@ class VisitorRepository
 	 * @param  array   $data
 	 * @return integer
 	 */
-	public function update($id, array $data)
+	public function update($id, $data)
 	{
 		$visitor = $this->filterFields($data, $this->getVisitorModel()->getColumns());
 
@@ -172,14 +191,34 @@ class VisitorRepository
 		$meals = $this->filterFields($data, $this->getMealModel()->getColumns());
 		$programs = $this->filterProgramFields($data);
 
-		if(is_numeric($id)) {
-			$id = $this->getVisitorModel()->modify($id, $visitor, $meals, $programs);
-		} else {
-			$id = $this->getVisitorModel()->modifyByGuid($id, $visitor, $meals, $programs);
-		}
+		$id = $this->getVisitorModel()->modify($id, $visitor, $meals, $programs);
 
 		return $id;
 	}
+
+    /**
+     * @param  integer $id
+     * @param  array   $data
+     * @return integer
+     */
+    public function updateByGuid($guid, array $data)
+    {
+        $visitor = $this->filterFields($data, $this->getVisitorModel()->getColumns());
+
+        $visitor['birthday'] = $this->convertToDateTime($visitor['birthday']);
+
+        $visitor['code'] = $this->calculateCode4Bank(
+            $visitor['name'],
+            $visitor['surname'],
+            $visitor['birthday']->format('d. m. Y')
+        );
+        $meals = $this->filterFields($data, $this->getMealModel()->getColumns());
+        $programs = $this->filterProgramFields($data);
+
+        $guid = $this->getVisitorModel()->modifyByGuid($guid, $visitor, $meals, $programs);
+
+        return $guid;
+    }
 
 	/**
 	 * @param  integer $id
@@ -200,11 +239,21 @@ class VisitorRepository
 		return $this->getVisitorModel()->getCount();
 	}
 
+    /**
+     * @param  int $id
+     * @return string
+     * @throws \Exception
+     */
 	public function payCostCharge(int $id)
 	{
 		return $this->getVisitorModel()->payCharge($id, 'cost');
 	}
 
+    /**
+     * @param  int $id
+     * @return string
+     * @throws \Exception
+     */
 	public function payAdvanceCharge(int $id)
 	{
 		return $this->getVisitorModel()->payCharge($id, 'advance');
@@ -244,30 +293,20 @@ class VisitorRepository
 	}
 
 	/**
-	 * @param  int    $meetingId
-	 * @param  int    $visitorId
-	 * @return string
-	 */
-	public function renderProgramSwitcher(int $meetingId, int $visitorId): string
-	{
-		return $this->getVisitorModel()->renderProgramSwitcher($meetingId, $visitorId);
-	}
-
-	/**
 	 * @param  array  $data
 	 * @param  array  $fields
 	 * @return array
 	 */
-	protected function filterFields(array $data, array $fields)
+	protected function filterFields($data, array $fields)
 	{
-		return array_intersect_key($data, array_flip($fields));
+		return array_intersect_key((array) $data, array_flip($fields));
 	}
 
 	/**
 	 * @param  array $data
 	 * @return array
 	 */
-	protected function filterProgramFields(array $data)
+	protected function filterProgramFields($data)
 	{
 		$blocks = $this->getBlockModel()->idsFromCurrentMeeting($data['meeting']);
 

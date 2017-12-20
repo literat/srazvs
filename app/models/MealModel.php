@@ -78,9 +78,9 @@ class MealModel extends BaseModel
 	/**
 	 * @param  integer $visitorId
 	 * @param  array   $data
-	 * @return ActiveRow
+	 * @return int
 	 */
-	public function updateByVisitor($visitorId, array $data): ActiveRow
+	public function updateByVisitor($visitorId, array $data)
 	{
 		return $this->getDatabase()
 			->table($this->getTable())
