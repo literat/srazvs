@@ -213,7 +213,7 @@ class VisitorModel extends BaseModel
 			->update($DB_data);
 
 		// change meals
-		$result = $this->Meals->update($ID_visitor, $meals_data);
+		$result = $this->Meals->updateOrCreate($ID_visitor, $meals_data);
 		$error['meal'] = $result;
 
 		// gets data from database
@@ -261,7 +261,7 @@ class VisitorModel extends BaseModel
 		$visitor = $this->findByGuid($guid);
 
 		// change meals
-		$result = $this->Meals->update($visitor->id, $meals_data);
+		$result = $this->Meals->updateOrCreate($visitor->id, $meals_data);
 		$error['meal'] = $result;
 
 		// gets data from database
@@ -438,37 +438,6 @@ class VisitorModel extends BaseModel
 		}
 
 		return $datetime;
-	}
-
-	/**
-	 * Render program switcher for unique visitor
-	 *
-	 * @param	int		ID of meeting
-	 * @param	int		ID of visitor
-	 * @return	string	html
-	 */
-	public function renderProgramSwitcher($meetingId, $visitorId)
-	{
-		$html = "";
-
-		// gets data from database
-		$programBlocks = $this->Blocks->getProgramBlocks($meetingId);
-
-		// table is empty
-		if(!$programBlocks){
-			$html .= "<div class='emptyTable' style='width:400px;'>Nejsou žádná aktuální data.</div>\n";
-		} else {
-			foreach($programBlocks as $block) {
-				$html .= "<div class='block-" . $block->id .  " ".Strings::webalize($block['day'])."'>".$block['day'].", ".$block['from']." - ".$block['to']." : ".$block['name']."</div>\n";
-				// rendering programs in block
-				if($block['program'] == 1) {
-					$html .= "<div class='block-" . $block->id .  " programs ".Strings::webalize($block['day'])." ".Strings::webalize($block['name'])."'>".$this->Programs->getPrograms($block['id'], $visitorId)."</div>";
-				}
-				$html .= "<br />";
-			}
-		}
-
-		return $html;
 	}
 
 	/**
