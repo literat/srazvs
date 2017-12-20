@@ -6,13 +6,11 @@ use DateTime;
 use Exception;
 use App\Entities\VisitorEntity;
 use App\Models\MeetingModel;
-use App\Models\VisitorModel;
 use App\Models\MealModel;
 use App\Services\SkautIS\UserService;
 use App\Services\Emailer;
 use App\Repositories\VisitorRepository;
 use App\Repositories\ProgramRepository;
-use Tracy\Debugger;
 use App\Components\Forms\RegistrationForm;
 use App\Components\Forms\Factories\IRegistrationFormFactory;
 use App\Services\SkautIS\EventService;
@@ -37,11 +35,6 @@ class RegistrationPresenter extends VisitorPresenter
 	private $userService;
 
 	/**
-	 * @var ProgramRepository
-	 */
-	private $programRepository;
-
-	/**
 	 * @var SettingsModel
 	 */
 	protected $settingsModel;
@@ -60,6 +53,11 @@ class RegistrationPresenter extends VisitorPresenter
 	 * @var EventService
 	 */
 	protected $skautisEventService;
+
+    protected $error = FALSE;
+    protected $hash = NULL;
+    private $user;
+    private $event;
 
 	/**
 	 * @param MeetingModel       $meetingModel
@@ -98,19 +96,10 @@ class RegistrationPresenter extends VisitorPresenter
 	}
 
 	/**
-	 * Injector
-	 *
-	 * @param  IRegistrationFormFactory $factory
-	 */
-
-	protected $error = FALSE;
-
-	protected $hash = NULL;
-	private $item;
-	private $mealData;
-	private $user;
-	private $event;
-
+     * Injector
+     *
+     * @param  IRegistrationFormFactory $factory
+     */
 	public function injectRegistrationFormFactory(IRegistrationFormFactory $factory)
 	{
 		$this->registrationFormFactory = $factory;
@@ -384,25 +373,6 @@ class RegistrationPresenter extends VisitorPresenter
 	protected function setMeetingModel(MeetingModel $model)
 	{
 		$this->meetingModel = $model;
-
-		return $this;
-	}
-
-	/**
-	 * @return ProgramRepository
-	 */
-	protected function getProgramRepository(): ProgramRepository
-	{
-		return $this->programRepository;
-	}
-
-	/**
-	 * @param  ProgramRepository $repository
-	 * @return $this
-	 */
-	protected function setProgramRepository(ProgramRepository $repository): self
-	{
-		$this->programRepository = $repository;
 
 		return $this;
 	}
