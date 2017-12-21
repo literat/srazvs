@@ -28,7 +28,8 @@ class EmailerModelTest extends Tester\TestCase
 	{
 		$recipient = [
 			'email' => 'prilis.zlutoucky@kun.cz',
-			'name'  => 'Příliš žluťoučký kůň',
+			'name'  => 'Příliš',
+			'surname'  => 'žluťoučký kůň',
 		];
 		$recipient = [ArrayHash::from($recipient)];
 		$subject = 'Úpěl ďábelské ódy';
@@ -43,7 +44,9 @@ class EmailerModelTest extends Tester\TestCase
 	public function testSendingFailed()
 	{
 		$recipient = array(
-			'' => 'Příliš žluťoučký kůň',
+			''        => 'Příliš žluťoučký kůň',
+			'name'    => '',
+			'surname' => ''
 		);
 		$subject = 'Úpěl ďábelské ódy';
 		$body = 'Testování';
@@ -58,7 +61,8 @@ class EmailerModelTest extends Tester\TestCase
 	{
 		$recipient = [
 			'email' => 'prilis.zlutoucky@kun.cz',
-			'name'  => 'Příliš žluťoučký kůň',
+			'name'  => 'Příliš',
+			'surname'  => 'žluťoučký kůň',
 		];
 		$recipient = [ArrayHash::from($recipient)];
 		$subject = 'Úpěl ďábelské ódy';
@@ -97,7 +101,8 @@ EOD
 	{
 		$recipient = [
 			'email' => 'prilis.zlutoucky@kun.cz',
-			'name'  => 'Příliš žluťoučký kůň',
+			'name'  => 'Příliš',
+			'surname'  => 'žluťoučký kůň',
 		];
 		$recipient = [ArrayHash::from($recipient)];
 		$subject = 'Úpěl ďábelské ódy';
@@ -141,13 +146,16 @@ EOD
 		$recipient = [
 			[
 				'email' => 'prilis.zlutoucky@kun.cz',
-				'name'  => 'Příliš žluťoučký kůň',
+				'name'  => 'Příliš',
+				'surname'  => 'žluťoučký kůň',
 			], [
 				'email' => 'john@doe.com',
-				'name'  => 'John Doe',
+				'name'  => 'John',
+				'surname'  => 'Doe',
 			], [
 				'email' => 'info@example.com',
-				'name'  => 'Info at Example',
+				'name'  => 'Info',
+				'surname'  => 'at Example',
 				],
 		];
 		$recipient = ArrayHash::from($recipient);
@@ -191,7 +199,8 @@ EOD
 	{
 		$recipient = [
 			'email' => 'prilis.zlutoucky@kun.cz',
-			'name'  => 'Příliš žluťoučký kůň',
+			'name'  => 'Příliš',
+			'surname'  => 'žluťoučký kůň',
 		];
 		$recipient = [ArrayHash::from($recipient)];
 		$subject = 'Úpěl ďábelské ódy';

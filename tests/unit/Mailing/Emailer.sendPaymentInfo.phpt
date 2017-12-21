@@ -28,7 +28,8 @@ class EmailerPaymentInfoTest extends Tester\TestCase
 	{
 		$recipient = [
 			'email' => 'prilis.zlutoucky@kun.cz',
-			'name'  => 'Příliš žluťoučký kůň',
+			'name'  => 'Příliš',
+			'surname' => 'žluťoučký kůň',
 		];
 		$recipient = [ArrayHash::from($recipient)];
 		$type = 'advance';

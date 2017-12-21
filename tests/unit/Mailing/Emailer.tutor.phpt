@@ -32,7 +32,8 @@ class EmailerTutorTest extends Tester\TestCase
 	{
 		$recipient = [
 			'email' => 'prilis.zlutoucky@kun.cz',
-			'name'  => 'Příliš žluťoučký kůň',
+			'name'  => 'Příliš',
+			'surname'  => 'žluťoučký kůň',
 		];
 		$recipient = [ArrayHash::from($recipient)];
 		$hash = 12345;
@@ -109,13 +110,16 @@ EOD
 		$recipient = [
 			[
 				'email' => 'prilis.zlutoucky@kun.cz',
-				'name'  => 'Příliš žluťoučký kůň',
+				'name'  => 'Příliš',
+				'surname'  => 'žluťoučký kůň',
 			], [
 				'email' => 'info@example.com',
 				'name'  => 'Info',
+				'surname' => '',
 			], [
 				'email' => 'john@doe.com',
-				'name'  => 'John Doe',
+				'name'  => 'John',
+				'surname' => 'Doe',
 			],
 		];
 		$recipient = ArrayHash::from($recipient);
@@ -195,12 +199,15 @@ EOD
 			[
 				'email' => 'prilis.zlutoucky@kun.cz',
 				'name'  => '',
+				'surname'  => '',
 			], [
 				'email' => 'info@example.com',
 				'name'  => '',
+				'surname'  => '',
 			], [
 				'email' => 'john@doe.com',
 				'name'  => '',
+				'surname'  => '',
 			],
 		];
 		$recipient = ArrayHash::from($recipient);

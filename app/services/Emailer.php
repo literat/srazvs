@@ -45,8 +45,10 @@ class Emailer
 		$message->setFrom('srazyvs@hkvs.cz', 'Srazy VS');
 
 		foreach($recipients as $recipient) {
-			// add recipient address and name
-			$message->addTo($recipient->email, $recipient->name);
+			$message->addTo(
+			    $recipient->email,
+                trim($recipient->name . ' ' . $recipient->surname)
+            );
 		}
 		// add bcc
 		if(!empty($bccMail)) {
