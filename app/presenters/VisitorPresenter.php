@@ -195,15 +195,22 @@ class VisitorPresenter extends BasePresenter
 	public function actionPay($id)
 	{
 		try {
+			if(!$id) {
+				$id = $this->getHttpRequest()->getPost('checker');
+			}
+
 			$visitor = $this->getVisitorRepository();
 			$visitor->payCostCharge($id);
 			$recipients = $visitor->findRecipients($id);
 			$this->getEmailer()->sendPaymentInfo($recipients, 'cost');
 
-			$this->logInfo('Visitor: Action pay cost for id ' . $id . ' executed successfully.');
-			$this->flashMessage('Platba byla zaplacena.', 'ok');
+			$this->logInfo('Visitor: Action pay cost for id %s executed successfully.', [json_encode($id)]);
+			$this->flashSuccess('Platba byla zaplacena.');
 		} catch(Exception $e) {
-			$this->logError('Visitor: Action pay for id ' . $id . ' failed, result: ' . $e->getMessage());
+			$this->logError('Visitor: Action pay for id %s failed, result: %s', [
+			    json_encode($id),
+                $e->getMessage()
+            ]);
 			$this->flashFailure('Visitor: Action pay for id ' . $id . ' failed, result: ' . $e->getMessage());
 		}
 
@@ -214,19 +221,27 @@ class VisitorPresenter extends BasePresenter
 	 * @param  string|interger $ids
 	 * @return void
 	 */
-	public function actionAdvance($id)
+	public function actionAdvance(int $id = null)
 	{
 		try {
+			if(!$id) {
+				$id = $this->getHttpRequest()->getPost('checker');
+			}
+
 			$visitor = $this->getVisitorRepository();
 			$visitor->payAdvanceCharge($id);
 			$recipients = $visitor->findRecipients($id);
 			$this->getEmailer()->sendPaymentInfo($recipients, 'advance');
 
-			$this->logInfo('Visitor: Action pay advance for id ' . $id . ' executed successfully.');
+			$this->logInfo('Visitor: Action pay advance for id %s executed successfully.', [json_encode($id)]);
 			$this->flashSuccess('Záloha byla zaplacena.');
 		} catch(Exception $e) {
-			$this->logError('Visitor: Action pay advance for id ' . $id . ' failed, result: ' . $e->getMessage());
-			$this->flashFailure('Visitor: Action advance for id ' . $id . ' failed, result: ' . $e->getMessage());
+			$this->logError(
+				'Visitor: Action pay advance for id %s failed, result: %s', [
+					json_encode($id),
+					$e->getMessage(),
+				]);
+			$this->flashFailure('Zaplacení zálohy pro účastníka s id '.json_encode($id).' neprošlo: '.$e->getMessage());
 		}
 
 		$this->redirect(self::REDIRECT_DEFAULT);

@@ -96,9 +96,9 @@ class VisitorForm extends BaseForm
 
 	/**
 	 * @param  array|ArrayHash $defaults
-	 * @return VisitorForm
+	 * @return self
 	 */
-	public function setDefaults($defaults): VisitorForm
+	public function setDefaults($defaults): BaseForm
 	{
 		$this['visitorForm']->setDefaults($defaults);
 
@@ -192,7 +192,7 @@ class VisitorForm extends BaseForm
 
         $form->addSubmit('save', 'Uložit')
             ->setAttribute('class', 'btn-primary')
-            ->onClick[] = [$this, 'processForm'];
+            ->onClick[] = [$this, 'processSave'];
         $form->addSubmit('reset', 'Storno')
             ->setAttribute('class', 'btn-reset')
             ->onClick[] = [$this, 'processReset'];
@@ -209,7 +209,7 @@ class VisitorForm extends BaseForm
      * @param  SubmitButton $button
      * @return void
      */
-    public function processForm(SubmitButton $button)
+    public function processSave(SubmitButton $button)
     {
         $visitor = $button->getForm()->getValues();
 
@@ -271,8 +271,7 @@ class VisitorForm extends BaseForm
 
 		foreach ($this->fetchMeals() as $name => $label) {
 			$this->setMealField($name);
-			$form->addSelect($name, $label . ':', $yesNoArray)
-                ->setAttribute('style', 'width:195px; font-size:11px;');
+			$form->addSelect($name, $label . ':', $yesNoArray);
 		}
 
 		return $form;
@@ -288,9 +287,9 @@ class VisitorForm extends BaseForm
 
 	/**
 	 * @param  ProvinceModel $model
-	 * @return VisitorFormFactory
+	 * @return self
 	 */
-	protected function setProvinceModel(ProvinceModel $model): VisitorForm
+	protected function setProvinceModel(ProvinceModel $model): self
 	{
 		$this->provinceModel = $model;
 
@@ -307,9 +306,9 @@ class VisitorForm extends BaseForm
 
 	/**
 	 * @param  ProgramRepository $repository
-	 * @return VisitorFormFactory
+	 * @return self
 	 */
-	protected function setProgramRepository(ProgramRepository $repository): VisitorForm
+	protected function setProgramRepository(ProgramRepository $repository): self
 	{
 		$this->programRepository = $repository;
 
@@ -326,9 +325,9 @@ class VisitorForm extends BaseForm
 
 	/**
 	 * @param  BlockModel $model
-	 * @return VisitorForm
+	 * @return self
 	 */
-	protected function setBlockModel(BlockModel $model): VisitorForm
+	protected function setBlockModel(BlockModel $model): self
 	{
 		$this->blockModel = $model;
 
@@ -364,9 +363,9 @@ class VisitorForm extends BaseForm
 
 	/**
 	 * @param  string $meal
-	 * @return VisitorForm
+	 * @return self
 	 */
-	protected function setMealField(string $meal): VisitorForm
+	protected function setMealField(string $meal): self
 	{
 		if(!in_array($meal, $this->mealFields)) {
 			$this->mealFields[] = $meal;
@@ -385,9 +384,9 @@ class VisitorForm extends BaseForm
 
 	/**
 	 * @param  string $program
-	 * @return VisitorForm
+	 * @return self
 	 */
-	protected function setProgramField(string $program): VisitorForm
+	protected function setProgramField(string $program): self
 	{
 		$this->programFields[] = $program;
 
@@ -395,9 +394,9 @@ class VisitorForm extends BaseForm
 	}
 
 	/**
-	 * @return VisitorForm
+	 * @return self
 	 */
-	protected function setProgramFields(): VisitorForm
+	protected function setProgramFields(): self
 	{
 		$programBlocks = $this->fetchProgramBlocks();
 
@@ -410,9 +409,9 @@ class VisitorForm extends BaseForm
 	}
 
 	/**
-	 * @return  VisitorForm
+	 * @return  self
 	 */
-	protected function setMealFields(): VisitorForm
+	protected function setMealFields(): self
 	{
 		$meals = $this->fetchMeals();
 

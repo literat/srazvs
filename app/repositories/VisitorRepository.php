@@ -114,9 +114,9 @@ class VisitorRepository
 	 * Return visitor by guid
 	 *
 	 * @param  string  $guid
-	 * @return Nette\Database\Table\ActiveRow
+	 * @return Nette\Database\Table\ActiveRow|bool
 	 */
-	public function findByGuid($guid): ActiveRow
+	public function findByGuid($guid)
 	{
 		return $this->getVisitorModel()->findBy('guid', $guid);
 	}
@@ -131,7 +131,7 @@ class VisitorRepository
 		$meals = $this->getMealModel()->findByVisitorId($visitor->id);
 		$programs = $this->assembleFormPrograms($visitor->id);
 
-		return array_merge($visitor->toArray(), $meals->toArray(), $programs);
+		return array_merge($visitor->toArray(), $meals, $programs);
 	}
 
 	/**
@@ -147,7 +147,7 @@ class VisitorRepository
 	 * @param  int  $id
 	 * @return array
 	 */
-	public function findRecipients(int $id): array
+	public function findRecipients($id): array
 	{
 		return $this->getVisitorModel()->getRecipients($id);
 	}
@@ -177,9 +177,9 @@ class VisitorRepository
 	 * @param  array   $data
 	 * @return integer
 	 */
-	public function update($id, $data)
+	public function update($id, $values)
 	{
-		$visitor = $this->filterFields($data, $this->getVisitorModel()->getColumns());
+		$visitor = $this->filterFields($values, $this->getVisitorModel()->getColumns());
 
 		$visitor['birthday'] = $this->convertToDateTime($visitor['birthday']);
 
@@ -188,8 +188,8 @@ class VisitorRepository
 			$visitor['surname'],
 			$visitor['birthday']->format('d. m. Y')
 		);
-		$meals = $this->filterFields($data, $this->getMealModel()->getColumns());
-		$programs = $this->filterProgramFields($data);
+		$meals = $this->filterFields($values, $this->getMealModel()->getColumns());
+		$programs = $this->filterProgramFields($values);
 
 		$id = $this->getVisitorModel()->modify($id, $visitor, $meals, $programs);
 
@@ -201,9 +201,9 @@ class VisitorRepository
      * @param  array   $data
      * @return integer
      */
-    public function updateByGuid($guid, array $data)
+    public function updateByGuid($guid, $values)
     {
-        $visitor = $this->filterFields($data, $this->getVisitorModel()->getColumns());
+        $visitor = $this->filterFields($values, $this->getVisitorModel()->getColumns());
 
         $visitor['birthday'] = $this->convertToDateTime($visitor['birthday']);
 
@@ -212,8 +212,9 @@ class VisitorRepository
             $visitor['surname'],
             $visitor['birthday']->format('d. m. Y')
         );
-        $meals = $this->filterFields($data, $this->getMealModel()->getColumns());
-        $programs = $this->filterProgramFields($data);
+
+        $meals = $this->filterFields($values, $this->getMealModel()->getColumns());
+        $programs = $this->filterProgramFields($values);
 
         $guid = $this->getVisitorModel()->modifyByGuid($guid, $visitor, $meals, $programs);
 
@@ -244,7 +245,7 @@ class VisitorRepository
      * @return string
      * @throws \Exception
      */
-	public function payCostCharge(int $id)
+	public function payCostCharge($id)
 	{
 		return $this->getVisitorModel()->payCharge($id, 'cost');
 	}
@@ -254,7 +255,7 @@ class VisitorRepository
      * @return string
      * @throws \Exception
      */
-	public function payAdvanceCharge(int $id)
+	public function payAdvanceCharge($id)
 	{
 		return $this->getVisitorModel()->payCharge($id, 'advance');
 	}

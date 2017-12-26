@@ -131,6 +131,15 @@ class VisitorModel extends BaseModel
 	}
 
 	/**
+	 * @param  $guid
+	 * @return ActiveRow
+	 */
+	public function findByGuid($guid)
+	{
+		return $this->findBy('guid', $guid);
+	}
+
+	/**
 	 * Create a new visitor
 	 *
 	 * @return	string
@@ -245,7 +254,7 @@ class VisitorModel extends BaseModel
 	 */
 	public function modifyByGuid($guid, $visitor, $meals, $programs)
 	{
-        $visitor['birthday'] = $this->convertToDateTime($visitor['birthday']);
+		$visitor['birthday'] = $this->convertToDateTime($visitor['birthday']);
 
 		$result = $this->database
 			->table($this->getTable())
@@ -268,44 +277,44 @@ class VisitorModel extends BaseModel
 			// read first value from array and shift it to the end
 			$oldProgram = array_shift($oldPrograms);
 
-            $this->updateOrCreateProgram(
-                $visitorId,
-                (empty($oldProgram)) ? $oldProgram : $oldProgram->id,
-                $programs[$programBlock->id]
-            );
+			$this->updateOrCreateProgram(
+				$visitor->id,
+				(empty($oldProgram)) ? $oldProgram : $oldProgram->id,
+				$programs[$programBlock->id]
+			);
 		}
 
 		return $guid;
 	}
 
-    /**
-     * @param int $visitorId
-     * @param int $oldProgramId
-     * @param int $newProgramId
-     * @return mixed
-     */
-    public function updateOrCreateProgram(int $visitorId, int $oldProgramId, int $newProgramId)
-    {
-        $result = $this->getDatabase()
-            ->table('kk_visitor-program')
-            ->where('visitor ? AND id ?', $visitorId, $oldProgramId)
-            ->update([
-                'program' => $newProgramId,
-            ]);
+	/**
+	 * @param int $visitorId
+	 * @param int $oldProgramId
+	 * @param int $newProgramId
+	 * @return mixed
+	 */
+	public function updateOrCreateProgram(int $visitorId, int $oldProgramId, int $newProgramId)
+	{
+		$result = $this->getDatabase()
+			->table('kk_visitor-program')
+			->where('visitor ? AND id ?', $visitorId, $oldProgramId)
+			->update([
+				'program' => $newProgramId,
+			]);
 
-        if(!$result) {
-            $result = $this->getDatabase()
-                ->table('kk_visitor-program')
-                ->where('visitor ? AND id ?', $visitorId, $oldProgramId)
-                ->insert([
-                    'guid'    => $this->generateGuid(),
-                    'visitor' => $visitorId,
-                    'program' => $newProgramId,
-                ]);
-        }
+		if(!$result) {
+			$result = $this->getDatabase()
+				->table('kk_visitor-program')
+				->where('visitor ? AND id ?', $visitorId, $oldProgramId)
+				->insert([
+					'guid'    => $this->generateGuid(),
+					'visitor' => $visitorId,
+					'program' => $newProgramId,
+				]);
+		}
 
-        return $result;
-    }
+		return $result;
+	}
 
 	/**
 	 * Delete one or multiple record/s
@@ -452,7 +461,8 @@ class VisitorModel extends BaseModel
 	 */
 	public function all()
 	{
-		return $this->getDatabase()->query('SELECT 	vis.id AS id,
+		return $this->getDatabase()
+			->query('SELECT 	vis.id AS id,
 								vis.guid AS guid,
 								code,
 								name,

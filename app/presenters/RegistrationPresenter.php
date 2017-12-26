@@ -14,6 +14,7 @@ use App\Repositories\ProgramRepository;
 use App\Components\Forms\RegistrationForm;
 use App\Components\Forms\Factories\IRegistrationFormFactory;
 use App\Services\SkautIS\EventService;
+use Nette\Utils\ArrayHash;
 use Skautis\Wsdl\WsdlException;
 use App\Models\SettingsModel;
 
@@ -53,6 +54,16 @@ class RegistrationPresenter extends VisitorPresenter
 	 * @var EventService
 	 */
 	protected $skautisEventService;
+
+    /**
+     * @var MealModel
+     */
+	private $mealModel;
+
+    /**
+     * @var ProgramRepository
+     */
+	private $programRepository;
 
     protected $error = FALSE;
     protected $hash = NULL;
@@ -139,25 +150,22 @@ class RegistrationPresenter extends VisitorPresenter
 	public function actionCreate($visitor)
 	{
 		try {
-			$postData = $this->getHttpRequest()->getPost();
-			$postData['meeting'] = $this->getMeetingId();
-
-			$guid = $this->getVisitorRepository()->create($postData);
-			$result = $this->sendRegistrationSummary($postData, $guid);
+			$guid = $this->getVisitorRepository()->create($visitor);
+			$result = $this->sendRegistrationSummary($visitor, $guid);
 
 			$this->logInfo('Creation of registration(%s) successfull, result: %s', [
 				$guid,
 				json_encode($result),
 			]);
 			$this->flashSuccess("Registrace({$guid}) byla úspěšně založena.");
-
-			$this->redirect('Registration:check', $guid);
 		} catch(Exception $e) {
 			$this->logError('Creation of registration failed, result: %s', [
 				$e->getMessage(),
 			]);
-			$this->flashError('Creation of registration failed, result: ' . $e->getMessage());
+			$this->flashError('Uložení účastníka selhalo, chyba: ' . $e->getMessage());
 		}
+
+		return $guid;
 	}
 
 	/**
@@ -167,10 +175,8 @@ class RegistrationPresenter extends VisitorPresenter
 	public function actionUpdate($guid, $visitor)
 	{
 		try {
-			$postData = $this->getHttpRequest()->getPost();
-
-			$result = $this->getVisitorRepository()->updateByGuid($guid, $postData);
-			$result = $this->sendRegistrationSummary($postData, $guid);
+			$result = $this->getVisitorRepository()->updateByGuid($guid, $visitor);
+			$result = $this->sendRegistrationSummary($visitor, $guid);
 
 			$this->logInfo('Modification of registration(%s) successfull, result: %s', [
 				$guid,
@@ -182,10 +188,11 @@ class RegistrationPresenter extends VisitorPresenter
 				$guid,
 				$e->getMessage(),
 			]);
-			$this->flashError("Modification of registration({$guid}) failed, result: " . $e->getMessage());
+			$this->flashError('Uložení účastníka selhalo, chyba: ' . $e->getMessage());
+			$result = false;
 		}
 
-		$this->redirect('Registration:check', $guid);
+		return $guid;
 	}
 
 	/**
@@ -228,7 +235,7 @@ class RegistrationPresenter extends VisitorPresenter
 		$template->guid = $guid;
 		$template->visitor = $visitor;
 		$template->meetingId = $visitor->meeting;
-		$template->meals = $this->getMealModel()->findByVisitorId($visitor->id);
+		$template->meals = ArrayHash::from($this->getMealModel()->findByVisitorId($visitor->id));
 		$template->province = $this->getMeetingModel()->getProvinceNameById($visitor->province);
 		$template->programs = $this->getProgramRepository()->findByVisitorId($visitor->id);
 	}
@@ -260,15 +267,14 @@ class RegistrationPresenter extends VisitorPresenter
 	{
 		$control = $this->registrationFormFactory->create();
 		$control->setMeetingId($this->getMeetingId());
-		$control->onRegistrationSave[] = function(RegistrationForm $control, $newVisitor) {
-			try {
-				$guid = $this->getParameter('guid');
+		$control->onRegistrationSave[] = function(RegistrationForm $control, $visitor) {
+		    $guid = $this->getParameter('guid');
 
-				if($guid) {
-					$guid = $this->getVisitorRepository()->update($guid, (array) $newVisitor);
-				} else {
-					$guid = $this->getVisitorRepository()->create((array) $newVisitor);
-				}
+			if($guid) {
+				$guid = $this->actionUpdate($guid, $visitor);
+			} else {
+				$guid = $this->actionCreate($visitor);
+			}
 /*
 				if($this->getUserService()->isLoggedIn() && $this->getMeetingModel()->findCourseId()) {
 					$this->getEventService()->insertEnroll(
@@ -279,27 +285,6 @@ class RegistrationPresenter extends VisitorPresenter
 					);
 				}
 */
-				$result = $this->sendRegistrationSummary((array) $newVisitor, $guid);
-
-				$this->logInfo('Storage of visitor(%s) successfull, result: %s', [
-					$guid,
-					json_encode($result),
-				]);
-				$this->flashSuccess("Účastník({$guid}) byl úspěšně uložen.");
-			} catch(WsdlException $e) {
-				$this->logWarning('Storage of visitor(%s) failed, result: %s', [
-					$guid,
-					$e->getMessage(),
-				]);
-				$this->flashError("Uložení účastníka ({$guid}) selhalo. Účastník je již zaregistrován.");
-			} catch(Exception $e) {
-				$this->logError('Storage of visitor(%s) failed, result: %s', [
-					$guid,
-					$e->getMessage(),
-				]);
-				$this->flashError('Uložení účastníka selhalo, chyba: ' . $e->getMessage());
-			}
-
 			$this->redirect('Registration:check', $guid);
 		};
 
@@ -420,7 +405,7 @@ class RegistrationPresenter extends VisitorPresenter
 	/**
 	 * @return SettingsModel
 	 */
-	public function getSettingsModel()
+	protected function getSettingsModel(): SettingsModel
 	{
 		return $this->settingsModel;
 	}
@@ -430,11 +415,30 @@ class RegistrationPresenter extends VisitorPresenter
 	 *
 	 * @return self
 	 */
-	public function setSettingsModel(SettingsModel $model): self
+	protected function setSettingsModel(SettingsModel $model): self
 	{
 		$this->settingsModel = $model;
 
 		return $this;
 	}
+
+    /**
+     * @return ProgramRepository
+     */
+    protected function getProgramRepository(): ProgramRepository
+    {
+        return $this->programRepository;
+    }
+
+    /**
+     * @param  ProgramRepository $repository
+     * @return RegistrationPresenter
+     */
+    protected function setProgramRepository(ProgramRepository $repository): self
+    {
+        $this->programRepository = $repository;
+
+        return $this;
+    }
 
 }
