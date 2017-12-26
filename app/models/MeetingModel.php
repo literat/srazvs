@@ -216,33 +216,6 @@ class MeetingModel extends BaseModel
 	}
 
 	/**
-	 * Render HTML Provinces <select>
-	 *
-	 * @param	int	ID of selected province
-	 * @return	string	html <select>
-	 */
-	public function renderHtmlProvinceSelect($selectedProvince)
-	{
-		$html_select = "<select style='width: 195px; font-size: 10px' name='province'>\n";
-
-		$result = $this->getDatabase()
-			->table('kk_provinces')
-			->fetchAll();
-
-		foreach($result as $data) {
-			if($data['id'] == $selectedProvince) {
-				$sel = "selected";
-			}
-			else $sel = "";
-			$html_select .= "<option value='" . $data['id'] . "' " . $sel . ">" . $data['province_name'] . "</option>";
-		}
-
-		$html_select .= "</select>\n";
-
-		return $html_select;
-	}
-
-	/**
 	 * @param  integer $meetingId
 	 * @return $this
 	 */

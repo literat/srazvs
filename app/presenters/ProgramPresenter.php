@@ -325,9 +325,9 @@ class ProgramPresenter extends BasePresenter
 	}
 
 	/**
-	 * @return ProgramOverviewControl
+	 * @return AProgramOverviewControl
 	 */
-	protected function createComponentProgramOverview(): ProgramOverviewControl
+	protected function createComponentProgramOverview(): IProgramOverviewControl
 	{
 		return $this->programOverview->setMeetingId($this->getMeetingId());
 	}
