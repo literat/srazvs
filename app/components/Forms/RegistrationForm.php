@@ -2,58 +2,22 @@
 
 namespace App\Components\Forms;
 
-use DateTime;
-use App\Components\BaseControl;
 use App\Models\ProvinceModel;
-use App\Models\ProgramModel;
+use App\Repositories\ProgramRepository;
 use App\Models\BlockModel;
-use App\Models\MealModel;
 use App\Models\MeetingModel;
 use Nette\Application\UI\Form;
 use App\Services\SkautIS\UserService;
 
-class RegistrationForm extends BaseForm
+class RegistrationForm extends VisitorForm
 {
 
 	const TEMPLATE_NAME = 'RegistrationForm';
-
-	const MESSAGE_REQUIRED = 'Hodnota musí být vyplněna!';
-	const MESSAGE_MAX_LENGTH = '%label nesmí mít více jak %d znaků!';
 
 	/**
 	 * @var Closure
 	 */
 	public $onRegistrationSave;
-
-	/**
-	 * @var ProvinceModel
-	 */
-	protected $provinceModel;
-
-	/**
-	 * @var ProgramModel
-	 */
-	protected $programModel;
-
-	/**
-	 * @var BlockModel
-	 */
-	protected $blockModel;
-
-	/**
-	 * @var  MeetingModel
-	 */
-	protected $meetingModel;
-
-	/**
-	 * @var array
-	 */
-	protected $mealFields = [];
-
-	/**
-	 * @var array
-	 */
-	protected $programFields = [];
 
 	/**
 	 * @var UserService
@@ -65,38 +29,23 @@ class RegistrationForm extends BaseForm
 	 */
 	public function __construct(
 		ProvinceModel $province,
-		ProgramModel $program,
+		ProgramRepository $program,
 		BlockModel $block,
 		MeetingModel $meeting,
 		UserService $user
 	) {
 		$this->setProvinceModel($province);
-		$this->setProgramModel($program);
+		$this->setProgramRepository($program);
 		$this->setBlockModel($block);
 		$this->setMeetingModel($meeting);
 		$this->setUserService($user);
 	}
 
 	/**
-	 * @return void
-	 */
-	public function render()
-	{
-		$this->setMealFields();
-		$this->setProgramFields();
-
-		$template = $this->getTemplate();
-		$template->setFile($this->buildTemplatePath());
-		$template->meals = $this->getMealFields();
-		$template->programs = $this->getProgramFields();
-		$template->render();
-	}
-
-	/**
 	 * @param  array $defaults
-	 * @return RegistrationForm
+	 * @return self
 	 */
-	public function setDefaults(array $defaults = []): RegistrationForm
+	public function setDefaults($defaults): BaseForm
 	{
 		$this['registrationForm']->setDefaults($defaults);
 
@@ -206,217 +155,6 @@ class RegistrationForm extends BaseForm
 	}
 
 	/**
-	 * @param  Form   $form
-	 * @return Form
-	 */
-	protected function buildProgramSwitcher(Form $form): Form
-	{
-		$programBlocks = $this->fetchProgramBlocks();
-
-		foreach ($programBlocks as $block) {
-
-			$programsInBlock = $this->getProgramModel()->findByBlockId($block->id);
-
-			$programs = [
-				0 => 'Nebudu přítomen'
-			];
-
-			foreach ($programsInBlock as $program) {
-				$programs[$program->id] = $program->name;
-			}
-
-			$form->addRadioList(
-				'blck_' . $block->id,
-				$block->day . ', ' . $block->from .' - ' . $block->to .' : ' . $block->name,
-				$programs
-			)->setDefaultValue(0)
-			->setDisabled($this->filterFilledCapacity($programs));
-		}
-
-		return $form;
-	}
-
-	/**
-	 * @param  Form   $form
-	 * @return Form
-	 */
-	protected function buildMealSwitcher(Form $form): Form
-	{
-		$yesNoArray = [
-			'ne'  => 'ne',
-			'ano' => 'ano',
-		];
-
-		foreach ($this->fetchMeals() as $name => $label) {
-			$this->setMealField($name);
-			$form->addSelect($name, $label . ':', $yesNoArray);
-		}
-
-		return $form;
-	}
-
-	/**
-	 * @return ProvinceModel
-	 */
-	protected function getProvinceModel(): ProvinceModel
-	{
-		return $this->provinceModel;
-	}
-
-	/**
-	 * @param  ProvinceModel $model
-	 * @return RegistrationFormFactory
-	 */
-	protected function setProvinceModel(ProvinceModel $model): RegistrationForm
-	{
-		$this->provinceModel = $model;
-
-		return $this;
-	}
-
-	/**
-	 * @return ProgramModel
-	 */
-	protected function getProgramModel(): ProgramModel
-	{
-		return $this->programModel;
-	}
-
-	/**
-	 * @param  ProgramModel $model
-	 * @return RegistrationFormFactory
-	 */
-	protected function setProgramModel(ProgramModel $model): RegistrationForm
-	{
-		$this->programModel = $model;
-
-		return $this;
-	}
-
-	/**
-	 * @return BlockModel
-	 */
-	protected function getBlockModel(): BlockModel
-	{
-		return $this->blockModel;
-	}
-
-	/**
-	 * @param  BlockModel $model
-	 * @return RegistrationForm
-	 */
-	protected function setBlockModel(BlockModel $model): RegistrationForm
-	{
-		$this->blockModel = $model;
-
-		return $this;
-	}
-
-	/**
-	 * @return MeetingModel
-	 */
-	protected function getMeetingModel(): MeetingModel
-	{
-		return $this->meetingModel;
-	}
-
-	/**
-	 * @param  MeetingModel $model
-	 * @return RegistrationForm
-	 */
-	protected function setMeetingModel(MeetingModel $model): RegistrationForm
-	{
-		$this->meetingModel = $model;
-
-		return $this;
-	}
-
-	/**
-	 * @return array
-	 */
-	protected function getMealFields(): array
-	{
-		return $this->mealFields;
-	}
-
-	/**
-	 * @param  string $meal
-	 * @return RegistrationForm
-	 */
-	protected function setMealField(string $meal): RegistrationForm
-	{
-		if(!in_array($meal, $this->mealFields)) {
-			$this->mealFields[] = $meal;
-		}
-
-		return $this;
-	}
-
-	/**
-	 * @return array
-	 */
-	protected function getProgramFields(): array
-	{
-		return $this->programFields;
-	}
-
-	/**
-	 * @param  string $program
-	 * @return RegistrationForm
-	 */
-	protected function setProgramField(string $program): RegistrationForm
-	{
-		$this->programFields[] = $program;
-
-		return $this;
-	}
-
-	/**
-	 * @return RegistrationForm
-	 */
-	protected function setProgramFields(): RegistrationForm
-	{
-		$programBlocks = $this->fetchProgramBlocks();
-
-		foreach ($programBlocks as $block) {
-			$programFieldName = 'blck_' . $block->id;
-			$this->setProgramField($programFieldName);
-		}
-
-		return $this;
-	}
-
-	/**
-	 * @return  RegistrationForm
-	 */
-	protected function setMealFields(): RegistrationForm
-	{
-		$meals = $this->fetchMeals();
-
-		foreach ($meals as $name => $label) {
-			$this->setMealField($name);
-		}
-
-		return $this;
-	}
-
-	/**
-	 * @return Row
-	 */
-	protected function fetchProgramBlocks()
-	{
-		return $this->getBlockModel()->getProgramBlocks($this->getMeetingId());
-	}
-
-	/**
-	 * @return array
-	 */
-	protected function fetchMeals()
-	{
-		return MealModel::$meals;
-	}
-
-	/**
 	 * @return UserService
 	 */
 	protected function getUserService()
@@ -433,24 +171,6 @@ class RegistrationForm extends BaseForm
 		$this->userService = $service;
 
 		return $this;
-	}
-
-	/**
-	 * @param  array  $programs
-	 * @return array
-	 */
-	protected function filterFilledCapacity(array $programs = []): array
-	{
-		return array_keys(
-			array_filter($programs, function($name, $id) {
-				if ($id) {
-					$visitorsOnProgram = $this->getProgramModel()->countProgramVisitors($id);
-					$programCapacity = $this->getProgramModel()->findByProgramId($id)->capacity;
-
-					return $visitorsOnProgram >= $programCapacity;
-				}
-			}, ARRAY_FILTER_USE_BOTH)
-		);
 	}
 
 }

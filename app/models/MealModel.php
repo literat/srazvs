@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Nette\Database\Context;
+use Nette\Database\Table\ActiveRow;
 
 /**
  * Meal
@@ -69,7 +70,7 @@ class MealModel extends BaseModel
 	/**
 	 * @return array
 	 */
-	public function getColumns()
+	public function getColumns(): array
 	{
 		return $this->columns;
 	}
@@ -77,9 +78,9 @@ class MealModel extends BaseModel
 	/**
 	 * @param  integer $visitorId
 	 * @param  array   $data
-	 * @return ActiveRow
+	 * @return int
 	 */
-	public function update($visitorId, array $data)
+	public function updateByVisitor($visitorId, array $data)
 	{
 		return $this->getDatabase()
 			->table($this->getTable())
@@ -87,84 +88,45 @@ class MealModel extends BaseModel
 			->update($data);
 	}
 
-	/**
-	 * @deprecated
-	 */
-	function getMeals($visitorId)
-	{
-		$meals = "<tr>";
-		$meals .= " <td class='progPart'>";
+    /**
+     * @param  int   $visitorId
+     * @param  array $values
+     * @return ActiveRow|bool
+     */
+	public function updateOrCreate(int $visitorId, array $values)
+    {
+        $result = $this->updateByVisitor($visitorId, $values);
 
-		$result = $this->database
-			->table($this->dbTable)
-			->where('visitor', $visitorId)
-			->fetchAll();
+        if(!$result) {
+            $values['visitor'] = $visitorId;
+            $result = $this->create($values);
+        }
 
-		if(!$result){
-			$meals .= "<div class='emptyTable' style='width:400px;'>Nejsou žádná aktuální data.</div>\n";
-		} else {
-			foreach($result as $mealData){
-				$meals .= "<div class='block'>".$mealData['fry_dinner'].", ".$mealData['sat_breakfast']." - ".$mealData['sat_lunch']." : ".$mealData['sat_dinner']."</div>\n";
-
-			}
-		}
-
-		$meals .= "</td>";
-		$meals .= "</tr>";
-
-		return $meals;
-	}
-
-	/**
-	 * @deprecated
-	 * Render HTML Meals <select>
-	 *
-	 * @param	string	value of selected meal
-	 * @param	string	if select is disabled
-	 * @return	string	html <select>
-	 */
-	public function renderHtmlMealsSelect($mealsValue, $disabled)
-	{
-		// order must be firtsly NO and then YES
-		// first value is displayed in form as default
-		$yesNoArray = array('ne', 'ano');
-
-		$htmlSelect = '';
-		foreach(static::$dayMeal as $title => $varName){
-			if(preg_match('/breakfast/', $varName))	$mealIcon = 'breakfast';
-			if(preg_match('/lunch/', $varName))		$mealIcon = 'lunch';
-			if(preg_match('/dinner/', $varName))	$mealIcon = 'dinner';
-
-			$htmlSelect .= "<span style='display:block;font-size:11px;'>".$title.":</span>\n";
-			$htmlSelect .= "<img style='width:18px;' src='".IMG_DIR."icons/".$mealIcon.".png' />\n";
-			$htmlSelect .= "<select ".$disabled." style='width:195px; font-size:11px;margin-left:5px;' name='".$varName."'>\n";
-
-			foreach ($yesNoArray as $key){
-				if($key == $mealsValue[$varName]){
-					$selected = "selected";
-				}
-				else $selected = "";
-				$htmlSelect .= "<option value='".$key."' ".$selected.">".$key."</option>";
-			}
-			$htmlSelect .= "</select><br />\n";
-		}
-
-		return $htmlSelect;
-	}
+        return $result;
+    }
 
 	/**
 	 * Get meals data by visitor id
 	 *
 	 * @param	integer	visitor id
-	 * @return	mixed
+	 * @return	array
 	 */
-	public function findByVisitorId($visitorId)
+	public function findByVisitorId($visitorId): array
 	{
-		return $this->getDatabase()
+		$meals = $this->getDatabase()
 			->table($this->getTable())
 			->where('visitor', $visitorId)
 			->limit(1)
 			->fetch();
+
+		if(!$meals) {
+		    $meals = [];
+        } else {
+		    $meals = $meals->toArray();
+        }
+
+        return $meals;
+
 	}
 
 }

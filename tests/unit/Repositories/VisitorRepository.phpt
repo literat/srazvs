@@ -3,17 +3,17 @@
 use Mockery\MockInterface;
 use Tester\Assert;
 use Tests\Unit\BaseTestCase;
-use App\Services\VisitorService;
+use App\Repositories\VisitorRepository;
 
 require_once __DIR__ . '/../bootstrap.php';
-require_once __DIR__ . '/../../../app/services/VisitorService.php';
+require_once __DIR__ . '/../../../app/repositories/VisitorRepository.php';
 
-class VisitorServiceTest extends BaseTestCase
+class VisitorRepositoryTest extends BaseTestCase
 {
 
 	private $service = null;
 
-	public function __construct(VisitorService $service)
+	public function __construct(VisitorRepository $service)
 	{
 		$this->service = $service;
 	}
@@ -155,7 +155,7 @@ class VisitorServiceTest extends BaseTestCase
 $mockedVisitorModel = Mockery::mock('App\Models\VisitorModel');
 $mockedMealModel = Mockery::mock('App\Models\MealModel');
 $mockedBLockModel = Mockery::mock('App\Models\BlockModel');
-$mockedProgramService = Mockery::mock('App\Services\ProgramService');
+$mockedProgramRepository = Mockery::mock('App\Repositories\ProgramRepository');
 
 $mockedBLockModel->shouldReceive('idsFromCurrentMeeting')->andReturn([
 	6 => ['id' => 6],
@@ -170,12 +170,12 @@ $mockedBLockModel->shouldReceive('idsFromCurrentMeeting')->andReturn([
 	396 => ['id' => 396],
 ]);
 
-$visitorService = new VisitorService(
+$visitorRepository = new VisitorRepository(
 	$mockedVisitorModel,
 	$mockedMealModel,
 	$mockedBLockModel,
-	$mockedProgramService
+	$mockedProgramRepository
 );
 
-$test = new VisitorServiceTest($visitorService);
+$test = new VisitorRepositoryTest($visitorRepository);
 $test->run();

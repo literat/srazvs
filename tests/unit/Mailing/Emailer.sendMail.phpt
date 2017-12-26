@@ -4,10 +4,11 @@
  * Test: App\Emailer sendMail.
  */
 
+use App\Services\Emailer;
 use Mockery\MockInterface;
 use Nette\Mail\Message;
+use Nette\Utils\ArrayHash;
 use Tester\Assert;
-use App\Services\Emailer;
 
 require_once __DIR__ . '/../bootstrap.php';
 require_once __DIR__ . '/TestMailer.php';
@@ -25,9 +26,12 @@ class EmailerModelTest extends Tester\TestCase
 
 	public function testSendedSuccessfully()
 	{
-		$recipient = array(
-			'prilis.zlutoucky@kun.cz' => 'Příliš žluťoučký kůň',
-		);
+		$recipient = [
+			'email' => 'prilis.zlutoucky@kun.cz',
+			'name'  => 'Příliš',
+			'surname'  => 'žluťoučký kůň',
+		];
+		$recipient = [ArrayHash::from($recipient)];
 		$subject = 'Úpěl ďábelské ódy';
 		$body = 'Testování';
 
@@ -40,7 +44,9 @@ class EmailerModelTest extends Tester\TestCase
 	public function testSendingFailed()
 	{
 		$recipient = array(
-			'' => 'Příliš žluťoučký kůň',
+			''        => 'Příliš žluťoučký kůň',
+			'name'    => '',
+			'surname' => ''
 		);
 		$subject = 'Úpěl ďábelské ódy';
 		$body = 'Testování';
@@ -53,9 +59,12 @@ class EmailerModelTest extends Tester\TestCase
 
 	public function testSendingMail()
 	{
-		$recipient = array(
-			'prilis.zlutoucky@kun.cz' => 'Příliš žluťoučký kůň',
-		);
+		$recipient = [
+			'email' => 'prilis.zlutoucky@kun.cz',
+			'name'  => 'Příliš',
+			'surname'  => 'žluťoučký kůň',
+		];
+		$recipient = [ArrayHash::from($recipient)];
 		$subject = 'Úpěl ďábelské ódy';
 		$body = 'Testování';
 
@@ -90,9 +99,12 @@ EOD
 
 	public function testSendingMailWithBcc()
 	{
-		$recipient = array(
-			'prilis.zlutoucky@kun.cz' => 'Příliš žluťoučký kůň',
-		);
+		$recipient = [
+			'email' => 'prilis.zlutoucky@kun.cz',
+			'name'  => 'Příliš',
+			'surname'  => 'žluťoučký kůň',
+		];
+		$recipient = [ArrayHash::from($recipient)];
 		$subject = 'Úpěl ďábelské ódy';
 		$body = 'Testování';
 		$bcc = array(
@@ -131,11 +143,22 @@ EOD
 
 	public function testSendingMultipleMailAddresses()
 	{
-		$recipient = array(
-			'prilis.zlutoucky@kun.cz' => 'Příliš žluťoučký kůň',
-			'john@doe.com' => 'John Doe',
-			'info@example.com' => 'Info at Example',
-		);
+		$recipient = [
+			[
+				'email' => 'prilis.zlutoucky@kun.cz',
+				'name'  => 'Příliš',
+				'surname'  => 'žluťoučký kůň',
+			], [
+				'email' => 'john@doe.com',
+				'name'  => 'John',
+				'surname'  => 'Doe',
+			], [
+				'email' => 'info@example.com',
+				'name'  => 'Info',
+				'surname'  => 'at Example',
+				],
+		];
+		$recipient = ArrayHash::from($recipient);
 		$subject = 'Úpěl ďábelské ódy';
 		$body = 'Testování';
 		$bcc = array(
@@ -174,9 +197,12 @@ EOD
 
 	public function testSendingMultipleBcc()
 	{
-		$recipient = array(
-			'prilis.zlutoucky@kun.cz' => 'Příliš žluťoučký kůň',
-		);
+		$recipient = [
+			'email' => 'prilis.zlutoucky@kun.cz',
+			'name'  => 'Příliš',
+			'surname'  => 'žluťoučký kůň',
+		];
+		$recipient = [ArrayHash::from($recipient)];
 		$subject = 'Úpěl ďábelské ódy';
 		$body = 'Testování';
 		$bcc = array(

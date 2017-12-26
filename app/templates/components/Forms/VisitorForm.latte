@@ -1,0 +1,144 @@
+<tr class="col-md-10 col-md-offset-1">
+
+{form visitorForm}
+
+	<div class="errors" n:if="$form->hasErrors()">
+		<div n:foreach="$form->errors as $error" class="alert alert-error alert-dismissible fade in">
+			<button type="button" class="close" data-dismiss="alert">&times;</button>
+			<span class="glyphicon glyphicon-warning-sign offset-right" aria-hidden="true"></span>
+			{$error}
+		</div>
+	</div>
+
+	<script src='{$basePath}/www/js/jquery/jquery-ui.min.js' type='text/javascript'></script>
+	<script type="text/javascript">
+	$(function() {
+		$.datepicker.setDefaults($.datepicker.regional['cs']);
+		$( ".datePicker" ).datepicker({
+			showOn: "button",
+			buttonImage: {$basePath} + "/www/images/calendar_button.png",
+			buttonImageOnly: true,
+			showWeek: true,
+			firstDay: 1,
+			showOtherMonths: true,
+			selectOtherMonths: true,
+			showButtonPanel: true,
+			changeMonth: true,
+			changeYear: true,
+			dateFormat: 'dd.mm.yy',
+		});
+	});
+	</script>
+
+	<table class='form'>
+		<tr>
+			<td class='label'>{label name}</td>
+			<td>{input name}</td>
+		</tr>
+		<tr>
+			<td class='label'>{label surname}</td>
+			<td>{input surname}</td>
+		</tr>
+		<tr>
+			<td class='label'>{label nick}</td>
+			<td>{input nick}</td>
+		</tr>
+		<tr>
+			<td class='label'>{label email}</td>
+			<td>{input email}</td>
+		</tr>
+		<tr>
+			<td class='label'>{label birthday}</td>
+			<td><div class="picker">{input birthday}</div> (datum ve formátu dd. mm. rrrr)</td>
+		</tr>
+		<tr>
+			<td class='label'>{label street}</td>
+			<td>{input street}</td>
+		</tr>
+		<tr>
+			<td class='label'>{label city}</td>
+			<td>{input city}</td>
+		</tr>
+		<tr>
+			<td class='label'>{label postal_code}</td>
+			<td>{input postal_code} (formát: 12345)</td>
+		</tr>
+		<tr>
+			<td class='label'>{label group_num}</td>
+			<td>{input group_num} (formát: 214[tečka]02)</td>
+		</tr>
+		<tr>
+			<td class='label'>{label group_name}</td>
+			<td><div style="margin:2px 0px 2px 0px; font-weight:bold;">Junák - český skaut, z. s.</div>
+			{input group_name} (2. přístav Poutníci Kolín)
+			</td>
+		</tr>
+		<tr>
+			<td class='label'>{label troop_name}</td>
+			<td>{input troop_name} (22. oddíl Galeje)</td>
+		</tr>
+		<tr>
+			<td class='label'>{label province}</td>
+			<td>{input province}</td>
+		</tr>
+
+        {foreach $meals as $meal}
+		<tr>
+			<td class="label">{label $meal}</td>
+			<td>{input $meal}</td>
+		</tr>
+        {/foreach}
+		<tr>
+			<td class='label'>{label arrival}</td>
+			<td>{input arrival}</td>
+		</tr>
+		<tr>
+			<td class='label'>{label departure}</td>
+			<td>{input departure}</td>
+		</tr>
+		<tr>
+			<td class='label'>{label comment}</td>
+			<td>{input comment}</td>
+		</tr>
+		<tr>
+			<td class='label'>{label question}</td>
+			<td>{input question}</td>
+		</tr>
+		<tr>
+			<td class='label'>{label question2}</td>
+			<td>{input question2}</td>
+		</tr>
+		<tr>
+			<td class='label'>{label bill}</td>
+			<td>{input bill}</td>
+		</tr>
+		<tr>
+			<td class='label'>{label cost}</td>
+			<td>{input cost} ,- Kč</td>
+		</tr>
+	</table>
+
+	<div style='border-bottom:1px solid black;text-align:right;'>výběr programů</div>
+
+		{foreach $programs as $program}
+			<div class="form-group">
+				<div class="col-sm-4 control-label">{label $program}</div>
+				<div class="col-sm-8 input-group">{input $program}</div>
+			</div>
+		{/foreach}
+
+	</div>
+
+	{input meeting}
+	{input backlink}
+
+	<div class='button-line'>
+		<div>
+			<span class="save-icon"></span>{input save}
+		</div>
+		<div>
+			<span class="reset-icon"></span>{input reset}
+		</div>
+	</div>
+
+{/form}

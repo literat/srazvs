@@ -304,7 +304,7 @@ class ProgramPresenter extends BasePresenter
 			//$guid = $this->getParameter('guid');
 			$id = $this->getParameter('id');
 
-			$this->setBacklinkFromProgram($program);
+			$this->setBacklinkFromArray($program);
 
 			if($id) {
 				$this->actionUpdate($id, $program);
@@ -316,7 +316,7 @@ class ProgramPresenter extends BasePresenter
 		};
 
 		$control->onProgramReset[] = function(ProgramForm $control, $program) {
-			$this->setBacklinkFromProgram($program);
+			$this->setBacklinkFromArray($program);
 
 			$this->redirect($this->getBacklink() ?: 'Program:listing');
 		};
@@ -325,23 +325,9 @@ class ProgramPresenter extends BasePresenter
 	}
 
 	/**
-	 * @param  Nette\Utils\ArrayHash $program
-	 * @return self
+	 * @return AProgramOverviewControl
 	 */
-	protected function setBacklinkFromProgram(ArrayHash $program): self
-	{
-		if(array_key_exists('backlink', $program) && !empty($program['backlink'])) {
-			$this->setBacklink($program['backlink']);
-			unset($program['backlink']);
-		}
-
-		return $this;
-	}
-
-	/**
-	 * @return ProgramOverviewControl
-	 */
-	protected function createComponentProgramOverview(): ProgramOverviewControl
+	protected function createComponentProgramOverview(): IProgramOverviewControl
 	{
 		return $this->programOverview->setMeetingId($this->getMeetingId());
 	}

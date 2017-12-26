@@ -9,6 +9,7 @@
 _compareTemp
 *.svn
 .phpintel
+.idea
 composer.phar
 deployment.*
 

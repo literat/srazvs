@@ -6,6 +6,7 @@ use Nette\Database\Context;
 use Nette\Utils\Strings;
 use \Exception;
 use DateTime;
+use Tracy\Debugger;
 
 /**
  * Visitor
@@ -130,6 +131,15 @@ class VisitorModel extends BaseModel
 	}
 
 	/**
+	 * @param  $guid
+	 * @return ActiveRow
+	 */
+	public function findByGuid($guid)
+	{
+		return $this->findBy('guid', $guid);
+	}
+
+	/**
 	 * Create a new visitor
 	 *
 	 * @return	string
@@ -200,41 +210,37 @@ class VisitorModel extends BaseModel
 	 * @param	array	$programs_data	Program's data
 	 * @return	mixed					TRUE or array of errors
 	 */
-	public function modify($ID_visitor, $DB_data, $meals_data, $programs_data)
+	public function modify(int $visitorId, array $visitor, array $meals, array $programs)
 	{
-		// for returning specific error
-		$error = array('visitor' => true, 'meal' => true, 'program' => true);
+		$visitor['birthday'] = $this->convertToDateTime($visitor['birthday']);
 
-		$DB_data['birthday'] = $this->convertToDateTime($DB_data['birthday']);
-
-		$result = $this->database
+		$result = $this->getDatabase()
 			->table($this->getTable())
-			->where('id', $ID_visitor)
-			->update($DB_data);
+			->where('id', $visitorId)
+			->update($visitor);
 
 		// change meals
-		$result = $this->Meals->update($ID_visitor, $meals_data);
-		$error['meal'] = $result;
+		$result = $this->Meals->updateOrCreate($visitorId, $meals);
 
 		// gets data from database
-		$programBlocks = $this->Blocks->getProgramBlocks($DB_data['meeting']);
+		$programBlocks = $this->Blocks->getProgramBlocks($visitor['meeting']);
 
 		// get program of visitor
-		$oldPrograms = $this->getVisitorPrograms($ID_visitor);
+		$oldPrograms = $this->findVisitorPrograms($visitorId);
 
 		// update old data to new existing
 		foreach($programBlocks as $programBlock) {
-			$data = array('program' => $programs_data[$programBlock->id]);
 			// read first value from array and shift it to the end
 			$oldProgram = array_shift($oldPrograms);
 
-			$result = $this->database
-				->table('kk_visitor-program')
-				->where('visitor ? AND id ?', $ID_visitor, (empty($oldProgram)) ? $oldProgram : $oldProgram->id)
-				->update($data);
+			$this->updateOrCreateProgram(
+				$visitorId,
+				(empty($oldProgram)) ? $oldProgram : $oldProgram->id,
+				$programs[$programBlock->id]
+			);
 		}
 
-		return $ID_visitor;
+		return $visitorId;
 	}
 
 	/**
@@ -246,43 +252,68 @@ class VisitorModel extends BaseModel
 	 * @param	array	$programs_data	Program's data
 	 * @return	mixed					TRUE or array of errors
 	 */
-	public function modifyByGuid($guid, $DB_data, $meals_data, $programs_data)
+	public function modifyByGuid($guid, $visitor, $meals, $programs)
 	{
-		// for returning specific error
-		$error = array('visitor' => true, 'meal' => true, 'program' => true);
-
-		$DB_data['birthday'] = new \DateTime($DB_data['birthday']);
+		$visitor['birthday'] = $this->convertToDateTime($visitor['birthday']);
 
 		$result = $this->database
 			->table($this->getTable())
 			->where('guid', $guid)
-			->update($DB_data);
+			->update($visitor);
 
 		$visitor = $this->findByGuid($guid);
 
 		// change meals
-		$result = $this->Meals->update($visitor->id, $meals_data);
-		$error['meal'] = $result;
+		$result = $this->Meals->updateOrCreate($visitor->id, $meals);
 
 		// gets data from database
-		$programBlocks = $this->Blocks->getProgramBlocks($DB_data['meeting']);
+		$programBlocks = $this->Blocks->getProgramBlocks($visitor['meeting']);
 
 		// get program of visitor
-		$oldPrograms = $this->getVisitorPrograms($visitor->id);
+		$oldPrograms = $this->findVisitorPrograms($visitor->id);
 
 		// update old data to new existing
 		foreach($programBlocks as $programBlock) {
-			$data = array('program' => $programs_data[$programBlock->id]);
 			// read first value from array and shift it to the end
 			$oldProgram = array_shift($oldPrograms);
 
-			$result = $this->getDatabase()
-				->table('kk_visitor-program')
-				->where('visitor ? AND id ?', $visitor->id, (empty($oldProgram)) ? $oldProgram : $oldProgram->id)
-				->update($data);
+			$this->updateOrCreateProgram(
+				$visitor->id,
+				(empty($oldProgram)) ? $oldProgram : $oldProgram->id,
+				$programs[$programBlock->id]
+			);
 		}
 
 		return $guid;
+	}
+
+	/**
+	 * @param int $visitorId
+	 * @param int $oldProgramId
+	 * @param int $newProgramId
+	 * @return mixed
+	 */
+	public function updateOrCreateProgram(int $visitorId, int $oldProgramId, int $newProgramId)
+	{
+		$result = $this->getDatabase()
+			->table('kk_visitor-program')
+			->where('visitor ? AND id ?', $visitorId, $oldProgramId)
+			->update([
+				'program' => $newProgramId,
+			]);
+
+		if(!$result) {
+			$result = $this->getDatabase()
+				->table('kk_visitor-program')
+				->where('visitor ? AND id ?', $visitorId, $oldProgramId)
+				->insert([
+					'guid'    => $this->generateGuid(),
+					'visitor' => $visitorId,
+					'program' => $newProgramId,
+				]);
+		}
+
+		return $result;
 	}
 
 	/**
@@ -378,16 +409,17 @@ class VisitorModel extends BaseModel
 	 * @param	string	type of payment (pay | advance)
 	 * @return	string	error message or true
 	 */
-	public function payCharge($query_id, $type)
+	public function payCharge($ids, $type)
 	{
-		$billData = $this->getBill($query_id);
+		$bill = $this->getBill($ids)['bill'];
+		$cost = $this->Meeting->getPrice('cost');
 
-		if($billData['bill'] < $this->Meeting->getPrice('cost')) {
-			$bill = array('bill' => $this->Meeting->getPrice($type));
+		if($bill < $cost) {
+			$newBill = ['bill' => $this->Meeting->getPrice($type)];
 			$payResult = $this->getDatabase()
 				->table($this->getTable())
-				->where('id', $query_id)
-				->update($bill);
+				->where('id', $ids)
+				->update($newBill);
 
 			return $payResult;
 		} else {
@@ -405,24 +437,9 @@ class VisitorModel extends BaseModel
 	{
 		return $this->getDatabase()
 			->table($this->getTable())
-			->select('email', 'name', 'surname')
+			->select('email, name, surname')
 			->where('id', $ids)
 			->where('deleted', '0')
-			->fetchAll();
-	}
-
-	/**
-	 * Get visitor's programs
-	 *
-	 * @param	int		ID of visitor
-	 * @return	mixed	result
-	 */
-	public function getVisitorPrograms($visitorId)
-	{
-		return $this->getDatabase()
-			->table('kk_visitor-program')
-			->select('id, program')
-			->where('visitor', $visitorId)
 			->fetchAll();
 	}
 
@@ -440,42 +457,12 @@ class VisitorModel extends BaseModel
 	}
 
 	/**
-	 * Render program switcher for unique visitor
-	 *
-	 * @param	int		ID of meeting
-	 * @param	int		ID of visitor
-	 * @return	string	html
-	 */
-	public function renderProgramSwitcher($meetingId, $visitorId)
-	{
-		$html = "";
-
-		// gets data from database
-		$programBlocks = $this->Blocks->getProgramBlocks($meetingId);
-
-		// table is empty
-		if(!$programBlocks){
-			$html .= "<div class='emptyTable' style='width:400px;'>Nejsou žádná aktuální data.</div>\n";
-		} else {
-			foreach($programBlocks as $block) {
-				$html .= "<div class='block-" . $block->id .  " ".Strings::webalize($block['day'])."'>".$block['day'].", ".$block['from']." - ".$block['to']." : ".$block['name']."</div>\n";
-				// rendering programs in block
-				if($block['program'] == 1) {
-					$html .= "<div class='block-" . $block->id .  " programs ".Strings::webalize($block['day'])." ".Strings::webalize($block['name'])."'>".$this->Programs->getPrograms($block['id'], $visitorId)."</div>";
-				}
-				$html .= "<br />";
-			}
-		}
-
-		return $html;
-	}
-
-	/**
 	 * @return Row
 	 */
 	public function all()
 	{
-		return $this->getDatabase()->query('SELECT 	vis.id AS id,
+		return $this->getDatabase()
+			->query('SELECT 	vis.id AS id,
 								vis.guid AS guid,
 								code,
 								name,
@@ -495,28 +482,6 @@ class VisitorModel extends BaseModel
 						WHERE meeting = ? AND vis.deleted = ? ' . $this->buildSearchQuery() . '
 						ORDER BY vis.id ASC',
 						$this->getMeetingId(), '0')->fetchAll();
-	}
-
-	/**
-	 * Return visitor by id
-	 *
-	 * @param  int    $id
-	 * @return ActiveRow
-	 */
-	public function findById($id)
-	{
-		return $this->find($id);
-	}
-
-	/**
-	 * Return visitor by guid
-	 *
-	 * @param  string  $guid
-	 * @return ActiveRow
-	 */
-	public function findByGuid($guid)
-	{
-		return $this->findBy('guid', $guid);
 	}
 
 	/**

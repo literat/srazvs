@@ -102,14 +102,14 @@ services:
     - App\Components\MaterialsControl
     - App\Components\MealControl
     - App\Components\CategoryStylesControl
-    - App\Services\VisitorService
-    - App\Services\ProgramService
+    - App\Repositories\VisitorRepository
     - App\Services\CategoryService
     - App\Services\AnnotationService
     - App\Repositories\ProgramRepository
     - App\Repositories\BlockRepository
     - App\Repositories\CategoryRepository
     - App\Components\Forms\Factories\IRegistrationFormFactory
+    - App\Components\Forms\Factories\IVisitorFormFactory
     - App\Components\Forms\Factories\IAnnotationFormFactory
     - App\Components\Forms\Factories\IProgramFormFactory
     - App\Services\Translators\CsTranslator
