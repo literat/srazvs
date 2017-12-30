@@ -1,3 +1,15 @@
+<a name="2.10.0"></a>
+# [2.10.0](https://github.com/literat/srazvs/compare/v2.9.0...v2.10.0) (2017-12-30)
+
+
+### Features
+
+* **Public programs:** Move html code into templates and logic into components (refs #131) ([7151cd7](https://github.com/literat/srazvs/commit/7151cd7))
+* **Public programs:** Remove unused methods (refs #131) ([847d36f](https://github.com/literat/srazvs/commit/847d36f))
+* **Public programs:** Reusing program ovreview components (refs #131) ([2dd5690](https://github.com/literat/srazvs/commit/2dd5690))
+
+
+
 <a name="2.9.0"></a>
 # [2.9.0](https://github.com/literat/srazvs/compare/v2.8.0...v2.9.0) (2017-10-29)
 

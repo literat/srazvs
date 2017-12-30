@@ -1,6 +1,6 @@
 {
   "name": "srazvs",
-  "version": "2.9.0",
+  "version": "2.10.0",
   "description": "SrazyVS application",
   "main": "index.php",
   "directories": {
@@ -10,8 +10,9 @@
     "bootstrap-ui": "^2.3.3"
   },
   "devDependencies": {
-    "grunt": "*",
+    "grunt": "^1.0.1",
     "grunt-bump": "*",
+    "grunt-cli": "^1.2.0",
     "grunt-contrib-clean": "^1.0.0",
     "grunt-contrib-watch": "*",
     "grunt-conventional-changelog": "*",
