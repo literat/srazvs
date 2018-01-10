@@ -2,11 +2,11 @@
 
 namespace App\Presenters;
 
-use Nette\Database\Context;
-use Tracy\Debugger;
 use App\Services\Emailer;
-use App\Models\BlockModel;
+use App\Repositories\BlockRepository;
 use App\Models\MeetingModel;
+use App\Components\Forms\Factories\IBlockFormFactory;
+use App\Components\Forms\BlockForm;
 use \Exception;
 
 /**
@@ -19,6 +19,8 @@ use \Exception;
  */
 class BlockPresenter extends BasePresenter
 {
+
+	const REDIRECT_DEFAULT = 'Block:listing';
 
 	/**
 	 * @var integer
@@ -36,14 +38,156 @@ class BlockPresenter extends BasePresenter
 	private $meetingModel;
 
 	/**
-	 * @param BlockModel $model
-	 * @param Emailer    $emailer
+	 * @var BlockRepository
 	 */
-	public function __construct(BlockModel $model, Emailer $emailer, MeetingModel $meetingModel)
+	private $blockRepository;
+
+	/**
+	 * @var IBlockFormFactory
+	 */
+	private $blockFormFactory;
+
+	/**
+	 * @param BlockRepository $blockRepository
+	 * @param Emailer         $emailer
+	 */
+	public function __construct(BlockRepository $blockRepository, Emailer $emailer, MeetingModel $meetingModel)
 	{
-		$this->setModel($model);
+		$this->setBlockRepository($blockRepository);
 		$this->setEmailer($emailer);
 		$this->setMeetingModel($meetingModel);
+	}
+
+	/**
+	 * @param  IBlockFormFactory $factory
+	 */
+	public function injectBlockFormFactory(IBlockFormFactory $factory)
+	{
+		$this->blockFormFactory = $factory;
+	}
+
+	/**
+	 * @return void
+	 */
+	public function startup()
+	{
+		parent::startup();
+
+		$meetingId = $this->getMeetingId();
+		$this->getBlockRepository()->setMeetingId($meetingId);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function actionCreate()
+	{
+		$model = $this->getModel();
+		$data = $this->getHttpRequest()->getPost();
+
+		$this->setBacklink($data['backlink']);
+		$data['from'] = date('H:i:s', mktime($data['start_hour'], $data['start_minute'], 0, 0, 0, 0));
+		$data['to'] = date('H:i:s', mktime($data['end_hour'], $data['end_minute'], 0, 0, 0, 0));
+		$data['meeting'] = $this->getMeetingId();
+
+		unset($data['start_hour']);
+		unset($data['end_hour']);
+		unset($data['start_minute']);
+		unset($data['end_minute']);
+		unset($data['backlink']);
+
+		try {
+			$this->guardToGreaterThanFrom($data['from'], $data['to']);
+			$result = $this->getModel()->create($data);
+
+			$this->logInfo('Creation of block successfull, result: ' . json_encode($result));
+
+			$this->flashSuccess('Položka byla úspěšně vytvořena');
+		} catch(Exception $e) {
+			$this->logError('Creation of block with data ' . json_encode($data) . ' failed, result: ' . $e->getMessage());
+
+			$this->flashFailure('Creation of block failed, result: ' . $e->getMessage());
+		}
+
+		$this->redirect($this->getBacklink() ?: self::REDIRECT_DEFAULT);
+	}
+
+	/**
+	 * @param  integer $id
+	 * @return void
+	 */
+	public function actionUpdate($id)
+	{
+		$model = $this->getModel();
+		$data = $this->getHttpRequest()->getPost();
+
+		$this->setBacklink($data['backlink']);
+		$data['from'] = date('H:i:s', mktime($data['start_hour'], $data['start_minute'], 0, 0, 0, 0));
+		$data['to'] = date('H:i:s', mktime($data['end_hour'], $data['end_minute'], 0, 0, 0, 0));
+		$data['meeting'] = $this->getMeetingId();
+		array_key_exists('display_progs', $data) ?: $data['display_progs'] = '1';
+
+		unset($data['start_hour']);
+		unset($data['end_hour']);
+		unset($data['start_minute']);
+		unset($data['end_minute']);
+		unset($data['backlink']);
+
+		try {
+			$this->guardToGreaterThanFrom($data['from'], $data['to']);
+			$result = $this->getModel()->update($id, $data);
+
+			$this->logInfo('Modification of block id ' . $id . ' with data ' . json_encode($data) . ' successfull, result: ' . json_encode($result));
+
+			$this->flashSuccess('Položka byla úspěšně upravena.');
+		} catch(Exception $e) {
+			$this->logError('Modification of block id ' . $id . ' failed, result: ' . $e->getMessage());
+
+			$this->flashFailure('Modification of block id ' . $id . ' failed, result: ' . $e->getMessage());
+		}
+
+		$this->redirect($this->getBacklink() ?: self::REDIRECT_DEFAULT);
+	}
+
+	/**
+	 * @param  int  $id
+	 * @return void
+	 */
+	public function actionDelete($id): void
+	{
+		try {
+			$result = $this->getModel()->delete($id);
+			$this->logInfo('Destroying of block successfull, result: ' . json_encode($result));
+			$this->flashSuccess('Položka byla úspěšně smazána.');
+		} catch(Exception $e) {
+			$this->logError('Destroying of block failed, result: ' .  $e->getMessage());
+			$this->flashFailure('Destroying of block failed, result: ' . $e->getMessage());
+		}
+
+		$this->redirect(self::REDIRECT_DEFAULT);
+	}
+
+	/**
+	 * Send mail to tutor
+	 *
+	 * @return void
+	 */
+	public function actionMail($id)
+	{
+		try {
+			$tutors = $this->getModel()->getTutor($id);
+			$recipients = $this->parseTutorEmail($tutors);
+
+			$this->getEmailer()->tutor($recipients, $tutors->guid, 'block');
+
+			$this->logInfo('Sending email to block tutor successfull, result: ' . json_encode($recipients) . ', ' . $tutors->guid);
+			$this->flashSuccess('Email lektorovi byl odeslán..');
+		} catch(Exception $e) {
+			$this->logError('Sending email to block tutor failed, result: ' .  $e->getMessage());
+			$this->flashFailure('Email lektorovi nebyl odeslán, result: ' . $e->getMessage());
+		}
+
+		$this->redirect('Block:edit', $id);
 	}
 
 	/**
@@ -74,119 +218,6 @@ class BlockPresenter extends BasePresenter
 	}
 
 	/**
-	 * @return void
-	 */
-	public function actionCreate()
-	{
-		$model = $this->getModel();
-		$data = $this->getHttpRequest()->getPost();
-
-		$this->setBacklink($data['backlink']);
-		$data['from'] = date('H:i:s', mktime($data['start_hour'], $data['start_minute'], 0, 0, 0, 0));
-		$data['to'] = date('H:i:s', mktime($data['end_hour'], $data['end_minute'], 0, 0, 0, 0));
-		$data['meeting'] = $this->getMeetingId();
-
-		unset($data['start_hour']);
-		unset($data['end_hour']);
-		unset($data['start_minute']);
-		unset($data['end_minute']);
-		unset($data['backlink']);
-
-		try {
-			$this->guardToGreaterThanFrom($data['from'], $data['to']);
-			$result = $this->getModel()->create($data);
-
-			Debugger::log('Creation of block successfull, result: ' . json_encode($result), Debugger::INFO);
-
-			$this->flashMessage('Položka byla úspěšně vytvořena', 'ok');
-		} catch(Exception $e) {
-			Debugger::log('Creation of block with data ' . json_encode($data) . ' failed, result: ' . $e->getMessage(), Debugger::ERROR);
-
-			$this->flashMessage('Creation of block failed, result: ' . $e->getMessage(), 'error');
-		}
-
-		$this->redirect($this->getBacklink() ?: 'Block:listing');
-	}
-
-	/**
-	 * @param  integer $id
-	 * @return void
-	 */
-	public function actionUpdate($id)
-	{
-		$model = $this->getModel();
-		$data = $this->getHttpRequest()->getPost();
-
-		$this->setBacklink($data['backlink']);
-		$data['from'] = date('H:i:s', mktime($data['start_hour'], $data['start_minute'], 0, 0, 0, 0));
-		$data['to'] = date('H:i:s', mktime($data['end_hour'], $data['end_minute'], 0, 0, 0, 0));
-		$data['meeting'] = $this->getMeetingId();
-		array_key_exists('display_progs', $data) ?: $data['display_progs'] = '1';
-
-		unset($data['start_hour']);
-		unset($data['end_hour']);
-		unset($data['start_minute']);
-		unset($data['end_minute']);
-		unset($data['backlink']);
-
-		try {
-			$this->guardToGreaterThanFrom($data['from'], $data['to']);
-			$result = $this->getModel()->update($id, $data);
-
-			Debugger::log('Modification of block id ' . $id . ' with data ' . json_encode($data) . ' successfull, result: ' . json_encode($result), Debugger::INFO);
-
-			$this->flashMessage('Položka byla úspěšně upravena.', 'ok');
-		} catch(Exception $e) {
-			Debugger::log('Modification of block id ' . $id . ' failed, result: ' . $e->getMessage(), Debugger::ERROR);
-
-			$this->flashMessage('Modification of block id ' . $id . ' failed, result: ' . $e->getMessage(), 'error');
-		}
-
-		$this->redirect($this->getBacklink() ?: 'Block:listing');
-	}
-
-	/**
-	 * @param  int  $id
-	 * @return void
-	 */
-	public function actionDelete($id)
-	{
-		try {
-			$result = $this->getModel()->delete($id);
-			Debugger::log('Destroying of block successfull, result: ' . json_encode($result), Debugger::INFO);
-			$this->flashMessage('Položka byla úspěšně smazána.', 'ok');
-		} catch(Exception $e) {
-			Debugger::log('Destroying of block failed, result: ' .  $e->getMessage(), Debugger::ERROR);
-			$this->flashMessage('Destroying of block failed, result: ' . $e->getMessage(), 'error');
-		}
-
-		$this->redirect('Block:listing');
-	}
-
-	/**
-	 * Send mail to tutor
-	 *
-	 * @return void
-	 */
-	public function actionMail($id)
-	{
-		try {
-			$tutors = $this->getModel()->getTutor($id);
-			$recipients = $this->parseTutorEmail($tutors);
-
-			$this->getEmailer()->tutor($recipients, $tutors->guid, 'block');
-
-			Debugger::log('Sending email to block tutor successfull, result: ' . json_encode($recipients) . ', ' . $tutors->guid, Debugger::INFO);
-			$this->flashMessage('Email lektorovi byl odeslán..', 'ok');
-		} catch(Exception $e) {
-			Debugger::log('Sending email to block tutor failed, result: ' .  $e->getMessage(), Debugger::ERROR);
-			$this->flashMessage('Email lektorovi nebyl odeslán, result: ' . $e->getMessage(), 'error');
-		}
-
-		$this->redirect('Block:edit', $id);
-	}
-
-	/**
 	 * Prepare data for editing
 	 *
 	 * @param  int $id of Block
@@ -205,7 +236,7 @@ class BlockPresenter extends BasePresenter
 		$template->error_material = "";
 
 		$this->blockId = $id;
-		$block = $this->getModel()->find($id);
+		$block = $this->getBlockRepository()->find($id);
 		$template->block = $block;
 		$template->id = $id;
 
@@ -229,9 +260,40 @@ class BlockPresenter extends BasePresenter
 		$model = $this->getModel();
 		$template = $this->getTemplate();
 
-		$template->blocks = $model->all();
+		$template->blocks = $this->getBlockRepository()->all();
 		$template->mid = $this->meetingId;
 		$template->heading = $this->heading;
+	}
+
+	/**
+	 * @return BlockForm
+	 */
+	protected function createComponentBlockForm(): BlockForm
+	{
+		$control = $this->blockFormFactory->create();
+		$control->setMeetingId($this->getMeetingId());
+		$control->onBlockSave[] = function(BlockForm $control, $block) {
+			//$guid = $this->getParameter('guid');
+			$id = $this->getParameter('id');
+
+			$this->setBacklinkFromArray($block);
+
+			if($id) {
+				$this->actionUpdate($id, $block);
+			} else {
+				$this->actionCreate($block);
+			}
+
+			$this->redirect($this->getBacklink() ?: self::REDIRECT_DEFAULT);
+		};
+
+		$control->onBlockReset[] = function(BlockForm $control, $block) {
+			$this->setBacklinkFromArray($block);
+
+			$this->redirect($this->getBacklink() ?: self::REDIRECT_DEFAULT);
+		};
+
+		return $control;
 	}
 
 	/**
@@ -256,7 +318,7 @@ class BlockPresenter extends BasePresenter
 	 * Render select box
 	 *
 	 * @param	string	name
-	 * @param	array	content of slect box
+	 * @param	array	content of select box
 	 * @param	var		variable that match selected option
 	 * @param	string	inline styling
 	 * @return	string	html of select box
@@ -298,7 +360,7 @@ class BlockPresenter extends BasePresenter
 	/**
 	 * @return MeetingModel
 	 */
-	public function getMeetingModel(): MeetingModel
+	private function getMeetingModel(): MeetingModel
 	{
 		return $this->meetingModel;
 	}
@@ -308,11 +370,31 @@ class BlockPresenter extends BasePresenter
 	 *
 	 * @return self
 	 */
-	public function setMeetingModel(MeetingModel $meetingModel): self
+	private function setMeetingModel(MeetingModel $meetingModel): self
 	{
 		$this->meetingModel = $meetingModel;
 
 		return $this;
 	}
+
+	/**
+	 * @return BlockRepository
+	 */
+	private function getBlockRepository(): BlockRepository
+	{
+		return $this->blockRepository;
+	}
+
+	/**
+	 * @param BlockRepository $blockRepository
+	 */
+	private function setBlockRepository(BlockRepository $blockRepository): self
+	{
+		$this->blockRepository = $blockRepository;
+
+		return $this;
+	}
+
+
 
 }

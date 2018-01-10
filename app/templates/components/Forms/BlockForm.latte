@@ -1,0 +1,83 @@
+<div class="col-md-10 col-md-offset-1">
+
+{form blockForm}
+
+	<div class="errors" n:if="$form->hasErrors()">
+		<div n:foreach="$form->errors as $error" class="alert alert-error alert-dismissible fade in">
+			<button type="button" class="close" data-dismiss="alert">&times;</button>
+			<span class="glyphicon glyphicon-warning-sign offset-right" aria-hidden="true"></span>
+			{$error}
+		</div>
+	</div>
+
+	<table class='form'>
+		<tr>
+			<td class='label'>{label name}</td>
+			<td>{input name}</td>
+		</tr>
+		<tr>
+			<td class='label'>{label day}</td>
+			<td>{input day}</td>
+		</tr>
+		<tr>
+			<td class='label'><label class="required">Od:</label></td>
+			<td>{input start_hour} {input start_minute}</td>
+		</tr>
+		<tr>
+			<td class='label'><label class="required">Do:</label></td>
+			<td>{input end_hour} {input end_minute}</td>
+		</tr>
+		<tr>
+			<td class='label'>{label description}</td>
+			<td>{input description}</td>
+		</tr>
+		<tr>
+			<td class='label'>{label tutor}</td>
+			<td>{input tutor}</td>
+		</tr>
+		<tr>
+			<td class='label'>{label email}</td>
+			<td>{input email} (více mailů musí být odděleno čárkou)</td>
+		</tr>
+		<tr>
+			<td class='label'><label>Programový blok:</label></td>
+			<td>{input program}</td>
+		</tr>
+		<tr>
+			<td class='label'><label>Nezobrazovat programy:</label></td>
+			<td>{input display_progs}</td>
+		</tr>
+		<tr>
+			<td class='label'>{label capacity}</td>
+			<td>{input capacity} (omezeno na 255)</td>
+		</tr>
+		<tr>
+			<td class="label">{label category}</td>
+			<td>{input category}</td>
+		</tr>
+	</table>
+
+	<div class='button-line'>
+		<div>
+			<span class="save-icon"></span>{input save}
+		</div>
+		<div>
+			<span class="reset-icon"></span>{input reset}
+		</div>
+	</div>
+
+	{input id}
+	{input guid}
+	<input type='hidden' name='backlink' value='{$backlink}'>
+
+{/form}
+
+<script src='{$basePath}/www/js/live-form-validation.js' type='text/javascript'></script>
+<script>
+	LiveForm.setOptions({
+		messageParentClass: 'form-group',
+		messageErrorClass: 'help-block text-danger col-md-offset-3'
+	});
+</script>
+
+</div>

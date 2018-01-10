@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Models\BlockModel;
+use Nette\Database\Table\ActiveRow;
 
 class BlockRepository
 {
@@ -19,6 +20,33 @@ class BlockRepository
 		BlockModel $blockModel
 	) {
 		$this->setBlockModel($blockModel);
+	}
+
+	/**
+	 * @param int $meetingId
+	 */
+	public function setMeetingId(int $meetingId): self
+	{
+		$this->getBlockModel()->setMeetingId($meetingId);
+
+		return $this;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function all(): array
+	{
+		return $this->getBlockModel()->all();
+	}
+
+	/**
+	 * @param  int $id
+	 * @return \\Nette\Database\Table\ActiveRow
+	 */
+	public function find(int $id): ActiveRow
+	{
+		return $this->getBlockModel()->find($id);
 	}
 
 	/**
