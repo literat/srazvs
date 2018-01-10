@@ -140,7 +140,7 @@ class BlockForm extends BaseForm
 			->setAttribute('placeholder', 0);
 		$form->addCheckbox('program');
 		$form->addCheckbox('display_progs')
-			->setDefaultValue(true);
+			->setDefaultValue(1);
 		$form->addSelect('category', 'Kategorie:', $this->buildCategorySelect());
 
 		$form->addHidden('id');
@@ -153,8 +153,6 @@ class BlockForm extends BaseForm
 		$form->addSubmit('reset', 'Storno')
 			->setAttribute('class', 'btn-reset')
 			->onClick[] = [$this, 'processReset'];
-
-		$form->setDefaults(['display_in_reg' => 1]);
 
 		$form = $this->setupRendering($form);
 

@@ -69,13 +69,13 @@ class ProgramRepository
 		return $this->getProgramModel()->findByVisitorId($visitorId);
 	}
 
-    /**
-     * @param int $blockId
-     * @return array
-     */
-    public function findByBlockId(int $blockId): array
-    {
-        return $this->getProgramModel()->findByBlockId($blockId);
+	/**
+	 * @param int $blockId
+	 * @return array
+	 */
+	public function findByBlockId(int $blockId): array
+	{
+		return $this->getProgramModel()->findByBlockId($blockId);
 	}
 
 	/**
@@ -102,6 +102,8 @@ class ProgramRepository
 	 */
 	public function create(ArrayHash $program)
 	{
+		unset($program->id);
+		unset($program->backlink);
 		$program = $this->transformDisplayInRegValue($program);
 
 		return $this->getProgramModel()->create((array) $program);
@@ -127,13 +129,13 @@ class ProgramRepository
 		return $this->getProgramModel()->delete($id);
 	}
 
-    /**
-     * @param  int $programId
-     * @return int
-     */
-    public function countVisitors(int $programId): int
-    {
-        return $this->getProgramModel()->countProgramVisitors($programId);
+	/**
+	 * @param  int $programId
+	 * @return int
+	 */
+	public function countVisitors(int $programId): int
+	{
+		return $this->getProgramModel()->countProgramVisitors($programId);
 	}
 
 	/**

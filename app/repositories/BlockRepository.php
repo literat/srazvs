@@ -23,7 +23,8 @@ class BlockRepository
 	}
 
 	/**
-	 * @param int $meetingId
+	 * @param  int $meetingId
+     * @return self
 	 */
 	public function setMeetingId(int $meetingId): self
 	{
@@ -42,7 +43,7 @@ class BlockRepository
 
 	/**
 	 * @param  int $id
-	 * @return \\Nette\Database\Table\ActiveRow
+	 * @return \Nette\Database\Table\ActiveRow
 	 */
 	public function find(int $id): ActiveRow
 	{
@@ -56,6 +57,25 @@ class BlockRepository
 	public function findByMeeting(string $meetingId): array
 	{
 		return $this->getBlockModel()->findBymeeting($meetingId);
+	}
+
+	/**
+	 * @param  $block
+	 * @return \Nette\Database\Table\ActiveRow
+	 */
+	public function create($block): ActiveRow
+	{
+		unset($block->id);
+		return $this->getBlockModel()->create((array) $block);
+	}
+
+	/**
+	 * @param $id
+	 * @return bool
+	 */
+	public function delete($id): bool
+	{
+		return $this->getBlockModel()->delete($id);
 	}
 
 	/**

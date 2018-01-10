@@ -4,10 +4,10 @@ namespace App\Presenters;
 
 use App\Services\Emailer;
 use App\Repositories\BlockRepository;
-use App\Models\MeetingModel;
 use App\Components\Forms\Factories\IBlockFormFactory;
 use App\Components\Forms\BlockForm;
 use \Exception;
+use Nette\Utils\ArrayHash;
 
 /**
  * Block controller
@@ -33,11 +33,6 @@ class BlockPresenter extends BasePresenter
 	private $emailer;
 
 	/**
-	 * @var MeetingModel
-	 */
-	private $meetingModel;
-
-	/**
 	 * @var BlockRepository
 	 */
 	private $blockRepository;
@@ -51,11 +46,10 @@ class BlockPresenter extends BasePresenter
 	 * @param BlockRepository $blockRepository
 	 * @param Emailer         $emailer
 	 */
-	public function __construct(BlockRepository $blockRepository, Emailer $emailer, MeetingModel $meetingModel)
+	public function __construct(BlockRepository $blockRepository, Emailer $emailer)
 	{
 		$this->setBlockRepository($blockRepository);
 		$this->setEmailer($emailer);
-		$this->setMeetingModel($meetingModel);
 	}
 
 	/**
@@ -80,32 +74,30 @@ class BlockPresenter extends BasePresenter
 	/**
 	 * @return void
 	 */
-	public function actionCreate()
+	public function actionCreate(ArrayHash $block)
 	{
-		$model = $this->getModel();
-		$data = $this->getHttpRequest()->getPost();
-
-		$this->setBacklink($data['backlink']);
-		$data['from'] = date('H:i:s', mktime($data['start_hour'], $data['start_minute'], 0, 0, 0, 0));
-		$data['to'] = date('H:i:s', mktime($data['end_hour'], $data['end_minute'], 0, 0, 0, 0));
-		$data['meeting'] = $this->getMeetingId();
-
-		unset($data['start_hour']);
-		unset($data['end_hour']);
-		unset($data['start_minute']);
-		unset($data['end_minute']);
-		unset($data['backlink']);
-
 		try {
-			$this->guardToGreaterThanFrom($data['from'], $data['to']);
-			$result = $this->getModel()->create($data);
+            $block->from = date('H:i:s', mktime($block->start_hour, $block->start_minute, 0, 0, 0, 0));
+            $block->to = date('H:i:s', mktime($block->end_hour, $block->end_minute, 0, 0, 0, 0));
+            $block->meeting = $this->getMeetingId();
+            $block->program = strval($block->program) ?: '0';
+            $block->display_progs = strval($block->display_progs) ?: '0';
+
+            unset($block->start_hour);
+            unset($block->end_hour);
+            unset($block->start_minute);
+            unset($block->end_minute);
+            unset($block->backlink);
+
+            $this->logInfo('Storing new block.');
+
+			$this->guardToGreaterThanFrom($block->from, $block->to);
+			$result = $this->getBlockRepository()->create($block);
 
 			$this->logInfo('Creation of block successfull, result: ' . json_encode($result));
-
 			$this->flashSuccess('Položka byla úspěšně vytvořena');
 		} catch(Exception $e) {
-			$this->logError('Creation of block with data ' . json_encode($data) . ' failed, result: ' . $e->getMessage());
-
+			$this->logError('Creation of block with data ' . json_encode($block) . ' failed, result: ' . $e->getMessage());
 			$this->flashFailure('Creation of block failed, result: ' . $e->getMessage());
 		}
 
@@ -116,33 +108,28 @@ class BlockPresenter extends BasePresenter
 	 * @param  integer $id
 	 * @return void
 	 */
-	public function actionUpdate($id)
+	public function actionUpdate($id, $block)
 	{
-		$model = $this->getModel();
-		$data = $this->getHttpRequest()->getPost();
-
-		$this->setBacklink($data['backlink']);
-		$data['from'] = date('H:i:s', mktime($data['start_hour'], $data['start_minute'], 0, 0, 0, 0));
-		$data['to'] = date('H:i:s', mktime($data['end_hour'], $data['end_minute'], 0, 0, 0, 0));
-		$data['meeting'] = $this->getMeetingId();
-		array_key_exists('display_progs', $data) ?: $data['display_progs'] = '1';
-
-		unset($data['start_hour']);
-		unset($data['end_hour']);
-		unset($data['start_minute']);
-		unset($data['end_minute']);
-		unset($data['backlink']);
-
 		try {
-			$this->guardToGreaterThanFrom($data['from'], $data['to']);
-			$result = $this->getModel()->update($id, $data);
+            $block->from = date('H:i:s', mktime($block->start_hour, $block->start_minute, 0, 0, 0, 0));
+            $block->to = date('H:i:s', mktime($block->end_hour, $block->end_minute, 0, 0, 0, 0));
+            $block->meeting = $this->getMeetingId();
+            $block->program = strval($block->program) ?: '0';
+            $block->display_progs = strval($block->display_progs) ?: '0';
 
-			$this->logInfo('Modification of block id ' . $id . ' with data ' . json_encode($data) . ' successfull, result: ' . json_encode($result));
+            unset($block->start_hour);
+            unset($block->end_hour);
+            unset($block->start_minute);
+            unset($block->end_minute);
+            unset($block->backlink);
 
+			$this->guardToGreaterThanFrom($block['from'], $block['to']);
+			$result = $this->getBlockRepository()->update($id, $block);
+
+			$this->logInfo('Modification of block id ' . $id . ' with data ' . json_encode($block) . ' successfull, result: ' . json_encode($result));
 			$this->flashSuccess('Položka byla úspěšně upravena.');
 		} catch(Exception $e) {
 			$this->logError('Modification of block id ' . $id . ' failed, result: ' . $e->getMessage());
-
 			$this->flashFailure('Modification of block id ' . $id . ' failed, result: ' . $e->getMessage());
 		}
 
@@ -156,7 +143,7 @@ class BlockPresenter extends BasePresenter
 	public function actionDelete($id): void
 	{
 		try {
-			$result = $this->getModel()->delete($id);
+			$result = $this->getBlockRepository()->delete($id);
 			$this->logInfo('Destroying of block successfull, result: ' . json_encode($result));
 			$this->flashSuccess('Položka byla úspěšně smazána.');
 		} catch(Exception $e) {
@@ -196,25 +183,7 @@ class BlockPresenter extends BasePresenter
 	public function renderNew()
 	{
 		$template = $this->getTemplate();
-
 		$template->heading = 'nový blok';
-		$template->page = $this->getHttpRequest()->getQuery('page');
-		$template->error_name = "";
-		$template->error_description = "";
-		$template->error_tutor = "";
-		$template->error_email = "";
-		$template->error_material = "";
-
-		$template->day_roll = $this->renderHtmlSelectBox('day', $this->days, null, 'width:172px;');
-		$template->hour_roll = $this->renderHtmlSelectBox('start_hour', $this->hours, date('H'));
-		$template->minute_roll = $this->renderHtmlSelectBox('start_minute', $this->minutes, date('i'));
-		$template->end_hour_roll = $this->renderHtmlSelectBox('end_hour', $this->hours, date('H')+1);
-		$template->end_minute_roll = $this->renderHtmlSelectBox('end_minute', $this->minutes, date('i'));
-		// is program block check box
-		$template->program_checkbox = $this->renderHtmlCheckBox('program', 1, 0);
-		// display programs in block check box
-		$template->display_progs_checkbox = $this->renderHtmlCheckBox('display_progs', 0, null);
-		$template->selectedCategory	= null;
 	}
 
 	/**
@@ -257,9 +226,7 @@ class BlockPresenter extends BasePresenter
 	 */
 	public function renderListing()
 	{
-		$model = $this->getModel();
 		$template = $this->getTemplate();
-
 		$template->blocks = $this->getBlockRepository()->all();
 		$template->mid = $this->meetingId;
 		$template->heading = $this->heading;
@@ -354,27 +321,6 @@ class BlockPresenter extends BasePresenter
 		if($from > $to) {
 			throw new Exception('Starting time is greater then finishing time.');
 		}
-	}
-
-
-	/**
-	 * @return MeetingModel
-	 */
-	private function getMeetingModel(): MeetingModel
-	{
-		return $this->meetingModel;
-	}
-
-	/**
-	 * @param MeetingModel $meetingModel
-	 *
-	 * @return self
-	 */
-	private function setMeetingModel(MeetingModel $meetingModel): self
-	{
-		$this->meetingModel = $meetingModel;
-
-		return $this;
 	}
 
 	/**
