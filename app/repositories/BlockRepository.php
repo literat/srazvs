@@ -16,15 +16,14 @@ class BlockRepository
 	/**
 	 * @param BlockModel $blockModel
 	 */
-	public function __construct(
-		BlockModel $blockModel
-	) {
+	public function __construct(BlockModel $blockModel)
+    {
 		$this->setBlockModel($blockModel);
 	}
 
 	/**
 	 * @param  int $meetingId
-     * @return self
+	 * @return self
 	 */
 	public function setMeetingId(int $meetingId): self
 	{
@@ -59,6 +58,15 @@ class BlockRepository
 		return $this->getBlockModel()->findBymeeting($meetingId);
 	}
 
+    /**
+     * @param $id
+     * @return \Nette\Database\Table\ActiveRow
+     */
+	public function findTutor($id)
+    {
+	    return $this->getBlockModel()->getTutor($id);
+    }
+
 	/**
 	 * @param  $block
 	 * @return \Nette\Database\Table\ActiveRow
@@ -67,6 +75,16 @@ class BlockRepository
 	{
 		unset($block->id);
 		return $this->getBlockModel()->create((array) $block);
+	}
+
+	/**
+     * @param  $id
+	 * @param  $block
+	 * @return \Nette\Database\Table\ActiveRow
+	 */
+	public function update($id, $block): bool
+	{
+		return $this->getBlockModel()->update($id, (array) $block);
 	}
 
 	/**

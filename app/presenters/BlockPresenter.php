@@ -77,19 +77,9 @@ class BlockPresenter extends BasePresenter
 	public function actionCreate(ArrayHash $block)
 	{
 		try {
-            $block->from = date('H:i:s', mktime($block->start_hour, $block->start_minute, 0, 0, 0, 0));
-            $block->to = date('H:i:s', mktime($block->end_hour, $block->end_minute, 0, 0, 0, 0));
-            $block->meeting = $this->getMeetingId();
-            $block->program = strval($block->program) ?: '0';
-            $block->display_progs = strval($block->display_progs) ?: '0';
+			$block = $this->transformBlock($block);
 
-            unset($block->start_hour);
-            unset($block->end_hour);
-            unset($block->start_minute);
-            unset($block->end_minute);
-            unset($block->backlink);
-
-            $this->logInfo('Storing new block.');
+			$this->logInfo('Storing new block.');
 
 			$this->guardToGreaterThanFrom($block->from, $block->to);
 			$result = $this->getBlockRepository()->create($block);
@@ -101,27 +91,18 @@ class BlockPresenter extends BasePresenter
 			$this->flashFailure('Creation of block failed, result: ' . $e->getMessage());
 		}
 
-		$this->redirect($this->getBacklink() ?: self::REDIRECT_DEFAULT);
+		return $result;
 	}
 
-	/**
-	 * @param  integer $id
-	 * @return void
-	 */
-	public function actionUpdate($id, $block)
+    /**
+     * @param  integer   $id
+     * @param  ArrayHash $block
+     * @return boolean
+     */
+	public function actionUpdate($id, ArrayHash $block)
 	{
 		try {
-            $block->from = date('H:i:s', mktime($block->start_hour, $block->start_minute, 0, 0, 0, 0));
-            $block->to = date('H:i:s', mktime($block->end_hour, $block->end_minute, 0, 0, 0, 0));
-            $block->meeting = $this->getMeetingId();
-            $block->program = strval($block->program) ?: '0';
-            $block->display_progs = strval($block->display_progs) ?: '0';
-
-            unset($block->start_hour);
-            unset($block->end_hour);
-            unset($block->start_minute);
-            unset($block->end_minute);
-            unset($block->backlink);
+			$block = $this->transformBlock($block);
 
 			$this->guardToGreaterThanFrom($block['from'], $block['to']);
 			$result = $this->getBlockRepository()->update($id, $block);
@@ -133,14 +114,15 @@ class BlockPresenter extends BasePresenter
 			$this->flashFailure('Modification of block id ' . $id . ' failed, result: ' . $e->getMessage());
 		}
 
-		$this->redirect($this->getBacklink() ?: self::REDIRECT_DEFAULT);
+		return $result;
 	}
 
-	/**
-	 * @param  int  $id
-	 * @return void
-	 */
-	public function actionDelete($id): void
+    /**
+     * @param  int $id
+     * @return void
+     * @throws \Nette\Application\AbortException
+     */
+	public function actionDelete($id)
 	{
 		try {
 			$result = $this->getBlockRepository()->delete($id);
@@ -154,15 +136,17 @@ class BlockPresenter extends BasePresenter
 		$this->redirect(self::REDIRECT_DEFAULT);
 	}
 
-	/**
-	 * Send mail to tutor
-	 *
-	 * @return void
-	 */
+    /**
+     * Send mail to tutor
+     *
+     * @param $id
+     * @return void
+     * @throws \Nette\Application\AbortException
+     */
 	public function actionMail($id)
 	{
 		try {
-			$tutors = $this->getModel()->getTutor($id);
+			$tutors = $this->getBlockRepository()->findTutor($id);
 			$recipients = $this->parseTutorEmail($tutors);
 
 			$this->getEmailer()->tutor($recipients, $tutors->guid, 'block');
@@ -197,28 +181,19 @@ class BlockPresenter extends BasePresenter
 		$template = $this->getTemplate();
 
 		$template->heading = 'úprava bloku';
-		$template->page = $this->getHttpRequest()->getQuery('page');
-		$template->error_name = "";
-		$template->error_description = "";
-		$template->error_tutor = "";
-		$template->error_email = "";
-		$template->error_material = "";
 
 		$this->blockId = $id;
 		$block = $this->getBlockRepository()->find($id);
+		$block = ArrayHash::from($block);
 		$template->block = $block;
 		$template->id = $id;
 
-		$template->day_roll = $this->renderHtmlSelectBox('day', $this->days, $block->day, 'width:172px;');
-		$template->hour_roll = $this->renderHtmlSelectBox('start_hour', $this->hours, $block->from->format('%H'));
-		$template->minute_roll = $this->renderHtmlSelectBox('start_minute', $this->minutes, $block->from->format('%I'));
-		$template->end_hour_roll = $this->renderHtmlSelectBox('end_hour', $this->hours, $block->to->format('%H'));
-		$template->end_minute_roll = $this->renderHtmlSelectBox('end_minute', $this->minutes, $block->to->format('%I'));
-		// is program block check box
-		$template->program_checkbox = $this->renderHtmlCheckBox('program', 1, $block->program);
-		// display programs in block check box
-		$template->display_progs_checkbox = $this->renderHtmlCheckBox('display_progs', 0, $block->display_progs);
-		$template->selectedCategory	= $block->category;
+		$block->start_hour = (int) $block->from->format('%H');
+		$block->start_minute = (int) $block->from->format('%I');
+		$block->end_hour = (int) $block->to->format('%H');
+		$block->end_minute = (int) $block->to->format('%I');
+
+		$this['blockForm']->setDefaults($block);
 	}
 
 	/**
@@ -231,6 +206,27 @@ class BlockPresenter extends BasePresenter
 		$template->mid = $this->meetingId;
 		$template->heading = $this->heading;
 	}
+
+    /**
+     * @param  ArrayHash $block
+     * @return ArrayHash
+     */
+	protected function transformBlock(ArrayHash $block): ArrayHash
+    {
+        $block->from = date('H:i:s', mktime($block->start_hour, $block->start_minute, 0, 0, 0, 0));
+        $block->to = date('H:i:s', mktime($block->end_hour, $block->end_minute, 0, 0, 0, 0));
+        $block->meeting = $this->getMeetingId();
+        $block->program = strval($block->program) ?: '0';
+        $block->display_progs = strval($block->display_progs) ?: '0';
+
+        unset($block->start_hour);
+        unset($block->end_hour);
+        unset($block->start_minute);
+        unset($block->end_minute);
+        unset($block->backlink);
+
+        return $block;
+    }
 
 	/**
 	 * @return BlockForm
@@ -266,55 +262,26 @@ class BlockPresenter extends BasePresenter
 	/**
 	 * @return Emailer
 	 */
-	protected function getEmailer()
+	protected function getEmailer(): Emailer
 	{
 		return $this->emailer;
 	}
 
 	/**
 	 * @param  Emailer $emailer
-	 * @return $this
+	 * @return self
 	 */
-	protected function setEmailer(Emailer $emailer)
+	protected function setEmailer(Emailer $emailer): self
 	{
 		$this->emailer = $emailer;
 		return $this;
 	}
 
 	/**
-	 * Render select box
-	 *
-	 * @param	string	name
-	 * @param	array	content of select box
-	 * @param	var		variable that match selected option
-	 * @param	string	inline styling
-	 * @return	string	html of select box
-	 */
-	private function renderHtmlSelectBox($name, $select_content, $selected_option, $inline_style = NULL)
-	{
-		if(isset($inline_style) && $inline_style != NULL){
-			$style = " style='".$inline_style."'";
-		} else {
-			$style = "";
-		}
-		$html_select = "<select name='".$name."'".$style.">";
-		foreach ($select_content as $key => $value) {
-			if($key == $selected_option) {
-				$selected = 'selected';
-			} else {
-				$selected = '';
-			}
-			$html_select .= "<option value='".$key."' ".$selected.">".$value."</option>";
-		}
-		$html_select .= '</select>';
-
-		return $html_select;
-	}
-
-	/**
 	 * @param  date $from
 	 * @param  date $to
-	 * @return Exception
+	 * @return void
+     * @throws Exception
 	 */
 	private function guardToGreaterThanFrom($from, $to)
 	{
@@ -332,7 +299,8 @@ class BlockPresenter extends BasePresenter
 	}
 
 	/**
-	 * @param BlockRepository $blockRepository
+	 * @param  BlockRepository $blockRepository
+     * @return self
 	 */
 	private function setBlockRepository(BlockRepository $blockRepository): self
 	{

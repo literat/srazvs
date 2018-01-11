@@ -2,12 +2,12 @@
 
 namespace App\Components\Forms;
 
-use App\Models\MeetingModel;
 use App\Repositories\BlockRepository;
 use App\Repositories\CategoryRepository;
 use Nette\Application\UI\Form;
 use Nette\Database\Table\ActiveRow;
 use Nette\Forms\Controls\SubmitButton;
+use Nette\Utils\ArrayHash;
 
 class BlockForm extends BaseForm
 {
@@ -100,8 +100,10 @@ class BlockForm extends BaseForm
 	 * @param  array $defaults
 	 * @return self
 	 */
-	public function setDefaults(ActiveRow $defaults): self
+	public function setDefaults(ArrayHash $defaults): self
 	{
+        $defaults = $this->guardDefaults($defaults);
+
 		$this['blockForm']->setDefaults($defaults);
 
 		return $this;
@@ -122,10 +124,10 @@ class BlockForm extends BaseForm
 		$form->addSelect('day', 'Den:', $this->days)
 			->setRequired();
 		$form->addSelect('start_hour', null, $this->hours)
-			->setDefaultValue(date('H'));
+			->setDefaultValue(date('G'));
 		$form->addSelect('start_minute', null, $this->minutes);
 		$form->addSelect('end_hour', null, $this->hours)
-			->setDefaultValue(date('H', strtotime('+1 hour')));
+			->setDefaultValue(date('G', strtotime('+1 hour')));
 		$form->addSelect('end_minute', null, $this->minutes);
 		$form->addTextArea('description', 'Popis:')
 			->setAttribute('rows', 10)
@@ -138,9 +140,10 @@ class BlockForm extends BaseForm
 			->setDefaultValue(0)
 			->setAttribute('size', 10)
 			->setAttribute('placeholder', 0);
-		$form->addCheckbox('program');
+		$form->addCheckbox('program')
+		    ->setDefaultValue(1);
 		$form->addCheckbox('display_progs')
-			->setDefaultValue(1);
+			->setDefaultValue(0);
 		$form->addSelect('category', 'Kategorie:', $this->buildCategorySelect());
 
 		$form->addHidden('id');
@@ -196,6 +199,20 @@ class BlockForm extends BaseForm
 
 		return $selectContent;
 	}
+
+    /**
+     * @param  ArrayHash $defaults
+     * @return ArrayHash
+     */
+	protected function guardDefaults(ArrayHash $defaults): ArrayHash
+    {
+        if(!array_key_exists($defaults->category, $this->buildCategorySelect()) )
+        {
+            $defaults->category = 0;
+        }
+
+        return $defaults;
+    }
 
 	/**
 	 * @return BlockRepository
