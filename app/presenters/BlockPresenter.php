@@ -77,11 +77,8 @@ class BlockPresenter extends BasePresenter
 	public function actionCreate(ArrayHash $block)
 	{
 		try {
-			$block = $this->transformBlock($block);
-
 			$this->logInfo('Storing new block.');
 
-			$this->guardToGreaterThanFrom($block->from, $block->to);
 			$result = $this->getBlockRepository()->create($block);
 
 			$this->logInfo('Creation of block successfull, result: ' . json_encode($result));
@@ -89,39 +86,44 @@ class BlockPresenter extends BasePresenter
 		} catch(Exception $e) {
 			$this->logError('Creation of block with data ' . json_encode($block) . ' failed, result: ' . $e->getMessage());
 			$this->flashFailure('Creation of block failed, result: ' . $e->getMessage());
+			$result = false;
 		}
 
 		return $result;
 	}
 
-    /**
-     * @param  integer   $id
-     * @param  ArrayHash $block
-     * @return boolean
-     */
+	/**
+	 * @param  integer   $id
+	 * @param  ArrayHash $block
+	 * @return boolean
+	 */
 	public function actionUpdate($id, ArrayHash $block)
 	{
 		try {
-			$block = $this->transformBlock($block);
+			$this->logInfo('Updating block.');
 
-			$this->guardToGreaterThanFrom($block['from'], $block['to']);
 			$result = $this->getBlockRepository()->update($id, $block);
 
-			$this->logInfo('Modification of block id ' . $id . ' with data ' . json_encode($block) . ' successfull, result: ' . json_encode($result));
-			$this->flashSuccess('Položka byla úspěšně upravena.');
+			$this->logInfo('Modification of block id %s with data =s successfull, result: %s', [
+				$id,
+				json_encode($block),
+				json_encode($result),
+			]);
+			$this->flashSuccess('Položka byla úspěšně uložena.');
 		} catch(Exception $e) {
-			$this->logError('Modification of block id ' . $id . ' failed, result: ' . $e->getMessage());
+			$this->logError('Záznam se nepodařilo uložit.');
 			$this->flashFailure('Modification of block id ' . $id . ' failed, result: ' . $e->getMessage());
+			$result = false;
 		}
 
 		return $result;
 	}
 
-    /**
-     * @param  int $id
-     * @return void
-     * @throws \Nette\Application\AbortException
-     */
+	/**
+	 * @param  int $id
+	 * @return void
+	 * @throws \Nette\Application\AbortException
+	 */
 	public function actionDelete($id)
 	{
 		try {
@@ -136,13 +138,13 @@ class BlockPresenter extends BasePresenter
 		$this->redirect(self::REDIRECT_DEFAULT);
 	}
 
-    /**
-     * Send mail to tutor
-     *
-     * @param $id
-     * @return void
-     * @throws \Nette\Application\AbortException
-     */
+	/**
+	 * Send mail to tutor
+	 *
+	 * @param $id
+	 * @return void
+	 * @throws \Nette\Application\AbortException
+	 */
 	public function actionMail($id)
 	{
 		try {
@@ -184,7 +186,6 @@ class BlockPresenter extends BasePresenter
 
 		$this->blockId = $id;
 		$block = $this->getBlockRepository()->find($id);
-		$block = ArrayHash::from($block);
 		$template->block = $block;
 		$template->id = $id;
 
@@ -206,27 +207,6 @@ class BlockPresenter extends BasePresenter
 		$template->mid = $this->meetingId;
 		$template->heading = $this->heading;
 	}
-
-    /**
-     * @param  ArrayHash $block
-     * @return ArrayHash
-     */
-	protected function transformBlock(ArrayHash $block): ArrayHash
-    {
-        $block->from = date('H:i:s', mktime($block->start_hour, $block->start_minute, 0, 0, 0, 0));
-        $block->to = date('H:i:s', mktime($block->end_hour, $block->end_minute, 0, 0, 0, 0));
-        $block->meeting = $this->getMeetingId();
-        $block->program = strval($block->program) ?: '0';
-        $block->display_progs = strval($block->display_progs) ?: '0';
-
-        unset($block->start_hour);
-        unset($block->end_hour);
-        unset($block->start_minute);
-        unset($block->end_minute);
-        unset($block->backlink);
-
-        return $block;
-    }
 
 	/**
 	 * @return BlockForm
@@ -278,19 +258,6 @@ class BlockPresenter extends BasePresenter
 	}
 
 	/**
-	 * @param  date $from
-	 * @param  date $to
-	 * @return void
-     * @throws Exception
-	 */
-	private function guardToGreaterThanFrom($from, $to)
-	{
-		if($from > $to) {
-			throw new Exception('Starting time is greater then finishing time.');
-		}
-	}
-
-	/**
 	 * @return BlockRepository
 	 */
 	private function getBlockRepository(): BlockRepository
@@ -300,7 +267,7 @@ class BlockPresenter extends BasePresenter
 
 	/**
 	 * @param  BlockRepository $blockRepository
-     * @return self
+	 * @return self
 	 */
 	private function setBlockRepository(BlockRepository $blockRepository): self
 	{

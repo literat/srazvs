@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Entities\BlockEntity;
 use App\Models\BlockModel;
 use Nette\Database\Table\ActiveRow;
 
@@ -17,7 +18,7 @@ class BlockRepository
 	 * @param BlockModel $blockModel
 	 */
 	public function __construct(BlockModel $blockModel)
-    {
+	{
 		$this->setBlockModel($blockModel);
 	}
 
@@ -44,7 +45,7 @@ class BlockRepository
 	 * @param  int $id
 	 * @return \Nette\Database\Table\ActiveRow
 	 */
-	public function find(int $id): ActiveRow
+	public function find(int $id): BlockEntity
 	{
 		return $this->getBlockModel()->find($id);
 	}
@@ -58,33 +59,53 @@ class BlockRepository
 		return $this->getBlockModel()->findBymeeting($meetingId);
 	}
 
-    /**
-     * @param $id
-     * @return \Nette\Database\Table\ActiveRow
-     */
-	public function findTutor($id)
-    {
-	    return $this->getBlockModel()->getTutor($id);
-    }
-
 	/**
-	 * @param  $block
+	 * @param $id
 	 * @return \Nette\Database\Table\ActiveRow
 	 */
-	public function create($block): ActiveRow
+	public function findTutor($id)
 	{
-		unset($block->id);
-		return $this->getBlockModel()->create((array) $block);
+		return $this->getBlockModel()->getTutor($id);
 	}
 
 	/**
-     * @param  $id
 	 * @param  $block
 	 * @return \Nette\Database\Table\ActiveRow
 	 */
-	public function update($id, $block): bool
+	public function create($block)
 	{
-		return $this->getBlockModel()->update($id, (array) $block);
+		unset($block->id);
+
+		return $this->getBlockModel()
+			->save(
+				$this->populate($block)
+			);
+	}
+
+	/**
+	 * @param  $id
+	 * @param  $block
+	 * @return \Nette\Database\Table\ActiveRow
+	 */
+	public function update($id, $block)
+	{
+		return $this->getBlockModel()
+			->save(
+				$this->populate($block)
+			);
+	}
+
+	/**
+	 * @param  $id
+	 * @param  $block
+	 * @return \Nette\Database\Table\ActiveRow
+	 */
+	public function save($block)
+	{
+		return $this->getBlockModel()
+			->save(
+				$this->populate($block)
+			);
 	}
 
 	/**
@@ -94,6 +115,19 @@ class BlockRepository
 	public function delete($id): bool
 	{
 		return $this->getBlockModel()->delete($id);
+	}
+
+	/**
+	 * @param  array $values
+	 * @return BlockEntity
+	 */
+	protected function populate($values): BlockEntity
+	{
+		$model = $this->getBlockModel();
+		$block = $model->hydrate($values);
+		$block = $model->transform($block);
+
+		return $block;
 	}
 
 	/**

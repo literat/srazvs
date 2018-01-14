@@ -2,12 +2,11 @@
 
 namespace App\Components\Forms;
 
+use App\Entities\BlockEntity;
 use App\Repositories\BlockRepository;
 use App\Repositories\CategoryRepository;
 use Nette\Application\UI\Form;
-use Nette\Database\Table\ActiveRow;
 use Nette\Forms\Controls\SubmitButton;
-use Nette\Utils\ArrayHash;
 
 class BlockForm extends BaseForm
 {
@@ -100,11 +99,11 @@ class BlockForm extends BaseForm
 	 * @param  array $defaults
 	 * @return self
 	 */
-	public function setDefaults(ArrayHash $defaults): self
+	public function setDefaults(BlockEntity $defaults): self
 	{
         $defaults = $this->guardDefaults($defaults);
 
-		$this['blockForm']->setDefaults($defaults);
+		$this['blockForm']->setDefaults($defaults->toArray());
 
 		return $this;
 	}
@@ -201,10 +200,10 @@ class BlockForm extends BaseForm
 	}
 
     /**
-     * @param  ArrayHash $defaults
-     * @return ArrayHash
+     * @param  BlockEntity $defaults
+     * @return BlockEntity
      */
-	protected function guardDefaults(ArrayHash $defaults): ArrayHash
+	protected function guardDefaults(BlockEntity $defaults): BlockEntity
     {
         if(!array_key_exists($defaults->category, $this->buildCategorySelect()) )
         {

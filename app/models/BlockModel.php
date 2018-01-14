@@ -2,7 +2,11 @@
 
 namespace App\Models;
 
+use App\Entities\BlockEntity;
 use Nette\Database\Context;
+use Nette\Reflection\ClassType;
+use App\Entities\IEntity;
+use \Exception;
 
 /**
  * Blocks
@@ -12,7 +16,7 @@ use Nette\Database\Context;
  * @created 2012-09-14
  * @author Tomas Litera <tomaslitera@hotmail.com>
  */
-class BlockModel extends BaseModel
+class BlockModel extends BaseModel implements IModel
 {
 
 	/** @var string */
@@ -70,6 +74,39 @@ class BlockModel extends BaseModel
 				ORDER BY day, `from` ASC',
 				$this->getMeetingId(), '0')
 			->fetchAll();
+	}
+
+    /**
+     * @param  int $id
+     * @return BlockEntity
+     */
+	public function find($id): BlockEntity
+	{
+		$block = parent::find($id);
+		return $this->hydrate($block);
+	}
+
+    /**
+     * @param IEntity $entity
+     * @return bool|mixed
+     * @throws Exception
+     */
+	public function save(IEntity $entity)
+	{
+        $this->guardToGreaterThanFrom($entity->from, $entity->to);
+
+		if ($entity->getId() === null) {
+			$values = $entity->toArray();
+
+			$id = $this->create($values);
+			$result = $this->setIdentity($entity, $id);
+
+		} else {
+			$values = $entity->toArray();
+			$result = $this->update($entity->getId(), $values);
+		}
+
+		return $result;
 	}
 
 	/**
@@ -213,5 +250,71 @@ class BlockModel extends BaseModel
 			->query()
 			->fetch();
 	}
+
+    /**
+     * @param  $values
+     * @return BlockEntity
+     */
+	public function hydrate($values): BlockEntity
+	{
+		$entity = new BlockEntity();
+		//$this->setIdentity($entity, $values->id);
+
+		// unset($values['id']);
+		foreach ($values as $property => $value) {
+			$entity->$property = $value;
+		}
+
+		return $entity;
+	}
+
+    /**
+     * @param  $block
+     * @return mixed
+     */
+	public function transform($block)
+    {
+        $block->from = date('H:i:s', mktime($block->start_hour, $block->start_minute, 0, 0, 0, 0));
+        $block->to = date('H:i:s', mktime($block->end_hour, $block->end_minute, 0, 0, 0, 0));
+        $block->meeting = $this->getMeetingId();
+        $block->program = strval($block->program) ?: '0';
+        $block->display_progs = strval($block->display_progs) ?: '0';
+
+        unset($block->start_hour);
+        unset($block->end_hour);
+        unset($block->start_minute);
+        unset($block->end_minute);
+        unset($block->backlink);
+
+        return $block;
+    }
+
+    /**
+     * @param  $item
+     * @param  $id
+     * @return mixed
+     */
+	private function setIdentity($item, $id)
+	{
+		$ref = new ClassType($item);
+		$idProperty = $ref->getProperty('id');
+		$idProperty->setAccessible(true);
+		$idProperty->setValue($item, $id);
+
+		return $item;
+	}
+
+    /**
+     * @param  date $from
+     * @param  date $to
+     * @return void
+     * @throws Exception
+     */
+    private function guardToGreaterThanFrom($from, $to)
+    {
+        if($from > $to) {
+            throw new Exception('Starting time is greater then finishing time.');
+        }
+    }
 
 }
