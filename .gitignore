@@ -12,6 +12,7 @@ _compareTemp
 .idea
 composer.phar
 deployment.*
+npm-debug.log
 
 # Configuration
 inc/config.inc.php

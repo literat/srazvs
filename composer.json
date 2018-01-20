@@ -41,11 +41,17 @@
     },
     "scripts": {
         "sa": "vendor/bin/phpstan analyze -l 4 -c phpstan.neon app",
-        "test:unit": "vendor/nette/tester/Tester/tester -c tests/php-unix.ini -j 10 --coverage tests/unit/coverage.html --coverage-src app/ tests/unit",
-        "test:acceptance": "vendor/codeception/codeception/codecept run acceptance",
-        "clear": "find temp/cache ! -name 'placeholder.txt' -type f -exec rm -rf {} +",
+        "test:unit": "composer tester -- --coverage tests/unit/coverage.html --coverage-src app/ tests/unit",
+        "test:acceptance": "codeception",
+        "tester": "vendor/nette/tester/Tester/tester -c tests/php-unix.ini -j 10",
+        "codeception": "vendor/codeception/codeception/codecept run acceptance",
+        "clean": "find temp/cache ! -name 'placeholder.txt' -type f -exec rm -rf {} +",
         "deploy": "vendor/dg/ftp-deployment/deployment deployment.ini",
         "deploy:test": "vendor/dg/ftp-deployment/deployment deployment.ini --test",
-        "release": "grunt build"
+        "release": [
+            "composer test:unit",
+            "composer deploy:test",
+            "npm run release"
+        ]
     }
 }
