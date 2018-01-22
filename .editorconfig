@@ -12,7 +12,7 @@ end_of_line = lf
 insert_final_newline = true
 trim_trailing_whitespace = true
 
-[*.php, *.css, *.tpl, *.html, *.js]
+[*.php, *.css, *.tpl, *.html, *.js, *.latte]
 indent_style = tab
 indent_size = 4
 

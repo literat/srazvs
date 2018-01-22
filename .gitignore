@@ -23,6 +23,7 @@ app/config/config.yml
 libs
 vendor
 node_modules
+bower_components
 
 # Temporary files
 temp

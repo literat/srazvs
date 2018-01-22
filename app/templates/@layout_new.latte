@@ -1,40 +1,37 @@
 <!doctype html>
 <html lang="en">
 <head>
-	<meta charset="utf-8" />
-	<link rel="dns-prefetch" href="//fonts.googleapis.com" />
-	<link rel="dns-prefetch" href="//themes.googleusercontent.com" />
-	<link rel="dns-prefetch" href="https://www.google-analytics.com" />
+	<meta charset="utf-8"/>
+	<link rel="dns-prefetch" href="//fonts.googleapis.com"/>
+	<link rel="dns-prefetch" href="//themes.googleusercontent.com"/>
+	<link rel="dns-prefetch" href="https://www.google-analytics.com"/>
 
-	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 
 	<title>{block title}{/block} | Sraz VS</title>
-	<meta name="description" content="Registrace na sraz vs" />
-	<meta name="author" content="Tomas Litera <tomas@litera.me>" />
+	<meta name="description" content="Registrace na sraz vs"/>
+	<meta name="author" content="Tomas Litera <tomas@litera.me>"/>
 
-	<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Titillium+Web:400,300,700&amp;subset=latin,latin-ext" type="text/css" />
+	<link rel="stylesheet" href="//fonts.googleapis.com/css?family=Titillium+Web:400,300,700&amp;subset=latin,latin-ext"
+							type="text/css"/>
 	{block headCss}{/block}
-	<link rel="stylesheet" href="{$basePath}/www/css/bootstrap-ui.min.css" />
-	<link rel="stylesheet" href="{$basePath}/www/css/custom.css?v{php echo appVersion()}" />
+	<link rel="stylesheet" href="{$basePath}/www/{php echo mainCss()}"/>
 	{block headInlineCss}{/block}
-	<script type="text/javascript" src="{$basePath}/www/js/jquery.min.js?v2.2.4"></script>
+
 	{block headJs}{/block}
 
 </head>
 
 <body class="site has-navbar-static-top">
 
-	{include 'header_new.latte'}
+{include 'header_new.latte'}
 
-	{include content}
+{include content}
 
-	{include 'footer_new.latte'}
-
-	<script type='text/javascript' src='{$basePath}/www/js/moment-with-locales.min.js'></script>
-	<script type='text/javascript' src='{$basePath}/www/js/bootstrap.min.js'></script>
-	<script type='text/javascript' src='{$basePath}/www/js/bootstrap-datetimepicker.min.js'></script>
-	<script type='text/javascript' src='{$basePath}/www/js/bootstrap-ui.min.js'></script>
-	{block footerJs}{/block}
+{include 'footer_new.latte'}
+<script type="text/javascript" src="{$basePath}/www/{php echo vendorJs()}"></script>
+<script type="text/javascript" src="{$basePath}/www/{php echo mainJs()}"></script>
+{block footerJs}{/block}
 
 </body>
 </html>
