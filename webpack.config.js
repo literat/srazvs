@@ -18,9 +18,7 @@ module.exports = {
             'bootstrap',
             './node_modules/bootstrap-ui/dist/js/bootstrap-ui.js',
             'moment',
-            'eonasdan-bootstrap-datetimepicker',
-            'bootstrap-datepicker-webpack',
-            'live-form-validation'
+            'eonasdan-bootstrap-datetimepicker'
         ]
     },
     output: {
@@ -29,17 +27,10 @@ module.exports = {
         filename: 'js/[name].[chunkhash].js',
     },
     resolve: {
-        /*alias: {
-            jquery: "jquery/src/jquery"
-        }*/
         alias: [{
             // Force all modules to use the same jquery version.
             alias: 'jquery',
             name: path.join(__dirname, 'node_modules/jquery/src/jquery')
-        },
-        {
-            alias: 'datetimepicker',
-            name: 'eonasdan-bootstrap-datetimepicker/bootstrap-datetimepicker.js'
         }]
     },
     watchOptions: {
@@ -99,7 +90,8 @@ module.exports = {
             $: 'jquery',
             jQuery: 'jquery',
             'window.jQuery': 'jquery',
-            'window.$': 'jquery'
+            'window.$': 'jquery',
+            moment: 'moment'
         }),
         new ExtractTextPlugin('css/[name].[contenthash].css'),
         new webpack.LoaderOptionsPlugin({
