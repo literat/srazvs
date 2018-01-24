@@ -51,7 +51,7 @@
         "release": [
             "composer test:unit",
             "composer deploy:test",
-            "npm run release"
+            "npm run version"
         ]
     }
 }
