@@ -38,9 +38,13 @@ if(!function_exists('webpackManifest')) {
      *
      * @return string
      */
-    function webpackManifest() {
+    function webpackManifest(string $name = null) {
         $manifestPath = realpath(__DIR__ . '/../www/manifest.json');
-        $manifest = json_decode(file_get_contents($manifestPath));
+        $manifest = json_decode(file_get_contents($manifestPath), true);
+
+        if ($name && array_key_exists($name, $manifest)) {
+            $manifest = $manifest[$name];
+        }
 
         return $manifest;
     }
@@ -53,7 +57,7 @@ if(!function_exists('mainCss')) {
      * @return string
      */
     function mainCss() {
-        return webpackManifest()->main[1];
+        return webpackManifest('main.css');
     }
 }
 
@@ -64,7 +68,7 @@ if(!function_exists('mainJs')) {
      * @return string
      */
     function mainJs() {
-        return webpackManifest()->main[0];
+        return webpackManifest('main.js');
     }
 }
 
@@ -75,12 +79,6 @@ if(!function_exists('vendorJs')) {
      * @return string
      */
     function vendorJs() {
-        $vendor = webpackManifest()->vendor;
-
-        if (is_array($vendor)) {
-            $vendor = $vendor[0];
-        }
-
-        return $vendor;
+        return webpackManifest('vendor.js');
     }
 }

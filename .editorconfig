@@ -12,12 +12,12 @@ end_of_line = lf
 insert_final_newline = true
 trim_trailing_whitespace = true
 
-[*.php, *.css, *.tpl, *.html, *.js, *.latte]
+[*.php, *.css, *.tpl, *.html, *.latte]
 indent_style = tab
 indent_size = 4
 
 # package.json uses spaces instead of tabs
-[*.json]
+[*.js, *.json]
 indent_style = space
 indent_size = 2
 
