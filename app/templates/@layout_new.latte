@@ -17,7 +17,8 @@
 	{block headCss}{/block}
 	<link rel="stylesheet" href="{$basePath}/www/{php echo mainCss()}"/>
 	{block headInlineCss}{/block}
-
+    <script type="text/javascript" src="{$basePath}/www/{php echo vendorJs()}"></script>
+    <script type="text/javascript" src="{$basePath}/www/{php echo mainJs()}"></script>
 	{block headJs}{/block}
 
 </head>
@@ -29,8 +30,6 @@
 {include content}
 
 {include 'footer_new.latte'}
-<script type="text/javascript" src="{$basePath}/www/{php echo vendorJs()}"></script>
-<script type="text/javascript" src="{$basePath}/www/{php echo mainJs()}"></script>
 {block footerJs}{/block}
 
 </body>

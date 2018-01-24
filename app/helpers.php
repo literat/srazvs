@@ -59,7 +59,7 @@ if(!function_exists('mainCss')) {
 
 if(!function_exists('mainJs')) {
     /**
-     * Get main css file from manifest.json
+     * Get main js file from manifest.json
      *
      * @return string
      */
@@ -70,11 +70,17 @@ if(!function_exists('mainJs')) {
 
 if(!function_exists('vendorJs')) {
     /**
-     * Get main css file from manifest.json
+     * Get vendor js file from manifest.json
      *
      * @return string
      */
     function vendorJs() {
-        return webpackManifest()->vendor;
+        $vendor = webpackManifest()->vendor;
+
+        if (is_array($vendor)) {
+            $vendor = $vendor[0];
+        }
+
+        return $vendor;
     }
 }
