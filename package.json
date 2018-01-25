@@ -47,7 +47,7 @@
   },
   "scripts": {
     "build": "webpack",
-    "dev": "npm run build",
+    "dev": "npm run build --",
     "prod": "npm run build -- --env.production=true --env.minify=true",
     "watch": "npm run dev -- --watch",
     "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s",

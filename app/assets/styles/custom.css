@@ -1,3 +1,13 @@
+body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    background-image: url(../images/20120124135204-367aa2e3.jpg);
+    background-position: 50% 0;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
 h1,
 h2 {
 	font-weight: lighter;
@@ -43,7 +53,10 @@ a:hover span {
 
 .footer {
 	background-color: transparent;
+    background-color: #ffffff;
+    opacity: 0.8;
 	font-variant: small-caps;
+    color: #444;
 }
 
 /* helpers */
@@ -90,7 +103,7 @@ a:hover span {
 .navbar-primary .navbar-nav>li>a,
 .navbar-primary .navbar-nav>li>a:focus,
 .navbar-primary .navbar-nav>li>a:hover {
-	color: #545454;
+	color: #444444;
 	font-size: 14px;
 }
 
@@ -230,4 +243,16 @@ table.program.detail,
 table.program.detail .label,
 table.program.detail .text {
 	color: #000000;
+}
+
+.site-header {
+    background-color: #ffffff;
+    opacity: 0.8;
+}
+
+.skaut:before {
+    content: url(../images/skaut.png);
+    position: relative;
+    top: 4px;
+    left: -2px;
 }
