@@ -1,0 +1,43 @@
+{layout '../@layout_new.latte'}
+
+{block content}
+
+<main role="main" class="site-content">
+
+	<section class="section-header section-header-condensed">
+		<div class="container text-center">
+
+			<h1 class="section-header-title">
+				Přihlášení
+			</h1>
+
+		</div><!-- .container -->
+	</section>
+
+	<section class="section-content">
+		<div class="container">
+
+			{foreach $flashes as $flash}
+				<div role="alert" class="flash alert alert-{$flash->type} alert-dismissible alert-full fade in">
+					<button type="button" class="close" data-dismiss="alert">&times;</button>
+					<div class="container">
+						<span class="glyphicon glyphicon-ok-sign offset-right" aria-hidden="true"></span>
+						{$flash->message}
+					</div>
+				</div>
+			{/foreach}
+
+			<div class="row">
+				<div class="col-md-3 col-centered">
+					<div class="aligner">
+						<a class="btn btn-default aligner-item offset-bottom-large" href="{link Auth:login 'skautis'}">
+							<img src='{$imgDir}icons/skaut.png' /> Přihlásit se pomocí SkautISu účtu
+						</a>
+					</div>
+				</div>
+			</div>
+
+		</div>
+	</section>
+
+</main>
