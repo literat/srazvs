@@ -124,6 +124,7 @@ class ProgramPresenter extends BasePresenter
 	public function actionCreate(ArrayHash $program)
 	{
 		try {
+		    $result = false;
 			$this->logInfo('Storing new program.');
 
 			$result = $this->getProgramRepository()->create($program);
@@ -136,7 +137,7 @@ class ProgramPresenter extends BasePresenter
 			$this->flashSuccess('Položka byla úspěšně vytvořena');
 		} catch(Exception $e) {
 			$this->logError('Creation of program with data %s failed, result: %s', [
-				json_encode($data),
+				json_encode($program),
 				$e->getMessage()
 			]);
 

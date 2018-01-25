@@ -11,7 +11,7 @@ interface IProgramFormFactory
 {
 
     /**
-     * @return \App\Forms\ProgramForm
+     * @return \App\Components\Forms\ProgramForm
      */
     public function create(): ProgramForm;
 
