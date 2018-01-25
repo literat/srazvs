@@ -12,6 +12,8 @@ _compareTemp
 .idea
 composer.phar
 deployment.*
+npm-debug.log
+*.map
 
 # Configuration
 inc/config.inc.php
@@ -22,10 +24,18 @@ app/config/config.yml
 libs
 vendor
 node_modules
+bower_components
+www/js/main.*.js
+www/js/vendor.*.js
+www/css/main.*.css
 
 # Temporary files
 temp
 tests/**/output
+www/images/logo.*.png
+www/images/select2.*.png
+www/images/select2-spinner.*.gif
+www/images/select2x2.*.png
 
 tests/_output/*
 tests/_support/_generated/*
