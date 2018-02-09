@@ -114,6 +114,7 @@ services:
     - App\Components\Forms\Factories\IProgramFormFactory
     - App\Components\Forms\Factories\IBlockFormFactory
     - App\Components\Forms\Factories\ILoginFormFactory
+    - App\Components\INavbarRightControlFactory
     - App\Services\Translators\CsTranslator
 
 extensions:

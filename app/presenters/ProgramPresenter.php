@@ -14,7 +14,6 @@ use App\Models\MeetingModel;
 use App\Repositories\ProgramRepository;
 use App\Services\Emailer;
 use Nette\Utils\ArrayHash;
-use Tracy\Debugger;
 use Exception;
 
 /**

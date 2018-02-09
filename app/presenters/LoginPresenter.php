@@ -4,9 +4,15 @@ namespace App\Presenters;
 
 use App\Components\Forms\LoginForm;
 use App\Components\Forms\Factories\ILoginFormFactory;
+use App\Services\SkautIS\UserService;
 
 class LoginPresenter extends BasePresenter
 {
+
+	/**
+	 * @var UserService
+	 */
+	private $userService;
 
 	/**
 	 * @var ILoginFormFactory
@@ -15,17 +21,11 @@ class LoginPresenter extends BasePresenter
 
 	/**
 	 */
-	public function __construct()
-    {
+	public function __construct(UserService $userService, ILoginFormFactory $loginFormFactory)
+	{
+		$this->setUserService($userService);
+		$this->setLoginFormFactory($loginFormFactory);
 	}
-
-    /**
-     * @param  ILoginFormFactory $factory
-     */
-    public function injectLoginFormFactory(ILoginFormFactory $factory)
-    {
-        $this->loginFormFactory = $factory;
-    }
 
 	/**
 	 * @return void
@@ -33,6 +33,9 @@ class LoginPresenter extends BasePresenter
 	public function startup()
 	{
 		parent::startup();
+		if ($backlink = $this->getParameter('backlink')) {
+			$this->getSession('auth')->backlink = $backlink;
+		}
 	}
 
 	/**
@@ -42,6 +45,8 @@ class LoginPresenter extends BasePresenter
 	public function renderDefault()
 	{
 		$template = $this->getTemplate();
+		$template->user = $this->getUser();
+		$template->page = $this->getPresenter()->getName();
 	}
 
 	/**
@@ -52,6 +57,30 @@ class LoginPresenter extends BasePresenter
 		return $this->loginFormFactory->create();
 	}
 
+	/**
+	 * @return UserService
+	 */
+	protected function getUserService()
+	{
+		return $this->userService;
+	}
 
+	/**
+	 * @param  UserService $service
+	 * @return $this
+	 */
+	protected function setUserService(UserService $service)
+	{
+		$this->userService = $service;
 
+		return $this;
+	}
+
+	/**
+	 * @param  ILoginFormFactory $factory
+	 */
+	protected function setLoginFormFactory(ILoginFormFactory $factory)
+	{
+		$this->loginFormFactory = $factory;
+	}
 }

@@ -15,7 +15,6 @@ use App\Components\Forms\RegistrationForm;
 use App\Components\Forms\Factories\IRegistrationFormFactory;
 use App\Services\SkautIS\EventService;
 use Nette\Utils\ArrayHash;
-use Skautis\Wsdl\WsdlException;
 use App\Models\SettingsModel;
 
 /**
@@ -195,7 +194,15 @@ class RegistrationPresenter extends VisitorPresenter
 		return $guid;
 	}
 
-	/**
+	public function beforeRender()
+    {
+        parent::beforeRender();
+        if (isset($this->params[self::FLASH_KEY])) {
+            $this->template->flashes = $this->getFlashSession()->flash;
+        }
+    }
+
+    /**
 	 * Renders default template
 	 */
 	public function renderDefault()
@@ -203,9 +210,10 @@ class RegistrationPresenter extends VisitorPresenter
 		$template = $this->getTemplate();
 		$disabled = $this->getMeetingModel()->isRegOpen($this->getDebugMode()) ? "" : "disabled";
 		$template->disabled = $disabled;
-		$template->loggedIn = $this->getUserService()->isLoggedIn();
+		$template->user = $this->getUser();
+		$template->backlink = $this->getHttpRequest()->getUrl()->getAbsoluteUrl();
 
-		if($this->getUserService()->isLoggedIn()) {
+		if($this->getUser()->isLoggedIn()) {
 			$this['registrationForm']->setDefaults(($this->useLoggedVisitor())->toArray());
 		}
 	}

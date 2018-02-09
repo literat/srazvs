@@ -107,7 +107,6 @@ abstract class SkautisService extends Object
 
 	/**
 	 * @param Skautis\Skautis $skautis
-	 *
 	 * @return self
 	 */
 	public function setSkautis(Skautis $skautis): self

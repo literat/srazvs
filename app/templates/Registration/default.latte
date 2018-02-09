@@ -29,11 +29,11 @@
 
 			{if $isRegistrationOpen}
 
-			{if !$loggedIn}
+			{if !$user->isLoggedIn()}
 			<div class="row">
 				<div class="col-md-3 col-centered">
 					<div class="aligner">
-						<a class="btn btn-default aligner-item offset-bottom-large" href="{link Auth:login 'skautis'}">
+						<a class="btn btn-default aligner-item offset-bottom-large" href="{plink Login:default}">
 							<img src='{$imgDir}icons/skaut.png' /> Vyplnit přihlášku pomocí SkautIS účtu
 						</a>
 					</div>

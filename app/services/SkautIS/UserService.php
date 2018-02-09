@@ -2,11 +2,21 @@
 
 namespace App\Services\SkautIS;
 
+use Skautis\User;
+
 /**
  * User service
  */
 class UserService extends SkautisService
 {
+
+    /**
+     * @return \Skautis\User
+     */
+	public function getUser(): User
+	{
+		return $this->getSkautis()->getUser();
+	}
 
 	/**
 	 * Returns Role ID of logged user

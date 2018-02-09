@@ -2,11 +2,10 @@
 
 namespace App\Presenters;
 
-use Skautis;
-use SkautisAuth;
 use App\Services\SkautIS\AuthService;
 use App\Services\SkautIS\UserService;
-use Tracy\Debugger;
+use Skautis\Wsdl\AuthenticationException;
+use SkautisAuth\SkautisAuthenticator;
 
 /**
  * SkautIS Auth presenters.
@@ -50,21 +49,22 @@ class AuthPresenter extends BasePresenter
 	}
 
 	/**
-	 * @param  string $id
+	 * @param  string $provider
 	 * @return void
 	 */
-	public function actionLogin($id)
+	public function actionLogin($provider)
 	{
-		$this->{$id . 'Login'}();
+		$this->{$provider . 'Login'}();
 	}
 
 	/**
-	 * @param  string $id
+	 * @param  string $provider
 	 * @return void
 	 */
-	public function actionLogout($id)
+	public function actionLogout($provider)
 	{
-		$this->{$id . 'Logout'}();
+		$this->getSession('auth')->backlink = $this->getParameter('backlink') ?? null;
+		$this->{$provider . 'Logout'}();
 	}
 
 	/**
@@ -107,36 +107,41 @@ class AuthPresenter extends BasePresenter
 	 */
 	protected function handleSkautisLogin($ReturnUrl = NULL)
 	{
-		$post = $this->getHttpRequest()->post;
-		//$post = $this->router->getPost();
-		// if token is not set - get out from here - must log in
-		if (!isset($post['skautIS_Token'])) {
-			$this->redirect(":Login:");
-		}
-		//Debugger::log("AuthP: ".$post['skautIS_Token']." / ". $post['skautIS_IDRole'] . " / " . $post['skautIS_IDUnit'], "auth");
 		try {
+			$post = $this->getHttpRequest()->post;
+			// if token is not set - get out from here - must log in
+			if (!isset($post['skautIS_Token'])) {
+				$this->redirect(":Login:");
+			}
+
+			$this->logInfo('Auth: ' . $post['skautIS_Token'] . ' / '. $post['skautIS_IDRole'] . ' / ' . $post['skautIS_IDUnit']);
+
 			$this->getAuthService()->setInit($post);
-			//$this->container->getService('authService')->setInit($post);
 
 			if (!$this->getUserService()->isLoggedIn()) {
-			//if (!$this->container->getService('userService')->isLoggedIn()) {
-				throw new \Skautis\Wsdl\AuthenticationException("Nemáte platné přihlášení do skautISu");
+				throw new AuthenticationException('Nemáte platné přihlášení do skautISu!');
 			}
-			$me = $this->getUserService()->getPersonalDetail();
-			//$me = $this->container->getService('userService')->getPersonalDetail();
 
-			$this->getUser()->setExpiration('+ 29 minutes'); // nastavíme expiraci
-			$this->getUser()->setAuthenticator(new SkautisAuth\SkautisAuthenticator());
-			$this->getUser()->login($me);
+			$user = $this->getUserService()->getPersonalDetail();
+			$this->getUser()->setExpiration('+ 29 minutes');
+			$this->getUser()->setAuthenticator(new SkautisAuthenticator());
+			$this->getUser()->login($user);
 
 			if (isset($ReturnUrl)) {
 				$this->context->application->restoreRequest($ReturnUrl);
 			}
-		} catch (\Skautis\Wsdl\AuthenticationException $e) {
-			$this->flashMessage($e->getMessage(), "danger");
+
+			if($backlink = $this->getSession('auth')->backlink) {
+				unset($this->getSession('auth')->backlink);
+				$this->redirectUrl($backlink);
+			} else {
+				$this->redirect(':Login:');
+			}
+		} catch (AuthenticationException $e) {
+			$this->logNotice($e->getMessage());
+			$this->flashFailure($e->getMessage());
 			$this->redirect(":Auth:Login");
 		}
-		$this->presenter->redirect(':Registration:');
 	}
 
 	/**
@@ -147,9 +152,9 @@ class AuthPresenter extends BasePresenter
 	 */
 	protected function handleSkautisLogout()
 	{
-		$this->getUserService()->logout(TRUE);
-		$this->getUserService()->resetLoginData();
-		$this->presenter->flashMessage("Byl jsi úspěšně odhlášen ze SkautISu.");
+		$this->getUser()->logout(TRUE);
+		//$this->getUserService()->resetLoginData();
+		$this->flashMessage("Byl jsi úspěšně odhlášen ze SkautISu.");
 		/*
 		if ($this->request->post['skautIS_Logout']) {
 			$this->presenter->flashMessage("Byl jsi úspěšně odhlášen ze SkautISu.");
@@ -157,23 +162,28 @@ class AuthPresenter extends BasePresenter
 			$this->presenter->flashMessage("Odhlášení ze skautISu se nezdařilo", "danger");
 		}
 		*/
-		$this->redirect(":Login:");
-		//$this->redirectUrl($this->service->getLogoutUrl());
+
+		if($backlink = $this->getSession('auth')->backlink) {
+			unset($this->getSession('auth')->backlink);
+			$this->redirectUrl($backlink);
+		} else {
+			$this->redirect(':Login:');
+		}
 	}
 
 	/**
 	 * @return AuthService
 	 */
-	protected function getAuthService()
+	protected function getAuthService(): AuthService
 	{
 		return $this->authService;
 	}
 
 	/**
 	 * @param  AuthService $service
-	 * @return $this
+	 * @return self
 	 */
-	protected function setAuthService(AuthService $service)
+	protected function setAuthService(AuthService $service): self
 	{
 		$this->authService = $service;
 
@@ -183,16 +193,16 @@ class AuthPresenter extends BasePresenter
 	/**
 	 * @return UserService
 	 */
-	protected function getUserService()
+	protected function getUserService(): UserService
 	{
 		return $this->userService;
 	}
 
 	/**
 	 * @param  UserService $service
-	 * @return $this
+	 * @return self
 	 */
-	protected function setUserService(UserService $service)
+	protected function setUserService(UserService $service): self
 	{
 		$this->userService = $service;
 
