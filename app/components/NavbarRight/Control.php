@@ -28,7 +28,7 @@ class NavbarRightControl extends BaseControl
 	public function render($backlink)
 	{
 		$template = $this->getTemplate();
-		$template->setFile($this->buildTemplatePath());
+		$template->setFile(__DIR__ . './templates/'.self::TEMPLATE_NAME.'.'.self::TEMPLATE_EXT);
 		$template->user = $this->getUser();
 		$template->page = $this->getPresenter()->getName();
 		$template->backlink = $backlink;

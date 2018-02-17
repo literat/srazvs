@@ -33,9 +33,14 @@ class LoginPresenter extends BasePresenter
 	public function startup()
 	{
 		parent::startup();
-		if ($backlink = $this->getParameter('backlink')) {
-			$this->getSession('auth')->backlink = $backlink;
-		}
+
+        if ($backlink = $this->getParameter('backlink')) {
+            $this->getSession('auth')->backlink = $backlink;
+        }
+
+		if ($this->getUser()->isLoggedIn()) {
+		    $this->redirect('Dashboard:default');
+        }
 	}
 
 	/**

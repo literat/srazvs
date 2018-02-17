@@ -89,6 +89,9 @@ services:
     visitor: App\Models\VisitorModel
     meal: App\Models\MealModel
     province: App\Models\ProvinceModel
+    - App\Models\SocialLoginModel
+    - App\Models\PersonModel
+    - App\Models\UserModel
     - App\Components\ProgramOverviewControl
     - App\Components\PublicProgramOverviewControl
     - App\Components\BlocksByDayControl
@@ -108,6 +111,9 @@ services:
     - App\Repositories\ProgramRepository
     - App\Repositories\BlockRepository
     - App\Repositories\CategoryRepository
+    - App\Repositories\SocialLoginRepository
+    - App\Repositories\PersonRepository
+    - App\Repositories\UserRepository
     - App\Components\Forms\Factories\IRegistrationFormFactory
     - App\Components\Forms\Factories\IVisitorFormFactory
     - App\Components\Forms\Factories\IAnnotationFormFactory
@@ -116,6 +122,8 @@ services:
     - App\Components\Forms\Factories\ILoginFormFactory
     - App\Components\INavbarRightControlFactory
     - App\Services\Translators\CsTranslator
+    - App\Services\UserService
+    - App\Services\Authenticator
 
 extensions:
     skautis: Skautis\Nette\SkautisExtension

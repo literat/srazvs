@@ -16,6 +16,7 @@ use App\Components\Forms\Factories\IRegistrationFormFactory;
 use App\Services\SkautIS\EventService;
 use Nette\Utils\ArrayHash;
 use App\Models\SettingsModel;
+use Skautis\Wsdl\AuthenticationException;
 
 /**
  * Registration controller
@@ -197,9 +198,9 @@ class RegistrationPresenter extends VisitorPresenter
 	public function beforeRender()
     {
         parent::beforeRender();
-        if (isset($this->params[self::FLASH_KEY])) {
-            $this->template->flashes = $this->getFlashSession()->flash;
-        }
+        /*if (isset($this->params[self::FLASH_KEY])) {
+			$this->template->flashes = $this->getFlashSession()->flash;
+		}*/
     }
 
     /**
@@ -213,9 +214,14 @@ class RegistrationPresenter extends VisitorPresenter
 		$template->user = $this->getUser();
 		$template->backlink = $this->getHttpRequest()->getUrl()->getAbsoluteUrl();
 
-		if($this->getUser()->isLoggedIn()) {
-			$this['registrationForm']->setDefaults(($this->useLoggedVisitor())->toArray());
-		}
+		try {
+            if ($this->getUser()->isLoggedIn()) {
+                $this['registrationForm']->setDefaults(($this->useLoggedVisitor())->toArray());
+            }
+        } catch (AuthenticationException $e) {
+		    $this->flashFailure('Uživatel byl odhlášen! Přihlaste se prosím znovu.');
+		    $this->getUser()->logout();
+        }
 	}
 
 	/**

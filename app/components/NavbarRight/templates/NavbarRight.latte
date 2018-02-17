@@ -7,9 +7,9 @@
 			<span class="glyphicon glyphicon-menu-down" aria-hidden="true"></span>
 		</a>
 		<ul class="dropdown-menu">
-			<li class="dropdown-header">{dump $user}</li>
+			<li class="dropdown-header">{$user->getIdentity()->username}</li>
 			<li class="divider"></li>
-			<li>
+			{*<li>
 				<a href="#" target="_blank" title="Open in new tab">
 					<span class="glyphicon glyphicon-user offset-right icon-shift-down" aria-hidden="true"></span>
 					Profil
@@ -22,7 +22,7 @@
 					Nastavení
 				</a>
 			</li>
-            <li class="divider"></li>
+            <li class="divider"></li>*}
 			<li>
 				<a href="{plink :Auth:logout 'skautis', 'backlink' => $backlink}">
 					<span class="glyphicon glyphicon-off offset-right icon-shift-down" aria-hidden="true"></span>
