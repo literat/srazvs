@@ -24,6 +24,15 @@ class SettingsPresenter extends BasePresenter
 		$this->setEmailer($emailer);
 	}
 
+    /**
+     * @throws \Nette\Application\AbortException
+     */
+	public function startup()
+	{
+		parent::startup();
+		$this->allowAdminAccessOnly();
+	}
+
 	/**
 	 * @param 	string 	$id
 	 * @return 	void

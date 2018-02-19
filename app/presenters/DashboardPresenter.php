@@ -38,11 +38,7 @@ class DashboardPresenter extends BasePresenter
 
 		$this->getModel()->setMeetingId($this->getMeetingId());
 
-		$user = $this->getUser();
-		if($user->isLoggedIn() && !$user->isInRole('administrator')) {
-		    $this->flashFailure('Nemáte oprávnění pro Dashboard.');
-		    $this->redirect('Registration:default');
-        }
+		$this->allowAdminAccessOnly();
 	}
 
 	/**

@@ -21,6 +21,15 @@ class MeetingPresenter extends BasePresenter
 	}
 
 	/**
+	 * @throws \Nette\Application\AbortException
+	 */
+	public function startup()
+	{
+		parent::startup();
+		$this->allowAdminAccessOnly();
+	}
+
+	/**
 	 * @return void
 	 */
 	public function actionCreate()

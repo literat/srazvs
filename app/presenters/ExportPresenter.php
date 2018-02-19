@@ -103,6 +103,8 @@ class ExportPresenter extends BasePresenter
 	 */
 	public function renderDefault()
 	{
+		$this->allowAdminAccessOnly();
+
 		$settingsModel = $this->getModel();
 		$template = $this->getTemplate();
 
@@ -116,6 +118,8 @@ class ExportPresenter extends BasePresenter
 
 	public function renderEvidence($type, $id = null)
 	{
+		$this->allowAdminAccessOnly();
+
 		$this->filename = 'faktura.pdf';
 
 		// summary header
@@ -163,6 +167,7 @@ class ExportPresenter extends BasePresenter
 	 */
 	public function renderAttendance()
 	{
+		$this->allowAdminAccessOnly();
 		// output file name
 		$this->filename = "attendance_list.pdf";
 		$templateName = 'attendance';
@@ -191,6 +196,7 @@ class ExportPresenter extends BasePresenter
 	 */
 	public function renderMealTicket()
 	{
+		$this->allowAdminAccessOnly();
 		// output file name
 		$this->filename= 'vlastni_stravenky.pdf';
 		$templateName = 'meal_ticket';
@@ -213,6 +219,7 @@ class ExportPresenter extends BasePresenter
 	 */
 	public function renderNameList()
 	{
+		$this->allowAdminAccessOnly();
 		// output file name
 		$this->filename = 'name_list.pdf';
 		$templateName = 'name_list';
@@ -253,6 +260,7 @@ class ExportPresenter extends BasePresenter
 	 */
 	protected function renderProgramCards()
 	{
+		$this->allowAdminAccessOnly();
 		$this->filename = 'vlastni_programy.pdf';
 		$templateName = 'program_cards';
 
@@ -275,6 +283,7 @@ class ExportPresenter extends BasePresenter
 	 */
 	protected function renderProgramLarge()
 	{
+		$this->allowAdminAccessOnly();
 		$largeProgram = $this->getModel()->largeProgram();
 
 		$this->filename = Strings::toAscii($largeProgram['place'] . $largeProgram['year'] . '-program') . '.pdf';
@@ -327,6 +336,7 @@ class ExportPresenter extends BasePresenter
 	 */
 	protected function renderProgramBadges()
 	{
+		$this->allowAdminAccessOnly();
 		$this->filename = 'program-badge.pdf';
 		$templateName = 'program_badge';
 
@@ -364,6 +374,7 @@ class ExportPresenter extends BasePresenter
 	 */
 	protected function renderProgramVisitors($id)
 	{
+		$this->allowAdminAccessOnly();
 		$this->filename = 'ucastnici-programu.pdf';
 		$templateName = 'program_visitors';
 
@@ -389,6 +400,7 @@ class ExportPresenter extends BasePresenter
 	 */
 	protected function renderProgramDetails()
 	{
+		$this->allowAdminAccessOnly();
 		$this->filename = 'vypis-programu.pdf';
 		$templateName = 'program_details';
 
@@ -409,6 +421,7 @@ class ExportPresenter extends BasePresenter
 	 */
 	public function actionNameBadges()
 	{
+		$this->allowAdminAccessOnly();
 		$names = $this->getHttpRequest()->getPost()['names'];
 		$this->renderNameBadges($names);
 	}
@@ -421,6 +434,7 @@ class ExportPresenter extends BasePresenter
 	 */
 	public function renderNameBadges($namesStringified)
 	{
+		$this->allowAdminAccessOnly();
 		$this->filename = 'jmenovky.pdf';
 		$templateName = 'name_badge';
 
@@ -456,6 +470,7 @@ class ExportPresenter extends BasePresenter
 	 */
 	public function renderVisitorsExcel()
 	{
+		$this->allowAdminAccessOnly();
 		$excel = $this->getExcel();
 
 		$excel->getProperties()->setCreator("HKVS Srazy K + K")->setTitle("Návštěvníci");

@@ -51,6 +51,7 @@ class UserService
             $credentials->id = $socialLogin->user->id;
             $credentials->guid = $socialLogin->user->guid;
             $credentials->login = $socialLogin->user->login;
+            $credentials->role = $socialLogin->user->is_admin ? 'admin' : 'guest';
             $credentials->name = $socialLogin->user->person->name;
             $credentials->surname = $socialLogin->user->person->surname;
         }
@@ -94,6 +95,8 @@ class UserService
 		$credentials->login = $newUser->login;
 		$credentials->name = $newPerson->name;
 		$credentials->surname = $newPerson->surname;
+		$credentials->nick = $newPerson->nick;
+		$credentials->role = 'guest';
 
 		return $credentials;
 	}

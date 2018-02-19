@@ -111,7 +111,7 @@ if($appRequest) {
 	die;
 }
 
-$target = $parameters['appDir'] . '/presenters/' . $controllerName . 'Presenter.php';
+/*$target = $parameters['appDir'] . '/presenters/' . $controllerName . 'Presenter.php';
 $container->parameters['router'] = $appRequest;
 
 $publicPages = [
@@ -131,11 +131,12 @@ $publicPages = [
 /**
  * Including access control
  */
+/*
 if(file_exists($target)) {
 	// access control
 	if(array_search($controllerName.'.'.$action, $publicPages) === false) {
 		include_once(INC_DIR . 'access.inc.php');
 	}
-}
+}*/
 
 return $container;

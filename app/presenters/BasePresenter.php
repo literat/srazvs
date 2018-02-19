@@ -21,6 +21,8 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 
 	const FLASH_TYPE_OK    = 'success';
 	const FLASH_TYPE_ERROR = 'error';
+	const ROLE_ADMIN = 'admin';
+	const ROLE_GUEST = 'guest';
 
 	/**
 	 * @var string
@@ -504,5 +506,25 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 	{
 		$this->flashMessage($message, self::FLASH_TYPE_ERROR);
 	}
+
+    /**
+     * @throws Nette\Application\AbortException
+     */
+	protected function unauthorized()
+    {
+        $this->flashFailure('Nemáte oprávnění pro tuto stránku. Prosím, přihlašte se nebo požádejte administrátora.');
+        $this->redirect('Login:default');
+    }
+
+    /**
+     * @throws Nette\Application\AbortException
+     */
+    protected function allowAdminAccessOnly()
+    {
+        $user = $this->getUser();
+        if(!$user->isInRole(self::ROLE_ADMIN)) {
+            $this->unauthorized();
+        }
+    }
 
 }

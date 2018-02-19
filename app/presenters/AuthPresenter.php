@@ -124,7 +124,6 @@ class AuthPresenter extends BasePresenter
 
 			if($user = $this->getUserService()->findByProviderAndToken('skautis', $credentials['skautIS_Token'])) {
 			} else {
-				$this->getSkautisAuthService()->setInit($credentials);
 				$userDetail = $this->getSkautisUserService()->getPersonalDetail();
 				$user = $this->getUserService()->createAccount($credentials['skautIS_Token'], $userDetail);
 			}
@@ -182,7 +181,6 @@ class AuthPresenter extends BasePresenter
 	protected function guardToken(string $token = '')
 	{
 		if (!$token) {
-            dd($token);
 			$this->redirect(":Login:");
 		}
 	}
@@ -193,7 +191,6 @@ class AuthPresenter extends BasePresenter
 	protected function guardSkautisLoggedIn()
 	{
 		if (!$this->getSkautisUserService()->isLoggedIn()) {
-		    dd('exp');
 			throw new AuthenticationException('Nemáte platné přihlášení do skautISu!');
 		}
 	}

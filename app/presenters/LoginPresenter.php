@@ -38,7 +38,8 @@ class LoginPresenter extends BasePresenter
             $this->getSession('auth')->backlink = $backlink;
         }
 
-		if ($this->getUser()->isLoggedIn()) {
+        $user = $this->getUser();
+		if ($user->isLoggedIn() && $user->isInRole('administrator')) {
 		    $this->redirect('Dashboard:default');
         }
 	}

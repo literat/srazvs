@@ -21,7 +21,16 @@ class CategoryPresenter extends BasePresenter
 		$this->setModel($model);
 	}
 
-	/**
+    /**
+     * @throws \Nette\Application\AbortException
+     */
+	public function startup()
+    {
+		parent::startup();
+		$this->allowAdminAccessOnly();
+    }
+
+    /**
 	 * @param  int  $id
 	 * @return void
 	 */

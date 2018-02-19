@@ -10,7 +10,7 @@ class Authenticator extends Nette\Object implements Nette\Security\IAuthenticato
     public function authenticate(array $credentials)
     {
         $identity = $credentials[0];
-        return new Nette\Security\Identity($identity->id, null,  ['username' => $identity->nick]);
+        return new Nette\Security\Identity($identity->id, $identity->role,  ['username' => $identity->nick]);
     }
 
 }

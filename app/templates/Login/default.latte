@@ -7,15 +7,7 @@
 	<section class="section-content">
 		<div class="container">
 
-			{foreach $flashes as $flash}
-				<div role="alert" class="flash alert alert-{$flash->type} alert-dismissible alert-full fade in">
-					<button type="button" class="close" data-dismiss="alert">&times;</button>
-					<div class="container">
-						<span class="glyphicon glyphicon-ok-sign offset-right" aria-hidden="true"></span>
-						{$flash->message}
-					</div>
-				</div>
-			{/foreach}
+            {include '../flash_messages.latte'}
 
 			<div class="row">
 				<div class="col-md-4 col-centered" style="background-color: #ffffff; border-radius: 3px;">
