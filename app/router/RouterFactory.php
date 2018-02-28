@@ -19,7 +19,7 @@ class RouterFactory
 	public function createRouter(): IRouter
 	{
 		$router = new RouteList();
-		$router[] = new Route('', 'Dashboard:default', Route::ONE_WAY);
+		$router[] = new Route('', 'Login:default', Route::ONE_WAY);
 		$router[] = new Route('index.php', 'Dashboard:default', Route::ONE_WAY);
 		$router[] = new Route('dashboard/', 'Dashboard:default');
 		$router[] = new Route('registrace/[<action>/[<guid>/]]', 'Registration:default', Route::ONE_WAY);

@@ -124,10 +124,11 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 		$template->categories = $this->remember('categories:all', 10, function () {
 			return $this->getContainer()->getService('category')->all();
 		});
-
+/*
 		if(isset($_SESSION[SESSION_PREFIX.'user'])) {
 			$template->user = $this->getSunlight()->findUser($_SESSION[SESSION_PREFIX.'user']);
 		}
+*/
 		$template->meeting = $meeting->getPlaceAndYear($_SESSION['meetingID']);
 		$template->menuItems = $meeting->getMenuItems();
 		$template->meeting_heading	= $meeting->getRegHeading();
@@ -507,24 +508,25 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 		$this->flashMessage($message, self::FLASH_TYPE_ERROR);
 	}
 
-    /**
-     * @throws Nette\Application\AbortException
-     */
+	/**
+	 * @throws Nette\Application\AbortException
+	 */
 	protected function unauthorized()
-    {
-        $this->flashFailure('Nemáte oprávnění pro tuto stránku. Prosím, přihlašte se nebo požádejte administrátora.');
-        $this->redirect('Login:default');
-    }
+	{
+		$message = 'Nemáte oprávnění pro tuto stránku. Prosím, přihlašte se nebo požádejte administrátora.';
+		$this->flashFailure($message);
+		$this->error($message, Nette\Http\IResponse::S403_FORBIDDEN );
+	}
 
-    /**
-     * @throws Nette\Application\AbortException
-     */
-    protected function allowAdminAccessOnly()
-    {
-        $user = $this->getUser();
-        if(!$user->isInRole(self::ROLE_ADMIN)) {
-            $this->unauthorized();
-        }
-    }
+	/**
+	 * @throws Nette\Application\AbortException
+	 */
+	protected function allowAdminAccessOnly()
+	{
+		$user = $this->getUser();
+		if(!$user->isInRole(self::ROLE_ADMIN)) {
+			$this->unauthorized();
+		}
+	}
 
 }
