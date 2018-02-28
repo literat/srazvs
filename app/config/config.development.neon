@@ -3,8 +3,8 @@ parameters:
         driver: mysql
         host: localhost
         name: vodni
-        user: root
-        password: root
+        user: vodni
+        password: vodni
     cacheDir: D:\home\literat\work\skauting\vodni\srazvs/temp/cache
 
 services:

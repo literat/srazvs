@@ -54,6 +54,9 @@ class UserService
             $credentials->role = $socialLogin->user->is_admin ? 'admin' : 'guest';
             $credentials->name = $socialLogin->user->person->name;
             $credentials->surname = $socialLogin->user->person->surname;
+            $credentials->nick = $socialLogin->user->person->nick;
+            $credentials->birthday = $socialLogin->user->person->birthday;
+            $credentials->email = $socialLogin->user->person->email;
         }
 
 		return $credentials;

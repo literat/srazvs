@@ -45,25 +45,25 @@ class SocialLoginModel extends BaseModel implements IModel
 		return $this->hydrate($block);
 	}
 
-    /**
-     * @param  string $provider
-     * @param  string $token
-     * @return SocialLoginEntity
-     */
-    public function findByProviderAndToken(string $provider, string $token)//: SocialLoginEntity
-    {
-        $socialLogin = $this->getDatabase()
-            ->table($this->getTable())
-            ->where('provider', $provider)
-            ->where('token', $token)
-            ->fetchAll();
+	/**
+	 * @param  string $provider
+	 * @param  string $token
+	 * @return SocialLoginEntity
+	 */
+	public function findByProviderAndToken(string $provider, string $token)//: SocialLoginEntity
+	{
+		$socialLogin = $this->getDatabase()
+			->table($this->getTable())
+			->where('provider', $provider)
+			->where('token', $token)
+			->fetch();
 
-        if($socialLogin) {
-            $socialLogin = $this->hydrate($socialLogin);
-        }
+		if($socialLogin) {
+			$socialLogin = $this->hydrate($socialLogin);
+		}
 
-        return $socialLogin ?: null;
-    }
+		return $socialLogin ?: null;
+	}
 
 	/**
 	 * @param IEntity $entity
@@ -97,7 +97,11 @@ class SocialLoginModel extends BaseModel implements IModel
 
 		// unset($values['id']);
 		foreach ($values as $property => $value) {
-			$entity->$property = $value;
+			if($property === 'user_id') {
+				$entity->user = $values->user;
+			} else {
+				$entity->$property = $value;
+			}
 		}
 
 		return $entity;

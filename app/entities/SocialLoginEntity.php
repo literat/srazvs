@@ -34,7 +34,12 @@ class SocialLoginEntity implements IEntity
 	 */
 	public function toArray()
 	{
-		return get_object_vars($this);
+		$userId = $this->user;
+		$properties = get_object_vars($this);
+		$properties['user_id'] = $userId;
+		unset($properties['user']);
+
+		return $properties;
 	}
 
 }

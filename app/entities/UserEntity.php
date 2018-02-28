@@ -32,7 +32,12 @@ class UserEntity implements IEntity
 	 */
 	public function toArray()
 	{
-		return get_object_vars($this);
+		$personId = $this->person;
+		$properties = get_object_vars($this);
+		$properties['person_id'] = $personId;
+		unset($properties['person']);
+
+		return $properties;
 	}
 
 }

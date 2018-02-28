@@ -7,6 +7,7 @@ use App\Services\SkautIS\UserService as SkautisUserService;
 use App\Services\UserService;
 use Skautis\Wsdl\AuthenticationException;
 use App\Services\Authenticator;
+use App\Entities\CredentialsEntity;
 
 
 /**
@@ -30,12 +31,12 @@ class AuthPresenter extends BasePresenter
 	 */
 	protected $userService;
 
-    /**
-     * AuthPresenter constructor.
-     * @param SkautisAuthService $skautisAuthService
-     * @param SkautisUserService $skautisUserService
-     * @param UserService        $userService
-     */
+	/**
+	 * AuthPresenter constructor.
+	 * @param SkautisAuthService $skautisAuthService
+	 * @param SkautisUserService $skautisUserService
+	 * @param UserService        $userService
+	 */
 	public function __construct(
 		SkautisAuthService $skautisAuthService,
 		SkautisUserService $skautisUserService,
@@ -115,17 +116,18 @@ class AuthPresenter extends BasePresenter
 	{
 		try {
 			$credentials = $this->getHttpRequest()->getPost();
-
 			$this->guardToken($credentials['skautIS_Token']);
-            $this->getSkautisAuthService()->setInit($credentials);
+			$this->getSkautisAuthService()->setInit($credentials);
 			$this->guardSkautisLoggedIn();
+			$userDetail = $this->getSkautisUserService()->getPersonalDetail();
+			$token = $userDetail->ID;
 
 			$this->logInfo('Auth: ' . $credentials['skautIS_Token'] . ' / '. $credentials['skautIS_IDRole'] . ' / ' . $credentials['skautIS_IDUnit']);
 
-			if($user = $this->getUserService()->findByProviderAndToken('skautis', $credentials['skautIS_Token'])) {
+			if($user = $this->getUserService()->findByProviderAndToken('skautis', $token)) {
 			} else {
 				$userDetail = $this->getSkautisUserService()->getPersonalDetail();
-				$user = $this->getUserService()->createAccount($credentials['skautIS_Token'], $userDetail);
+				$user = $this->getUserService()->createAccount($token, $userDetail);
 			}
 
 			$this->login($user);
@@ -243,24 +245,24 @@ class AuthPresenter extends BasePresenter
 		return $this;
 	}
 
-    /**
-     * @return UserService
-     */
-    protected function getUserService(): UserService
-    {
-        return $this->userService;
-    }
+	/**
+	 * @return UserService
+	 */
+	protected function getUserService(): UserService
+	{
+		return $this->userService;
+	}
 
-    /**
-     * @param  UserService $service
-     * @return self
-     */
-    protected function setUserService(UserService $service): self
-    {
-        $this->userService = $service;
+	/**
+	 * @param  UserService $service
+	 * @return self
+	 */
+	protected function setUserService(UserService $service): self
+	{
+		$this->userService = $service;
 
-        return $this;
-    }
+		return $this;
+	}
 
 
 
