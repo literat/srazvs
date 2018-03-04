@@ -2,7 +2,7 @@ body.login {
     height: 100%;
     width: 100%;
     margin: 0;
-    background-image: url(../images/20120124135204-367aa2e3.jpg);
+    background-image: url(../images/login-bg.png);
     background-position: 50% 0;
     background-size: cover;
     background-repeat: no-repeat;
@@ -40,6 +40,13 @@ a:hover span {
 .navbar-primary .navbar-brand:focus,
 .navbar-primary .navbar-brand:hover {
 	color: #000;
+}
+
+.navbar-primary .navbar-nav > .open > a,
+.navbar-primary .navbar-nav > .open > a:hover,
+.navbar-primary .navbar-nav > .open > a:focus {
+    background-color: transparent;
+    color: #444444;
 }
 
 .section-header {

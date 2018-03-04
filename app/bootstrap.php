@@ -4,17 +4,6 @@ use Nette\Configurator;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-//define('SESSION_PREFIX', md5('localhost'.'vodni'.'vodni'.'sunlight')."-");
-
-//nastartovani session
-//session_name(SESSION_PREFIX . 'session');
-
-//$requestFatory = new Nette\Http\RequestFactory;
-//$httpRequest = $requestFatory->createHttpRequest();
-//$httpResponse = new Nette\Http\Response;
-
-//$session = new Nette\Http\Session($httpRequest, $httpResponse);
-
 $configurator = new Configurator;
 
 /**
@@ -42,11 +31,7 @@ $configurator->addConfig(__DIR__ . '/config/config.local.neon');
  * DI Container and Session
  */
 RadekDostal\NetteComponents\DateTimePicker\TbDatePicker::register();
-/*
-$configurator->addServices(array(
-    'session.session' => $session,
-));
-*/
+
 $container = $configurator->createContainer();
 $parameters = $container->getParameters();
 
