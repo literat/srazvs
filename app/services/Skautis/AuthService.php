@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\SkautIS;
+namespace App\Services\Skautis;
 
 /**
  * Authentication service
@@ -21,7 +21,7 @@ class AuthService extends SkautisService
 
 
 	/**
-	 * Sets initial data after login to SkautIS
+	 * Sets initial data after login to Skautis
 	 *
 	 * @param   array  $arr
 	 * @return  void

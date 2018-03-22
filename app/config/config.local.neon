@@ -74,9 +74,9 @@ services:
             %excel%
         ]
 
-    - App\Services\SkautIS\AuthService
-    - App\Services\SkautIS\UserService
-    - App\Services\SkautIS\EventService
+    - App\Services\Skautis\AuthService
+    - App\Services\Skautis\UserService
+    - App\Services\Skautis\EventService
     category: App\Models\CategoryModel
     meeting: App\Models\MeetingModel
     program: App\Models\ProgramModel
@@ -123,7 +123,7 @@ services:
     - App\Components\INavbarRightControlFactory
     - App\Services\Translators\CsTranslator
     - App\Services\UserService
-    - App\Services\Authenticator
+    - App\Services\Skautis\Authenticator
 
 extensions:
     skautis: Skautis\Nette\SkautisExtension

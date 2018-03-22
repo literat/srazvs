@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Services\SkautIS;
+namespace App\Services\Skautis;
 
 use Nette\Object;
 use Skautis\Skautis;
 
 /**
- * SkautIS service
+ * Skautis service
  */
 abstract class SkautisService extends Object
 {
@@ -19,7 +19,7 @@ abstract class SkautisService extends Object
 
 
 	/**
-	 * Holds SkautIS instance
+	 * Holds Skautis instance
 	 * @var Skautis\Skautis
 	 */
 	protected $skautis;
@@ -33,7 +33,7 @@ abstract class SkautisService extends Object
 
 
 	/**
-	 * Short term storage for saving SkautIS answers
+	 * Short term storage for saving Skautis answers
 	 * @var type
 	 */
 	private static $storage;

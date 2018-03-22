@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\SkautIS;
+namespace App\Services\Skautis;
 
 use Skautis\User;
 
@@ -31,7 +31,7 @@ class UserService extends SkautisService
 
 
 	/**
-	 * Returns all SkautIS roles
+	 * Returns all Skautis roles
 	 *
 	 * @param   bool   $activeOnly  only active roles
 	 * @return  array               all roles of logged user
@@ -65,7 +65,7 @@ class UserService extends SkautisService
 
 
 	/**
-	 * Changes the loggeed user SkautIS role
+	 * Changes the loggeed user Skautis role
 	 *
 	 * @param   ID_Role  $id
 	 * @return  void

@@ -4,14 +4,12 @@ namespace App\Presenters;
 
 use App\Services\SkautIS\AuthService as SkautisAuthService;
 use App\Services\SkautIS\UserService as SkautisUserService;
+use App\Services\SkautIS\Authenticator as SkautisAuthenticator;
 use App\Services\UserService;
 use Skautis\Wsdl\AuthenticationException;
-use App\Services\Authenticator;
-use App\Entities\CredentialsEntity;
-
 
 /**
- * SkautIS Auth presenters.
+ * Skautis Auth presenters.
  */
 class AuthPresenter extends BasePresenter
 {
@@ -31,6 +29,11 @@ class AuthPresenter extends BasePresenter
 	 */
 	protected $userService;
 
+    /**
+     * @var SkautisAuthenticator
+     */
+	private $skautisAuthenticator;
+
 	/**
 	 * AuthPresenter constructor.
 	 * @param SkautisAuthService $skautisAuthService
@@ -40,11 +43,13 @@ class AuthPresenter extends BasePresenter
 	public function __construct(
 		SkautisAuthService $skautisAuthService,
 		SkautisUserService $skautisUserService,
-		UserService $userService
+		UserService $userService,
+        SkautisAuthenticator $skautisAuthenticator
 	) {
 		$this->setSkautisAuthService($skautisAuthService);
 		$this->setSkautisUserService($skautisUserService);
 		$this->setUserService($userService);
+		$this->skautisAuthenticator = $skautisAuthenticator;
 	}
 
 	/**
@@ -83,57 +88,56 @@ class AuthPresenter extends BasePresenter
 		$this->{'handleSkautis' . $id}();
 	}
 
-	/**
-	 * Redirects to login page
-	 *
-	 * @param  	string  $backlink
-	 * @return  void
-	 */
+    /**
+     * Redirects to login page
+     *
+     * @param   string $backlink
+     * @return  void
+     * @throws \Nette\Application\AbortException
+     */
 	protected function skautisLogin($backlink = null)
 	{
 		$this->redirectUrl($this->getSkautisAuthService()->getLoginUrl($backlink));
 	}
 
-	/**
-	 * Handle log out from SkautIS
-	 * SkautIS redirects to this action after log out
-	 *
-	 * @param   void
-	 * @return  void
-	 */
+    /**
+     * Handle log out from Skautis
+     * Skautis redirects to this action after log out
+     *
+     * @return  void
+     * @throws \Nette\Application\AbortException
+     */
 	protected function skautisLogout()
 	{
 		$this->redirectUrl($this->getSkautisAuthService()->getLogoutUrl());
 	}
 
-	/**
-	 * Handle SkautIS login process
-	 *
-	 * @param   string  $ReturnUrl
-	 * @return  void
-	 */
-	protected function handleSkautisLogin($ReturnUrl = NULL)
+    /**
+     * Handle Skautis login process
+     *
+     * @param   string $returnUrl
+     * @return  void
+     * @throws \Nette\Application\AbortException
+     * @throws \Nette\Security\AuthenticationException
+     */
+	protected function handleSkautisLogin($returnUrl = NULL)
 	{
 		try {
 			$credentials = $this->getHttpRequest()->getPost();
-			$this->guardToken($credentials['skautIS_Token']);
-			$this->getSkautisAuthService()->setInit($credentials);
-			$this->guardSkautisLoggedIn();
-			$userDetail = $this->getSkautisUserService()->getPersonalDetail();
-			$token = $userDetail->ID;
+            $this->logInfo('Auth: %s / %s / %s', [
+                $credentials['skautIS_Token'],
+                $credentials['skautIS_IDRole'],
+                $credentials['skautIS_IDUnit']
+            ]);
 
-			$this->logInfo('Auth: ' . $credentials['skautIS_Token'] . ' / '. $credentials['skautIS_IDRole'] . ' / ' . $credentials['skautIS_IDUnit']);
+            $this->guardToken($credentials['skautIS_Token']);
 
-			if($user = $this->getUserService()->findByProviderAndToken('skautis', $token)) {
-			} else {
-				$userDetail = $this->getSkautisUserService()->getPersonalDetail();
-				$user = $this->getUserService()->createAccount($token, $userDetail);
-			}
+            $this->getUser()->setExpiration('+ 29 minutes');
+            $this->getUser()->setAuthenticator($this->skautisAuthenticator);
+            $this->getUser()->login($credentials);
 
-			$this->login($user);
-
-			if (isset($ReturnUrl)) {
-				$this->context->application->restoreRequest($ReturnUrl);
+			if (isset($returnUrl)) {
+				$this->context->application->restoreRequest($returnUrl);
 			}
 
 			if($backlink = $this->getSession('auth')->backlink) {
@@ -150,7 +154,7 @@ class AuthPresenter extends BasePresenter
 	}
 
 	/**
-	 * Log out from SkautIS
+	 * Log out from Skautis
 	 *
 	 * @param   void
 	 * @return  void
@@ -176,36 +180,16 @@ class AuthPresenter extends BasePresenter
 		}
 	}
 
-	/**
-	 * @param string $token
-	 * @throws \Nette\Application\AbortException
-	 */
-	protected function guardToken(string $token = '')
-	{
-		if (!$token) {
-			$this->redirect(":Login:");
-		}
-	}
-
-	/**
-	 * @throws AuthenticationException
-	 */
-	protected function guardSkautisLoggedIn()
-	{
-		if (!$this->getSkautisUserService()->isLoggedIn()) {
-			throw new AuthenticationException('Nemáte platné přihlášení do skautISu!');
-		}
-	}
-
-	/**
-	 * @throws \Nette\Security\AuthenticationException
-	 */
-	protected function login($user)
-	{
-		$this->getUser()->setExpiration('+ 29 minutes');
-		$this->getUser()->setAuthenticator(new Authenticator());
-		$this->getUser()->login($user);
-	}
+    /**
+     * @param string $token
+     * @throws \Nette\Application\AbortException
+     */
+    protected function guardToken(string $token = '')
+    {
+        if (!$token) {
+            $this->redirect(":Login:");
+        }
+    }
 
 	/**
 	 * @return SkautisAuthService

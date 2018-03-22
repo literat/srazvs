@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services\SkautIS;
+namespace App\Services\Skautis;
 
 /**
  * User service
