@@ -12,7 +12,7 @@
         "nette/bootstrap": "^2.4",
         "nette/application": "^2.4",
         "nette/php-generator": "^2.6",
-        "mpdf/mpdf": "v7.0.0-beta2",
+        "mpdf/mpdf": "v7.0.0",
         "phpoffice/phpexcel": "^1.8",
         "latte/latte": "^2.4",
         "skautis/nette": "^2.0",
@@ -27,7 +27,8 @@
         "dg/ftp-deployment": "~2.1",
         "phpunit/phpunit": "^6.0",
         "doctrine/instantiator": "~1.0.0",
-        "php-coveralls/php-coveralls": "^1.0"
+        "php-coveralls/php-coveralls": "^1.0",
+        "friendsofphp/php-cs-fixer": "^2.11"
     },
     "autoload": {
         "files": [
@@ -40,6 +41,7 @@
         ]
     },
     "scripts": {
+        "cs": "php-cs-fixer fix --dry-run --diff --diff-format=udiff --ansi",
         "sa": "vendor/bin/phpstan analyze -l 4 -c phpstan.neon app",
         "test:unit": "composer tester -- --coverage tests/unit/coverage.html --coverage-src app/ tests/unit",
         "test:acceptance": "codeception",
