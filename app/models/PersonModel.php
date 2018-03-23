@@ -92,10 +92,9 @@ class PersonModel extends BaseModel implements IModel
 	{
 		$ref = new ClassType($item);
 		$idProperty = $ref->getProperty('data');
-		//dd($idProperty->id);
 		$idProperty->setAccessible(true);
 		$idProperty->setValue($item, $id);
-dd($item);
+
 		return $item;
 	}
 
