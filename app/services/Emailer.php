@@ -91,10 +91,10 @@ class Emailer
 		$subject = html_entity_decode($json->subject);
 		$message = html_entity_decode($json->message);
 
-		return array(
+		return [
 			'subject' => $subject,
 			'message' => $message,
-		);
+		];
 	}
 
 	/**

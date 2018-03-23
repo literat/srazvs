@@ -26,7 +26,7 @@ class EmailerGetTemplateTest extends Tester\TestCase
 	{
 		Assert::same(
 			$this->mailer->getTemplate('tutor'),
-			array(
+			[
 				'subject' => 'Sraz vodních skautů: anotace %%[typ-anotace]%%',
 				'message' => '<html>
   <head>
@@ -47,7 +47,7 @@ class EmailerGetTemplateTest extends Tester\TestCase
 	 Na setkání se těší přípravný tým srazů VS.
   </body>
 </html>',
-));
+]);
 	}
 }
 

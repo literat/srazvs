@@ -47,9 +47,6 @@ class MeetingModel extends BaseModel
 
 	public $eventId;
 	public $courseId;
-
-	private $configuration;
-
 	private $program;
 	private $httpEncoding;
 	private $dbTable;
@@ -59,8 +56,8 @@ class MeetingModel extends BaseModel
 	/** Constructor */
 	public function __construct(Context $database, ProgramModel $program)
 	{
-		$this->weekendDays = array("pátek", "sobota", "neděle");
-		$this->form_names = array(
+		$this->weekendDays = ["pátek", "sobota", "neděle"];
+		$this->form_names = [
 			"place",
 			"start_date",
 			"end_date",
@@ -74,8 +71,8 @@ class MeetingModel extends BaseModel
 			"numbering",
 			'skautis_event_id',
 			'skautis_course_id',
-		);
-		$this->dbColumns = array(
+		];
+		$this->dbColumns = [
 			"place",
 			"start_date",
 			"end_date",
@@ -89,7 +86,7 @@ class MeetingModel extends BaseModel
 			"numbering",
 			'skautis_event_id',
 			'skautis_course_id',
-		);
+		];
 		$this->dbTable = "kk_meetings";
 		$this->setDatabase($database);
 		$this->program = $program;
@@ -175,7 +172,7 @@ class MeetingModel extends BaseModel
 	 */
 	public function delete($ids)
 	{
-		$data = array('deleted' => '1');
+		$data = ['deleted' => '1'];
 		$result = $this->getDatabase()->table($this->getTable())->where('id', $ids)->update($data);
 
 		return $result;

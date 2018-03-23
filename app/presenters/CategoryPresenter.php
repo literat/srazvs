@@ -38,10 +38,10 @@ class CategoryPresenter extends BasePresenter
 	{
 		try {
 			$result = $this->getModel()->delete($id);
-			Debugger::log('Destroying of category successfull, result: ' . json_encode($result), Debugger::INFO);
+			$this->logInfo('Destroying of category successfull, result: %s', json_encode($result));
 			$this->flashMessage('Položka byla úspěšně smazána', 'ok');
 		} catch(Exception $e) {
-			Debugger::log('Destroying of category failed, result: ' .  $e->getMessage(), Debugger::ERROR);
+			$this->logError('Destroying of category failed, result: %s', $e->getMessage());
 			$this->flashMessage('Destroying of category failed, result: ' . $e->getMessage(), 'error');
 		}
 
@@ -58,11 +58,14 @@ class CategoryPresenter extends BasePresenter
 			$data = $this->getHttpRequest()->getPost();
 			$result = $this->getModel()->create($data);
 
-			Debugger::log('Creation of category successfull, result: ' . json_encode($result), Debugger::INFO);
+			$this->logInfo('Creation of category successfull, result: %s', json_encode($result));
 
 			$this->flashMessage('Položka byla úspěšně vytvořena', 'ok');
 		} catch(Exception $e) {
-			Debugger::log('Creation of category with data ' . json_encode($data) . ' failed, result: ' . $e->getMessage(), Debugger::ERROR);
+			$this->logError('Creation of category with data %s failed, result: %s', [
+			    json_encode($data),
+                $e->getMessage()
+            ]);
 
 			$this->flashMessage('Creation of category failed, result: ' . $e->getMessage(), 'error');
 		}
@@ -80,11 +83,17 @@ class CategoryPresenter extends BasePresenter
 			$data = $this->getHttpRequest()->getPost();
 			$result = $this->getModel()->update($id, $data);
 
-			Debugger::log('Modification of category id ' . $id . ' with data ' . json_encode($data) . ' successfull, result: ' . json_encode($result), Debugger::INFO);
-
+            $this->logInfo('Modification of category id %s with data %s successfull, result: %s', [
+                $id,
+                json_encode($data),
+                json_encode($result),
+            ]);
 			$this->flashMessage('Položka byla úspěšně upravena', 'ok');
 		} catch(Exception $e) {
-			Debugger::log('Modification of category id ' . $id . ' failed, result: ' . $e->getMessage(), Debugger::ERROR);
+			$this->logError('Modification of category id %s failed, result: %s', [
+			    $id,
+                $e->getMessage(),
+            ]);
 
 			$this->flashMessage('Modification of category id ' . $id . ' failed, result: ' . $e->getMessage(), 'error');
 		}

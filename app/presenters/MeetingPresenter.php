@@ -35,15 +35,17 @@ class MeetingPresenter extends BasePresenter
 	public function actionCreate()
 	{
 		try {
-			$model = $this->getModel();
 			$data = $this->getHttpRequest()->getPost();
 			$result = $this->getModel()->create($data);
 
-			Debugger::log('Creation of meeting successfull, result: ' . json_encode($result), Debugger::INFO);
-			$this->flashMessage('Položka byla úspěšně vytvořena', 'ok');
+			$this->logInfo('Creation of meeting successfull, result: %s', json_encode($result));
+			$this->flashSuccess('Položka byla úspěšně vytvořena');
 		} catch(Exception $e) {
-			Debugger::log('Creation of meeting with data ' . json_encode($data) . ' failed, result: ' . $e->getMessage(), Debugger::ERROR);
-			$this->flashMessage('Creation of meeting failed, result: ' . $e->getMessage(), 'error');
+			$this->logError('Creation of meeting with data %s failed, result: %s', [
+			    json_encode($data),
+                $e->getMessage()
+            ]);
+			$this->flashFailure('Creation of meeting failed, result: %s', $e->getMessage());
 		}
 
 		$this->redirect('Meeting:listing');
@@ -59,11 +61,21 @@ class MeetingPresenter extends BasePresenter
 			$data = $this->getHttpRequest()->getPost();
 			$result = $this->getModel()->update($id, $data);
 
-			Debugger::log('Modification of meeting id ' . $id . ' with data ' . json_encode($data) . ' successfull, result: ' . json_encode($result), Debugger::INFO);
-			$this->flashMessage('Položka byla úspěšně upravena', 'ok');
+            $this->logInfo('Modification of meeting id %s with data %s successfull, result: %s', [
+                $id,
+                json_encode($data),
+                json_encode($result)
+            ]);
+			$this->flashSuccess('Položka byla úspěšně upravena');
 		} catch(Exception $e) {
-			Debugger::log('Modification of meeting id ' . $id . ' failed, result: ' . $e->getMessage(), Debugger::ERROR);
-			$this->flashMessage('Modification of meeting id ' . $id . ' failed, result: ' . $e->getMessage(), 'error');
+			$this->logError('Modification of meeting id %s failed, result: %s', [
+			    $id,
+			    $e->getMessage(),
+            ]);
+			$this->flashFailure(sprintf('Modification of meeting id %s failed, result: %s',
+			    $id,
+                $e->getMessage()
+            ));
 		}
 
 		$this->redirect('Meeting:listing');
@@ -78,11 +90,18 @@ class MeetingPresenter extends BasePresenter
 	{
 		try {
 			$result = $this->getModel()->delete($id);
-			Debugger::log('Destroying of meeting('. $id .') successfull, result: ' . json_encode($result), Debugger::INFO);
-			$this->flashMessage('Položka byla úspěšně smazána', 'ok');
+
+			$this->logInfo('Destroying of meeting(%s) successfull, result: %s', [
+			    $id,
+			    json_encode($result),
+            ]);
+			$this->flashSuccess('Položka byla úspěšně smazána');
 		} catch(Exception $e) {
-			Debugger::log('Destroying of meeting('. $id .') failed, result: ' .  $e->getMessage(), Debugger::ERROR);
-			$this->flashMessage('Destroying of meeting failed, result: ' . $e->getMessage(), 'error');
+			$this->logError('Destroying of meeting(%s) failed, result: %s', [
+			    $id,
+			    $e->getMessage(),
+            ]);
+			$this->flashFailure(sprintf('Destroying of meeting failed, result: %s', $e->getMessage()));
 		}
 
 		$this->redirect('Meeting:listing');

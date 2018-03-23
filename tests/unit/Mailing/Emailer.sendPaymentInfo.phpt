@@ -92,7 +92,7 @@ EOD
 	}
 }
 
-$template = array(
+$template = [
 	"subject" => "Sraz VS: zaplacení zálohy",
 	"message" => "<html>
 	<head>
@@ -109,13 +109,13 @@ $template = array(
 		Na setkání se těší přípravný tým srazu VS.
 	</body>
 </html>"
-);
+];
 
 $mockedSettings = Mockery::mock(App\Models\SettingsModel::class);
 
 $testMailer = new TestMailer();
 
-$mockedEmailer = Mockery::mock('App\Services\Emailer[getTemplate]', array($mockedSettings, $testMailer));
+$mockedEmailer = Mockery::mock('App\Services\Emailer[getTemplate]', [$mockedSettings, $testMailer]);
 $mockedEmailer->shouldReceive('getTemplate')->with('advance')->andReturn($template);
 
 $EmailerPaymentInfoTest = new EmailerPaymentInfoTest($mockedEmailer);

@@ -130,7 +130,7 @@ class ExportPresenter extends BasePresenter
 		$evidences = $this->getModel()->evidence($id);
 
 		if(!$evidences) {
-			Debugger::log('No data for evidence export.', Debugger::ERROR);
+			$this->logError('No data for evidence export.');
 			$this->flashMessage('No data.');
 			$this->redirect('Export:listing');
 		}
@@ -178,7 +178,7 @@ class ExportPresenter extends BasePresenter
 		$attendanceHeader = $attendances[0]['place'] . ' ' . $attendances[0]['year'];
 
 		// set header
-		$this->getPdf()->SetHeader($attendanceHeader.'|sraz VS|Prezenční listina');
+		$this->getPdf()->SetHeader($attendanceHeader . '|sraz VS|Prezenční listina');
 
 		$parameters = [
 			'result' => $attendances,
@@ -230,7 +230,7 @@ class ExportPresenter extends BasePresenter
 		$namelistHeader = $nameList[0]['place'] . " " . $nameList[0]['year'];
 
 		// set header
-		$this->getPdf()->SetHeader($namelistHeader.'|sraz VS|Jméno, Příjmení, Přezdívka');
+		$this->getPdf()->SetHeader($namelistHeader . '|sraz VS|Jméno, Příjmení, Přezdívka');
 
 		$parameters = [
 			'result' => $nameList,
@@ -289,7 +289,7 @@ class ExportPresenter extends BasePresenter
 		$this->filename = Strings::toAscii($largeProgram['place'] . $largeProgram['year'] . '-program') . '.pdf';
 		$templateName = 'program_large';
 
-		$meetingHeader = $largeProgram['place']." ".$largeProgram['year'];
+		$meetingHeader = $largeProgram['place'] . " " . $largeProgram['year'];
 
 		$this->getPdf()->paperFormat = 'B1';
 
@@ -382,7 +382,7 @@ class ExportPresenter extends BasePresenter
 
 		$programHeader = $programs[0]['program'];
 
-		$this->getPdf()->SetHeader($programHeader.'|sraz VS|Účastnící programu');
+		$this->getPdf()->SetHeader($programHeader . '|sraz VS|Účastnící programu');
 
 		$parameters = [
 			'result' => $programs,
@@ -567,17 +567,17 @@ class ExportPresenter extends BasePresenter
 		}
 
 		// stahnuti souboru
-		$filename = 'export-MS-'.date('Y-m-d',time()).'.xlsx';
+		$filename = 'export-MS-' . date('Y-m-d',time()) . '.xlsx';
 
 		$excel->setActiveSheetIndex(0);
 
 		header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-		header('Content-Disposition: attachment;filename="'.$filename.'"');
+		header('Content-Disposition: attachment;filename="' . $filename . '"');
 		header('Cache-Control: max-age=0');
 
 		// If you're serving to IE over SSL, then the following may be needed
 		header('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
-		header('Last-Modified: '.gmdate('D, d M Y H:i:s').' GMT'); // always modified
+		header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT'); // always modified
 		header('Cache-Control: cache, must-revalidate'); // HTTP/1.1
 		header('Pragma: public'); // HTTP/1.0
 

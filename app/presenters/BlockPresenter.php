@@ -81,10 +81,13 @@ class BlockPresenter extends BasePresenter
 
 			$result = $this->getBlockRepository()->create($block);
 
-			$this->logInfo('Creation of block successfull, result: ' . json_encode($result));
+			$this->logInfo('Creation of block successfull, result: %s', [json_encode($result)]);
 			$this->flashSuccess('Položka byla úspěšně vytvořena');
 		} catch(Exception $e) {
-			$this->logError('Creation of block with data ' . json_encode($block) . ' failed, result: ' . $e->getMessage());
+			$this->logError('Creation of block with data %s failed, result: %s', [
+				json_encode($block),
+				$e->getMessage(),
+			]);
 			$this->flashFailure('Creation of block failed, result: ' . $e->getMessage());
 			$result = false;
 		}
@@ -131,7 +134,7 @@ class BlockPresenter extends BasePresenter
 			$this->logInfo('Destroying of block successfull, result: ' . json_encode($result));
 			$this->flashSuccess('Položka byla úspěšně smazána.');
 		} catch(Exception $e) {
-			$this->logError('Destroying of block failed, result: ' .  $e->getMessage());
+			$this->logError('Destroying of block failed, result: ' . $e->getMessage());
 			$this->flashFailure('Destroying of block failed, result: ' . $e->getMessage());
 		}
 
@@ -156,7 +159,7 @@ class BlockPresenter extends BasePresenter
 			$this->logInfo('Sending email to block tutor successfull, result: ' . json_encode($recipients) . ', ' . $tutors->guid);
 			$this->flashSuccess('Email lektorovi byl odeslán..');
 		} catch(Exception $e) {
-			$this->logError('Sending email to block tutor failed, result: ' .  $e->getMessage());
+			$this->logError('Sending email to block tutor failed, result: ' . $e->getMessage());
 			$this->flashFailure('Email lektorovi nebyl odeslán, result: ' . $e->getMessage());
 		}
 

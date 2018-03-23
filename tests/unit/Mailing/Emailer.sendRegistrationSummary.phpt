@@ -117,7 +117,7 @@ EOD
 	}
 }
 
-$template = array(
+$template = [
 	"subject" => "Sraz VS: registrace",
 	"message" => "<html>
 	<head>
@@ -146,7 +146,7 @@ Pokud budete platit za víc osob najednou, uveďte kódy za VŠECHNY, za které 
 		Na setkání se těší přípravný tým srazu VS.
 	</body>
 </html>"
-);
+];
 
 $mockedSettings = Mockery::mock(App\Models\SettingsModel::class);
 

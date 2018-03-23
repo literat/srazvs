@@ -100,10 +100,10 @@ class VisitorPresenter extends BasePresenter
 			$guid = $this->getVisitorRepository()->create($visitor);
 			$result = $this->sendRegistrationSummary($visitor, $guid);
 
-			$this->logInfo('Creation of visitor('. $guid .') successfull, result: ' . json_encode($result));
+			$this->logInfo('Creation of visitor(' . $guid . ') successfull, result: ' . json_encode($result));
 			$this->flashSuccess('Účastník(' . $guid . ') byl úspěšně vytvořen.');
 		} catch(Exception $e) {
-			$this->logError('Creation of visitor('. $guid .') failed, result: ' .  $e->getMessage());
+			$this->logError('Creation of visitor(' . $guid . ') failed, result: ' . $e->getMessage());
 			$this->flashError('Creation of visitor failed, result: ' . $e->getMessage());
 		}
 
@@ -123,10 +123,10 @@ class VisitorPresenter extends BasePresenter
 			$result = $this->getVisitorRepository()->update($id, $visitor);
 			$result = $this->sendRegistrationSummary($visitor, $id);
 
-			$this->logInfo('Modification of visitor('. $id .') successfull, result: ' . json_encode($result));
+			$this->logInfo('Modification of visitor(' . $id . ') successfull, result: ' . json_encode($result));
 			$this->flashSuccess('Účastník(' . $id . ') byl úspěšně upraven.');
 		} catch(Exception $e) {
-			$this->logError('Modification of visitor('. $id .') failed, result: ' .  $e->getMessage());
+			$this->logError('Modification of visitor(' . $id . ') failed, result: ' . $e->getMessage());
 			$this->flashFailure('Modification of visitor failed, result: ' . $e->getMessage());
 			$result = false;
 		}
@@ -144,10 +144,10 @@ class VisitorPresenter extends BasePresenter
 		try {
 			$result = $this->getVisitorRepository()->delete($id);
 
-			$this->logInfo('Destroying of visitor('. $id .') successfull, result: ' . json_encode($result));
+			$this->logInfo('Destroying of visitor(' . $id . ') successfull, result: ' . json_encode($result));
 			$this->flashSuccess('Položka byla úspěšně smazána');
 		} catch(Exception $e) {
-			$this->logError('Destroying of visitor('. $id .') failed, result: ' .  $e->getMessage());
+			$this->logError('Destroying of visitor(' . $id . ') failed, result: ' . $e->getMessage());
 			$this->flashFailure('Destroying of visitor failed, result: ' . $e->getMessage());
 		}
 
@@ -184,7 +184,7 @@ class VisitorPresenter extends BasePresenter
 			$this->logInfo('E-mail was send successfully, result: ' . json_encode($result));
 			$this->flashSuccess('E-mail byl úspěšně odeslán');
 		} catch(Exception $e) {
-			$this->logError('Sending of e-mail failed, result: ' .  $e->getMessage());
+			$this->logError('Sending of e-mail failed, result: ' . $e->getMessage());
 			$this->flashFailure('Sending of e-mail failed, result: ' . $e->getMessage());
 		}
 
@@ -246,7 +246,7 @@ class VisitorPresenter extends BasePresenter
 					json_encode($id),
 					$e->getMessage(),
 				]);
-			$this->flashFailure('Zaplacení zálohy pro účastníka s id '.json_encode($id).' neprošlo: '.$e->getMessage());
+			$this->flashFailure('Zaplacení zálohy pro účastníka s id ' . json_encode($id) . ' neprošlo: ' . $e->getMessage());
 		}
 
 		$this->redirect(self::REDIRECT_DEFAULT);
@@ -263,10 +263,10 @@ class VisitorPresenter extends BasePresenter
 		$this->allowAdminAccessOnly();
 		try {
 			$result = $this->getVisitorRepository()->setChecked($id);
-			$this->logInfo('Check of visitor('. $id .') successfull, result: ' . json_encode($result));
+			$this->logInfo('Check of visitor(' . $id . ') successfull, result: ' . json_encode($result));
 			$this->flashSuccess('Položka byla úspěšně zkontrolována');
 		} catch(Exception $e) {
-			$this->logError('Check of visitor('. $id .') failed, result: ' .  $e->getMessage());
+			$this->logError('Check of visitor(' . $id . ') failed, result: ' . $e->getMessage());
 			$this->flashFailure('Check of visitor failed, result: ' . $e->getMessage());
 		}
 
@@ -284,10 +284,10 @@ class VisitorPresenter extends BasePresenter
 		$this->allowAdminAccessOnly();
 		try {
 			$result = $this->getVisitorRepository()->setUnchecked($id);
-			$this->logInfo('Uncheck of visitor('. $id .') successfull, result: ' . json_encode($result));
+			$this->logInfo('Uncheck of visitor(' . $id . ') successfull, result: ' . json_encode($result));
 			$this->flashSuccess('Položka byla nastavena jako nekontrolována');
 		} catch(Exception $e) {
-			$this->logError('Uncheck of visitor('. $id .') failed, result: ' .  $e->getMessage());
+			$this->logError('Uncheck of visitor(' . $id . ') failed, result: ' . $e->getMessage());
 			$this->flashFailure('Uncheck of visitor failed, result: ' . $e->getMessage());
 		}
 

@@ -36,7 +36,7 @@ class ProgramModel extends BaseModel
 	 *
 	 * @var array	form_names[]
 	 */
-	public $formNames = array();
+	public $formNames = [];
 
 	protected $table = 'kk_programs';
 
@@ -45,7 +45,7 @@ class ProgramModel extends BaseModel
 	/** Constructor */
 	public function __construct(Context $database)
 	{
-		$this->formNames = array('guid', "name", "description", "material", "tutor", "email", "capacity", "display_in_reg", "block", "category");
+		$this->formNames = ['guid', "name", "description", "material", "tutor", "email", "capacity", "display_in_reg", "block", "category"];
 		$this->setDatabase($database);
 		self::$connection = $this->getDatabase();
 	}
@@ -102,13 +102,13 @@ class ProgramModel extends BaseModel
 				}
 				// if the capacity is full
 				if($fullProgramData['visitors'] >= $data['capacity']){
-					$html_input .= "<input id='".$data['id'].$blockId."' ".$checked." disabled type='radio' name='blck_".$blockId."' value='".$data['id']."' />\n";
+					$html_input .= "<input id='" . $data['id'] . $blockId . "' " . $checked . " disabled type='radio' name='blck_" . $blockId . "' value='" . $data['id'] . "' />\n";
 					$fullProgramInfo = " (NELZE ZAPSAT - kapacita programu je již naplněna!)";
 				} else {
-					$html_input .= "<input id='".$data['id'].$blockId."' ".$checked." type='radio' name='blck_".$blockId."' value='".$data['id']."' /> \n";
+					$html_input .= "<input id='" . $data['id'] . $blockId . "' " . $checked . " type='radio' name='blck_" . $blockId . "' value='" . $data['id'] . "' /> \n";
 					$fullProgramInfo = "";
 				}
-				$html_input .= '<label for="'.$data['id'].$blockId.'">'.$data['name'].'</label>';
+				$html_input .= '<label for="' . $data['id'] . $blockId . '">' . $data['name'] . '</label>';
 				$html_input .= $fullProgramInfo;
 				$html_input .= "<br />\n";
 			}
@@ -117,7 +117,7 @@ class ProgramModel extends BaseModel
 			if(!$checked_flag) $checked = "checked='checked'";
 			else $checked = "";
 
-			$html .= "<input ".$checked." type='radio' name='blck_".$blockId."' value='0' /> Nebudu přítomen <br />\n";
+			$html .= "<input " . $checked . " type='radio' name='blck_" . $blockId . "' value='0' /> Nebudu přítomen <br />\n";
 			$html .= $html_input;
 
 			$html .= "</div>\n";
@@ -151,14 +151,14 @@ class ProgramModel extends BaseModel
 
 				if($fullProgramData['visitors'] >= $data['capacity']){
 					//$html .= "<input disabled type='radio' name='".$id."' value='".$data['id']."' />\n";
-					$fullProgramInfo = "<span style='font-size:12px; font-weight:bold;'>".$fullProgramData['visitors']."/".$data['capacity']."</span> (kapacita programu je naplněna!)";
+					$fullProgramInfo = "<span style='font-size:12px; font-weight:bold;'>" . $fullProgramData['visitors'] . "/" . $data['capacity'] . "</span> (kapacita programu je naplněna!)";
 				}
 				else {
 					//$html .= "<input type='radio' name='".$id."' value='".$data['id']."' /> \n";
-					$fullProgramInfo = "<span style='font-size:12px; font-weight:bold;'>".$fullProgramData['visitors']."/".$data['capacity']."</span>";
+					$fullProgramInfo = "<span style='font-size:12px; font-weight:bold;'>" . $fullProgramData['visitors'] . "/" . $data['capacity'] . "</span>";
 				}
 				$html .= "<td style='min-width:270px;'>";
-				$html .= "<a rel='programDetail' href='".PRJ_DIR."program/?id=".$data['id']."&cms=edit&page=export' title='".$data['name']."'>".$data['name']."</a>\n";
+				$html .= "<a rel='programDetail' href='" . PRJ_DIR . "program/?id=" . $data['id'] . "&cms=edit&page=export' title='" . $data['name'] . "'>" . $data['name'] . "</a>\n";
 				$html .= "</td>";
 				$html .= "<td>";
 				$html .= $fullProgramInfo;
@@ -205,8 +205,8 @@ class ProgramModel extends BaseModel
 				}
 				*/
 				else $notDisplayed = "";
-				$programs .= "<div ".$notDisplayed.">".$progData['day'].", ".$progData['from']." - ".$progData['to']." : ".$progData['name']."</div>\n";
-				if($progData['program'] == 1) $programs .= "<div ".$notDisplayed.">".$this->getExportPrograms($progData['id'])."</div>";
+				$programs .= "<div " . $notDisplayed . ">" . $progData['day'] . ", " . $progData['from'] . " - " . $progData['to'] . " : " . $progData['name'] . "</div>\n";
+				if($progData['program'] == 1) $programs .= "<div " . $notDisplayed . ">" . $this->getExportPrograms($progData['id']) . "</div>";
 				$programs .= "<br />";
 			}
 		}
@@ -348,7 +348,7 @@ class ProgramModel extends BaseModel
 			$html = "<table>";
 			$html .= " <tr>";
 			foreach($result as $data){
-				$html .= "<td class='category cat-".$data['style']."' >".$data['name']."</td>\n";
+				$html .= "<td class='category cat-" . $data['style'] . "' >" . $data['name'] . "</td>\n";
 			}
 			$html .= " </tr>\n";
 			$html .= "</table>\n";
@@ -370,7 +370,7 @@ class ProgramModel extends BaseModel
 		if(!$result) $html = "";
 		else {
 			foreach($result as $data){
-				$html .= $data['name'].",\n";
+				$html .= $data['name'] . ",\n";
 			}
 		}
 		return $html;

@@ -36,7 +36,7 @@ $container = $configurator->createContainer();
 $parameters = $container->getParameters();
 
 define('ROOT_DIR', $parameters['wwwDir']);
-define('HTTP_DIR', '//'.$_SERVER['HTTP_HOST'] . '/');
+define('HTTP_DIR', '//' . $_SERVER['HTTP_HOST'] . '/');
 
 /**
  * Application's definitions
@@ -56,12 +56,12 @@ define('TEMPLATE_DIR',	$parameters['appDir'] . '/templates/');
 define('TPL_DIR',		TEMPLATE_DIR);
 
 /* URLs */
-define('BLOCK_DIR',		PRJ_DIR.'block');
-define('PROG_DIR',		PRJ_DIR.'program');
-define('MEET_DIR',		PRJ_DIR.'meeting');
-define('VISIT_DIR',		PRJ_DIR.'visitor');
-define('CAT_DIR',		PRJ_DIR.'category');
-define('EXP_DIR',		PRJ_DIR.'export');
-define('SET_DIR',		PRJ_DIR.'settings');
+define('BLOCK_DIR',		PRJ_DIR . 'block');
+define('PROG_DIR',		PRJ_DIR . 'program');
+define('MEET_DIR',		PRJ_DIR . 'meeting');
+define('VISIT_DIR',		PRJ_DIR . 'visitor');
+define('CAT_DIR',		PRJ_DIR . 'category');
+define('EXP_DIR',		PRJ_DIR . 'export');
+define('SET_DIR',		PRJ_DIR . 'settings');
 
 return $container;

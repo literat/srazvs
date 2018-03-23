@@ -193,7 +193,7 @@ class UserService extends SkautisService
 			}
 		}
 		if (is_array($res)) {
-			$tmp = array();
+			$tmp = [];
 			foreach ($res as $v) {
 				$tmp[$v->ID] = $v;
 			}

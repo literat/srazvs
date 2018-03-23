@@ -45,7 +45,7 @@ abstract class SkautisService extends Object
 	public function __construct(Skautis $skautIS = NULL)
 	{
 		$this->setSkautis($skautIS);
-		self::$storage = array();
+		self::$storage = [];
 	}
 
 

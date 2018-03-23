@@ -43,11 +43,11 @@ class EmailerModelTest extends Tester\TestCase
 /*
 	public function testSendingFailed()
 	{
-		$recipient = array(
+		$recipient = [
 			''        => 'Příliš žluťoučký kůň',
 			'name'    => '',
 			'surname' => ''
-		);
+		];
 		$subject = 'Úpěl ďábelské ódy';
 		$body = 'Testování';
 
@@ -107,9 +107,9 @@ EOD
 		$recipient = [ArrayHash::from($recipient)];
 		$subject = 'Úpěl ďábelské ódy';
 		$body = 'Testování';
-		$bcc = array(
+		$bcc = [
 			'info@example.com' => 'Info at Example',
-		);
+		];
 
 		$this->mailer->sendMail($recipient, $subject, $body, $bcc);
 
@@ -161,9 +161,9 @@ EOD
 		$recipient = ArrayHash::from($recipient);
 		$subject = 'Úpěl ďábelské ódy';
 		$body = 'Testování';
-		$bcc = array(
+		$bcc = [
 			'info@example.com' => 'Info at Example',
-		);
+		];
 
 		$this->mailer->sendMail($recipient, $subject, $body);
 
@@ -205,11 +205,11 @@ EOD
 		$recipient = [ArrayHash::from($recipient)];
 		$subject = 'Úpěl ďábelské ódy';
 		$body = 'Testování';
-		$bcc = array(
+		$bcc = [
 			'info@example.com' => 'Info at Example',
 			'john@doe.com' => 'John Doe',
 			'Test@example.com' => 'Test at Example',
-		);
+		];
 
 		$this->mailer->sendMail($recipient, $subject, $body, $bcc);
 

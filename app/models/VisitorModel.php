@@ -45,14 +45,14 @@ class VisitorModel extends BaseModel
 	 *
 	 * @var array	dbColumns[]
 	 */
-	public $dbColumns = array();
+	public $dbColumns = [];
 
 	/**
 	 * Array of form names
 	 *
 	 * @var array	formNames[]
 	 */
-	public $formNames = array();
+	public $formNames = [];
 
 	protected $table = 'kk_visitors';
 
@@ -93,32 +93,34 @@ class VisitorModel extends BaseModel
 		$this->Meals = $Meals;
 		$this->Programs = $Program;
 		$this->Blocks = $Blocks;
-		$this->dbColumns = array(
-								"guid",
-								"name",
-								"surname",
-								"nick",
-								"birthday",
-								"street",
-								"city",
-								"postal_code",
-								"province",
-								"group_num",
-								"group_name",
-								"troop_name",
-								"bill",
-								"cost",
-								"email",
-								"comment",
-								"arrival",
-								"departure",
-								"question",
-								"question2",
-								"checked",
-								"meeting",
-								"hash"
-							);
-		$this->formNames = array("name", "description", "material", "tutor", "email", "capacity", "display_in_reg", "block", "category");
+		$this->dbColumns = [
+			"guid",
+			"name",
+			"surname",
+			"nick",
+			"birthday",
+			"street",
+			"city",
+			"postal_code",
+			"province",
+			"group_num",
+			"group_name",
+			"troop_name",
+			"bill",
+			"cost",
+			"email",
+			"comment",
+            "arrival",
+			"departure",
+			"question",
+			"question2",
+			"checked",
+			"meeting",
+			"hash",
+        ];
+		$this->formNames = [
+		    "name", "description", "material", "tutor", "email", "capacity", "display_in_reg", "block", "category"
+        ];
 		$this->database = $database;
 	}
 
@@ -168,10 +170,10 @@ class VisitorModel extends BaseModel
 			$program_blocks = $this->Blocks->getProgramBlocks($DB_data['meeting']);
 
 			foreach($program_blocks as $DB_blocks_data) {
-				$bindingsData = array(
+				$bindingsData = [
 					'visitor' => $ID_visitor,
 					'program' => $programs_data[$DB_blocks_data['id']],
-				);
+				];
 				// insert into binding table
 				// var programs_data contains requested values in format block-id => program-id
 				$bindingsData['guid'] = md5(uniqid());

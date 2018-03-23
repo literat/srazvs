@@ -213,9 +213,9 @@ class ExportModel extends BaseModel
 				// zbaveni se predsnemovni diskuse
 				if($progData['id'] == 63) $programs .= "";
 				else {
-					$programs .= "<div class='block'>".$progData['day'].", ".$progData['from']." - ".$progData['to']." : ".$progData['name']."</div>\n";
+					$programs .= "<div class='block'>" . $progData['day'] . ", " . $progData['from'] . " - " . $progData['to'] . " : " . $progData['name'] . "</div>\n";
 
-					if($progData['program'] == 1) $programs .= "<div>".ProgramModel::getPdfPrograms($progData['id'], $vid, self::$connection)."</div>";
+					if($progData['program'] == 1) $programs .= "<div>" . ProgramModel::getPdfPrograms($progData['id'], $vid, self::$connection) . "</div>";
 				}
 			}
 		}

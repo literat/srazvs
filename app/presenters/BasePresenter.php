@@ -186,7 +186,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 	 * data
 	 * @var array
 	 */
-	protected $data = array();
+	protected $data = [];
 
 	/**
 	 * error handler
