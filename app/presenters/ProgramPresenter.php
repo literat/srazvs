@@ -14,7 +14,6 @@ use App\Models\MeetingModel;
 use App\Repositories\ProgramRepository;
 use App\Services\Emailer;
 use Nette\Utils\ArrayHash;
-use Tracy\Debugger;
 use Exception;
 
 /**
@@ -123,8 +122,9 @@ class ProgramPresenter extends BasePresenter
 	 */
 	public function actionCreate(ArrayHash $program)
 	{
+		$this->allowAdminAccessOnly();
 		try {
-		    $result = false;
+			$result = false;
 			$this->logInfo('Storing new program.');
 
 			$result = $this->getProgramRepository()->create($program);
@@ -156,6 +156,7 @@ class ProgramPresenter extends BasePresenter
 	 */
 	public function actionUpdate(int $id, ArrayHash $program)
 	{
+		$this->allowAdminAccessOnly();
 		try {
 			$this->logInfo('Updating program(%s).', [$id]);
 
@@ -186,6 +187,7 @@ class ProgramPresenter extends BasePresenter
 	 */
 	public function actionDelete($id)
 	{
+		$this->allowAdminAccessOnly();
 		try {
 			$result = $this->getProgramRepository()->delete($id);
 
@@ -210,6 +212,7 @@ class ProgramPresenter extends BasePresenter
 	 */
 	public function actionMail($id)
 	{
+		$this->allowAdminAccessOnly();
 		try {
 			$tutors = $this->getProgramRepository()->findTutor($id);
 			$recipients = $this->parseTutorEmail($tutors);
@@ -262,6 +265,7 @@ class ProgramPresenter extends BasePresenter
 	 */
 	public function renderListing()
 	{
+		$this->allowAdminAccessOnly();
 		$template = $this->getTemplate();
 		$template->programs = $this->getProgramRepository()->all();
 		$template->mid = $this->meetingId;
@@ -273,6 +277,7 @@ class ProgramPresenter extends BasePresenter
 	 */
 	public function renderNew()
 	{
+		$this->allowAdminAccessOnly();
 		$template = $this->getTemplate();
 		$template->heading = 'nový program';
 	}
@@ -283,6 +288,7 @@ class ProgramPresenter extends BasePresenter
 	 */
 	public function renderEdit($id)
 	{
+		$this->allowAdminAccessOnly();
 		$this->programId = $id;
 		$program = $this->getProgramRepository()->find($id);
 

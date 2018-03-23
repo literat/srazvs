@@ -84,7 +84,6 @@ class VisitorPresenter extends BasePresenter
 	public function startup()
 	{
 		parent::startup();
-
 		$this->getMeetingModel()->setMeetingId($this->getMeetingId());
 		$this->getVisitorRepository()->setMeeting($this->getMeetingId())
 ;	}
@@ -96,6 +95,7 @@ class VisitorPresenter extends BasePresenter
 	 */
 	public function actionCreate($visitor)
 	{
+		$this->allowAdminAccessOnly();
 		try {
 			$guid = $this->getVisitorRepository()->create($visitor);
 			$result = $this->sendRegistrationSummary($visitor, $guid);
@@ -118,6 +118,7 @@ class VisitorPresenter extends BasePresenter
 	 */
 	public function actionUpdate($id, $visitor)
 	{
+		$this->allowAdminAccessOnly();
 		try {
 			$result = $this->getVisitorRepository()->update($id, $visitor);
 			$result = $this->sendRegistrationSummary($visitor, $id);
@@ -139,6 +140,7 @@ class VisitorPresenter extends BasePresenter
 	 */
 	public function actionDelete($id)
 	{
+		$this->allowAdminAccessOnly();
 		try {
 			$result = $this->getVisitorRepository()->delete($id);
 
@@ -159,6 +161,7 @@ class VisitorPresenter extends BasePresenter
 	 */
 	public function actionSend()
 	{
+		$this->allowAdminAccessOnly();
 		try {
 			$request = $this->getHttpRequest();
 			$subject = $request->getPost('subject', '');
@@ -194,6 +197,7 @@ class VisitorPresenter extends BasePresenter
 	 */
 	public function actionPay($id)
 	{
+		$this->allowAdminAccessOnly();
 		try {
 			if(!$id) {
 				$id = $this->getHttpRequest()->getPost('checker');
@@ -208,9 +212,9 @@ class VisitorPresenter extends BasePresenter
 			$this->flashSuccess('Platba byla zaplacena.');
 		} catch(Exception $e) {
 			$this->logError('Visitor: Action pay for id %s failed, result: %s', [
-			    json_encode($id),
-                $e->getMessage()
-            ]);
+				json_encode($id),
+				$e->getMessage()
+			]);
 			$this->flashFailure('Visitor: Action pay for id ' . $id . ' failed, result: ' . $e->getMessage());
 		}
 
@@ -223,6 +227,7 @@ class VisitorPresenter extends BasePresenter
 	 */
 	public function actionAdvance(int $id = null)
 	{
+		$this->allowAdminAccessOnly();
 		try {
 			if(!$id) {
 				$id = $this->getHttpRequest()->getPost('checker');
@@ -255,6 +260,7 @@ class VisitorPresenter extends BasePresenter
 	 */
 	public function actionChecked($id)
 	{
+		$this->allowAdminAccessOnly();
 		try {
 			$result = $this->getVisitorRepository()->setChecked($id);
 			$this->logInfo('Check of visitor('. $id .') successfull, result: ' . json_encode($result));
@@ -275,6 +281,7 @@ class VisitorPresenter extends BasePresenter
 	 */
 	public function actionUnchecked($id)
 	{
+		$this->allowAdminAccessOnly();
 		try {
 			$result = $this->getVisitorRepository()->setUnchecked($id);
 			$this->logInfo('Uncheck of visitor('. $id .') successfull, result: ' . json_encode($result));
@@ -294,6 +301,7 @@ class VisitorPresenter extends BasePresenter
 	 */
 	public function renderNew()
 	{
+		$this->allowAdminAccessOnly();
 		$template = $this->getTemplate();
 		$template->heading = 'nový účastník';
 	}
@@ -304,6 +312,7 @@ class VisitorPresenter extends BasePresenter
 	 */
 	public function renderEdit($id)
 	{
+		$this->allowAdminAccessOnly();
 		$visitor = $this->getVisitorRepository()->findExpandedById($id);
 
 		$template = $this->getTemplate();
@@ -319,6 +328,7 @@ class VisitorPresenter extends BasePresenter
 	 */
 	public function renderMail()
 	{
+		$this->allowAdminAccessOnly();
 		$ids = $this->getHttpRequest()->getPost('checker');
 
 		$template = $this->getTemplate();
@@ -331,6 +341,7 @@ class VisitorPresenter extends BasePresenter
 	 */
 	public function renderListing()
 	{
+		$this->allowAdminAccessOnly();
 		$search = $this->getHttpRequest()->getQuery('search') ?: '';
 
 		$visitorRepository = $this->getVisitorRepository();

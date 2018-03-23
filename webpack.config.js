@@ -15,7 +15,7 @@ const ExtractTextPluginConfig = (minify) => ({
       sourceMap: true
     }
   }, {
-    loader: 'sass-loader',
+    loader: 'less-loader',
     options: {
       sourceMap: true
     }
@@ -65,7 +65,7 @@ module.exports = ({minify = false, production = false} = {}) => {
     entry: {
       main: [
         './app/assets/js/main.js',
-        './app/assets/styles/main.scss'
+        './app/assets/styles/main.less'
       ],
       vendor: [
         'jquery',
@@ -87,9 +87,12 @@ module.exports = ({minify = false, production = false} = {}) => {
     module: {
       rules: [
         {
+          test: /\.less$/,
+          use: extractStylesheet.extract(ExtractTextPluginConfig(minify))
+        },/* {
           test: /\.s[ac]ss$/,
           use: extractStylesheet.extract(ExtractTextPluginConfig(minify))
-        }, {
+        }, */{
           test: /\.(svg|eot|ttf|woff|woff2)$/,
           loaders: [
             {
@@ -100,7 +103,7 @@ module.exports = ({minify = false, production = false} = {}) => {
             }
           ]
         }, {
-          test: /\.(png|jpe?g|gif)$/,
+          test: /\.(png|jpg|jpeg|gif)$/,
           loaders: [
             {
               loader: 'file-loader',
@@ -126,6 +129,7 @@ module.exports = ({minify = false, production = false} = {}) => {
     plugins,
     devtool: 'source-map',
     resolve: {
+      extensions: ['.js', '.json', '.less'],
       alias: [
         {
           alias: 'recharts',

@@ -2,43 +2,54 @@
 
 namespace App\Presenters;
 
-use Skautis;
-use SkautisAuth;
-use App\Services\SkautIS\AuthService;
-use App\Services\SkautIS\UserService;
-use Tracy\Debugger;
+use App\Services\SkautIS\AuthService as SkautisAuthService;
+use App\Services\SkautIS\UserService as SkautisUserService;
+use App\Services\SkautIS\Authenticator as SkautisAuthenticator;
+use App\Services\UserService;
+use Skautis\Wsdl\AuthenticationException;
 
 /**
- * SkautIS Auth presenters.
+ * Skautis Auth presenters.
  */
 class AuthPresenter extends BasePresenter
 {
 
 	/**
-	 * @var AuthService
+	 * @var SkautisAuthService
 	 */
-	protected $authService;
+	protected $skautisAuthService;
+
+	/**
+	 * @var SkautisUserService
+	 */
+	protected $skautisUserService;
 
 	/**
 	 * @var UserService
 	 */
 	protected $userService;
 
-	/**
-	 * @var User
-	 */
-	protected $user;
+    /**
+     * @var SkautisAuthenticator
+     */
+	private $skautisAuthenticator;
 
 	/**
-	 * @param AuthService $authService
-	 * @param UserService $userService
+	 * AuthPresenter constructor.
+	 * @param SkautisAuthService $skautisAuthService
+	 * @param SkautisUserService $skautisUserService
+	 * @param UserService        $userService
 	 */
 	public function __construct(
-		AuthService $authService,
-		UserService $userService
+		SkautisAuthService $skautisAuthService,
+		SkautisUserService $skautisUserService,
+		UserService $userService,
+        SkautisAuthenticator $skautisAuthenticator
 	) {
-		$this->setAuthService($authService);
+		$this->setSkautisAuthService($skautisAuthService);
+		$this->setSkautisUserService($skautisUserService);
 		$this->setUserService($userService);
+		$this->skautisAuthenticator = $skautisAuthenticator;
 	}
 
 	/**
@@ -50,21 +61,22 @@ class AuthPresenter extends BasePresenter
 	}
 
 	/**
-	 * @param  string $id
+	 * @param  string $provider
 	 * @return void
 	 */
-	public function actionLogin($id)
+	public function actionLogin($provider)
 	{
-		$this->{$id . 'Login'}();
+		$this->{$provider . 'Login'}();
 	}
 
 	/**
-	 * @param  string $id
+	 * @param  string $provider
 	 * @return void
 	 */
-	public function actionLogout($id)
+	public function actionLogout($provider)
 	{
-		$this->{$id . 'Logout'}();
+		$this->getSession('auth')->backlink = $this->getParameter('backlink') ?? null;
+		$this->{$provider . 'Logout'}();
 	}
 
 	/**
@@ -76,80 +88,82 @@ class AuthPresenter extends BasePresenter
 		$this->{'handleSkautis' . $id}();
 	}
 
-	/**
-	 * Redirects to login page
-	 *
-	 * @param  	string  $backlink
-	 * @return  void
-	 */
+    /**
+     * Redirects to login page
+     *
+     * @param   string $backlink
+     * @return  void
+     * @throws \Nette\Application\AbortException
+     */
 	protected function skautisLogin($backlink = null)
 	{
-		$this->redirectUrl($this->getAuthService()->getLoginUrl($backlink));
+		$this->redirectUrl($this->getSkautisAuthService()->getLoginUrl($backlink));
 	}
 
-	/**
-	 * Handle log out from SkautIS
-	 * SkautIS redirects to this action after log out
-	 *
-	 * @param   void
-	 * @return  void
-	 */
+    /**
+     * Handle log out from Skautis
+     * Skautis redirects to this action after log out
+     *
+     * @return  void
+     * @throws \Nette\Application\AbortException
+     */
 	protected function skautisLogout()
 	{
-		$this->redirectUrl($this->getAuthService()->getLogoutUrl());
+		$this->redirectUrl($this->getSkautisAuthService()->getLogoutUrl());
 	}
 
-	/**
-	 * Handle SkautIS login process
-	 *
-	 * @param   string  $ReturnUrl
-	 * @return  void
-	 */
-	protected function handleSkautisLogin($ReturnUrl = NULL)
+    /**
+     * Handle Skautis login process
+     *
+     * @param   string $returnUrl
+     * @return  void
+     * @throws \Nette\Application\AbortException
+     * @throws \Nette\Security\AuthenticationException
+     */
+	protected function handleSkautisLogin($returnUrl = NULL)
 	{
-		$post = $this->getHttpRequest()->post;
-		//$post = $this->router->getPost();
-		// if token is not set - get out from here - must log in
-		if (!isset($post['skautIS_Token'])) {
-			$this->redirect(":Login:");
-		}
-		//Debugger::log("AuthP: ".$post['skautIS_Token']." / ". $post['skautIS_IDRole'] . " / " . $post['skautIS_IDUnit'], "auth");
 		try {
-			$this->getAuthService()->setInit($post);
-			//$this->container->getService('authService')->setInit($post);
+			$credentials = $this->getHttpRequest()->getPost();
+            $this->logInfo('Auth: %s / %s / %s', [
+                $credentials['skautIS_Token'],
+                $credentials['skautIS_IDRole'],
+                $credentials['skautIS_IDUnit']
+            ]);
 
-			if (!$this->getUserService()->isLoggedIn()) {
-			//if (!$this->container->getService('userService')->isLoggedIn()) {
-				throw new \Skautis\Wsdl\AuthenticationException("Nemáte platné přihlášení do skautISu");
+            $this->guardToken($credentials['skautIS_Token']);
+
+            $this->getUser()->setExpiration('+ 29 minutes');
+            $this->getUser()->setAuthenticator($this->skautisAuthenticator);
+            $this->getUser()->login($credentials);
+
+			if (isset($returnUrl)) {
+				$this->context->application->restoreRequest($returnUrl);
 			}
-			$me = $this->getUserService()->getPersonalDetail();
-			//$me = $this->container->getService('userService')->getPersonalDetail();
 
-			$this->getUser()->setExpiration('+ 29 minutes'); // nastavíme expiraci
-			$this->getUser()->setAuthenticator(new SkautisAuth\SkautisAuthenticator());
-			$this->getUser()->login($me);
-
-			if (isset($ReturnUrl)) {
-				$this->context->application->restoreRequest($ReturnUrl);
+			if($backlink = $this->getSession('auth')->backlink) {
+				unset($this->getSession('auth')->backlink);
+				$this->redirectUrl($backlink);
+			} else {
+				$this->redirect(':Dashboard:');
 			}
-		} catch (\Skautis\Wsdl\AuthenticationException $e) {
-			$this->flashMessage($e->getMessage(), "danger");
+		} catch (AuthenticationException $e) {
+			$this->logWarning($e->getMessage());
+			$this->flashFailure($e->getMessage());
 			$this->redirect(":Auth:Login");
 		}
-		$this->presenter->redirect(':Registration:');
 	}
 
 	/**
-	 * Log out from SkautIS
+	 * Log out from Skautis
 	 *
 	 * @param   void
 	 * @return  void
 	 */
 	protected function handleSkautisLogout()
 	{
-		$this->getUserService()->logout(TRUE);
-		$this->getUserService()->resetLoginData();
-		$this->presenter->flashMessage("Byl jsi úspěšně odhlášen ze SkautISu.");
+		$this->getUser()->logout(TRUE);
+		//$this->getUserService()->resetLoginData();
+		$this->flashMessage("Byl jsi úspěšně odhlášen ze SkautISu.");
 		/*
 		if ($this->request->post['skautIS_Logout']) {
 			$this->presenter->flashMessage("Byl jsi úspěšně odhlášen ze SkautISu.");
@@ -157,25 +171,60 @@ class AuthPresenter extends BasePresenter
 			$this->presenter->flashMessage("Odhlášení ze skautISu se nezdařilo", "danger");
 		}
 		*/
-		$this->redirect(":Login:");
-		//$this->redirectUrl($this->service->getLogoutUrl());
+
+		if($backlink = $this->getSession('auth')->backlink) {
+			unset($this->getSession('auth')->backlink);
+			$this->redirectUrl($backlink);
+		} else {
+			$this->redirect(':Login:');
+		}
+	}
+
+    /**
+     * @param string $token
+     * @throws \Nette\Application\AbortException
+     */
+    protected function guardToken(string $token = '')
+    {
+        if (!$token) {
+            $this->redirect(":Login:");
+        }
+    }
+
+	/**
+	 * @return SkautisAuthService
+	 */
+	protected function getSkautisAuthService(): SkautisAuthService
+	{
+		return $this->skautisAuthService;
 	}
 
 	/**
-	 * @return AuthService
+	 * @param  SkautisAuthService $service
+	 * @return self
 	 */
-	protected function getAuthService()
+	protected function setskautisAuthService(SkautisAuthService $service): self
 	{
-		return $this->authService;
+		$this->skautisAuthService = $service;
+
+		return $this;
 	}
 
 	/**
-	 * @param  AuthService $service
-	 * @return $this
+	 * @return SkautisUserService
 	 */
-	protected function setAuthService(AuthService $service)
+	protected function getSkautisUserService(): SkautisUserService
 	{
-		$this->authService = $service;
+		return $this->skautisUserService;
+	}
+
+	/**
+	 * @param  SkautisUserService $service
+	 * @return self
+	 */
+	protected function setSkautisUserService(SkautisUserService $service): self
+	{
+		$this->skautisUserService = $service;
 
 		return $this;
 	}
@@ -183,20 +232,22 @@ class AuthPresenter extends BasePresenter
 	/**
 	 * @return UserService
 	 */
-	protected function getUserService()
+	protected function getUserService(): UserService
 	{
 		return $this->userService;
 	}
 
 	/**
 	 * @param  UserService $service
-	 * @return $this
+	 * @return self
 	 */
-	protected function setUserService(UserService $service)
+	protected function setUserService(UserService $service): self
 	{
 		$this->userService = $service;
 
 		return $this;
 	}
+
+
 
 }

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Entities\BlockEntity;
 use Nette\Utils\ArrayHash;
 use App\Models\BlockModel;
 use App\Models\ProgramModel;
@@ -42,9 +43,9 @@ class AnnotationService
 
 	/**
 	 * @param  ActiveRow $annotation
-	 * @return ActiveRow
+	 * @return BlockEntity
 	 */
-	public function findParentProgram(ActiveRow $annotation): ActiveRow
+	public function findParentProgram(ActiveRow $annotation): BlockEntity
 	{
 		if(array_key_exists('block', $annotation->toArray())) {
 			$parentProgram = $this->getBlockModel()->find($annotation->block);

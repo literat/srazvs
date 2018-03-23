@@ -15,8 +15,8 @@ use App\Components\Forms\RegistrationForm;
 use App\Components\Forms\Factories\IRegistrationFormFactory;
 use App\Services\SkautIS\EventService;
 use Nette\Utils\ArrayHash;
-use Skautis\Wsdl\WsdlException;
 use App\Models\SettingsModel;
+use Skautis\Wsdl\AuthenticationException;
 
 /**
  * Registration controller
@@ -55,20 +55,19 @@ class RegistrationPresenter extends VisitorPresenter
 	 */
 	protected $skautisEventService;
 
-    /**
-     * @var MealModel
-     */
+	/**
+	 * @var MealModel
+	 */
 	private $mealModel;
 
-    /**
-     * @var ProgramRepository
-     */
+	/**
+	 * @var ProgramRepository
+	 */
 	private $programRepository;
 
-    protected $error = FALSE;
-    protected $hash = NULL;
-    private $user;
-    private $event;
+	protected $error = FALSE;
+	protected $hash = NULL;
+	private $user;
 
 	/**
 	 * @param MeetingModel       $meetingModel
@@ -107,10 +106,10 @@ class RegistrationPresenter extends VisitorPresenter
 	}
 
 	/**
-     * Injector
-     *
-     * @param  IRegistrationFormFactory $factory
-     */
+	 * Injector
+	 *
+	 * @param  IRegistrationFormFactory $factory
+	 */
 	public function injectRegistrationFormFactory(IRegistrationFormFactory $factory)
 	{
 		$this->registrationFormFactory = $factory;
@@ -195,6 +194,11 @@ class RegistrationPresenter extends VisitorPresenter
 		return $guid;
 	}
 
+	public function beforeRender()
+	{
+		parent::beforeRender();
+	}
+
 	/**
 	 * Renders default template
 	 */
@@ -203,10 +207,16 @@ class RegistrationPresenter extends VisitorPresenter
 		$template = $this->getTemplate();
 		$disabled = $this->getMeetingModel()->isRegOpen($this->getDebugMode()) ? "" : "disabled";
 		$template->disabled = $disabled;
-		$template->loggedIn = $this->getUserService()->isLoggedIn();
+		$template->user = $this->getUser();
+		$template->backlink = $this->getHttpRequest()->getUrl()->getAbsoluteUrl();
 
-		if($this->getUserService()->isLoggedIn()) {
-			$this['registrationForm']->setDefaults(($this->useLoggedVisitor())->toArray());
+		try {
+			if ($this->getUser()->isLoggedIn()) {
+				$this['registrationForm']->setDefaults(($this->useLoggedVisitor())->toArray());
+			}
+		} catch (AuthenticationException $e) {
+			$this->flashFailure('Uživatel byl odhlášen! Přihlaste se prosím znovu.');
+			$this->getUser()->logout();
 		}
 	}
 
@@ -268,7 +278,7 @@ class RegistrationPresenter extends VisitorPresenter
 		$control = $this->registrationFormFactory->create();
 		$control->setMeetingId($this->getMeetingId());
 		$control->onRegistrationSave[] = function(RegistrationForm $control, $visitor) {
-		    $guid = $this->getParameter('guid');
+			$guid = $this->getParameter('guid');
 
 			if($guid) {
 				$guid = $this->actionUpdate($guid, $visitor);
@@ -422,23 +432,23 @@ class RegistrationPresenter extends VisitorPresenter
 		return $this;
 	}
 
-    /**
-     * @return ProgramRepository
-     */
-    protected function getProgramRepository(): ProgramRepository
-    {
-        return $this->programRepository;
-    }
+	/**
+	 * @return ProgramRepository
+	 */
+	protected function getProgramRepository(): ProgramRepository
+	{
+		return $this->programRepository;
+	}
 
-    /**
-     * @param  ProgramRepository $repository
-     * @return RegistrationPresenter
-     */
-    protected function setProgramRepository(ProgramRepository $repository): self
-    {
-        $this->programRepository = $repository;
+	/**
+	 * @param  ProgramRepository $repository
+	 * @return RegistrationPresenter
+	 */
+	protected function setProgramRepository(ProgramRepository $repository): self
+	{
+		$this->programRepository = $repository;
 
-        return $this;
-    }
+		return $this;
+	}
 
 }

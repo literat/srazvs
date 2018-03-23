@@ -66,7 +66,7 @@ class BlockPresenter extends BasePresenter
 	public function startup()
 	{
 		parent::startup();
-
+		$this->allowAdminAccessOnly();
 		$meetingId = $this->getMeetingId();
 		$this->getBlockRepository()->setMeetingId($meetingId);
 	}

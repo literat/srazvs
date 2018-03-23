@@ -37,6 +37,8 @@ class DashboardPresenter extends BasePresenter
 		parent::startup();
 
 		$this->getModel()->setMeetingId($this->getMeetingId());
+
+		$this->allowAdminAccessOnly();
 	}
 
 	/**

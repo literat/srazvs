@@ -1,0 +1,11 @@
+<div class="row">
+    {foreach $flashes as $flash}
+        <div role="alert" class="flash alert alert-{$flash->type} alert-dismissible alert-full fade in">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <div class="container">
+                <span class="glyphicon {$flash->type === 'error' ? 'glyphicon-remove-sign' : 'glyphicon-ok-sign'} offset-right" aria-hidden="true"></span>
+                {$flash->message}
+            </div>
+        </div>
+    {/foreach}
+</div>

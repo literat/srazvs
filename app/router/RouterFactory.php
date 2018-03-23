@@ -2,10 +2,9 @@
 
 namespace App\Routers;
 
-use Nette,
-	Nette\Application\Routers\RouteList,
-	Nette\Application\Routers\Route,
-	Nette\Application\Routers\SimpleRouter;
+use Nette\Application\Routers\RouteList;
+use Nette\Application\Routers\Route;
+use Nette\Application\IRouter;
 
 
 /**
@@ -17,14 +16,16 @@ class RouterFactory
 	/**
 	 * @return \Nette\Application\IRouter
 	 */
-	public function createRouter()
+	public function createRouter(): IRouter
 	{
 		$router = new RouteList();
-		$router[] = new Route('', 'Dashboard:default', Route::ONE_WAY);
+		$router[] = new Route('', 'Login:default', Route::ONE_WAY);
 		$router[] = new Route('index.php', 'Dashboard:default', Route::ONE_WAY);
 		$router[] = new Route('dashboard/', 'Dashboard:default');
 		$router[] = new Route('registrace/[<action>/[<guid>/]]', 'Registration:default', Route::ONE_WAY);
 		$router[] = new Route('registration/[<action>/[<guid>/]]', 'Registration:default');
+		$router[] = new Route('prihlaseni/[<action>/[<guid>/]]', 'Login:default', Route::ONE_WAY);
+		$router[] = new Route('login/[<action>/[<guid>/]]', 'Login:default');
 		$router[] = new Route('export/[<action>/[<type>/[<id>/]]]', 'Export:default');
 		$router[] = new Route('block/annotation/<guid>', [
 			'presenter' => 'Annotation',

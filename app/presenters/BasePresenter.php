@@ -2,11 +2,11 @@
 
 namespace App\Presenters;
 
+use App\Components\INavbarRightControlFactory;
+use App\Components\NavbarRightControl;
 use Nette,
 	App\Model;
 use Nette\Utils\ArrayHash;
-use Nette\Utils\Strings;
-use Nette\Http\Request;
 use App\Models\SunlightModel;
 use Nette\Caching\Cache;
 use App\Traits\Loggable;
@@ -21,6 +21,8 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 
 	const FLASH_TYPE_OK    = 'success';
 	const FLASH_TYPE_ERROR = 'error';
+	const ROLE_ADMIN = 'admin';
+	const ROLE_GUEST = 'guest';
 
 	/**
 	 * @var string
@@ -47,6 +49,22 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 
 	/** @var integer */
 	protected $meetingId;
+
+	/**
+	 * @var INavbarRightControlFactory
+	 */
+	protected $navbarRightControlFactory;
+
+	/**
+	 * @param  INavbarRightControlFactory $factory
+	 * @return BasePresenter
+	 */
+	public function injectNavbarRightControlFactory(INavbarRightControlFactory $factory): self
+	{
+		$this->navbarRightControlFactory = $factory;
+
+		return $this;
+	}
 
 	/**
 	 * Startup
@@ -106,17 +124,17 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 		$template->categories = $this->remember('categories:all', 10, function () {
 			return $this->getContainer()->getService('category')->all();
 		});
-
+/*
 		if(isset($_SESSION[SESSION_PREFIX.'user'])) {
 			$template->user = $this->getSunlight()->findUser($_SESSION[SESSION_PREFIX.'user']);
 		}
+*/
 		$template->meeting = $meeting->getPlaceAndYear($_SESSION['meetingID']);
 		$template->menuItems = $meeting->getMenuItems();
 		$template->meeting_heading	= $meeting->getRegHeading();
 		$template->meetingId = $this->getMeetingId();
-		$template->backlinkUrl = $this->getBacklinkUrl();
+		//$template->backlinkUrl = $this->getBacklinkUrl();
 		$template->backlink = $this->getBacklink();
-		//$this->template->backlink = $this->getParameter("backlink");
 
 		//$this->template->production = $this->context->parameters['environment'] === 'production' ? 1 : 0;
 		//$this->template->version = $this->context->parameters['site']['version'];
@@ -391,6 +409,14 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 		return $data;
 	}
 
+	/**
+	 * @return NavbarRightControl
+	 */
+	protected function createComponentNavbarRight(): NavbarRightControl
+	{
+		return $this->navbarRightControlFactory->create();
+	}
+
 	protected function getCache()
 	{
 		return $this->getContainer()->getService('cache');
@@ -438,19 +464,19 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 		}
 	}
 
-    /**
-     * @param  Nette\Utils\ArrayHash $array
-     * @return self
-     */
-    protected function setBacklinkFromArray(ArrayHash $array): self
-    {
-        if(array_key_exists('backlink', $array) && !empty($array['backlink'])) {
-            $this->setBacklink($array['backlink']);
-            unset($array['backlink']);
-        }
+	/**
+	 * @param  Nette\Utils\ArrayHash $array
+	 * @return self
+	 */
+	protected function setBacklinkFromArray(ArrayHash $array): self
+	{
+		if(array_key_exists('backlink', $array) && !empty($array['backlink'])) {
+			$this->setBacklink($array['backlink']);
+			unset($array['backlink']);
+		}
 
-        return $this;
-    }
+		return $this;
+	}
 
 	/**
 	 * Flashes success message
@@ -480,6 +506,27 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 	protected function flashError(string $message = '')
 	{
 		$this->flashMessage($message, self::FLASH_TYPE_ERROR);
+	}
+
+	/**
+	 * @throws Nette\Application\AbortException
+	 */
+	protected function unauthorized()
+	{
+		$message = 'Nemáte oprávnění pro tuto stránku. Prosím, přihlašte se nebo požádejte administrátora.';
+		$this->flashFailure($message);
+		$this->error($message, Nette\Http\IResponse::S403_FORBIDDEN );
+	}
+
+	/**
+	 * @throws Nette\Application\AbortException
+	 */
+	protected function allowAdminAccessOnly()
+	{
+		$user = $this->getUser();
+		if(!$user->isInRole(self::ROLE_ADMIN)) {
+			$this->unauthorized();
+		}
 	}
 
 }

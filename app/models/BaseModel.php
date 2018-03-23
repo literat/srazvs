@@ -100,6 +100,9 @@ abstract class BaseModel extends Object
 	public function create(array $data)
 	{
 		$data['guid'] = $this->generateGuid();
+		$data['created_at'] = date('Y-m-d H:i:s');
+		$data['updated_at'] = date('Y-m-d H:i:s');
+
 		$result = $this->getDatabase()->table($this->getTable())->insert($data);
 
 		return $result;
