@@ -51,7 +51,7 @@ class SettingsModel extends BaseModel
 	 * @param	string	$message 	e-mail message
 	 * @return	string 				error code
 	 */
-	public function modifyMailJSON($type, $subject, $message)
+	public function modifyMailJson($type, $subject, $message)
 	{
 		$mailData = [
 			'subject' => $subject,
@@ -71,7 +71,7 @@ class SettingsModel extends BaseModel
 	 * @param  string $type
 	 * @return object
 	 */
-	public function getMailJSON($type)
+	public function getMailJson($type)
 	{
 		return $this->findByName('mail_' . $type);
 	}

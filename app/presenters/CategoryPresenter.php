@@ -11,7 +11,7 @@ class CategoryPresenter extends BasePresenter
 {
 
 	/** @var integer */
-	private $categoryId = NULL;
+	private $categoryId = null;
 
 	/**
 	 * @param CategoryModel $model
@@ -21,16 +21,16 @@ class CategoryPresenter extends BasePresenter
 		$this->setModel($model);
 	}
 
-    /**
-     * @throws \Nette\Application\AbortException
-     */
+	/**
+	 * @throws \Nette\Application\AbortException
+	 */
 	public function startup()
-    {
+	{
 		parent::startup();
 		$this->allowAdminAccessOnly();
-    }
+	}
 
-    /**
+	/**
 	 * @param  int  $id
 	 * @return void
 	 */
@@ -54,7 +54,6 @@ class CategoryPresenter extends BasePresenter
 	public function actionCreate()
 	{
 		try {
-			$model = $this->getModel();
 			$data = $this->getHttpRequest()->getPost();
 			$result = $this->getModel()->create($data);
 
@@ -63,9 +62,9 @@ class CategoryPresenter extends BasePresenter
 			$this->flashMessage('Položka byla úspěšně vytvořena', 'ok');
 		} catch(Exception $e) {
 			$this->logError('Creation of category with data %s failed, result: %s', [
-			    json_encode($data),
-                $e->getMessage()
-            ]);
+				json_encode($data),
+				$e->getMessage()
+			]);
 
 			$this->flashMessage('Creation of category failed, result: ' . $e->getMessage(), 'error');
 		}
@@ -83,17 +82,17 @@ class CategoryPresenter extends BasePresenter
 			$data = $this->getHttpRequest()->getPost();
 			$result = $this->getModel()->update($id, $data);
 
-            $this->logInfo('Modification of category id %s with data %s successfull, result: %s', [
-                $id,
-                json_encode($data),
-                json_encode($result),
-            ]);
+			$this->logInfo('Modification of category id %s with data %s successfull, result: %s', [
+				$id,
+				json_encode($data),
+				json_encode($result),
+			]);
 			$this->flashMessage('Položka byla úspěšně upravena', 'ok');
 		} catch(Exception $e) {
 			$this->logError('Modification of category id %s failed, result: %s', [
-			    $id,
-                $e->getMessage(),
-            ]);
+				$id,
+				$e->getMessage(),
+			]);
 
 			$this->flashMessage('Modification of category id ' . $id . ' failed, result: ' . $e->getMessage(), 'error');
 		}

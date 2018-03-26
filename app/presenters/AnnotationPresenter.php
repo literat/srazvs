@@ -70,7 +70,7 @@ class AnnotationPresenter extends BasePresenter
 		$control = $this->annotationFormFactory->create();
 		$control->setMeetingId($this->getMeetingId());
 		$type = $this->getParameter('type');
-		$control->onAnnotationSave[] = function(AnnotationForm $control, $annotation) use ($type) {
+		$control->onAnnotationSave[] = function($annotation) use ($type) {
 			try {
 				$result = $this->getAnnotationService()->updateByType($type, $annotation);
 

@@ -67,7 +67,7 @@ class SocialLoginRepository
 	 * @param  $socialLogin
 	 * @return \Nette\Database\Table\ActiveRow
 	 */
-	public function update($id, $socialLogin)
+	public function update($socialLogin)
 	{
 		return $this->getSocialLoginModel()
 			->save(

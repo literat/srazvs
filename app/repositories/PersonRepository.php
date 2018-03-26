@@ -57,7 +57,7 @@ class PersonRepository
 	 * @param  $person
 	 * @return \Nette\Database\Table\ActiveRow
 	 */
-	public function update($id, $person)
+	public function update($person)
 	{
 		return $this->getPersonModel()
 			->save(

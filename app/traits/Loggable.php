@@ -79,7 +79,7 @@ trait Loggable
 	 * @param  string $message   Formatted message
 	 * @param  array  $arguments Message arguments
 	 */
-	protected function log(string $message = '', array $arguments = [], string $level)
+	protected function log(string $message = '', array $arguments = [], string $level = Debugger::ERROR)
 	{
 		Debugger::log(vsprintf($message, $arguments), $level);
 	}

@@ -10,24 +10,24 @@ interface IModel
 	/**
 	 * @return mixed
 	 */
-	function all();
+	public function all();
 
 	/**
 	 * @param $id
 	 * @return mixed
 	 */
-	function find($id);
+	public function find($id);
 
 	/**
 	 * @param array $values
 	 * @return mixed
 	 */
-	function findBy($column, $value);
+	public function findBy($column, $value);
 
 	/**
 	 * @param $entity
 	 * @return mixed
 	 */
-	function save(IEntity $entity);
+	public function save(IEntity $entity);
 
 }

@@ -1,11 +1,11 @@
 body.login {
-    height: 100%;
-    width: 100%;
-    margin: 0;
-    background-image: url(../images/login-bg.png);
-    background-position: 50% 0;
-    background-size: cover;
-    background-repeat: no-repeat;
+	height: 100%;
+	width: 100%;
+	margin: 0;
+	background-image: url(../images/login-bg.png);
+	background-position: 50% 0;
+	background-size: cover;
+	background-repeat: no-repeat;
 }
 
 h1,
@@ -45,8 +45,8 @@ a:hover span {
 .navbar-primary .navbar-nav > .open > a,
 .navbar-primary .navbar-nav > .open > a:hover,
 .navbar-primary .navbar-nav > .open > a:focus {
-    background-color: transparent;
-    color: #444444;
+	background-color: transparent;
+	color: #444444;
 }
 
 .section-header {
@@ -60,10 +60,10 @@ a:hover span {
 
 .footer {
 	background-color: transparent;
-    background-color: #ffffff;
-    opacity: 0.8;
+	background-color: #ffffff;
+	opacity: 0.8;
 	font-variant: small-caps;
-    color: #444;
+	color: #444;
 }
 
 /* helpers */
@@ -253,13 +253,13 @@ table.program.detail .text {
 }
 
 .site-header {
-    background-color: #ffffff;
-    opacity: 0.8;
+	background-color: #ffffff;
+	opacity: 0.8;
 }
 
 .skaut:before {
-    content: url(../images/skaut.png);
-    position: relative;
-    top: 4px;
-    left: -2px;
+	content: url(../images/skaut.png);
+	position: relative;
+	top: 4px;
+	left: -2px;
 }

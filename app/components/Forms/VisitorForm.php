@@ -25,10 +25,10 @@ class VisitorForm extends BaseForm
 	 */
 	public $onVisitorSave;
 
-    /**
-     * @var Closure
-     */
-    public $onVisitorReset;
+	/**
+	 * @var Closure
+	 */
+	public $onVisitorReset;
 
 	/**
 	 * @var ProvinceModel
@@ -60,13 +60,13 @@ class VisitorForm extends BaseForm
 	 */
 	protected $programFields = [];
 
-    /**
-     * VisitorForm constructor.
-     * @param ProvinceModel     $province
-     * @param ProgramRepository $program
-     * @param BlockModel        $block
-     * @param MeetingModel      $meeting
-     */
+	/**
+	 * VisitorForm constructor.
+	 * @param ProvinceModel     $province
+	 * @param ProgramRepository $program
+	 * @param BlockModel        $block
+	 * @param MeetingModel      $meeting
+	 */
 	public function __construct(
 		ProvinceModel $province,
 		ProgramRepository $program,
@@ -128,15 +128,15 @@ class VisitorForm extends BaseForm
 			->getLabelPrototype()->setAttribute('class', 'required');
 		$form->addEmail('email', 'E-mail:')
 			->setRequired(static::MESSAGE_REQUIRED)
-            ->setAttribute('size', 30)
+			->setAttribute('size', 30)
 			->getLabelPrototype()->setAttribute('class', 'required');
-        $form->addTbDatePicker('birthday', 'Datum narození:', null, 16)
-            ->setRequired(static::MESSAGE_REQUIRED)
-            ->setFormat('d.m.Y')
-            ->setAttribute('placeholder', 'dd. mm. rrrr')
-            ->setAttribute('id', 'birthday')
-            ->setAttribute('class', 'datePicker')
-            ->getLabelPrototype()->setAttribute('class', 'required');
+		$form->addTbDatePicker('birthday', 'Datum narození:', null, 16)
+			->setRequired(static::MESSAGE_REQUIRED)
+			->setFormat('d.m.Y')
+			->setAttribute('placeholder', 'dd. mm. rrrr')
+			->setAttribute('id', 'birthday')
+			->setAttribute('class', 'datePicker')
+			->getLabelPrototype()->setAttribute('class', 'required');
 		$form->addText('street', 'Ulice:', 30)
 			->setRequired(static::MESSAGE_REQUIRED)
 			->addRule(Form::MAX_LENGTH, static::MESSAGE_MAX_LENGTH, 30)
@@ -152,7 +152,10 @@ class VisitorForm extends BaseForm
 			->getLabelPrototype()->setAttribute('class', 'required');
 		$form->addText('group_num', 'Číslo středika/přístavu:', 30)
 			->setRequired(static::MESSAGE_REQUIRED)
-			->addRule(Form::PATTERN, 'Číslo musí být ve formátu nnn.nn!', '[1-9]{1}[0-9a-zA-Z]{2}\.[0-9a-zA-Z]{1}[0-9a-zA-Z]{1}')
+			->addRule(
+				Form::PATTERN,
+				'Číslo musí být ve formátu nnn.nn!',
+				'[1-9]{1}[0-9a-zA-Z]{2}\.[0-9a-zA-Z]{1}[0-9a-zA-Z]{1}')
 			->setAttribute('placeholder', '214.02')
 			->getLabelPrototype()->setAttribute('class', 'required');
 		$form->addText('group_name', 'Název střediska/přístavu:', 30)
@@ -171,61 +174,70 @@ class VisitorForm extends BaseForm
 		$form = $this->buildMealSwitcher($form);
 
 		$form->addTextArea('arrival', 'Informace o příjezdu:', 50, 3)
-			->setAttribute('placeholder', 'Napište, prosím, stručně jakým dopravním prostředkem a v kolik hodin (přibližně) přijedete na místo srazu.');
+			->setAttribute(
+				'placeholder',
+				'Napište, prosím, stručně jakým dopravním prostředkem a v kolik hodin (přibližně) přijedete na místo srazu.'
+			);
 		$form->addTextArea('departure', 'Informace o odjezdu:', 50, 3)
-			->setAttribute('placeholder', 'Napište, prosím, stručně jakým dopravním prostředkem a v kolik hodin (přibližně) sraz opustíte.');
+			->setAttribute(
+				'placeholder',
+				'Napište, prosím, stručně jakým dopravním prostředkem a v kolik hodin (přibližně) sraz opustíte.'
+			);
 		$form->addTextArea('comment', 'Dotazy, přání, připomínky, stížnosti:', 50, 8);
 		$form->addTextArea('question', 'Vaše nabídka:', 50, 8)
-			->setAttribute('placeholder', 'Vaše nabídka na sdílení dobré praxe (co u vás umíte dobře a jste ochotni se o to podělit)');
+			->setAttribute(
+			'placeholder',
+			'Vaše nabídka na sdílení dobré praxe (co u vás umíte dobře a jste ochotni se o to podělit)'
+			);
 		$form->addTextArea('question2', 'Počet a typy lodí:', 50, 8)
 			->setAttribute('placeholder', 'Počet a typy lodí, které sebou přivezete (vyplňte pokud ano)');
-        $form->addText('bill', 'Zaplaceno:', 30)
-            ->setDefaultValue(0);
-        $form->addText('cost', 'Poplatek:', 30)
-            ->setDefaultValue($this->getMeetingModel()->getPrice('cost'));
+		$form->addText('bill', 'Zaplaceno:', 30)
+			->setDefaultValue(0);
+		$form->addText('cost', 'Poplatek:', 30)
+			->setDefaultValue($this->getMeetingModel()->getPrice('cost'));
 
 		$form = $this->buildProgramSwitcher($form);
 
 		$form->addHidden('mid', $this->getMeetingId());
-        $form->addHidden('meeting', $this->getMeetingId());
+		$form->addHidden('meeting', $this->getMeetingId());
 		$form->addHidden('backlink');
 
-        $form->addSubmit('save', 'Uložit')
-            ->setAttribute('class', 'btn-primary')
-            ->onClick[] = [$this, 'processSave'];
-        $form->addSubmit('reset', 'Storno')
-            ->setAttribute('class', 'btn-reset')
-            ->onClick[] = [$this, 'processReset'];
+		$form->addSubmit('save', 'Uložit')
+			->setAttribute('class', 'btn-primary')
+			->onClick[] = [$this, 'processSave'];
+		$form->addSubmit('reset', 'Storno')
+			->setAttribute('class', 'btn-reset')
+			->onClick[] = [$this, 'processReset'];
 
 
-        $form = $this->setupRendering($form);
+		$form = $this->setupRendering($form);
 
 		$form->onSuccess[] = [$this, 'processForm'];
 
 		return $form;
 	}
 
-    /**
-     * @param  SubmitButton $button
-     * @return void
-     */
-    public function processSave(SubmitButton $button)
-    {
-        $visitor = $button->getForm()->getValues();
+	/**
+	 * @param  SubmitButton $button
+	 * @return void
+	 */
+	public function processSave(SubmitButton $button)
+	{
+		$visitor = $button->getForm()->getValues();
 
-        $this->onVisitorSave($this, $visitor);
-    }
+		$this->onVisitorSave($this, $visitor);
+	}
 
-    /**
-     * @param  SubmitButton $button
-     * @return void
-     */
-    public function processReset(SubmitButton $button)
-    {
-        $visitor = $button->getForm()->getValues();
+	/**
+	 * @param  SubmitButton $button
+	 * @return void
+	 */
+	public function processReset(SubmitButton $button)
+	{
+		$visitor = $button->getForm()->getValues();
 
-        $this->onVisitorReset($this, $visitor);
-    }
+		$this->onVisitorReset($this, $visitor);
+	}
 
 	/**
 	 * @param  Form   $form
@@ -464,7 +476,7 @@ class VisitorForm extends BaseForm
 	protected function filterFilledCapacity(array $programs = []): array
 	{
 		return array_keys(
-			array_filter($programs, function($name, $id) {
+			array_filter($programs, function($id) {
 				if ($id) {
 					$visitorsOnProgram = $this->getProgramRepository()->countVisitors($id);
 					$programCapacity = $this->getProgramRepository()->find($id)->capacity;

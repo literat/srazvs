@@ -58,7 +58,7 @@ abstract class ABlocksByDayControl extends BaseControl implements IBlocksByDayCo
 	 */
 	protected function getBlockModel(): BlockModel
 	{
-		return  $this->blockModel;
+		return $this->blockModel;
 	}
 
 	/**

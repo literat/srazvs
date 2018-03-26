@@ -110,17 +110,17 @@ class VisitorModel extends BaseModel
 			"cost",
 			"email",
 			"comment",
-            "arrival",
+			"arrival",
 			"departure",
 			"question",
 			"question2",
 			"checked",
 			"meeting",
 			"hash",
-        ];
+		];
 		$this->formNames = [
-		    "name", "description", "material", "tutor", "email", "capacity", "display_in_reg", "block", "category"
-        ];
+			"name", "description", "material", "tutor", "email", "capacity", "display_in_reg", "block", "category"
+		];
 		$this->database = $database;
 	}
 

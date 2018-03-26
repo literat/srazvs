@@ -101,7 +101,7 @@ class BlockForm extends BaseForm
 	 */
 	public function setDefaults(BlockEntity $defaults): self
 	{
-        $defaults = $this->guardDefaults($defaults);
+		$defaults = $this->guardDefaults($defaults);
 
 		$this['blockForm']->setDefaults($defaults->toArray());
 
@@ -140,7 +140,7 @@ class BlockForm extends BaseForm
 			->setAttribute('size', 10)
 			->setAttribute('placeholder', 0);
 		$form->addCheckbox('program')
-		    ->setDefaultValue(1);
+			->setDefaultValue(1);
 		$form->addCheckbox('display_progs')
 			->setDefaultValue(0);
 		$form->addSelect('category', 'Kategorie:', $this->buildCategorySelect());
@@ -199,19 +199,19 @@ class BlockForm extends BaseForm
 		return $selectContent;
 	}
 
-    /**
-     * @param  BlockEntity $defaults
-     * @return BlockEntity
-     */
+	/**
+	 * @param  BlockEntity $defaults
+	 * @return BlockEntity
+	 */
 	protected function guardDefaults(BlockEntity $defaults): BlockEntity
-    {
-        if(!array_key_exists($defaults->category, $this->buildCategorySelect()) )
-        {
-            $defaults->category = 0;
-        }
+	{
+		if(!array_key_exists($defaults->category, $this->buildCategorySelect()) )
+		{
+			$defaults->category = 0;
+		}
 
-        return $defaults;
-    }
+		return $defaults;
+	}
 
 	/**
 	 * @return BlockRepository

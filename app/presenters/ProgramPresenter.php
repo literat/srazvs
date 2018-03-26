@@ -307,7 +307,7 @@ class ProgramPresenter extends BasePresenter
 	{
 		$control = $this->programFormFactory->create();
 		$control->setMeetingId($this->getMeetingId());
-		$control->onProgramSave[] = function(ProgramForm $control, $program) {
+		$control->onProgramSave[] = function($program) {
 			//$guid = $this->getParameter('guid');
 			$id = $this->getParameter('id');
 
@@ -322,7 +322,7 @@ class ProgramPresenter extends BasePresenter
 			$this->redirect($this->getBacklink() ?: 'Program:listing');
 		};
 
-		$control->onProgramReset[] = function(ProgramForm $control, $program) {
+		$control->onProgramReset[] = function($program) {
 			$this->setBacklinkFromArray($program);
 
 			$this->redirect($this->getBacklink() ?: 'Program:listing');

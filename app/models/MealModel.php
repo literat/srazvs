@@ -88,22 +88,22 @@ class MealModel extends BaseModel
 			->update($data);
 	}
 
-    /**
-     * @param  int   $visitorId
-     * @param  array $values
-     * @return ActiveRow|bool
-     */
+	/**
+	 * @param  int   $visitorId
+	 * @param  array $values
+	 * @return ActiveRow|bool
+	 */
 	public function updateOrCreate(int $visitorId, array $values)
-    {
-        $result = $this->updateByVisitor($visitorId, $values);
+	{
+		$result = $this->updateByVisitor($visitorId, $values);
 
-        if(!$result) {
-            $values['visitor'] = $visitorId;
-            $result = $this->create($values);
-        }
+		if(!$result) {
+			$values['visitor'] = $visitorId;
+			$result = $this->create($values);
+		}
 
-        return $result;
-    }
+		return $result;
+	}
 
 	/**
 	 * Get meals data by visitor id
@@ -120,12 +120,12 @@ class MealModel extends BaseModel
 			->fetch();
 
 		if(!$meals) {
-		    $meals = [];
-        } else {
-		    $meals = $meals->toArray();
-        }
+			$meals = [];
+		} else {
+			$meals = $meals->toArray();
+		}
 
-        return $meals;
+		return $meals;
 
 	}
 

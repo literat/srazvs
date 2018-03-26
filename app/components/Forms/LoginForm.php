@@ -70,9 +70,15 @@ class LoginForm extends BaseForm
 			->addRule(Form::MAX_LENGTH, static::MESSAGE_MAX_LENGTH, 30)
 			->getLabelPrototype()->setAttribute('class', 'required');
 		$form->addTextArea('description', 'Popis:')
-			->setAttribute('placeholder', 'Doplň, prosím, popis Tvého programu (bude se zobrazovat účastníkům na webu při výběru programu).');
+			->setAttribute(
+				'placeholder',
+				'Doplň, prosím, popis Tvého programu (bude se zobrazovat účastníkům na webu při výběru programu).'
+			);
 		$form->addTextArea('material', 'Materiál:')
-			->setAttribute('placeholder', 'Doplň, prosím, vybavení, které budeš potřebovat na Tvůj program a které máme zajistit.');
+			->setAttribute(
+				'placeholder',
+				'Doplň, prosím, vybavení, které budeš potřebovat na Tvůj program a které máme zajistit.'
+			);
 		$form->addText('tutor', 'Lektor:');
 		$form->addEmail('email', 'E-mail:');
 		$form->addText('capacity', 'Kapacita:');

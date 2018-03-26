@@ -4,8 +4,8 @@ namespace App\Presenters;
 
 use App\Components\INavbarRightControlFactory;
 use App\Components\NavbarRightControl;
-use Nette,
-	App\Model;
+use Nette;
+use App\Model;
 use Nette\Utils\ArrayHash;
 use App\Models\SunlightModel;
 use Nette\Caching\Cache;
@@ -156,7 +156,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 	 * category ID
 	 * @var integer
 	 */
-	protected $itemId = NULL;
+	protected $itemId = null;
 
 	/**
 	 * action what to do
@@ -198,7 +198,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 	 * database connection
 	 * @var string
 	 */
-	protected $database = NULL;
+	protected $database = null;
 
 	/**
 	 * debug mode
@@ -230,7 +230,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 	// zaheshovane udaje, aby se nedali jen tak ziskat data z databaze
 	protected function formKeyHash($id, $meetingId)
 	{
-		return ((int)$id . $meetingId) * 116 + 39147;
+		return ((int) $id . $meetingId) * 116 + 39147;
 	}
 
 	/**
@@ -308,7 +308,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 	/**
 	 * @return string
 	 */
-	public function getAction($fullyQualified = false)
+	public function getAction(/*$fullyQualified = false*/)
 	{
 		return $this->action;
 	}
@@ -378,7 +378,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 		// If the item exists in the cache we will just return this immediately
 		// otherwise we will execute the given Closure and cache the result
 		// of that execution for the given number of minutes in storage.
-		if (! is_null($data = $this->getCache()->load($key))) {
+		if (($data = $this->getCache()->load($key)) !== null) {
 			$items = [];
 
 			foreach($data as $item) {

@@ -42,9 +42,9 @@ class MeetingPresenter extends BasePresenter
 			$this->flashSuccess('Položka byla úspěšně vytvořena');
 		} catch(Exception $e) {
 			$this->logError('Creation of meeting with data %s failed, result: %s', [
-			    json_encode($data),
-                $e->getMessage()
-            ]);
+				json_encode($data),
+				$e->getMessage()
+			]);
 			$this->flashFailure('Creation of meeting failed, result: %s', $e->getMessage());
 		}
 
@@ -61,21 +61,21 @@ class MeetingPresenter extends BasePresenter
 			$data = $this->getHttpRequest()->getPost();
 			$result = $this->getModel()->update($id, $data);
 
-            $this->logInfo('Modification of meeting id %s with data %s successfull, result: %s', [
-                $id,
-                json_encode($data),
-                json_encode($result)
-            ]);
+			$this->logInfo('Modification of meeting id %s with data %s successfull, result: %s', [
+				$id,
+				json_encode($data),
+				json_encode($result)
+			]);
 			$this->flashSuccess('Položka byla úspěšně upravena');
 		} catch(Exception $e) {
 			$this->logError('Modification of meeting id %s failed, result: %s', [
-			    $id,
-			    $e->getMessage(),
-            ]);
+				$id,
+				$e->getMessage(),
+			]);
 			$this->flashFailure(sprintf('Modification of meeting id %s failed, result: %s',
-			    $id,
-                $e->getMessage()
-            ));
+				$id,
+				$e->getMessage()
+			));
 		}
 
 		$this->redirect('Meeting:listing');
@@ -92,15 +92,15 @@ class MeetingPresenter extends BasePresenter
 			$result = $this->getModel()->delete($id);
 
 			$this->logInfo('Destroying of meeting(%s) successfull, result: %s', [
-			    $id,
-			    json_encode($result),
-            ]);
+				$id,
+				json_encode($result),
+			]);
 			$this->flashSuccess('Položka byla úspěšně smazána');
 		} catch(Exception $e) {
 			$this->logError('Destroying of meeting(%s) failed, result: %s', [
-			    $id,
-			    $e->getMessage(),
-            ]);
+				$id,
+				$e->getMessage(),
+			]);
 			$this->flashFailure(sprintf('Destroying of meeting failed, result: %s', $e->getMessage()));
 		}
 

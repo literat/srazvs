@@ -35,12 +35,12 @@ class MeetingModel extends BaseModel
 	/**
 	 * @var DateTime
 	 */
-	public $regOpening = NULL;
+	public $regOpening = null;
 
 	/**
 	 * @var DateTime
 	 */
-	public $regClosing = NULL;
+	public $regClosing = null;
 
 	/** @var string registration heading text */
 	public $regHeading = '';

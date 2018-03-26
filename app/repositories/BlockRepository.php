@@ -87,7 +87,7 @@ class BlockRepository
 	 * @param  $block
 	 * @return \Nette\Database\Table\ActiveRow
 	 */
-	public function update($id, $block)
+	public function update($block)
 	{
 		return $this->getBlockModel()
 			->save(

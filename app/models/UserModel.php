@@ -32,7 +32,7 @@ class UserModel extends BaseModel implements IModel
 	 */
 	public function all()
 	{
-		return;
+		//return;
 	}
 
 	/**

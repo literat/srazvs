@@ -65,8 +65,8 @@ class RegistrationPresenter extends VisitorPresenter
 	 */
 	private $programRepository;
 
-	protected $error = FALSE;
-	protected $hash = NULL;
+	protected $error = false;
+	protected $hash = null;
 	private $user;
 
 	/**
@@ -277,7 +277,7 @@ class RegistrationPresenter extends VisitorPresenter
 	{
 		$control = $this->registrationFormFactory->create();
 		$control->setMeetingId($this->getMeetingId());
-		$control->onRegistrationSave[] = function(RegistrationForm $control, $visitor) {
+		$control->onRegistrationSave[] = function($visitor) {
 			$guid = $this->getParameter('guid');
 
 			if($guid) {

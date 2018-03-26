@@ -10,9 +10,9 @@ use App\Components;
 interface INavbarRightControlFactory
 {
 
-    /**
-     * @return \App\Components\NavbarRightControl
-     */
-    public function create(): NavbarRightControl;
+	/**
+	 * @return \App\Components\NavbarRightControl
+	 */
+	public function create(): NavbarRightControl;
 
 }

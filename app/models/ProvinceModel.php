@@ -33,7 +33,7 @@ class ProvinceModel extends BaseModel
 			->where('deleted', '0')
 			->fetchAll();
 
-		array_walk($provinces, function(&$province, $key) {
+		array_walk($provinces, function(&$province) {
 			$province = $province->province_name;
 		});
 

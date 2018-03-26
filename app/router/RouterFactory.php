@@ -6,7 +6,6 @@ use Nette\Application\Routers\RouteList;
 use Nette\Application\Routers\Route;
 use Nette\Application\IRouter;
 
-
 /**
  * Router factory.
  */

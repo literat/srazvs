@@ -25,7 +25,7 @@ class BlockPresenter extends BasePresenter
 	/**
 	 * @var integer
 	 */
-	private $blockId = NULL;
+	private $blockId = null;
 
 	/**
 	 * @var Emailer
@@ -156,10 +156,13 @@ class BlockPresenter extends BasePresenter
 
 			$this->getEmailer()->tutor($recipients, $tutors->guid, 'block');
 
-			$this->logInfo('Sending email to block tutor successfull, result: ' . json_encode($recipients) . ', ' . $tutors->guid);
+			$this->logInfo('Sending email to block tutor successfull, result: %s, %s', [
+				json_encode($recipients),
+				$tutors->guid,
+			]);
 			$this->flashSuccess('Email lektorovi byl odeslán..');
 		} catch(Exception $e) {
-			$this->logError('Sending email to block tutor failed, result: ' . $e->getMessage());
+			$this->logError('Sending email to block tutor failed, result: %s', [$e->getMessage()]);
 			$this->flashFailure('Email lektorovi nebyl odeslán, result: ' . $e->getMessage());
 		}
 
@@ -218,7 +221,7 @@ class BlockPresenter extends BasePresenter
 	{
 		$control = $this->blockFormFactory->create();
 		$control->setMeetingId($this->getMeetingId());
-		$control->onBlockSave[] = function(BlockForm $control, $block) {
+		$control->onBlockSave[] = function($block) {
 			//$guid = $this->getParameter('guid');
 			$id = $this->getParameter('id');
 
@@ -233,7 +236,7 @@ class BlockPresenter extends BasePresenter
 			$this->redirect($this->getBacklink() ?: self::REDIRECT_DEFAULT);
 		};
 
-		$control->onBlockReset[] = function(BlockForm $control, $block) {
+		$control->onBlockReset[] = function($block) {
 			$this->setBacklinkFromArray($block);
 
 			$this->redirect($this->getBacklink() ?: self::REDIRECT_DEFAULT);

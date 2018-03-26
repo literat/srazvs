@@ -10,9 +10,9 @@ use App\Components\Forms\LoginForm;
 interface ILoginFormFactory
 {
 
-    /**
-     * @return \App\Forms\LoginForm
-     */
-    public function create(): LoginForm;
+	/**
+	 * @return \App\Forms\LoginForm
+	 */
+	public function create(): LoginForm;
 
 }

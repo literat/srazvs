@@ -33,52 +33,52 @@ if(!function_exists('appVersion')) {
 }
 
 if(!function_exists('webpackManifest')) {
-    /**
-     * Get object from manifest.json
-     *
-     * @return string
-     */
-    function webpackManifest(string $name = null) {
-        $manifestPath = realpath(__DIR__ . '/../www/manifest.json');
-        $manifest = json_decode(file_get_contents($manifestPath), true);
+	/**
+	 * Get object from manifest.json
+	 *
+	 * @return string
+	 */
+	function webpackManifest(string $name = null) {
+		$manifestPath = realpath(__DIR__ . '/../www/manifest.json');
+		$manifest = json_decode(file_get_contents($manifestPath), true);
 
-        if ($name && array_key_exists($name, $manifest)) {
-            $manifest = $manifest[$name];
-        }
+		if ($name && array_key_exists($name, $manifest)) {
+			$manifest = $manifest[$name];
+		}
 
-        return $manifest;
-    }
+		return $manifest;
+	}
 }
 
 if(!function_exists('mainCss')) {
-    /**
-     * Get main css file from manifest.json
-     *
-     * @return string
-     */
-    function mainCss() {
-        return webpackManifest('main.css');
-    }
+	/**
+	 * Get main css file from manifest.json
+	 *
+	 * @return string
+	 */
+	function mainCss() {
+		return webpackManifest('main.css');
+	}
 }
 
 if(!function_exists('mainJs')) {
-    /**
-     * Get main js file from manifest.json
-     *
-     * @return string
-     */
-    function mainJs() {
-        return webpackManifest('main.js');
-    }
+	/**
+	 * Get main js file from manifest.json
+	 *
+	 * @return string
+	 */
+	function mainJs() {
+		return webpackManifest('main.js');
+	}
 }
 
 if(!function_exists('vendorJs')) {
-    /**
-     * Get vendor js file from manifest.json
-     *
-     * @return string
-     */
-    function vendorJs() {
-        return webpackManifest('vendor.js');
-    }
+	/**
+	 * Get vendor js file from manifest.json
+	 *
+	 * @return string
+	 */
+	function vendorJs() {
+		return webpackManifest('vendor.js');
+	}
 }

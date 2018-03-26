@@ -198,7 +198,7 @@ class ExportPresenter extends BasePresenter
 	{
 		$this->allowAdminAccessOnly();
 		// output file name
-		$this->filename= 'vlastni_stravenky.pdf';
+		$this->filename = 'vlastni_stravenky.pdf';
 		$templateName = 'meal_ticket';
 
 		$mealTickets = $this->getModel()->mealTicket();
@@ -314,7 +314,7 @@ class ExportPresenter extends BasePresenter
 	{
 		$templateName = 'program_public';
 		$publicProgram = $this->getModel()->publicProgram();
-		$this->filename = Strings::toAscii($publicProgram['place'] . $publicProgram['year'] . '-program' . '.pdf');
+		$this->filename = Strings::toAscii($publicProgram['place'] . $publicProgram['year'] . '-program.pdf');
 
 		$meetingHeader = $publicProgram['place'] . ' ' . $publicProgram['year'];
 
@@ -453,7 +453,7 @@ class ExportPresenter extends BasePresenter
 
 		$this->getPdf()->setMargins(15, 15, 10, 5);
 		$this->getPdf()->SetWatermarkImage(IMG_DIR . 'logos/watermark-waves.jpg', 0.1, '');
-		$this->getPdf()->showWatermarkImage = TRUE;
+		$this->getPdf()->showWatermarkImage = true;
 
 		$parameters = [
 			'result' => $badges,

@@ -31,19 +31,19 @@ class Authenticator implements IAuthenticator
 	 */
 	private $userRepository;
 
-    /**
-     * @var AuthService
-     */
+	/**
+	 * @var AuthService
+	 */
 	private $skautisAuthService;
 
-    /**
-     * @var \App\Services\SkautIS\UserService
-     */
+	/**
+	 * @var \App\Services\SkautIS\UserService
+	 */
 	private $skautisUserService;
 
-    /**
-     * @var UserService
-     */
+	/**
+	 * @var UserService
+	 */
 	private $userService;
 
 	public function __construct(
@@ -71,7 +71,7 @@ class Authenticator implements IAuthenticator
 		$userDetail = $this->skautisUserService->getPersonalDetail();
 		$token = $userDetail->ID;
 
-        $user = $this->userService->findByProviderAndToken('skautis', $token);
+		$user = $this->userService->findByProviderAndToken('skautis', $token);
 		if(!$user) {
 			$userDetail = $this->skautisUserService->getPersonalDetail();
 			$user = $this->userService->createAccount($token, $userDetail);

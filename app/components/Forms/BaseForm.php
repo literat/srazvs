@@ -19,7 +19,7 @@ abstract class BaseForm extends BaseControl
 	{
 		// setup form rendering
 		$renderer = $form->getRenderer();
-		$renderer->wrappers['controls']['container'] = NULL;
+		$renderer->wrappers['controls']['container'] = null;
 		$renderer->wrappers['pair']['.error'] = 'has-error';
 		$renderer->wrappers['control']['description'] = 'span class=help-block';
 		$renderer->wrappers['control']['errorcontainer'] = 'span class=help-block';
@@ -30,7 +30,7 @@ abstract class BaseForm extends BaseControl
 			if ($control instanceof Controls\Button) {
 				$control->getControlPrototype()
 					->addClass(empty($usedPrimary) ? 'btn btn-default' : '');
-				$usedPrimary = TRUE;
+				$usedPrimary = true;
 			} elseif (
 				$control instanceof Controls\TextBase ||
 				$control instanceof Controls\SelectBox ||

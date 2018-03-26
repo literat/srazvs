@@ -91,24 +91,24 @@ class VisitorRepository
 		return $this->getVisitorModel()->find($id);
 	}
 
-    /**
-     * @param  int $id
-     * @return ArrayHash
-     */
-    public function findExpandedById(int $id): ArrayHash
-    {
-        $visitor = $this->findById($id);
-        $meals = $this->getMealModel()->findByVisitorId($id);
-        $programs = $this->assembleFormPrograms($id);
+	/**
+	 * @param  int $id
+	 * @return ArrayHash
+	 */
+	public function findExpandedById(int $id): ArrayHash
+	{
+		$visitor = $this->findById($id);
+		$meals = $this->getMealModel()->findByVisitorId($id);
+		$programs = $this->assembleFormPrograms($id);
 
-        return ArrayHash::from(
-            array_merge(
-                $visitor->toArray(),
-                $meals,
-                $programs
-            )
-        );
-    }
+		return ArrayHash::from(
+			array_merge(
+				$visitor->toArray(),
+				$meals,
+				$programs
+			)
+		);
+	}
 
 	/**
 	 * Return visitor by guid
@@ -196,30 +196,30 @@ class VisitorRepository
 		return $id;
 	}
 
-    /**
-     * @param  integer $id
-     * @param  array   $data
-     * @return integer
-     */
-    public function updateByGuid($guid, $values)
-    {
-        $visitor = $this->filterFields($values, $this->getVisitorModel()->getColumns());
+	/**
+	 * @param  integer $id
+	 * @param  array   $data
+	 * @return integer
+	 */
+	public function updateByGuid($guid, $values)
+	{
+		$visitor = $this->filterFields($values, $this->getVisitorModel()->getColumns());
 
-        $visitor['birthday'] = $this->convertToDateTime($visitor['birthday']);
+		$visitor['birthday'] = $this->convertToDateTime($visitor['birthday']);
 
-        $visitor['code'] = $this->calculateCode4Bank(
-            $visitor['name'],
-            $visitor['surname'],
-            $visitor['birthday']->format('d. m. Y')
-        );
+		$visitor['code'] = $this->calculateCode4Bank(
+			$visitor['name'],
+			$visitor['surname'],
+			$visitor['birthday']->format('d. m. Y')
+		);
 
-        $meals = $this->filterFields($values, $this->getMealModel()->getColumns());
-        $programs = $this->filterProgramFields($values);
+		$meals = $this->filterFields($values, $this->getMealModel()->getColumns());
+		$programs = $this->filterProgramFields($values);
 
-        $guid = $this->getVisitorModel()->modifyByGuid($guid, $visitor, $meals, $programs);
+		$guid = $this->getVisitorModel()->modifyByGuid($guid, $visitor, $meals, $programs);
 
-        return $guid;
-    }
+		return $guid;
+	}
 
 	/**
 	 * @param  integer $id
@@ -240,21 +240,21 @@ class VisitorRepository
 		return $this->getVisitorModel()->getCount();
 	}
 
-    /**
-     * @param  int $id
-     * @return string
-     * @throws \Exception
-     */
+	/**
+	 * @param  int $id
+	 * @return string
+	 * @throws \Exception
+	 */
 	public function payCostCharge($id)
 	{
 		return $this->getVisitorModel()->payCharge($id, 'cost');
 	}
 
-    /**
-     * @param  int $id
-     * @return string
-     * @throws \Exception
-     */
+	/**
+	 * @param  int $id
+	 * @return string
+	 * @throws \Exception
+	 */
 	public function payAdvanceCharge($id)
 	{
 		return $this->getVisitorModel()->payCharge($id, 'advance');

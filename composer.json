@@ -21,14 +21,16 @@
         "radekdostal/nette-datetimepicker": "^2.5"
     },
     "require-dev": {
-        "nette/tester": "^1.7",
+        "nette/tester": "^2",
         "mockery/mockery": "^0.9.4",
         "codeception/codeception": "^2.2",
         "dg/ftp-deployment": "~2.1",
         "phpunit/phpunit": "^6.0",
         "doctrine/instantiator": "~1.0.0",
         "php-coveralls/php-coveralls": "^1.0",
-        "friendsofphp/php-cs-fixer": "^2.11"
+        "friendsofphp/php-cs-fixer": "^2.11",
+        "phpmd/phpmd": "^2.6",
+        "squizlabs/php_codesniffer": "^3.2"
     },
     "autoload": {
         "files": [
@@ -41,11 +43,18 @@
         ]
     },
     "scripts": {
-        "cs": "php-cs-fixer fix --dry-run --diff --diff-format=udiff --ansi",
-        "sa": "vendor/bin/phpstan analyze -l 4 -c phpstan.neon app",
+        "code:sniffer": "phpcs --standard=phpcs.xml --colors -p -s app",
+        "code:mess": "phpmd app text codesize.xml",
+        "code:fixer": "php-cs-fixer fix --dry-run --diff --diff-format=udiff --ansi",
+        "code:analysis": "vendor/bin/phpstan analyze -l 4 -c phpstan.neon app",
+        "code": [
+            "@code:sniffer",
+            "@code:mess",
+            "@code:fixer"
+        ],
         "test:unit": "composer tester -- --coverage tests/unit/coverage.html --coverage-src app/ tests/unit",
         "test:acceptance": "codeception",
-        "tester": "vendor/nette/tester/Tester/tester -c tests/php-unix.ini -j 10",
+        "tester": "tester -C -j 10",
         "codeception": "vendor/codeception/codeception/codecept run acceptance",
         "clean": "find temp/cache ! -name 'placeholder.txt' -type f -exec rm -rf {} +",
         "deploy": "vendor/dg/ftp-deployment/deployment deployment.ini",

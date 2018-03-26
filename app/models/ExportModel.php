@@ -162,7 +162,7 @@ class ExportModel extends BaseModel
 		$evidenceLimit = '';
 		$specificVisitor = '';
 
-		if(isset($visitorId) && $visitorId != NULL) {
+		if(isset($visitorId) && $visitorId !== null) {
 			$evidenceLimit = 'LIMIT 1';
 			$specificVisitor = "vis.id IN (" . $visitorId . ") AND";
 		}
@@ -191,7 +191,7 @@ class ExportModel extends BaseModel
 			' . $evidenceLimit, $this->getMeetingId(), '0')->fetchAll();
 	}
 
-	public static function getPdfBlocks($vid, $database)
+	public static function getPdfBlocks($vid)
 	{
 		$programs = "<tr>";
 		$programs .= " <td class='progPart'>";
@@ -211,11 +211,22 @@ class ExportModel extends BaseModel
 		} else {
 			foreach($data as $progData) {
 				// zbaveni se predsnemovni diskuse
-				if($progData['id'] == 63) $programs .= "";
-				else {
-					$programs .= "<div class='block'>" . $progData['day'] . ", " . $progData['from'] . " - " . $progData['to'] . " : " . $progData['name'] . "</div>\n";
-
-					if($progData['program'] == 1) $programs .= "<div>" . ProgramModel::getPdfPrograms($progData['id'], $vid, self::$connection) . "</div>";
+				if($progData['id'] == 63) {
+					$programs .= "";
+				} else {
+					$programs = sprintf(
+						'<div class="block">%s, %s - %s : %s</div>',
+						$progData['day'],
+						$progData['from'],
+						$progData['to'],
+						$progData['name']
+					);
+					if($progData['program'] == 1) {
+						$programs .= sprintf(
+							'<div>%s</div>',
+							ProgramModel::getPdfPrograms($progData['id'], $vid, self::$connection)
+						);
+					}
 				}
 			}
 		}
@@ -432,16 +443,12 @@ class ExportModel extends BaseModel
 		switch($type){
 			case "account":
 				return $data['account'];
-				break;
 			case "balance":
 				return $data['balance'];
-				break;
 			case "suma":
 				return $data['suma'];
-				break;
 			default:
-				return FALSE;
-				break;
+				return false;
 		}
 	}
 

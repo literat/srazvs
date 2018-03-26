@@ -10,9 +10,9 @@ use Skautis\User;
 class UserService extends SkautisService
 {
 
-    /**
-     * @return \Skautis\User
-     */
+	/**
+	 * @return \Skautis\User
+	 */
 	public function getUser(): User
 	{
 		return $this->getSkautis()->getUser();
@@ -36,7 +36,7 @@ class UserService extends SkautisService
 	 * @param   bool   $activeOnly  only active roles
 	 * @return  array               all roles of logged user
 	 */
-	public function getAllSkautISRoles($activeOnly = true)
+	public function getAllSkautisRoles($activeOnly = true)
 	{
 		return $this->getSkautis()
 			->user
@@ -70,7 +70,7 @@ class UserService extends SkautisService
 	 * @param   ID_Role  $id
 	 * @return  void
 	 */
-	public function updateSkautISRole($id)
+	public function updateSkautisRole($id)
 	{
 		$skautis = $this->getSkautis();
 
@@ -175,7 +175,7 @@ class UserService extends SkautisService
 	 * @param   type  $ID_Action  tabulka v DB skautisu
 	 * @return  BOOL|stdClass|array
 	 */
-	public function actionVerify($table, $id = NULL, $ID_Action = NULL)
+	public function actionVerify($table, $id = null, $ID_Action = null)
 	{
 		$res = $this->getSkautis()->user->ActionVerify([
 			'ID'        => $id,
@@ -184,7 +184,7 @@ class UserService extends SkautisService
 		]);
 
 		// returns boolean if certain function for verifying is set
-		if ($ID_Action !== NULL) {
+		if ($ID_Action !== null) {
 			if ($res instanceof stdClass) {
 				return false;
 			}

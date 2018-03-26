@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use Nette\Database\Context;
-use Nette\Object;
+use Nette\SmartObject;
 use Nette\Caching\Cache;
 
 /**
@@ -14,8 +14,10 @@ use Nette\Caching\Cache;
  * @created 2012-12-16
  * @author Tomas Litera <tomaslitera@hotmail.com>
  */
-abstract class BaseModel extends Object
+abstract class BaseModel
 {
+	use SmartObject;
+
 	/** @var string */
 	protected $table = null;
 

@@ -85,8 +85,8 @@ class VisitorPresenter extends BasePresenter
 	{
 		parent::startup();
 		$this->getMeetingModel()->setMeetingId($this->getMeetingId());
-		$this->getVisitorRepository()->setMeeting($this->getMeetingId())
-;	}
+		$this->getVisitorRepository()->setMeeting($this->getMeetingId());
+	}
 
 	/**
 	 * Process data from form
@@ -361,7 +361,7 @@ class VisitorPresenter extends BasePresenter
 		$control = $this->visitorFormFactory->create();
 		$control->setMeetingId($this->getMeetingId());
 
-		$control->onVisitorSave[] = function(VisitorForm $control, $visitor) {
+		$control->onVisitorSave[] = function($visitor) {
 			$id = $this->getParameter('id');
 			$this->setBacklinkFromArray($visitor);
 
@@ -374,7 +374,7 @@ class VisitorPresenter extends BasePresenter
 			$this->redirect($this->getBacklink() ?: self::REDIRECT_DEFAULT);
 		};
 
-		$control->onVisitorReset[] = function(VisitorForm $control, $visitor) {
+		$control->onVisitorReset[] = function($visitor) {
 			$this->setBacklinkFromArray($visitor);
 
 			$this->redirect($this->getBacklink() ?: self::REDIRECT_DEFAULT);

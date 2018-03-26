@@ -81,7 +81,6 @@ class AnnotationService
 				break;
 			default:
 				throw new Exception('Annotation model not found!');
-				break;
 		}
 
 		return $model;

@@ -29,7 +29,7 @@ abstract class SkautisService extends Object
 	 * Use local storage (cache)?
 	 * @var bool
 	 */
-	private $useCache = TRUE;
+	private $useCache = true;
 
 
 	/**
@@ -42,7 +42,7 @@ abstract class SkautisService extends Object
 	/**
 	 * Construct
 	 */
-	public function __construct(Skautis $skautIS = NULL)
+	public function __construct(Skautis $skautIS = null)
 	{
 		$this->setSkautis($skautIS);
 		self::$storage = [];
@@ -94,7 +94,7 @@ abstract class SkautisService extends Object
 		if ($this->useCache && array_key_exists($id, self::$storage)) {
 			return self::$storage[$id];
 		}
-		return FALSE;
+		return false;
 	}
 
 	/**

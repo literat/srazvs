@@ -25,7 +25,7 @@ class UserService
 	 */
 	protected $userRepository;
 
-	function __construct(
+	public function __construct(
 		SocialLoginRepository $socialLoginRepository,
 		PersonRepository $personRepository,
 		UserRepository $userRepository
@@ -47,17 +47,17 @@ class UserService
 
 		$credentials = null;
 		if($socialLogin) {
-            $credentials = new CredentialsEntity();
-            $credentials->id = $socialLogin->user->id;
-            $credentials->guid = $socialLogin->user->guid;
-            $credentials->login = $socialLogin->user->login;
-            $credentials->role = $socialLogin->user->is_admin ? 'admin' : 'guest';
-            $credentials->name = $socialLogin->user->person->name;
-            $credentials->surname = $socialLogin->user->person->surname;
-            $credentials->nick = $socialLogin->user->person->nick;
-            $credentials->birthday = $socialLogin->user->person->birthday;
-            $credentials->email = $socialLogin->user->person->email;
-        }
+			$credentials = new CredentialsEntity();
+			$credentials->id = $socialLogin->user->id;
+			$credentials->guid = $socialLogin->user->guid;
+			$credentials->login = $socialLogin->user->login;
+			$credentials->role = $socialLogin->user->is_admin ? 'admin' : 'guest';
+			$credentials->name = $socialLogin->user->person->name;
+			$credentials->surname = $socialLogin->user->person->surname;
+			$credentials->nick = $socialLogin->user->person->nick;
+			$credentials->birthday = $socialLogin->user->person->birthday;
+			$credentials->email = $socialLogin->user->person->email;
+		}
 
 		return $credentials;
 	}

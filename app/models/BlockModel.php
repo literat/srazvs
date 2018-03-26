@@ -76,24 +76,24 @@ class BlockModel extends BaseModel implements IModel
 			->fetchAll();
 	}
 
-    /**
-     * @param  int $id
-     * @return BlockEntity
-     */
+	/**
+	 * @param  int $id
+	 * @return BlockEntity
+	 */
 	public function find($id): BlockEntity
 	{
 		$block = parent::find($id);
 		return $this->hydrate($block);
 	}
 
-    /**
-     * @param IEntity $entity
-     * @return bool|mixed
-     * @throws Exception
-     */
+	/**
+	 * @param IEntity $entity
+	 * @return bool|mixed
+	 * @throws Exception
+	 */
 	public function save(IEntity $entity)
 	{
-        $this->guardToGreaterThanFrom($entity->from, $entity->to);
+		$this->guardToGreaterThanFrom($entity->from, $entity->to);
 
 		if ($entity->getId() === null) {
 			$values = $entity->toArray();
@@ -244,17 +244,17 @@ class BlockModel extends BaseModel implements IModel
 				'0', '1', $meetingId)->fetchAll();
 	}
 
-	public function findByProgramId(int $programId)
+	public function findByProgramId(/*int $programId*/)
 	{
 		return $this->getDatabase()
 			->query()
 			->fetch();
 	}
 
-    /**
-     * @param  $values
-     * @return BlockEntity
-     */
+	/**
+	 * @param  $values
+	 * @return BlockEntity
+	 */
 	public function hydrate($values): BlockEntity
 	{
 		$entity = new BlockEntity();
@@ -268,32 +268,32 @@ class BlockModel extends BaseModel implements IModel
 		return $entity;
 	}
 
-    /**
-     * @param  $block
-     * @return mixed
-     */
+	/**
+	 * @param  $block
+	 * @return mixed
+	 */
 	public function transform($block)
-    {
-        $block->from = date('H:i:s', mktime($block->start_hour, $block->start_minute, 0, 0, 0, 0));
-        $block->to = date('H:i:s', mktime($block->end_hour, $block->end_minute, 0, 0, 0, 0));
-        $block->meeting = $this->getMeetingId();
-        $block->program = strval($block->program) ?: '0';
-        $block->display_progs = strval($block->display_progs) ?: '0';
+	{
+		$block->from = date('H:i:s', mktime($block->start_hour, $block->start_minute, 0, 0, 0, 0));
+		$block->to = date('H:i:s', mktime($block->end_hour, $block->end_minute, 0, 0, 0, 0));
+		$block->meeting = $this->getMeetingId();
+		$block->program = strval($block->program) ?: '0';
+		$block->display_progs = strval($block->display_progs) ?: '0';
 
-        unset($block->start_hour);
-        unset($block->end_hour);
-        unset($block->start_minute);
-        unset($block->end_minute);
-        unset($block->backlink);
+		unset($block->start_hour);
+		unset($block->end_hour);
+		unset($block->start_minute);
+		unset($block->end_minute);
+		unset($block->backlink);
 
-        return $block;
-    }
+		return $block;
+	}
 
-    /**
-     * @param  $item
-     * @param  $id
-     * @return mixed
-     */
+	/**
+	 * @param  $item
+	 * @param  $id
+	 * @return mixed
+	 */
 	private function setIdentity($item, $id)
 	{
 		$ref = new ClassType($item);
@@ -304,17 +304,17 @@ class BlockModel extends BaseModel implements IModel
 		return $item;
 	}
 
-    /**
-     * @param  date $from
-     * @param  date $to
-     * @return void
-     * @throws Exception
-     */
-    private function guardToGreaterThanFrom($from, $to)
-    {
-        if($from > $to) {
-            throw new Exception('Starting time is greater then finishing time.');
-        }
-    }
+	/**
+	 * @param  date $from
+	 * @param  date $to
+	 * @return void
+	 * @throws Exception
+	 */
+	private function guardToGreaterThanFrom($from, $to)
+	{
+		if($from > $to) {
+			throw new Exception('Starting time is greater then finishing time.');
+		}
+	}
 
 }

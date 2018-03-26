@@ -24,9 +24,6 @@ class RegistrationForm extends VisitorForm
 	 */
 	protected $userService;
 
-	/**
-	 * @param ProvinceModel $model
-	 */
 	public function __construct(
 		ProvinceModel $province,
 		ProgramRepository $program,
@@ -96,7 +93,11 @@ class RegistrationForm extends VisitorForm
 			->getLabelPrototype()->setAttribute('class', 'required');
 		$form->addText('group_num', 'Číslo středika/přístavu:')
 			->setRequired(static::MESSAGE_REQUIRED)
-			->addRule(Form::PATTERN, 'Číslo musí být ve formátu nnn.nn!', '[1-9]{1}[0-9a-zA-Z]{2}\.[0-9a-zA-Z]{1}[0-9a-zA-Z]{1}')
+			->addRule(
+				Form::PATTERN,
+				'Číslo musí být ve formátu nnn.nn!',
+				'[1-9]{1}[0-9a-zA-Z]{2}\.[0-9a-zA-Z]{1}[0-9a-zA-Z]{1}'
+			)
 			->setAttribute('placeholder', '214.02')
 			->getLabelPrototype()->setAttribute('class', 'required');
 		$form->addText('group_name', 'Název střediska/přístavu:')
@@ -115,12 +116,21 @@ class RegistrationForm extends VisitorForm
 		$form = $this->buildMealSwitcher($form);
 
 		$form->addTextArea('arrival', 'Informace o příjezdu:')
-			->setAttribute('placeholder', 'Napište, prosím, stručně jakým dopravním prostředkem a v kolik hodin (přibližně) přijedete na místo srazu.');
+			->setAttribute(
+				'placeholder',
+				'Napište, prosím, stručně jakým dopravním prostředkem a v kolik hodin (přibližně) přijedete na místo srazu.'
+			);
 		$form->addTextArea('departure', 'Informace o odjezdu:')
-			->setAttribute('placeholder', 'Napište, prosím, stručně jakým dopravním prostředkem a v kolik hodin (přibližně) sraz opustíte.');
+			->setAttribute(
+				'placeholder',
+				'Napište, prosím, stručně jakým dopravním prostředkem a v kolik hodin (přibližně) sraz opustíte.'
+			);
 		$form->addTextArea('comment', 'Dotazy, přání, připomínky, stížnosti:');
 		$form->addTextArea('question', 'Vaše nabídka:')
-			->setAttribute('placeholder', 'Vaše nabídka na sdílení dobré praxe (co u vás umíte dobře a jste ochotni se o to podělit)');
+			->setAttribute(
+				'placeholder',
+				'Vaše nabídka na sdílení dobré praxe (co u vás umíte dobře a jste ochotni se o to podělit)'
+			);
 		$form->addTextArea('question2', 'Počet a typy lodí:')
 			->setAttribute('placeholder', 'Počet a typy lodí, které sebou přivezete (vyplňte pokud ano)');
 

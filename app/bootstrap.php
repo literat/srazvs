@@ -21,9 +21,9 @@ $configurator->createRobotLoader()
 	->register();
 
 if ($configurator->isDebugMode()) {
-    $configurator->addConfig(__DIR__ . '/config/config.development.neon');
+	$configurator->addConfig(__DIR__ . '/config/config.development.neon');
 } else {
-    $configurator->addConfig(__DIR__ . '/config/config.production.neon');
+	$configurator->addConfig(__DIR__ . '/config/config.production.neon');
 }
 $configurator->addConfig(__DIR__ . '/config/config.local.neon');
 

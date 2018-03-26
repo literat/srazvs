@@ -57,7 +57,7 @@ class UserRepository
 	 * @param  $user
 	 * @return \Nette\Database\Table\ActiveRow
 	 */
-	public function update($id, $user)
+	public function update($user)
 	{
 		return $this->getUserModel()
 			->save(

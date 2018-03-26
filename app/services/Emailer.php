@@ -39,7 +39,7 @@ class Emailer
 	 * @param	array	bcc
 	 * @return	bool	true | false (log the exception)
 	 */
-	public function sendMail($recipients, $subject, $body, array $bccMail = NULL)
+	public function sendMail($recipients, $subject, $body, array $bccMail = null)
 	{
 		$message = new Message;
 		$message->setFrom('srazyvs@hkvs.cz', 'Srazy VS');
@@ -86,7 +86,7 @@ class Emailer
 	 */
 	public function getTemplate($type)
 	{
-		$json = $this->settings->getMailJSON($type);
+		$json = $this->settings->getMailJson($type);
 
 		$subject = html_entity_decode($json->subject);
 		$message = html_entity_decode($json->message);

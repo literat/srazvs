@@ -54,7 +54,7 @@ class EmailerGetTemplateTest extends Tester\TestCase
 $json = json_decode('{"subject":"Sraz vodn\u00edch skaut\u016f: anotace %%[typ-anotace]%%","message":"&lt;html&gt;\n  &lt;head&gt;\n\t &lt;title&gt;Anotace %%[typ-anotace]%% na sraz VS&lt;\/title&gt;\n  &lt;\/head&gt;\n  &lt;body&gt;\n\t Ahoj,&lt;br \/&gt;&lt;br \/&gt;\n\t jako p\u0159edn\u00e1\u0161ej\u00edc\u00ed\/ho bychom T\u011b cht\u011bli po\u017e\u00e1dat o vypln\u011bn\u00ed anotace k Tv\u00e9mu %%[typ-anotace]%% nejpozd\u011bji do 18. 10.&lt;br \/&gt;\n\t \u00dadaje m\u016f\u017ee\u0161 doplnit a d\u00e1le m\u011bnit a upravovat na adrese: &lt;a href=\"%%[url-formulare]%%\"&gt;%%[url-formulare]%%&lt;\/a&gt;\n\t &lt;br \/&gt;\n\t &lt;br \/&gt;\n\t Popis, Tv\u00e9 jm\u00e9no a Tv\u016fj e-mail se bude zobrazovat \u00fa\u010dastn\u00edk\u016fm srazu na webu, aby v\u011bd\u011bli, co je \u010dek\u00e1. M\u016f\u017ee\u0161 zm\u011bnit i n\u00e1zev programu a stanov tak\u00e9 maxim\u00e1ln\u00ed po\u010det lid\u00ed, kte\u0159\u00ed se m\u016f\u017eou programu z\u00fa\u010dastnit.\n\t &lt;br \/&gt;\n\t &lt;br \/&gt;\n\t Pro p\u0159\u00edpadn\u00e9 ot\u00e1zky pi\u0161 na &lt;a href=\"mailto:katka.kaderova@seznam.cz\"&gt;katka.kaderova(at)seznam.cz&lt;\/a&gt;.\n\t &lt;br \/&gt;\n\t &lt;br \/&gt;\n\t Na setk\u00e1n\u00ed se t\u011b\u0161\u00ed p\u0159\u00edpravn\u00fd t\u00fdm sraz\u016f VS.\n  &lt;\/body&gt;\n&lt;\/html&gt;"}');
 
 $mockedSettings = Mockery::mock('App\Models\SettingsModel');
-$mockedSettings->shouldReceive('getMailJSON')->with('tutor')->andReturn($json);
+$mockedSettings->shouldReceive('getMailJson')->with('tutor')->andReturn($json);
 
 $testMailer = new TestMailer();
 $emailer = new Emailer($mockedSettings, $testMailer);

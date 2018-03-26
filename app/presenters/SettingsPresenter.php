@@ -24,9 +24,9 @@ class SettingsPresenter extends BasePresenter
 		$this->setEmailer($emailer);
 	}
 
-    /**
-     * @throws \Nette\Application\AbortException
-     */
+	/**
+	 * @throws \Nette\Application\AbortException
+	 */
 	public function startup()
 	{
 		parent::startup();
@@ -41,13 +41,16 @@ class SettingsPresenter extends BasePresenter
 	{
 		try {
 			$data = $this->getHttpRequest()->getPost();
-			$this->getModel()->modifyMailJSON($id, $data['subject'], $data['message']);
+			$this->getModel()->modifyMailJson($id, $data['subject'], $data['message']);
 
-			Debugger::log('Settings: mail type ' . $id . ' update succesfull.', Debugger::INFO);
-			$this->flashMessage('Settings: mail type ' . $id . ' update succesfull.', 'ok');
+			$this->logInfo('Settings: mail type %s update succesfull.', [$id]);
+			$this->flashSuccess('Settings: mail type ' . $id . ' update succesfull.');
 		} catch(Exception $e) {
-			Debugger::log('Settings: mail type ' . $id . ' update failed, result: ' . $e->getMessage(), Debugger::ERROR);
-			$this->flashMessage('Settings: mail type ' . $id . ' update failed, result: ' . $e->getMessage(), 'error');
+			$this->logError('Settings: mail type %s update failed, result: %s', [
+				$id,
+				$e->getMessage(),
+			]);
+			$this->flashFailure('Settings: mail type ' . $id . ' update failed, result: ' . $e->getMessage());
 		}
 
 		$this->redirect('Settings:listing');
@@ -68,11 +71,11 @@ class SettingsPresenter extends BasePresenter
 
 			$this->getModel()->updateDebugRegime($activate);
 
-			Debugger::log('Settings: debug regime update succesfull.', Debugger::INFO);
-			$this->flashMessage('Settings: debug regime update succesfull.', 'ok');
+			$this->logInfo('Settings: debug regime update succesfull.');
+			$this->flashSuccess('Settings: debug regime update succesfull.');
 		} catch(Exception $e) {
-			Debugger::log('Settings: debug update update failed, result: ' . $e->getMessage(), Debugger::ERROR);
-			$this->flashMessage('Settings: debug regime update failed, result: ' . $e->getMessage(), 'error');
+			$this->logError('Settings: debug update update failed, result: %s', [$e->getMessage()]);
+			$this->flashFailure('Settings: debug regime update failed, result: ' . $e->getMessage());
 		}
 
 		$this->redirect('Settings:listing');
@@ -86,7 +89,7 @@ class SettingsPresenter extends BasePresenter
 	{
 		try {
 			$recipient = $this->getHttpRequest()->getPost()['test-mail'];
-			$jsonMail = $this->getModel()->getMailJSON($id);
+			$jsonMail = $this->getModel()->getMailJson($id);
 
 			$this->getEmailer()
 				->sendMail(
@@ -95,11 +98,18 @@ class SettingsPresenter extends BasePresenter
 					html_entity_decode($jsonMail->message)
 				);
 
-			Debugger::log('Settings: mail type ' . $id . ' succesfully send to recipient ' . $recipient, Debugger::INFO);
-			$this->flashMessage('Settings: mail type ' . $id . ' succesfully send.', 'ok');
+			$this->logInfo('Settings: mail type ' . $id . ' succesfully send to recipient %s', [
+				$id,
+				$recipient,
+			]);
+			$this->flashSuccess('Settings: mail type ' . $id . ' succesfully send.');
 		} catch (Exception $e) {
-			Debugger::log('Settings: mail type ' . $id . ' send to recipient ' . $recipient . ' failed, result: ' . $e->getMessage(), Debugger::ERROR);
-			$this->flashMessage('Settings: mail type ' . $id . ' send to recipient failed, result: ' . $e->getMessage(), 'error');
+			$this->logError('Settings: mail type %s send to recipient %s failed, result: %s', [
+				$id,
+				$recipient,
+				$e->getMessage(),
+			]);
+			$this->flashFailure('Settings: mail type ' . $id . ' send to recipient failed, result: ' . $e->getMessage());
 		}
 
 		$this->redirect('Settings:listing');
@@ -114,18 +124,18 @@ class SettingsPresenter extends BasePresenter
 		$template = $this->getTemplate();
 		$error = '';
 
-		$template->payment_subject = $settingsModel->getMailJSON('cost')->subject;
-		$template->payment_message = $settingsModel->getMailJSON('cost')->message;
-		$template->payment_html_message = html_entity_decode($settingsModel->getMailJSON('cost')->message);
-		$template->advance_subject = $settingsModel->getMailJSON('advance')->subject;
-		$template->advance_message = $settingsModel->getMailJSON('advance')->message;
-		$template->advance_html_message = html_entity_decode($settingsModel->getMailJSON('advance')->message);
-		$template->tutor_subject = $settingsModel->getMailJSON('tutor')->subject;
-		$template->tutor_message = $settingsModel->getMailJSON('tutor')->message;
-		$template->tutor_html_message = html_entity_decode($settingsModel->getMailJSON('tutor')->message);
-		$template->reg_subject = $settingsModel->getMailJSON('post_reg')->subject;
-		$template->reg_message = $settingsModel->getMailJSON('post_reg')->message;
-		$template->reg_html_message = html_entity_decode($settingsModel->getMailJSON('post_reg')->message);
+		$template->payment_subject = $settingsModel->getMailJson('cost')->subject;
+		$template->payment_message = $settingsModel->getMailJson('cost')->message;
+		$template->payment_html_message = html_entity_decode($settingsModel->getMailJson('cost')->message);
+		$template->advance_subject = $settingsModel->getMailJson('advance')->subject;
+		$template->advance_message = $settingsModel->getMailJson('advance')->message;
+		$template->advance_html_message = html_entity_decode($settingsModel->getMailJson('advance')->message);
+		$template->tutor_subject = $settingsModel->getMailJson('tutor')->subject;
+		$template->tutor_message = $settingsModel->getMailJson('tutor')->message;
+		$template->tutor_html_message = html_entity_decode($settingsModel->getMailJson('tutor')->message);
+		$template->reg_subject = $settingsModel->getMailJson('post_reg')->subject;
+		$template->reg_message = $settingsModel->getMailJson('post_reg')->message;
+		$template->reg_html_message = html_entity_decode($settingsModel->getMailJson('post_reg')->message);
 		$template->debugRegime = $settingsModel->findDebugRegime();
 	}
 

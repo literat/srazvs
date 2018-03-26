@@ -45,7 +45,18 @@ class ProgramModel extends BaseModel
 	/** Constructor */
 	public function __construct(Context $database)
 	{
-		$this->formNames = ['guid', "name", "description", "material", "tutor", "email", "capacity", "display_in_reg", "block", "category"];
+		$this->formNames = [
+			'guid',
+			'name',
+			'description',
+			'material',
+			'tutor',
+			'email',
+			'capacity',
+			'display_in_reg',
+			'block',
+			'category'
+		];
 		$this->setDatabase($database);
 		self::$connection = $this->getDatabase();
 	}
@@ -102,22 +113,44 @@ class ProgramModel extends BaseModel
 				}
 				// if the capacity is full
 				if($fullProgramData['visitors'] >= $data['capacity']){
-					$html_input .= "<input id='" . $data['id'] . $blockId . "' " . $checked . " disabled type='radio' name='blck_" . $blockId . "' value='" . $data['id'] . "' />\n";
+					$html_input .= sprintf('<input id="%s%s" %s disabled type="radio" name="blck_%s" value="%s" />',
+						$data['id'],
+						$blockId,
+						$checked,
+						$blockId,
+						$data['id']
+					);
 					$fullProgramInfo = " (NELZE ZAPSAT - kapacita programu je již naplněna!)";
 				} else {
-					$html_input .= "<input id='" . $data['id'] . $blockId . "' " . $checked . " type='radio' name='blck_" . $blockId . "' value='" . $data['id'] . "' /> \n";
+					$html_input .= sprintf('<input id="%s%s" %s type="radio" name="blck_%s" value="%s" />',
+						$data['id'],
+						$blockId,
+						$checked,
+						$blockId,
+						$data['id']
+					);
 					$fullProgramInfo = "";
 				}
-				$html_input .= '<label for="' . $data['id'] . $blockId . '">' . $data['name'] . '</label>';
+				$html_input .= sprintf('<label for="%s%s">%s</label>',
+					$data['id'],
+					$blockId,
+					$data['name']
+				);
 				$html_input .= $fullProgramInfo;
 				$html_input .= "<br />\n";
 			}
 
 			// pokud uz jednou bylo zaskrtnuto, nezaskrtavam znovu
-			if(!$checked_flag) $checked = "checked='checked'";
-			else $checked = "";
+			if(!$checked_flag) {
+				$checked = "checked='checked'";
+			} else {
+				$checked = "";
+			}
 
-			$html .= "<input " . $checked . " type='radio' name='blck_" . $blockId . "' value='0' /> Nebudu přítomen <br />\n";
+			$html .= sprintf('<input %s type="radio" name="blck_%s" value="0" /> Nebudu přítomen <br />',
+				$checked,
+				$blockId
+			);
 			$html .= $html_input;
 
 			$html .= "</div>\n";
@@ -151,14 +184,28 @@ class ProgramModel extends BaseModel
 
 				if($fullProgramData['visitors'] >= $data['capacity']){
 					//$html .= "<input disabled type='radio' name='".$id."' value='".$data['id']."' />\n";
-					$fullProgramInfo = "<span style='font-size:12px; font-weight:bold;'>" . $fullProgramData['visitors'] . "/" . $data['capacity'] . "</span> (kapacita programu je naplněna!)";
+					$fullProgramInfo = sprintf(
+						'<span style="font-size:12px; font-weight:bold;">%s/%s</span> (kapacita programu je naplněna!)',
+						$fullProgramData['visitors'],
+						$data['capacity']
+					);
 				}
 				else {
 					//$html .= "<input type='radio' name='".$id."' value='".$data['id']."' /> \n";
-					$fullProgramInfo = "<span style='font-size:12px; font-weight:bold;'>" . $fullProgramData['visitors'] . "/" . $data['capacity'] . "</span>";
+					$fullProgramInfo = sprintf(
+						'<span style="font-size:12px; font-weight:bold;">%s/%s</span>',
+						$fullProgramData['visitors'],
+						$data['capacity']
+					);
 				}
 				$html .= "<td style='min-width:270px;'>";
-				$html .= "<a rel='programDetail' href='" . PRJ_DIR . "program/?id=" . $data['id'] . "&cms=edit&page=export' title='" . $data['name'] . "'>" . $data['name'] . "</a>\n";
+				$html .= sprintf(
+					'<a rel="programDetail" href="%sprogram/?id=%s&cms=edit&page=export" title="%s">%s</a>',
+					PRJ_DIR,
+					$data['id'],
+					$data['name'],
+					$data['name']
+				);
 				$html .= "</td>";
 				$html .= "<td>";
 				$html .= $fullProgramInfo;
@@ -196,7 +243,9 @@ class ProgramModel extends BaseModel
 
 			foreach($progSql as $progData){
 				//nemoznost volit predsnemovni dikusi
-				if($progData['id'] == 63) $notDisplayed = "style='display:none;'";
+				if($progData['id'] == 63) {
+					$notDisplayed = "style='display:none;'";
+				}
 				//obsazenost raftu
 				/*
 				elseif($raftCountData['raft'] >= 18){
@@ -204,9 +253,20 @@ class ProgramModel extends BaseModel
 					else $notDisplayed = "";
 				}
 				*/
-				else $notDisplayed = "";
-				$programs .= "<div " . $notDisplayed . ">" . $progData['day'] . ", " . $progData['from'] . " - " . $progData['to'] . " : " . $progData['name'] . "</div>\n";
-				if($progData['program'] == 1) $programs .= "<div " . $notDisplayed . ">" . $this->getExportPrograms($progData['id']) . "</div>";
+				else {
+					$notDisplayed = "";
+				}
+				$programs .= sprintf(
+					'<div %s>%s, %s - %s : %s</div>',
+					$notDisplayed,
+					$progData['day'],
+					$progData['from'],
+					$progData['to'],
+					$progData['name']
+				);
+				if($progData['program'] == 1) {
+					$programs .= "<div " . $notDisplayed . ">" . $this->getExportPrograms($progData['id']) . "</div>";
+				}
 				$programs .= "<br />";
 			}
 		}
@@ -219,7 +279,7 @@ class ProgramModel extends BaseModel
 	 *
 	 * @return	string	html of a table
 	 */
-	public function getData($program_id = NULL)
+	public function getData($program_id = null)
 	{
 		if(isset($program_id)) {
 			$data = $this->database
@@ -325,7 +385,9 @@ class ProgramModel extends BaseModel
 					->table('kk_visitor-program')
 					->where('program ? AND visitor ?', $data->id, $vid)
 					->fetchAll();
-				if($rows) $html .= $data['name'];
+				if($rows) {
+					$html .= $data['name'];
+				}
 			}
 			$html .= "</div>\n";
 		}
@@ -343,7 +405,9 @@ class ProgramModel extends BaseModel
 				LIMIT 10',
 				$id, '0')->fetchAll();
 
-		if(!$result) $html = "";
+		if(!$result) {
+			$html = "";
+		}
 		else {
 			$html = "<table>";
 			$html .= " <tr>";
@@ -367,8 +431,9 @@ class ProgramModel extends BaseModel
 
 		$html = '';
 
-		if(!$result) $html = "";
-		else {
+		if(!$result) {
+			$html = "";
+		} else {
 			foreach($result as $data){
 				$html .= $data['name'] . ",\n";
 			}
