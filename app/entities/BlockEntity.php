@@ -25,7 +25,7 @@ class BlockEntity implements IEntity
 
 	public $program;
 
-	public $display_progs;
+	public $displayProgs;
 
 	public $capacity;
 

@@ -23,13 +23,13 @@ class PersonEntity implements IEntity
 
 	public $city;
 
-	public $postal_code;
+	public $postalCode;
 
-	public $created_at;
+	public $createdAt;
 
-	public $updated_at;
+	public $updatedAt;
 
-	public $deleted_at;
+	public $deletedAt;
 
 	/**
 	 * @return int

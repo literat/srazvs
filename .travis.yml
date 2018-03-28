@@ -3,19 +3,18 @@ language: php
 php:
   - 7.0
   - 7.1
+  - 7.2
 
 env:
 matrix:
     include:
-        - php: 7.0
-          env: coverage=on
         - php: 7.1
           env: coverage=on
         - php: 7.2
-          env: coverage=off
+          env: coverage=on
 
     allow_failures:
-        - php: 7.2
+        - php: 7.0
           env: coverage=off
 
 before_script:
@@ -26,7 +25,8 @@ before_script:
   - if [ "$coverage" == "on" ]; then coverageArgs="--coverage ./coverage.xml --coverage-src ./app"; fi
 
 script:
-  - vendor/bin/tester tests -s -c tests/php-unix.ini $coverageArgs
+  - composer code
+  - vendor/bin/tester tests -s -C $coverageArgs
 
 after_script:
     # Report Code Coverage

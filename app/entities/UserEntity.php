@@ -1,4 +1,4 @@
-<?php
+`<?php
 
 namespace App\Entities;
 
@@ -13,11 +13,11 @@ class UserEntity implements IEntity
 
 	public $person;
 
-	public $created_at;
+	public $createdAt;
 
-	public $updated_at;
+	public $updatedAt;
 
-	public $deleted_at;
+	public $deletedAt;
 
 	/**
 	 * @return int

@@ -191,7 +191,7 @@ class ExportModel extends BaseModel
 			' . $evidenceLimit, $this->getMeetingId(), '0')->fetchAll();
 	}
 
-	public static function getPdfBlocks($vid)
+	public static function getPdfBlocks($vid, string $meetingId)
 	{
 		$programs = "<tr>";
 		$programs .= " <td class='progPart'>";
@@ -204,7 +204,7 @@ class ExportModel extends BaseModel
 							program
 					FROM kk_blocks
 					WHERE deleted = ? AND program = ? AND meeting = ?
-					ORDER BY `day` ASC', '0', '1', $_SESSION['meetingID'])->fetchAll();
+					ORDER BY `day` ASC', '0', '1', $meetingId)->fetchAll();
 
 		if(!$data){
 			$programs .= "<div class='emptyTable' style='width:400px;'>Nejsou žádná aktuální data.</div>\n";

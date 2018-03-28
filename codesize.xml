@@ -1,0 +1,82 @@
+<?xml version="1.0"?>
+<ruleset name="Team OS PHPMD rule set"
+		 xmlns="http://pmd.sf.net/ruleset/1.0.0"
+		 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		 xsi:schemaLocation="http://pmd.sf.net/ruleset/1.0.0
+					 http://pmd.sf.net/ruleset_xml_schema.xsd"
+		 xsi:noNamespaceSchemaLocation="
+					 http://pmd.sf.net/ruleset_xml_schema.xsd">
+	<description>
+		* Static methods are forbidden
+
+		* CyclomaticComplexity is set to 10
+		* NPathComplexity is set 200
+		* ExcessiveMethodLength is set 25 with ignored whitespaces
+		* ExcessiveClassLength is set 250 with ignored whitespaces
+
+		* Superglobals variables are forbidden
+		* Use CamelCase
+
+		* exit, eval, goto, var_dump, print functions are forbidden
+		* NumberOfChildren is set to 15
+		* DepthOfInheritance is set to 6
+		* Number of acceptable dependencies is set to 15
+
+		* Minimum variable name is set to 3 characters, except: id,e,i,x,y,ip
+		* Maximum variable name is set to 25 characters
+		* Constructor name must be __construct
+		* Constants must be uppercase
+
+		* Any unused variable or method is not allowed
+	</description>
+//todo - refactor static access
+	<!--
+	<rule ref="rulesets/cleancode.xml/StaticAccess">
+		<properties>
+			<property name="exceptions" value="Log,Illuminate\Support\Str" />
+		</properties>
+	</rule>
+	-->
+	<!--<rule ref="rulesets/codesize.xml/CyclomaticComplexity" />-->
+	<rule ref="rulesets/codesize.xml/NPathComplexity" />
+	<!--<rule ref="rulesets/codesize.xml/ExcessiveMethodLength">
+		<properties>
+			<property name="minimum" value="60" />
+			<property name="ignore-whitespace" value="true" />
+		</properties>
+	</rule>-->
+	<!--<rule ref="rulesets/codesize.xml/ExcessiveClassLength">
+		<properties>
+			<property name="minimum" value="250" />
+			<property name="ignore-whitespace" value="true" />
+		</properties>
+	</rule>-->
+
+	<rule ref="rulesets/controversial.xml" />
+	<!--<rule ref="rulesets/design.xml" />-->
+	<rule ref="rulesets/naming.xml/ShortVariable">
+		<properties>
+			<property name="minimum" value="3" />
+			<property name="exceptions" value="id,e,i,x,y,ip,to,dd" />
+		</properties>
+	</rule>
+	<rule ref="rulesets/naming.xml/LongVariable">
+		<properties>
+			<property name="maximum" value="25" />
+		</properties>
+	</rule>
+	<rule ref="rulesets/naming.xml/ShortMethodName">
+		<properties>
+			<property name="minimum" value="3" />
+			<property name="exceptions" value="dd" />
+		</properties>
+	</rule>
+	<rule ref="rulesets/naming.xml/ConstructorWithNameAsEnclosingClass" />
+	<rule ref="rulesets/naming.xml/ConstantNamingConventions" />
+	<!--<rule ref="rulesets/design.xml/CouplingBetweenObjects">
+		<properties>
+			<property name="minimum" value="20"/>
+		</properties>
+	</rule>-->
+
+</ruleset>

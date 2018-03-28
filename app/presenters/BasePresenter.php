@@ -80,18 +80,23 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 			$this->setBacklink($backlink);
 		}
 
-		if($meetingId){
-			$_SESSION['meetingID'] = $meetingId;
-		} elseif(!isset($_SESSION['meetingID'])) {
+		$meetingSession = $this->getSession('meeting');
+		if($meetingId) {
+			$meetingSession->meetingId = $meetingId;
+			//$_SESSION['meetingID'] = $meetingId;
+		} elseif($meetingSession->meetingId/*!isset($_SESSION['meetingID'])*/) {
 			$meeting = $this->getContainer()->getService('meeting');
-			$_SESSION['meetingID'] = $meeting->getLastMeetingId();
+			//$_SESSION['meetingID'] = $meeting->getLastMeetingId();
+			$meetingSession->meetingId = $meeting->getLastMeetingId();
 		}
 
-		$this->setMeetingId($_SESSION['meetingID']);
+		$this->setMeetingId($meetingSession->meetingId);
+		//$this->setMeetingId($_SESSION['meetingID']);
 
 		$model = $this->getModel();
 		if($model) {
-			$model->setMeetingId($_SESSION['meetingID']);
+			//$model->setMeetingId($_SESSION['meetingID']);
+			$model->setMeetingId($meetingSession->meetingId);
 		}
 
 		$this->debugMode = $this->getContainer()->getParameters()['debugMode'];
@@ -129,7 +134,8 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 			$template->user = $this->getSunlight()->findUser($_SESSION[SESSION_PREFIX.'user']);
 		}
 */
-		$template->meeting = $meeting->getPlaceAndYear($_SESSION['meetingID']);
+		//$template->meeting = $meeting->getPlaceAndYear($_SESSION['meetingID']);
+		$template->meeting = $meeting->getPlaceAndYear($this->getSession('meeting')->meetingId);
 		$template->menuItems = $meeting->getMenuItems();
 		$template->meeting_heading	= $meeting->getRegHeading();
 		$template->meetingId = $this->getMeetingId();

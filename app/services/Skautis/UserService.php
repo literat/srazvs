@@ -175,16 +175,16 @@ class UserService extends SkautisService
 	 * @param   type  $ID_Action  tabulka v DB skautisu
 	 * @return  BOOL|stdClass|array
 	 */
-	public function actionVerify($table, $id = null, $ID_Action = null)
+	public function actionVerify($table, $id = null, $actionId = null)
 	{
 		$res = $this->getSkautis()->user->ActionVerify([
 			'ID'        => $id,
 			'ID_Table'  => $table,
-			'ID_Action' => $ID_Action,
+			'ID_Action' => $actionId,
 		]);
 
 		// returns boolean if certain function for verifying is set
-		if ($ID_Action !== null) {
+		if ($actionId !== null) {
 			if ($res instanceof stdClass) {
 				return false;
 			}

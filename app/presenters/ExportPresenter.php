@@ -581,8 +581,8 @@ class ExportPresenter extends BasePresenter
 		header('Cache-Control: cache, must-revalidate'); // HTTP/1.1
 		header('Pragma: public'); // HTTP/1.0
 
-		$ExcelWriter = \PHPExcel_IOFactory::createWriter($excel, 'Excel2007');
-		$ExcelWriter->save('php://output');
+		$excelWriter = \PHPExcel_IOFactory::createWriter($excel, 'Excel2007');
+		$excelWriter->save('php://output');
 		exit;
 	}
 

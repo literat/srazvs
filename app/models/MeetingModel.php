@@ -25,7 +25,7 @@ class MeetingModel extends BaseModel
 	/**
 	 * @var array
 	 */
-	public $form_names = [];
+	public $formNames = [];
 
 	/**
 	 * @var array
@@ -57,7 +57,7 @@ class MeetingModel extends BaseModel
 	public function __construct(Context $database, ProgramModel $program)
 	{
 		$this->weekendDays = ["pátek", "sobota", "neděle"];
-		$this->form_names = [
+		$this->formNames = [
 			"place",
 			"start_date",
 			"end_date",

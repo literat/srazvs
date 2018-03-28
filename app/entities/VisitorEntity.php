@@ -17,15 +17,15 @@ class VisitorEntity
 
 	public $city;
 
-	public $postal_code;
+	public $postalCode;
 
 	public $birthday;
 
-	public $group_name;
+	public $groupName;
 
-	public $group_num;
+	public $groupNum;
 
-	public $troop_name;
+	public $troopName;
 
 	/**
 	 * @return array

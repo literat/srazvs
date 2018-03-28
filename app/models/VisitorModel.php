@@ -19,26 +19,26 @@ use Tracy\Debugger;
 class VisitorModel extends BaseModel
 {
 
-	/** @var string	search pattern */
+	/** @var string */
 	public $search;
 
-	/** @var Meeting Meeting class */
-	public $Meeting;
+	/** @var Meeting */
+	public $meetingModel;
 
-	/** @var Meal Meals class */
-	public $Meals;
+	/** @var Meal */
+	public $mealModel;
 
-	/** @var Program Programs class */
-	public $Programs;
+	/** @var Program */
+	public $programModel;
 
-	/** @var Blocks Blocks class */
-	public $Blocks;
+	/** @var Blocks */
+	public $blocksModel;
 
-	/** @var int meeting price */
-	public $meeting_price;
+	/** @var int */
+	public $meetingPrice;
 
-	/** @var int meeting advance */
-	private $meeting_advance;
+	/** @var int */
+	private $meetingAdvance;
 
 	/**
 	 * Array of database programs table columns
@@ -79,20 +79,19 @@ class VisitorModel extends BaseModel
 		'meeting',
 	];
 
-	/** konstruktor */
 	public function __construct(
-		MeetingModel $Meeting,
-		MealModel $Meals,
-		ProgramModel $Program,
-		BlockModel $Blocks,
+		MeetingModel $meetingModel,
+		MealModel $mealModel,
+		ProgramModel $programModel,
+		BlockModel $blockModel,
 		Context $database
 	) {
-		$this->Meeting = $Meeting;
-		$this->meeting_price = $this->Meeting->getPrice('cost');
-		$this->meeting_advance = $this->Meeting->getPrice('advance');
-		$this->Meals = $Meals;
-		$this->Programs = $Program;
-		$this->Blocks = $Blocks;
+		$this->meetingModel = $meetingModel;
+		$this->meetingPrice = $this->meetingModel->getPrice('cost');
+		$this->meetingAdvance = $this->meetingModel->getPrice('advance');
+		$this->mealModel = $mealModel;
+		$this->programModel = $programModel;
+		$this->blocksModel = $blockModel;
 		$this->dbColumns = [
 			"guid",
 			"name",
@@ -146,40 +145,40 @@ class VisitorModel extends BaseModel
 	 *
 	 * @return	string
 	 */
-	public function assemble(array $DB_data, $meals_data, $programs_data, $returnGuid = false)
+	public function assemble(array $dbData, $mealsData, $programsData, $returnGuid = false)
 	{
 		$return = true;
 
-		if(!$DB_data['province']) {
-			$DB_data['province'] = 0;
+		if(!$dbData['province']) {
+			$dbData['province'] = 0;
 		}
 
-		$DB_data['birthday'] = new \DateTime($DB_data['birthday']);
-		$DB_data['reg_daytime'] = (new \DateTime())->format('Y-m-d H:i:s');
-		$DB_data['guid'] = md5(uniqid());
+		$dbData['birthday'] = new \DateTime($dbData['birthday']);
+		$dbData['reg_daytime'] = (new \DateTime())->format('Y-m-d H:i:s');
+		$dbData['guid'] = md5(uniqid());
 
-		$ID_visitor = $this->database
+		$visitorId = $this->database
 			->table($this->getTable())
-			->insert($DB_data)->id;
+			->insert($dbData)->id;
 
 		// visitor's id is empty and i must add one
-		$meals_data['visitor'] = $ID_visitor;
+		$mealsData['visitor'] = $visitorId;
 
-		if($ID_visitor){
+		if($visitorId){
 			// gets data from database
-			$program_blocks = $this->Blocks->getProgramBlocks($DB_data['meeting']);
+			$programBlocks = $this->blocksModel->getProgramBlocks($dbData['meeting']);
 
-			foreach($program_blocks as $DB_blocks_data) {
+			foreach($programBlocks as $dbBlocksData) {
 				$bindingsData = [
-					'visitor' => $ID_visitor,
-					'program' => $programs_data[$DB_blocks_data['id']],
+					'visitor' => $visitorId,
+					'program' => $programsData[$dbBlocksData['id']],
 				];
 				// insert into binding table
-				// var programs_data contains requested values in format block-id => program-id
+				// var programsData contains requested values in format block-id => program-id
 				$bindingsData['guid'] = md5(uniqid());
-				$result_binding = $this->database->query('INSERT INTO `kk_visitor-program`', $bindingsData);
+				$resultBinding = $this->database->query('INSERT INTO `kk_visitor-program`', $bindingsData);
 
-				if(!$result_binding) {
+				if(!$resultBinding) {
 					throw new Exception('Error while binding visitor`s program');
 				}
 			}
@@ -187,7 +186,7 @@ class VisitorModel extends BaseModel
 			if($return) {
 
 				// create meals for visitor
-				if(!$return = $this->Meals->create($meals_data)) {
+				if(!$return = $this->mealModel->create($mealsData)) {
 					throw new Exception('Error while creating meals');
 				}
 			}
@@ -197,9 +196,9 @@ class VisitorModel extends BaseModel
 
 		//return $return;
 		if($returnGuid) {
-			return $DB_data['guid'];
+			return $dbData['guid'];
 		} else {
-			return $ID_visitor;
+			return $visitorId;
 		}
 	}
 
@@ -208,8 +207,8 @@ class VisitorModel extends BaseModel
 	 *
 	 * @param	int		$visitor_id		ID of a visitor
 	 * @param	array	$db_data		Visitor's database data
-	 * @param	array	$meals_data		Data of meals
-	 * @param	array	$programs_data	Program's data
+	 * @param	array	$mealsData		Data of meals
+	 * @param	array	$programsData	Program's data
 	 * @return	mixed					TRUE or array of errors
 	 */
 	public function modify(int $visitorId, array $visitor, array $meals, array $programs)
@@ -222,10 +221,10 @@ class VisitorModel extends BaseModel
 			->update($visitor);
 
 		// change meals
-		$result = $this->Meals->updateOrCreate($visitorId, $meals);
+		$result = $this->mealModel->updateOrCreate($visitorId, $meals);
 
 		// gets data from database
-		$programBlocks = $this->Blocks->getProgramBlocks($visitor['meeting']);
+		$programBlocks = $this->blocksModel->getProgramBlocks($visitor['meeting']);
 
 		// get program of visitor
 		$oldPrograms = $this->findVisitorPrograms($visitorId);
@@ -266,10 +265,10 @@ class VisitorModel extends BaseModel
 		$visitor = $this->findByGuid($guid);
 
 		// change meals
-		$result = $this->Meals->updateOrCreate($visitor->id, $meals);
+		$result = $this->mealModel->updateOrCreate($visitor->id, $meals);
 
 		// gets data from database
-		$programBlocks = $this->Blocks->getProgramBlocks($visitor['meeting']);
+		$programBlocks = $this->blocksModel->getProgramBlocks($visitor['meeting']);
 
 		// get program of visitor
 		$oldPrograms = $this->findVisitorPrograms($visitor->id);
@@ -414,10 +413,10 @@ class VisitorModel extends BaseModel
 	public function payCharge($ids, $type)
 	{
 		$bill = $this->getBill($ids)['bill'];
-		$cost = $this->Meeting->getPrice('cost');
+		$cost = $this->meetingModel->getPrice('cost');
 
 		if($bill < $cost) {
-			$newBill = ['bill' => $this->Meeting->getPrice($type)];
+			$newBill = ['bill' => $this->meetingModel->getPrice($type)];
 			$payResult = $this->getDatabase()
 				->table($this->getTable())
 				->where('id', $ids)

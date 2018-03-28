@@ -89,8 +89,8 @@ class ProgramModel extends BaseModel
 
 			$html = "<div>\n";
 
-			$checked_flag = false;
-			$html_input = "";
+			$checkedFlag = false;
+			$htmlInput = "";
 			foreach($blocks as $data){
 				// full program capacity with visitors
 				$fullProgramData = $this->database
@@ -107,13 +107,13 @@ class ProgramModel extends BaseModel
 
 				if($program){
 					$checked = "checked='checked'";
-					$checked_flag = true;
+					$checkedFlag = true;
 				} else {
 					$checked = "";
 				}
 				// if the capacity is full
 				if($fullProgramData['visitors'] >= $data['capacity']){
-					$html_input .= sprintf('<input id="%s%s" %s disabled type="radio" name="blck_%s" value="%s" />',
+					$htmlInput .= sprintf('<input id="%s%s" %s disabled type="radio" name="blck_%s" value="%s" />',
 						$data['id'],
 						$blockId,
 						$checked,
@@ -122,7 +122,7 @@ class ProgramModel extends BaseModel
 					);
 					$fullProgramInfo = " (NELZE ZAPSAT - kapacita programu je již naplněna!)";
 				} else {
-					$html_input .= sprintf('<input id="%s%s" %s type="radio" name="blck_%s" value="%s" />',
+					$htmlInput .= sprintf('<input id="%s%s" %s type="radio" name="blck_%s" value="%s" />',
 						$data['id'],
 						$blockId,
 						$checked,
@@ -131,17 +131,17 @@ class ProgramModel extends BaseModel
 					);
 					$fullProgramInfo = "";
 				}
-				$html_input .= sprintf('<label for="%s%s">%s</label>',
+				$htmlInput .= sprintf('<label for="%s%s">%s</label>',
 					$data['id'],
 					$blockId,
 					$data['name']
 				);
-				$html_input .= $fullProgramInfo;
-				$html_input .= "<br />\n";
+				$htmlInput .= $fullProgramInfo;
+				$htmlInput .= "<br />\n";
 			}
 
 			// pokud uz jednou bylo zaskrtnuto, nezaskrtavam znovu
-			if(!$checked_flag) {
+			if(!$checkedFlag) {
 				$checked = "checked='checked'";
 			} else {
 				$checked = "";
@@ -151,7 +151,7 @@ class ProgramModel extends BaseModel
 				$checked,
 				$blockId
 			);
-			$html .= $html_input;
+			$html .= $htmlInput;
 
 			$html .= "</div>\n";
 		}
@@ -279,12 +279,12 @@ class ProgramModel extends BaseModel
 	 *
 	 * @return	string	html of a table
 	 */
-	public function getData($program_id = null)
+	public function getData($programId = null)
 	{
-		if(isset($program_id)) {
+		if(isset($programId)) {
 			$data = $this->database
 				->table($this->getTable())
-				->where('id ? AND deleted ?', $program_id, '0')
+				->where('id ? AND deleted ?', $programId, '0')
 				->limit(1)
 				->fetch();
 		} else {
@@ -420,12 +420,12 @@ class ProgramModel extends BaseModel
 		return $html;
 	}
 
-	public static function getProgramNames($block_id)
+	public static function getProgramNames($blockId)
 	{
 		$result = self::$connection
 			->table('kk_programs')
 			->select('name')
-			->where('block ? AND deleted ?', $block_id, '0')
+			->where('block ? AND deleted ?', $blockId, '0')
 			->limit(10)
 			->fetchAll();
 
