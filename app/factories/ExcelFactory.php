@@ -2,6 +2,8 @@
 
 namespace App\Factories;
 
+use PHPExcel;
+
 /**
  * ExcelFactory
  *
@@ -12,7 +14,7 @@ namespace App\Factories;
  */
 class ExcelFactory
 {
-	/** @var Excel */
+	/** @var \PHPExcel */
 	private $excel;
 	private $creator = 'Junák - český skaut, Kapitanát vodních skautů, z. s.';
 	private $lastModifiedBy = 'Srazy VS';
@@ -38,10 +40,8 @@ class ExcelFactory
 
 	/**
 	 * Return new PHPExcel with few settings
-	 *
-	 * @return	PHPExcel;
 	 */
-	public function create()
+	public function create(): PHPExcel
 	{
 		$this->excel = new \PHPExcel();
 

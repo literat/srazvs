@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Nette\Database\Context;
+use Nette\Database\Table\ActiveRow;
 
 /**
  * Program model
@@ -309,10 +310,7 @@ class ProgramModel extends BaseModel
 		return $data;
 	}
 
-	/**
-	 * @return Nette\Database\Table\ActiveRow
-	 */
-	public function all()
+	public function all(): ActiveRow
 	{
 		return $this->getDatabase()
 				->query('SELECT programs.id AS id,
@@ -333,11 +331,7 @@ class ProgramModel extends BaseModel
 				$this->getMeetingId(), '0', '0')->fetchAll();
 	}
 
-	/**
-	 * @param  string $guid
-	 * @return Nette\Database\Table\ActiveRow
-	 */
-	public function annotation($guid)
+	public function annotation(string $guid): ActiveRow
 	{
 		return $this->getDatabase()
 				->table($this->getTable())
@@ -445,9 +439,9 @@ class ProgramModel extends BaseModel
 	 * Get tutor e-mail address
 	 *
 	 * @param int $id id of block item
-	 * @return Nette\Database\Table\ActiveRow object with e-mail address
+	 * @return \Nette\Database\Table\ActiveRow object with e-mail address
 	 */
-	public function getTutor($id)
+	public function getTutor($id): ActiveRow
 	{
 		return $this->getDatabase()
 			->table($this->getTable())
@@ -457,11 +451,7 @@ class ProgramModel extends BaseModel
 			->fetch();
 	}
 
-	/**
-	 * @param  integer $blockId
-	 * @return Row
-	 */
-	public function findByBlockId($blockId = null)
+	public function findByBlockId(int $blockId = null): ActiveRow
 	{
 		return $this->getDatabase()
 			->query('SELECT	progs.id AS id,
@@ -475,11 +465,7 @@ class ProgramModel extends BaseModel
 			->fetchAll();
 	}
 
-	/**
-	 * @param  int  $programId
-	 * @return Row
-	 */
-	public function findProgramVisitors(int $programId)
+	public function findProgramVisitors(int $programId): ActiveRow
 	{
 		return $this->getDatabase()
 				->query('SELECT vis.name AS name,
@@ -491,11 +477,7 @@ class ProgramModel extends BaseModel
 						$programId, '0')->fetchAll();
 	}
 
-	/**
-	 * @param  int  $programId
-	 * @return Row
-	 */
-	public function countProgramVisitors(int $programId)
+	public function countProgramVisitors(int $programId): ActiveRow
 	{
 		return $this->getDatabase()
 				->query('SELECT COUNT(*)

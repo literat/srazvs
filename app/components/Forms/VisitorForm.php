@@ -8,9 +8,8 @@ use App\Models\BlockModel;
 use App\Models\MealModel;
 use App\Models\MeetingModel;
 use Nette\Application\UI\Form;
-use App\Services\SkautIS\UserService;
+use App\Services\Skautis\UserService;
 use Nette\Forms\Controls\SubmitButton;
-use Nette\Utils\ArrayHash;
 
 class VisitorForm extends BaseForm
 {
@@ -21,14 +20,14 @@ class VisitorForm extends BaseForm
 	const MESSAGE_MAX_LENGTH = '%label nesmí mít více jak %d znaků!';
 
 	/**
-	 * @var Closure
+	 * @var callable[]
 	 */
-	public $onVisitorSave;
+	public $onVisitorSave = [];
 
 	/**
-	 * @var Closure
+	 * @var callable[]
 	 */
-	public $onVisitorReset;
+	public $onVisitorReset = [];
 
 	/**
 	 * @var ProvinceModel
@@ -59,6 +58,11 @@ class VisitorForm extends BaseForm
 	 * @var array
 	 */
 	protected $programFields = [];
+
+	/**
+	 * @var UserService
+	 */
+	private $userService;
 
 	/**
 	 * VisitorForm constructor.
@@ -94,11 +98,7 @@ class VisitorForm extends BaseForm
 		$template->render();
 	}
 
-	/**
-	 * @param  array|ArrayHash $defaults
-	 * @return self
-	 */
-	public function setDefaults($defaults): BaseForm
+	public function setDefaults(array $defaults): BaseForm
 	{
 		$this['visitorForm']->setDefaults($defaults);
 
@@ -225,7 +225,8 @@ class VisitorForm extends BaseForm
 	{
 		$visitor = $button->getForm()->getValues();
 
-		$this->onVisitorSave($this, $visitor);
+		//$this->onVisitorSave($this, $visitor);
+		call_user_func([$this, 'onVisitorSave', $visitor]);
 	}
 
 	/**
@@ -236,7 +237,8 @@ class VisitorForm extends BaseForm
 	{
 		$visitor = $button->getForm()->getValues();
 
-		$this->onVisitorReset($this, $visitor);
+		//$this->onVisitorReset($this, $visitor);
+		call_user_func([$this, 'onVisitorSave', $visitor]);
 	}
 
 	/**
@@ -434,10 +436,7 @@ class VisitorForm extends BaseForm
 		return $this;
 	}
 
-	/**
-	 * @return Row
-	 */
-	protected function fetchProgramBlocks()
+	protected function fetchProgramBlocks(): array
 	{
 		return $this->getBlockModel()->getProgramBlocks($this->getMeetingId());
 	}

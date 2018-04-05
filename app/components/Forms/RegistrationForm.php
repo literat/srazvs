@@ -7,7 +7,7 @@ use App\Repositories\ProgramRepository;
 use App\Models\BlockModel;
 use App\Models\MeetingModel;
 use Nette\Application\UI\Form;
-use App\Services\SkautIS\UserService;
+use App\Services\Skautis\UserService;
 
 class RegistrationForm extends VisitorForm
 {
@@ -15,9 +15,9 @@ class RegistrationForm extends VisitorForm
 	const TEMPLATE_NAME = 'RegistrationForm';
 
 	/**
-	 * @var Closure
+	 * @var callable[]
 	 */
-	public $onRegistrationSave;
+	public $onRegistrationSave = [];
 
 	/**
 	 * @var UserService
@@ -38,20 +38,13 @@ class RegistrationForm extends VisitorForm
 		$this->setUserService($user);
 	}
 
-	/**
-	 * @param  array $defaults
-	 * @return self
-	 */
-	public function setDefaults($defaults): BaseForm
+	public function setDefaults(array $defaults): BaseForm
 	{
 		$this['registrationForm']->setDefaults($defaults);
 
 		return $this;
 	}
 
-	/**
-	 * @return Form
-	 */
 	public function createComponentRegistrationForm(): Form
 	{
 		$provinces = $this->getProvinceModel()->all();
@@ -152,31 +145,21 @@ class RegistrationForm extends VisitorForm
 		return $form;
 	}
 
-	/**
-	 * @param  Form $form
-	 * @return void
-	 */
-	public function processForm(Form $form)
+	public function processForm(Form $form): void
 	{
 		$registration = $form->getValues();
 		$registration['meeting'] = $this->getMeetingId();
 
-		$this->onRegistrationSave($this, $registration);
+		//$this->onRegistrationSave($this, $registration);
+		call_user_func([$this, 'onRegistrationSave', $registration]);
 	}
 
-	/**
-	 * @return UserService
-	 */
-	protected function getUserService()
+	protected function getUserService(): UserService
 	{
 		return $this->userService;
 	}
 
-	/**
-	 * @param  UserService $service
-	 * @return $this
-	 */
-	protected function setUserService(UserService $service)
+	protected function setUserService(UserService $service): self
 	{
 		$this->userService = $service;
 

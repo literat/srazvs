@@ -7,13 +7,13 @@ use Exception;
 use App\Entities\VisitorEntity;
 use App\Models\MeetingModel;
 use App\Models\MealModel;
-use App\Services\SkautIS\UserService;
+use App\Services\Skautis\UserService;
 use App\Services\Emailer;
 use App\Repositories\VisitorRepository;
 use App\Repositories\ProgramRepository;
 use App\Components\Forms\RegistrationForm;
 use App\Components\Forms\Factories\IRegistrationFormFactory;
-use App\Services\SkautIS\EventService;
+use App\Services\Skautis\EventService;
 use Nette\Utils\ArrayHash;
 use App\Models\SettingsModel;
 use Skautis\Wsdl\AuthenticationException;
@@ -143,10 +143,8 @@ class RegistrationPresenter extends VisitorPresenter
 
 	/**
 	 * Process data from form
-	 *
-	 * @return void
 	 */
-	public function actionCreate($visitor)
+	public function actionCreate($visitor): string
 	{
 		try {
 			$guid = $this->getVisitorRepository()->create($visitor);
@@ -167,11 +165,7 @@ class RegistrationPresenter extends VisitorPresenter
 		return $guid;
 	}
 
-	/**
-	 * @param  string  $guid
-	 * @return void
-	 */
-	public function actionUpdate($guid, $visitor)
+	public function actionUpdate($guid, $visitor): string
 	{
 		try {
 			$result = $this->getVisitorRepository()->updateByGuid($guid, $visitor);

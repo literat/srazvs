@@ -22,7 +22,7 @@ interface IModel
 	 * @param array $values
 	 * @return mixed
 	 */
-	public function findBy($column, $value);
+	public function findBy(string $column, $value);
 
 	/**
 	 * @param $entity

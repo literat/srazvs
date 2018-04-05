@@ -4,7 +4,6 @@ namespace App\Presenters;
 
 use App\Models\SettingsModel;
 use App\Services\Emailer;
-use Tracy\Debugger;
 
 class SettingsPresenter extends BasePresenter
 {
@@ -14,10 +13,6 @@ class SettingsPresenter extends BasePresenter
 	 */
 	private $emailer;
 
-	/**
-	 * @param SettingsModel $settingsModel
-	 * @param Emailer       $emailer
-	 */
 	public function __construct(SettingsModel $settingsModel, Emailer $emailer)
 	{
 		$this->setModel($settingsModel);
@@ -45,7 +40,7 @@ class SettingsPresenter extends BasePresenter
 
 			$this->logInfo('Settings: mail type %s update succesfull.', [$id]);
 			$this->flashSuccess('Settings: mail type ' . $id . ' update succesfull.');
-		} catch(Exception $e) {
+		} catch(\Exception $e) {
 			$this->logError('Settings: mail type %s update failed, result: %s', [
 				$id,
 				$e->getMessage(),
@@ -73,7 +68,7 @@ class SettingsPresenter extends BasePresenter
 
 			$this->logInfo('Settings: debug regime update succesfull.');
 			$this->flashSuccess('Settings: debug regime update succesfull.');
-		} catch(Exception $e) {
+		} catch(\Exception $e) {
 			$this->logError('Settings: debug update update failed, result: %s', [$e->getMessage()]);
 			$this->flashFailure('Settings: debug regime update failed, result: ' . $e->getMessage());
 		}
@@ -103,7 +98,7 @@ class SettingsPresenter extends BasePresenter
 				$recipient,
 			]);
 			$this->flashSuccess('Settings: mail type ' . $id . ' succesfully send.');
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 			$this->logError('Settings: mail type %s send to recipient %s failed, result: %s', [
 				$id,
 				$recipient,
@@ -122,7 +117,6 @@ class SettingsPresenter extends BasePresenter
 	{
 		$settingsModel = $this->getModel();
 		$template = $this->getTemplate();
-		$error = '';
 
 		$template->payment_subject = $settingsModel->getMailJson('cost')->subject;
 		$template->payment_message = $settingsModel->getMailJson('cost')->message;
@@ -139,21 +133,15 @@ class SettingsPresenter extends BasePresenter
 		$template->debugRegime = $settingsModel->findDebugRegime();
 	}
 
-	/**
-	 * @return Emailer
-	 */
-	protected function getEmailer()
+	protected function getEmailer(): Emailer
 	{
 		return $this->emailer;
 	}
 
-	/**
-	 * @param  Emailer $emailer
-	 * @return $this
-	 */
-	protected function setEmailer(Emailer $emailer)
+	protected function setEmailer(Emailer $emailer): self
 	{
 		$this->emailer = $emailer;
+
 		return $this;
 	}
 

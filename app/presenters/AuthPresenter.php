@@ -2,9 +2,9 @@
 
 namespace App\Presenters;
 
-use App\Services\SkautIS\AuthService as SkautisAuthService;
-use App\Services\SkautIS\UserService as SkautisUserService;
-use App\Services\SkautIS\Authenticator as SkautisAuthenticator;
+use App\Services\Skautis\AuthService as SkautisAuthService;
+use App\Services\Skautis\UserService as SkautisUserService;
+use App\Services\Skautis\Authenticator as SkautisAuthenticator;
 use App\Services\UserService;
 use Skautis\Wsdl\AuthenticationException;
 
@@ -199,29 +199,18 @@ class AuthPresenter extends BasePresenter
 		return $this->skautisAuthService;
 	}
 
-	/**
-	 * @param  SkautisAuthService $service
-	 * @return self
-	 */
-	protected function setskautisAuthService(SkautisAuthService $service): self
+	protected function setSkautisAuthService(SkautisAuthService $service): self
 	{
 		$this->skautisAuthService = $service;
 
 		return $this;
 	}
 
-	/**
-	 * @return SkautisUserService
-	 */
 	protected function getSkautisUserService(): SkautisUserService
 	{
 		return $this->skautisUserService;
 	}
 
-	/**
-	 * @param  SkautisUserService $service
-	 * @return self
-	 */
 	protected function setSkautisUserService(SkautisUserService $service): self
 	{
 		$this->skautisUserService = $service;
@@ -229,18 +218,11 @@ class AuthPresenter extends BasePresenter
 		return $this;
 	}
 
-	/**
-	 * @return UserService
-	 */
 	protected function getUserService(): UserService
 	{
 		return $this->userService;
 	}
 
-	/**
-	 * @param  UserService $service
-	 * @return self
-	 */
 	protected function setUserService(UserService $service): self
 	{
 		$this->userService = $service;

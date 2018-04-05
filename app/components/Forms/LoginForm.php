@@ -10,9 +10,11 @@ class LoginForm extends BaseForm
 {
 
 	const TEMPLATE_NAME = 'LoginForm';
+	const MESSAGE_REQUIRED = '';
+	const MESSAGE_MAX_LENGTH = '';
 
 	/**
-	 * @var Closure
+	 * @var callable
 	 */
 	public $onAnnotationSave;
 
@@ -26,9 +28,6 @@ class LoginForm extends BaseForm
 	 */
 	protected $meetingModel;
 
-	/**
-	 * @param ProvinceModel $model
-	 */
 	public function __construct(
 		AnnotationService $annotation,
 		MeetingModel $meeting
@@ -37,10 +36,7 @@ class LoginForm extends BaseForm
 		$this->setMeetingModel($meeting);
 	}
 
-	/**
-	 * @return void
-	 */
-	public function render()
+	public function render(): void
 	{
 		$template = $this->getTemplate();
 		$template->setFile($this->buildTemplatePath());
@@ -105,7 +101,7 @@ class LoginForm extends BaseForm
 	{
 		$annotation = $form->getValues();
 
-		$this->onAnnotationSave($this, $annotation);
+		//$this->onAnnotationSave($this, $annotation);
 	}
 
 	/**

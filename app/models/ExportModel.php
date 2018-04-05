@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Nette\Database\Context;
+use Nette\Database\Table\ActiveRow;
 
 /**
  * Export Model
@@ -99,11 +100,8 @@ class ExportModel extends BaseModel
 
 	/**
 	 * Print Attendance into PDF file
-	 *
-	 * @param	void
-	 * @return	file	PDF file
 	 */
-	public function attendance()
+	public function attendance(): ActiveRow
 	{
 		return $this->getDatabase()->query('SELECT	vis.id AS id,
 						name,
@@ -371,10 +369,7 @@ class ExportModel extends BaseModel
 			->fetchAll();
 	}
 
-	/**
-	 * @return ActiveRow
-	 */
-	public function graph()
+	public function graph(): ActiveRow
 	{
 		return $this->getDatabase()
 			->query('SELECT DATE_FORMAT(reg_daytime, "%d. %m. %Y") AS day,
@@ -406,10 +401,7 @@ class ExportModel extends BaseModel
 					  $this->getMeetingId(), '0')->fetchField();
 	}
 
-	/**
-	 * @return ActiveRow
-	 */
-	public function materials()
+	public function materials(): ActiveRow
 	{
 		return $this->getDatabase()
 			->query('SELECT	progs.id AS id,
@@ -474,11 +466,8 @@ class ExportModel extends BaseModel
 
 	/**
 	 * Return data for visitors's program
-	 *
-	 * @param	int		program id
-	 * @return	file	PDF file
 	 */
-	public function programVisitors($programId)
+	public function programVisitors(int $programId): ActiveRow
 	{
 		return $this->getDatabase()
 			->query('SELECT vis.name AS name,

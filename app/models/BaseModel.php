@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Nette\Database\Context;
+use Nette\Database\Table\ActiveRow;
 use Nette\SmartObject;
 use Nette\Caching\Cache;
 
@@ -17,6 +18,11 @@ use Nette\Caching\Cache;
 abstract class BaseModel
 {
 	use SmartObject;
+
+	/**
+	 * @var BaseModel
+	 */
+	protected static $instance;
 
 	/** @var string */
 	protected $table = null;
@@ -47,6 +53,7 @@ abstract class BaseModel
 	 *
 	 * @return	mixed	instance of class
 	 */
+	/*
 	public static function getInstance()
 	{
 		if(self::$instance === false) {
@@ -54,11 +61,9 @@ abstract class BaseModel
 		}
 		return self::$instance;
 	}
+	*/
 
-	/**
-	 * @return Nette\Database\Table\ActiveRow
-	 */
-	public function all()
+	public function all(): ActiveRow
 	{
 		return $this->getDatabase()
 			->table($this->getTable())
@@ -66,10 +71,6 @@ abstract class BaseModel
 			->fetchAll();
 	}
 
-	/**
-	 * @param  integer $id
-	 * @return Nette\Database\Table\ActiveRow
-	 */
 	public function find($id)
 	{
 		return $this->getDatabase()
@@ -79,12 +80,7 @@ abstract class BaseModel
 			->fetch();
 	}
 
-	/**
-	 * @param  string $column
-	 * @param  mixed  $value
-	 * @return ActiveRow
-	 */
-	public function findBy($column, $value)
+	public function findBy(string $column, $value)
 	{
 		return $this->getDatabase()
 			->table($this->getTable())
@@ -178,10 +174,7 @@ abstract class BaseModel
 		return $this->meetingId;
 	}
 
-	/**
-	 * @return Nette\Database\Context
-	 */
-	protected function getDatabase()
+	protected function getDatabase(): Context
 	{
 		return $this->database;
 	}

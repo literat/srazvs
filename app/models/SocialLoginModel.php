@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Entities\SocialLoginEntity;
 use Nette\Database\Context;
+use Nette\Database\Table\ActiveRow;
 use Nette\Reflection\ClassType;
 use App\Entities\IEntity;
 use \Exception;
@@ -27,10 +28,7 @@ class SocialLoginModel extends BaseModel implements IModel
 		$this->setDatabase($database);
 	}
 
-	/**
-	 * @return	ActiveRow
-	 */
-	public function all()
+	public function all(): ActiveRow
 	{
 		//return;
 	}

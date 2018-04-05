@@ -17,7 +17,7 @@ use Tracy\Debugger;
  */
 class Emailer
 {
-	/** @var SmtpMailer */
+	/** @var IMailer */
 	private $mailer;
 
 	/** @var SettingsModel */
@@ -72,7 +72,7 @@ class Emailer
 		try {
 			$this->mailer->send($message);
 			return true;
-		} catch(Exception $e) {
+		} catch(\Exception $e) {
 			Debugger::log($e, 'error');
 			return false;
 		}

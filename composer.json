@@ -8,7 +8,7 @@
         "nette/di": "^2.4",
         "nette/utils": "^2.4",
         "nette/neon": "^2.4",
-        "nette/robot-loader": "^2.4",
+        "nette/robot-loader": "^3",
         "nette/bootstrap": "^2.4",
         "nette/application": "^2.4",
         "nette/php-generator": "^2.6",
@@ -30,7 +30,9 @@
         "php-coveralls/php-coveralls": "^1.0",
         "friendsofphp/php-cs-fixer": "^2.11",
         "phpmd/phpmd": "^2.6",
-        "squizlabs/php_codesniffer": "^3.2"
+        "squizlabs/php_codesniffer": "^3.2",
+        "phpstan/phpstan": "^0.9.2",
+        "phpstan/phpstan-nette": "^0.9.0"
     },
     "autoload": {
         "files": [
@@ -46,11 +48,12 @@
         "code:sniffer": "phpcs --standard=phpcs.xml --colors -p -s app",
         "code:mess": "phpmd app text codesize.xml",
         "code:fixer": "php-cs-fixer fix --dry-run --diff --diff-format=udiff --ansi",
-        "code:analysis": "vendor/bin/phpstan analyze -l 4 -c phpstan.neon app",
+        "code:analysis": "phpstan analyze -c phpstan.neon -l 0 app",
         "code": [
             "@code:sniffer",
             "@code:mess",
-            "@code:fixer"
+            "@code:fixer",
+            "@code:analysis"
         ],
         "test:unit": "composer tester -- --coverage tests/unit/coverage.html --coverage-src app/ tests/unit",
         "test:acceptance": "codeception",

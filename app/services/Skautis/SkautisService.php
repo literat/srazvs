@@ -2,25 +2,27 @@
 
 namespace App\Services\Skautis;
 
-use Nette\Object;
+use Nette\SmartObject;
 use Skautis\Skautis;
 
 /**
  * Skautis service
  */
-abstract class SkautisService extends Object
+abstract class SkautisService
 {
+
+	use SmartObject;
 
 	/**
 	 * Class Table reference
 	 * @var instance of BaseTable
 	 */
-	protected $table;
+	//protected $table;
 
 
 	/**
 	 * Holds Skautis instance
-	 * @var Skautis\Skautis
+	 * @var \Skautis\Skautis
 	 */
 	protected $skautis;
 
@@ -34,9 +36,9 @@ abstract class SkautisService extends Object
 
 	/**
 	 * Short term storage for saving Skautis answers
-	 * @var type
+	 * @var array
 	 */
-	private static $storage;
+	private static $storage = [];
 
 
 	/**
@@ -45,7 +47,6 @@ abstract class SkautisService extends Object
 	public function __construct(Skautis $skautIS = null)
 	{
 		$this->setSkautis($skautIS);
-		self::$storage = [];
 	}
 
 

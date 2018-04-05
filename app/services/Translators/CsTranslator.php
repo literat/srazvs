@@ -12,8 +12,11 @@ class CsTranslator implements ITranslator
 	 * @param  int      plural count
 	 * @return string
 	 */
-	public function translate($message/*, $count = null*/)
+	// @codingStandardsIgnoreStart
+	public function translate($message, $count = null)
 	{
 		dd($message);
 	}
+	// @codingStandardsIgnoreEnd
+
 }

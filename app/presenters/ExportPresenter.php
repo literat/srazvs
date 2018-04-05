@@ -14,6 +14,7 @@ use App\Components\MealControl;
 use Nette\Utils\Strings;
 use Tracy\Debugger;
 use Mpdf\Mpdf;
+use PHPExcel;
 
 /**
  * Export Controller
@@ -34,12 +35,12 @@ class ExportPresenter extends BasePresenter
 	protected $blockModel;
 
 	/**
-	 * @var Mpdf\Mpdf
+	 * @var \Mpdf\Mpdf
 	 */
 	protected $pdf;
 
 	/**
-	 * @var PHPExcel
+	 * @var \PHPExcel
 	 */
 	protected $excel;
 
@@ -161,11 +162,8 @@ class ExportPresenter extends BasePresenter
 
 	/**
 	 * Print Attendance into PDF file
-	 *
-	 * @param	void
-	 * @return	file	PDF file
 	 */
-	public function renderAttendance()
+	public function renderAttendance(): void
 	{
 		$this->allowAdminAccessOnly();
 		// output file name
@@ -190,11 +188,8 @@ class ExportPresenter extends BasePresenter
 
 	/**
 	 * Print meal tickets into PDF file
-	 *
-	 * @param	void
-	 * @return	file	PDF file
 	 */
-	public function renderMealTicket()
+	public function renderMealTicket(): void
 	{
 		$this->allowAdminAccessOnly();
 		// output file name
@@ -213,11 +208,8 @@ class ExportPresenter extends BasePresenter
 
 	/**
 	 * Print name list into PDF file
-	 *
-	 * @param	void
-	 * @return	file	PDF file
 	 */
-	public function renderNameList()
+	public function renderNameList(): void
 	{
 		$this->allowAdminAccessOnly();
 		// output file name
@@ -240,12 +232,7 @@ class ExportPresenter extends BasePresenter
 		$this->publish();
 	}
 
-	/**
-	 * @param  string  $type
-	 * @param  integer $id
-	 * @return void
-	 */
-	public function renderProgram($type, $id)
+	public function renderProgram(string $type, int $id): void
 	{
 		$programMethod = 'renderProgram' . Strings::firstUpper($type);
 
@@ -254,11 +241,8 @@ class ExportPresenter extends BasePresenter
 
 	/**
 	 * Print program cards into PDF file
-	 *
-	 * @param	void
-	 * @return	file	PDF file
 	 */
-	protected function renderProgramCards()
+	protected function renderProgramCards(): void
 	{
 		$this->allowAdminAccessOnly();
 		$this->filename = 'vlastni_programy.pdf';
@@ -277,11 +261,8 @@ class ExportPresenter extends BasePresenter
 
 	/**
 	 * Print large program into PDF file
-	 *
-	 * @param	voide
-	 * @return	file	PDF file
 	 */
-	protected function renderProgramLarge()
+	protected function renderProgramLarge(): void
 	{
 		$this->allowAdminAccessOnly();
 		$largeProgram = $this->getModel()->largeProgram();
@@ -306,11 +287,8 @@ class ExportPresenter extends BasePresenter
 
 	/**
 	 * Print public program into PDF file
-	 *
-	 * @param	void
-	 * @return	file	PDF file
 	 */
-	protected function renderProgramPublic()
+	protected function renderProgramPublic(): void
 	{
 		$templateName = 'program_public';
 		$publicProgram = $this->getModel()->publicProgram();
@@ -330,11 +308,8 @@ class ExportPresenter extends BasePresenter
 
 	/**
 	 * Print program badges into PDF file
-	 *
-	 * @param	void
-	 * @return	file	PDF file
 	 */
-	protected function renderProgramBadges()
+	protected function renderProgramBadges(): void
 	{
 		$this->allowAdminAccessOnly();
 		$this->filename = 'program-badge.pdf';
@@ -368,11 +343,8 @@ class ExportPresenter extends BasePresenter
 
 	/**
 	 * Print visitors on program into PDF file
-	 *
-	 * @param	int		program id
-	 * @return	file	PDF file
 	 */
-	protected function renderProgramVisitors($id)
+	protected function renderProgramVisitors(int $id): void
 	{
 		$this->allowAdminAccessOnly();
 		$this->filename = 'ucastnici-programu.pdf';
@@ -394,11 +366,8 @@ class ExportPresenter extends BasePresenter
 
 	/**
 	 * Print details of program into PDF file
-	 *
-	 * @param	void
-	 * @return	file	PDF file
 	 */
-	protected function renderProgramDetails()
+	protected function renderProgramDetails(): void
 	{
 		$this->allowAdminAccessOnly();
 		$this->filename = 'vypis-programu.pdf';
@@ -416,10 +385,7 @@ class ExportPresenter extends BasePresenter
 		$this->publish();
 	}
 
-	/**
-	 * @return void
-	 */
-	public function actionNameBadges()
+	public function actionNameBadges(): void
 	{
 		$this->allowAdminAccessOnly();
 		$names = $this->getHttpRequest()->getPost()['names'];
@@ -430,9 +396,8 @@ class ExportPresenter extends BasePresenter
 	 * Print name badges into PDF file
 	 *
 	 * @param	string 	comma separated values
-	 * @return	file	PDF file
 	 */
-	public function renderNameBadges($namesStringified)
+	public function renderNameBadges(string $namesStringified): void
 	{
 		$this->allowAdminAccessOnly();
 		$this->filename = 'jmenovky.pdf';
@@ -465,10 +430,8 @@ class ExportPresenter extends BasePresenter
 
 	/**
 	 * Print data of visitors into excel file
-	 *
-	 * @return	file	*.xlsx file type
 	 */
-	public function renderVisitorsExcel()
+	public function renderVisitorsExcel(): void
 	{
 		$this->allowAdminAccessOnly();
 		$excel = $this->getExcel();
@@ -548,14 +511,14 @@ class ExportPresenter extends BasePresenter
 			'Q' => 'arrival',
 			'R' => 'departure',
 			'S' => 'question',
-			'S' => 'question2',
-			'T' => 'all',
-			'U' => 'fry_dinner',
-			'V' => 'sat_breakfast',
-			'W' => 'sat_lunch',
-			'X' => 'sat_dinner',
-			'Y' => 'sun_breakfast',
-			'Z' => 'sun_lunch',
+			'T' => 'question2',
+			'U' => 'all',
+			'V' => 'fry_dinner',
+			'W' => 'sat_breakfast',
+			'X' => 'sat_lunch',
+			'Y' => 'sat_dinner',
+			'Z' => 'sun_breakfast',
+			'AA' => 'sun_lunch',
 		];
 
 		$i = 2;
@@ -586,12 +549,7 @@ class ExportPresenter extends BasePresenter
 		exit;
 	}
 
-	/**
-	 * @param  string $name
-	 * @param  array  $parameters
-	 * @return self
-	 */
-	protected function forgeView($name = '', array $parameters = [])
+	protected function forgeView(string $name = '', array $parameters = []): self
 	{
 		$template = $this->getTemplate();
 
@@ -612,7 +570,7 @@ class ExportPresenter extends BasePresenter
 		return $this;
 	}
 
-	protected function publish()
+	protected function publish(): void
 	{
 		$template = $this->getTemplate();
 
@@ -629,67 +587,43 @@ class ExportPresenter extends BasePresenter
 		}
 	}
 
-	/**
-	 * @return RegistrationGraphControl
-	 */
-	protected function createComponentRegistrationGraph()
+	protected function createComponentRegistrationGraph(): RegistrationGraphControl
 	{
 		return $this->registrationGraphControl->setMeetingId($this->getMeetingId());
 	}
 
-	/**
-	 * @param  RegistrationGraphControl $control
-	 * @return $this
-	 */
-	protected function setRegistrationGraphControl(RegistrationGraphControl $control)
+	protected function setRegistrationGraphControl(RegistrationGraphControl $control): self
 	{
 		$this->registrationGraphControl = $control;
 
 		return $this;
 	}
 
-	/**
-	 * @return MaterialControl
-	 */
-	protected function createComponentMaterials()
+	protected function createComponentMaterials(): MaterialsControl
 	{
 		return $this->materialControl->setMeetingId($this->getMeetingId());
 	}
 
-	/**
-	 * @param  MaterialControl $control
-	 * @return $this
-	 */
-	protected function setMaterialControl(MaterialsControl $control)
+	protected function setMaterialControl(MaterialsControl $control): self
 	{
 		$this->materialControl = $control;
 
 		return $this;
 	}
 
-	/**
-	 * @return MealControl
-	 */
-	protected function createComponentMeal()
+	protected function createComponentMeal(): MealControl
 	{
 		return $this->mealControl->setMeetingId($this->getMeetingId());
 	}
 
-	/**
-	 * @param  MealControl $control
-	 * @return $this
-	 */
-	protected function setMealControl(MealControl $control)
+	protected function setMealControl(MealControl $control): self
 	{
 		$this->mealControl = $control;
 
 		return $this;
 	}
 
-	/**
-	 * @return integer
-	 */
-	protected function calculateGraphHeight()
+	protected function calculateGraphHeight(): int
 	{
 		$graphHeight = RegistrationGraphControl::GRAPH_HEIGHT_INIT;
 
@@ -704,76 +638,51 @@ class ExportPresenter extends BasePresenter
 		return $graphHeight;
 	}
 
-	/**
-	 * @return ProgramModel
-	 */
-	protected function getProgramModel()
+	protected function getProgramModel(): ProgramModel
 	{
 		return $this->programModel;
 	}
 
-	/**
-	 * @param  BlockModel $model
-	 * @return $this
-	 */
-	protected function setBlockModel(BlockModel $model)
+	protected function setBlockModel(BlockModel $model): self
 	{
 		$this->blockModel = $model;
+
 		return $this;
 	}
 
-	/**
-	 * @return BlockModel
-	 */
-	protected function getBlockModel()
+	protected function getBlockModel(): BlockModel
 	{
 		return $this->blockModel;
 	}
 
-	/**
-	 * @param  ProgramModel $model
-	 * @return $this
-	 */
-	protected function setProgramModel(ProgramModel $model)
+	protected function setProgramModel(ProgramModel $model): self
 	{
 		$this->programModel = $model;
+
 		return $this;
 	}
 
-
-	/**
-	 * @return PHPExcel
-	 */
-	protected function getExcel()
+	protected function getExcel(): PHPExcel
 	{
 		return $this->excel;
 	}
 
-	/**
-	 * @param  PHPExcel $excel
-	 * @return $this
-	 */
-	protected function setExcel(\PHPExcel $excel)
+	protected function setExcel(PHPExcel $excel): self
 	{
 		$this->excel = $excel;
+
 		return $this;
 	}
 
-	/**
-	 * @return mPDF
-	 */
-	protected function getPdf()
+	protected function getPdf(): Mpdf
 	{
 		return $this->pdf;
 	}
 
-	/**
-	 * @param  Mpdf $pdf
-	 * @return self
-	 */
-	protected function setPdf(Mpdf $pdf)
+	protected function setPdf(Mpdf $pdf): self
 	{
 		$this->pdf = $pdf;
+
 		return $this;
 	}
 

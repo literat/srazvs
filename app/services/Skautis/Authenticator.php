@@ -9,8 +9,9 @@ use App\Repositories\SocialLoginRepository;
 use App\Repositories\PersonRepository;
 use App\Repositories\UserRepository;
 use App\Services\UserService;
-use App\Services\SkautIS\UserService as SkautisUserService;
-use App\Services\SkautIS\AuthService as SkautisAuthService;
+use App\Services\Skautis\UserService as SkautisUserService;
+use App\Services\Skautis\AuthService as SkautisAuthService;
+use Nette\Security\AuthenticationException;
 
 class Authenticator implements IAuthenticator
 {
@@ -37,7 +38,7 @@ class Authenticator implements IAuthenticator
 	private $skautisAuthService;
 
 	/**
-	 * @var \App\Services\SkautIS\UserService
+	 * @var \App\Services\Skautis\UserService
 	 */
 	private $skautisUserService;
 

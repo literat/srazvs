@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Nette\Database\Context;
+use Nette\Database\Table\ActiveRow;
 use Nette\Utils\Strings;
 use \Exception;
 use DateTime;
@@ -19,25 +20,39 @@ use Tracy\Debugger;
 class VisitorModel extends BaseModel
 {
 
-	/** @var string */
+	/**
+	 * @var string
+	 */
 	public $search;
 
-	/** @var Meeting */
+	/**
+	 * @var MeetingModel
+	 */
 	public $meetingModel;
 
-	/** @var Meal */
+	/**
+	 * @var MealModel
+	 */
 	public $mealModel;
 
-	/** @var Program */
+	/**
+	 * @var ProgramModel
+	 */
 	public $programModel;
 
-	/** @var Blocks */
+	/**
+	 * @var BlockModel
+	 */
 	public $blocksModel;
 
-	/** @var int */
+	/**
+	 * @var int
+	 */
 	public $meetingPrice;
 
-	/** @var int */
+	/**
+	 * @var int
+	 */
 	private $meetingAdvance;
 
 	/**
@@ -457,10 +472,7 @@ class VisitorModel extends BaseModel
 		return $datetime;
 	}
 
-	/**
-	 * @return Row
-	 */
-	public function all()
+	public function all(): ActiveRow
 	{
 		return $this->getDatabase()
 			->query('SELECT 	vis.id AS id,
@@ -509,11 +521,7 @@ class VisitorModel extends BaseModel
 		return $recipientMailAddresses;
 	}
 
-	/**
-	 * @param  int  $id
-	 * @return Visitor
-	 */
-	public function getBill($id)
+	public function getBill(int $id): ActiveRow
 	{
 		return $this->getDatabase()
 			->table($this->getTable())

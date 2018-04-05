@@ -17,14 +17,14 @@ class BlockForm extends BaseForm
 	const MESSAGE_MAX_LENGTH = '%label nesmí mít více jak %d znaků!';
 
 	/**
-	 * @var Closure
+	 * @var callable[]
 	 */
-	public $onBlockSave;
+	public $onBlockSave = [];
 
 	/**
-	 * @var Closure
+	 * @var callable[]
 	 */
-	public $onBlockReset;
+	public $onBlockReset = [];
 
 	/**
 	 * @var BlockRepository
@@ -72,10 +72,6 @@ class BlockForm extends BaseForm
 		55 => "55",
 	];
 
-	/**
-	 * @param BlockRepository    $blockRepository
-	 * @param CategoryRepository $categoryRepository
-	 */
 	public function __construct(
 		BlockRepository $blockRepository,
 		CategoryRepository $categoryRepository
@@ -84,10 +80,7 @@ class BlockForm extends BaseForm
 		$this->setCategoryRepository($categoryRepository);
 	}
 
-	/**
-	 * @return void
-	 */
-	public function render()
+	public function render(): void
 	{
 		$template = $this->getTemplate();
 		$template->setFile($this->buildTemplatePath());
@@ -169,7 +162,8 @@ class BlockForm extends BaseForm
 	{
 		$block = $button->getForm()->getValues();
 
-		$this->onBlockSave($this, $block);
+		//$this->onBlockSave($this, $block);
+		call_user_func([$this, 'onBlockSave', $block]);
 	}
 
 	/**
@@ -180,7 +174,8 @@ class BlockForm extends BaseForm
 	{
 		$block = $button->getForm()->getValues();
 
-		$this->onBlockReset($this, $block);
+		//$this->onBlockReset($this, $block);
+		call_user_func([$this, 'onBlockReset', $block]);
 	}
 
 	/**

@@ -4,9 +4,11 @@ namespace App\Models;
 
 use App\Entities\BlockEntity;
 use Nette\Database\Context;
+use Nette\Database\Table\ActiveRow;
 use Nette\Reflection\ClassType;
 use App\Entities\IEntity;
 use \Exception;
+use Nette\Utils\DateTime;
 
 /**
  * Blocks
@@ -51,10 +53,7 @@ class BlockModel extends BaseModel implements IModel
 		self::$connection = $this->getDatabase();
 	}
 
-	/**
-	 * @return	ActiveRow
-	 */
-	public function all()
+	public function all(): ActiveRow
 	{
 		return $this->getDatabase()
 			->query('SELECT blocks.guid AS guid,
@@ -80,7 +79,7 @@ class BlockModel extends BaseModel implements IModel
 	 * @param  int $id
 	 * @return BlockEntity
 	 */
-	public function find($id): BlockEntity
+	public function find($id): IEntity
 	{
 		$block = parent::find($id);
 		return $this->hydrate($block);
@@ -174,11 +173,8 @@ class BlockModel extends BaseModel implements IModel
 
 	/**
 	 * Get tutor e-mail address
-	 *
-	 * @param int $blockId id of block item
-	 * @return Nette\Database\Table\ActiveRow object with e-mail address
 	 */
-	public function getTutor($blockId)
+	public function getTutor(int $blockId): ActiveRow
 	{
 		return $this->getDatabase()
 			->table($this->getTable())
@@ -188,11 +184,7 @@ class BlockModel extends BaseModel implements IModel
 			->fetch();
 	}
 
-	/**
-	 * @param  int $meetingId
-	 * @return Database
-	 */
-	public function findByMeeting($meetingId)
+	public function findByMeeting(int $meetingId): ActiveRow
 	{
 		return $this->getDatabase()
 			->table($this->getTable())
@@ -201,11 +193,7 @@ class BlockModel extends BaseModel implements IModel
 			->fetchAll();
 	}
 
-	/**
-	 * @param  string $day
-	 * @return Row
-	 */
-	public function findByDay($day = '')
+	public function findByDay(string $day = ''): ActiveRow
 	{
 		return $this->getDatabase()
 				->query('SELECT	blocks.id AS id,
@@ -305,12 +293,9 @@ class BlockModel extends BaseModel implements IModel
 	}
 
 	/**
-	 * @param  date $from
-	 * @param  date $to
-	 * @return void
 	 * @throws Exception
 	 */
-	private function guardToGreaterThanFrom($from, $to)
+	private function guardToGreaterThanFrom(DateTime $from, DateTime $to): void
 	{
 		if($from > $to) {
 			throw new Exception('Starting time is greater then finishing time.');

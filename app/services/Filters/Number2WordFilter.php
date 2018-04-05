@@ -2,10 +2,12 @@
 
 namespace App\Services\Filters;
 
-use Nette\Object;
+use Nette\SmartObject;
 
-class Number2WordFilter extends Object
+class Number2WordFilter
 {
+
+	use SmartObject;
 
 	/**
 	 * převod desitkového čísla vyjádřeného matematicky na číslo vyjádřené slovně

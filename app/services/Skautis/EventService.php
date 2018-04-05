@@ -10,9 +10,9 @@ class EventService extends SkautisService
 
 	/**
 	 * @param   void
-	 * @return  stdClass
+	 * @return  \stdClass
 	 *
-	 * @throws Skautis\Wsdl\WsdlException
+	 * @throws \Skautis\Wsdl\WsdlException
 	 */
 	public function insertParticipant($loginId, $personId, $educationEventId, $educationEventCourseId)
 	{
@@ -30,9 +30,9 @@ class EventService extends SkautisService
 	 * @param  int    $loginId
 	 * @param  int    $educationEventCourseId
 	 * @param  string $phone
-	 * @return stdClass
+	 * @return \stdClass
 	 *
-	 * @throws Skautis\Wsdl\WsdlException
+	 * @throws \Skautis\Wsdl\WsdlException
 	 */
 	public function insertEnroll($loginId, $educationEventCourseId, $phone)
 	{

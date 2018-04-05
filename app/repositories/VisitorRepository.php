@@ -112,11 +112,8 @@ class VisitorRepository
 
 	/**
 	 * Return visitor by guid
-	 *
-	 * @param  string  $guid
-	 * @return Nette\Database\Table\ActiveRow|bool
 	 */
-	public function findByGuid($guid)
+	public function findByGuid(string $guid): ActiveRow
 	{
 		return $this->getVisitorModel()->findBy('guid', $guid);
 	}

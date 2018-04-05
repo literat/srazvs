@@ -21,10 +21,7 @@ class ProvinceModel extends BaseModel
 		$this->setDatabase($database);
 	}
 
-	/**
-	 * @return array
-	 */
-	public function all(): array
+	public function all(): ActiveRow
 	{
 		$provinces = $this->getDatabase()
 			->table($this->getTable())

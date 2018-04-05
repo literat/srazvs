@@ -199,9 +199,7 @@ class ProgramPresenter extends BasePresenter
 			$this->logError('Destroying of program failed, result: %s', [
 				$e->getMessage()
 			]);
-			$this->flashError('Smazání programu se nezdařilo, result: %s', [
-				$e->getMessage()
-			]);
+			$this->flashError(sprintf('Smazání programu se nezdařilo, result: %s', $e->getMessage()));
 		}
 
 		$this->redirect('Program:listing');
@@ -228,9 +226,7 @@ class ProgramPresenter extends BasePresenter
 			$this->logError('Sending email to program tutor failed, result: %s', [
 				$e->getMessage()
 			]);
-			$this->flashError('Email lektorovi nebyl odeslán, result: %s', [
-				$e->getMessage()
-			]);
+			$this->flashError(sprintf('Email lektorovi nebyl odeslán, result: %s', $e->getMessage()));
 		}
 
 		$this->redirect('Program:edit', $id);

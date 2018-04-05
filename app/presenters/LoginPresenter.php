@@ -4,7 +4,7 @@ namespace App\Presenters;
 
 use App\Components\Forms\LoginForm;
 use App\Components\Forms\Factories\ILoginFormFactory;
-use App\Services\SkautIS\UserService;
+use App\Services\Skautis\UserService;
 
 class LoginPresenter extends BasePresenter
 {
@@ -27,10 +27,7 @@ class LoginPresenter extends BasePresenter
 		$this->setLoginFormFactory($loginFormFactory);
 	}
 
-	/**
-	 * @return void
-	 */
-	public function startup()
+	public function startup(): void
 	{
 		parent::startup();
 
@@ -46,47 +43,34 @@ class LoginPresenter extends BasePresenter
 
 	/**
 	 * Render entire page
-	 * @return void
 	 */
-	public function renderDefault()
+	public function renderDefault(): void
 	{
 		$template = $this->getTemplate();
 		$template->user = $this->getUser();
 		$template->page = $this->getPresenter()->getName();
 	}
 
-	/**
-	 * @return LoginForm
-	 */
 	protected function createComponentLoginForm(): LoginForm
 	{
 		return $this->loginFormFactory->create();
 	}
 
-	/**
-	 * @return UserService
-	 */
-	protected function getUserService()
+	protected function getUserService(): UserService
 	{
 		return $this->userService;
 	}
 
-	/**
-	 * @param  UserService $service
-	 * @return $this
-	 */
-	protected function setUserService(UserService $service)
+	protected function setUserService(UserService $service): self
 	{
 		$this->userService = $service;
 
 		return $this;
 	}
 
-	/**
-	 * @param  ILoginFormFactory $factory
-	 */
-	protected function setLoginFormFactory(ILoginFormFactory $factory)
+	protected function setLoginFormFactory(ILoginFormFactory $factory): ILoginFormFactory
 	{
 		$this->loginFormFactory = $factory;
 	}
+
 }

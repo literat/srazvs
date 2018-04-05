@@ -29,10 +29,7 @@ class MeetingPresenter extends BasePresenter
 		$this->allowAdminAccessOnly();
 	}
 
-	/**
-	 * @return void
-	 */
-	public function actionCreate()
+	public function actionCreate(): void
 	{
 		try {
 			$data = $this->getHttpRequest()->getPost();
@@ -45,7 +42,7 @@ class MeetingPresenter extends BasePresenter
 				json_encode($data),
 				$e->getMessage()
 			]);
-			$this->flashFailure('Creation of meeting failed, result: %s', $e->getMessage());
+			$this->flashFailure(sprintf('Creation of meeting failed, result: %s', $e->getMessage()));
 		}
 
 		$this->redirect('Meeting:listing');

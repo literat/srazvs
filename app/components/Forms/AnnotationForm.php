@@ -15,9 +15,9 @@ class AnnotationForm extends BaseForm
 	const MESSAGE_MAX_LENGTH = '%label nesmí mít více jak %d znaků!';
 
 	/**
-	 * @var Closure
+	 * @var callable[]
 	 */
-	public $onAnnotationSave;
+	public $onAnnotationSave = [];
 
 	/**
 	 * @var AnnotationService
@@ -29,9 +29,6 @@ class AnnotationForm extends BaseForm
 	 */
 	protected $meetingModel;
 
-	/**
-	 * @param ProvinceModel $model
-	 */
 	public function __construct(
 		AnnotationService $annotation,
 		MeetingModel $meeting
@@ -108,7 +105,8 @@ class AnnotationForm extends BaseForm
 	{
 		$annotation = $form->getValues();
 
-		$this->onAnnotationSave($this, $annotation);
+		//$this->onAnnotationSave($this, $annotation);
+		call_user_func([$this, 'onAnnotationSave', $annotation]);
 	}
 
 	/**

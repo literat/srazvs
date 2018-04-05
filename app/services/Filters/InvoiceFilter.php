@@ -2,10 +2,12 @@
 
 namespace App\Services\Filters;
 
-use Nette\Object;
+use Nette\SmartObject;
 
-class InvoiceFilter extends Object
+class InvoiceFilter
 {
+
+	use SmartObject;
 
 	/**
 	 * @param  integer $value

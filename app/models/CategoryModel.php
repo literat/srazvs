@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Nette\Database\Table\ActiveRow;
 use Tracy\Debugger;
 use Nette\Utils\Strings;
 use Nette\Database\Context;
@@ -62,9 +63,9 @@ class CategoryModel extends BaseModel
 
 	/**
 	 * @param  integer $id
-	 * @return Nette\Database\Table\ActiveRow
+	 * @return \Nette\Database\Table\ActiveRow
 	 */
-	public function find($id)
+	public function find($id): ActiveRow
 	{
 		return $this->getDatabase()
 			->table($this->getTable())
@@ -73,10 +74,7 @@ class CategoryModel extends BaseModel
 			->fetch();
 	}
 
-	/**
-	 * @return array
-	 */
-	public function all(): array
+	public function all(): ActiveRow
 	{
 		return $this->getDatabase()
 			->table($this->getTable())

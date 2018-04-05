@@ -2,10 +2,9 @@
 
 namespace App\Models;
 
-use App\Models\BaseModel;
+use Nette\Database\Table\ActiveRow;
 use Nette\Utils\Json;
 use Nette\Database\Context;
-use Tracy\Debugger;
 use \Exception;
 
 /**
@@ -30,10 +29,7 @@ class SettingsModel extends BaseModel
 		$this->setDatabase($database);
 	}
 
-	/**
-	 * @return	Nette\Database\Table\ActiveRow
-	 */
-	public function allOrFail()
+	public function allOrFail(): ActiveRow
 	{
 		$data = $this->all();
 
@@ -46,12 +42,8 @@ class SettingsModel extends BaseModel
 
 	/**
 	 * Modify mail subject and message
-	 *
-	 * @param	string 	$subject 	e-mail subject
-	 * @param	string	$message 	e-mail message
-	 * @return	string 				error code
 	 */
-	public function modifyMailJson($type, $subject, $message)
+	public function modifyMailJson(string $type, string $subject, string $message): string
 	{
 		$mailData = [
 			'subject' => $subject,
@@ -76,10 +68,7 @@ class SettingsModel extends BaseModel
 		return $this->findByName('mail_' . $type);
 	}
 
-	/**
-	 * @return ActiveRow
-	 */
-	public function all()
+	public function all(): ActiveRow
 	{
 		return $this->getDatabase()
 			->table($this->getTable())
@@ -114,11 +103,7 @@ class SettingsModel extends BaseModel
 			->update($this->encodeValue($value));
 	}
 
-	/**
-	 * @param  mixed $data
-	 * @return Row
-	 */
-	public function updateDebugRegime($data)
+	public function updateDebugRegime($data): ActiveRow
 	{
 		return $this->updateByName($data, 'debug');
 	}

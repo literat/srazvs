@@ -34,7 +34,7 @@ class AnnotationService
 	/**
 	 * @param  string $id
 	 * @param  string $type
-	 * @return Row
+	 * @return \Nette\Database\Table\ActiveRow
 	 */
 	public function findByType(string $guid, string $type)
 	{
@@ -59,7 +59,7 @@ class AnnotationService
 	/**
 	 * @param  string    $type
 	 * @param  ArrayHash $annotation
-	 * @return Row
+	 * @return \Nette\Database\Table\ActiveRow
 	 */
 	public function updateByType(string $type, ArrayHash $annotation)
 	{
@@ -68,7 +68,7 @@ class AnnotationService
 
 	/**
 	 * @param  string $type
-	 * @return ProgramModel | BLockModel
+	 * @return \App\Models\ProgramModel | \App\Models\BLockModel
 	 */
 	protected function getModelByType(string $type)
 	{
@@ -80,7 +80,7 @@ class AnnotationService
 				$model = $this->getProgramModel();
 				break;
 			default:
-				throw new Exception('Annotation model not found!');
+				throw new \Exception('Annotation model not found!');
 		}
 
 		return $model;

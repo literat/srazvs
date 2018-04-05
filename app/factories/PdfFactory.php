@@ -14,18 +14,34 @@ use Mpdf\Mpdf;
  */
 class PdfFactory
 {
-	/** @var Pdf */
+	/** @var Mpdf */
 	public $pdf;
 
-	/** @var defaults */
+	/** @var string */
 	private $encoding = 'utf-8';
+
+	/** @var string  */
 	private $paperFormat = 'A4';
+
+	/** @var int  */
 	private $fontSize = 0;
+
+	/** @var mixed  */
 	private $font = '';
+
+	/** @var int  */
 	private $marginLeft = 15;
+
+	/** @var int  */
 	private $marginRight = 15;
+
+	/** @var int  */
 	private $marginTop = 16;
+
+	/** @var int  */
 	private $marginBottom = 16;
+
+	/** @var bool */
 	private $debugMode = false;
 
 	/** Constructor */

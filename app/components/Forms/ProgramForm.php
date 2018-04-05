@@ -2,7 +2,6 @@
 
 namespace App\Components\Forms;
 
-use App\Models\MeetingModel;
 use App\Repositories\BlockRepository;
 use App\Repositories\CategoryRepository;
 use Nette\Application\UI\Form;
@@ -18,14 +17,14 @@ class ProgramForm extends BaseForm
 	const MESSAGE_MAX_LENGTH = '%label nesmí mít více jak %d znaků!';
 
 	/**
-	 * @var Closure
+	 * @var callable[]
 	 */
-	public $onProgramSave;
+	public $onProgramSave = [];
 
 	/**
-	 * @var Closure
+	 * @var callable[]
 	 */
-	public $onProgramReset;
+	public $onProgramReset = [];
 
 	/**
 	 * @var BlockRepository
@@ -37,10 +36,6 @@ class ProgramForm extends BaseForm
 	 */
 	protected $categoryRepository;
 
-	/**
-	 * @param BlockRepository    $blockRepository
-	 * @param CategoryRepository $categoryRepository
-	 */
 	public function __construct(
 		BlockRepository $blockRepository,
 		CategoryRepository $categoryRepository
@@ -60,10 +55,6 @@ class ProgramForm extends BaseForm
 		$template->render();
 	}
 
-	/**
-	 * @param  array $defaults
-	 * @return AnnotationForm
-	 */
 	public function setDefaults(ActiveRow $defaults): ProgramForm
 	{
 		$this['programForm']->setDefaults($defaults);
@@ -128,7 +119,8 @@ class ProgramForm extends BaseForm
 	{
 		$program = $button->getForm()->getValues();
 
-		$this->onProgramSave($this, $program);
+		//$this->onProgramSave($this, $program);
+		call_user_func([$this, 'onProgramSave', $program]);
 	}
 
 	/**
@@ -139,7 +131,8 @@ class ProgramForm extends BaseForm
 	{
 		$program = $button->getForm()->getValues();
 
-		$this->onProgramReset($this, $program);
+		//$this->onProgramReset($this, $program);
+		call_user_func([$this, 'onProgramReset', $program]);
 	}
 
 	/**

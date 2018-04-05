@@ -4,12 +4,13 @@ namespace App\Presenters;
 
 use App\Components\INavbarRightControlFactory;
 use App\Components\NavbarRightControl;
+use App\Models\BaseModel;
 use Nette;
-use App\Model;
 use Nette\Utils\ArrayHash;
-use App\Models\SunlightModel;
 use Nette\Caching\Cache;
 use App\Traits\Loggable;
+use Nette\DI\Container;
+use Nette\Database\Table\ActiveRow;
 
 /**
  * Base presenter for all application presenters.
@@ -29,25 +30,29 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 	 */
 	public $backlink = '';
 
-	/** @var Model */
+	/**
+	 * @var \App\Models\BaseModel
+	 */
 	protected $model;
 
-	/** @var Nette\DI\Container */
+	/**
+	 * @var \Nette\DI\Container
+	 */
 	protected $container;
 
-	/** @var Latte */
-	protected $latte;
-
-	/** @var Router */
-	protected $router;
-
-	/** @var string */
+	/**
+	 * @var string
+	 */
 	protected $action;
 
-	/** @var Nette\Http\Request */
+	/**
+	 * @var \Nette\Http\Request
+	 */
 	protected $request;
 
-	/** @var integer */
+	/**
+	 * @var integer
+	 */
 	protected $meetingId;
 
 	/**
@@ -55,10 +60,6 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 	 */
 	protected $navbarRightControlFactory;
 
-	/**
-	 * @param  INavbarRightControlFactory $factory
-	 * @return BasePresenter
-	 */
 	public function injectNavbarRightControlFactory(INavbarRightControlFactory $factory): self
 	{
 		$this->navbarRightControlFactory = $factory;
@@ -129,11 +130,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 		$template->categories = $this->remember('categories:all', 10, function () {
 			return $this->getContainer()->getService('category')->all();
 		});
-/*
-		if(isset($_SESSION[SESSION_PREFIX.'user'])) {
-			$template->user = $this->getSunlight()->findUser($_SESSION[SESSION_PREFIX.'user']);
-		}
-*/
+
 		//$template->meeting = $meeting->getPlaceAndYear($_SESSION['meetingID']);
 		$template->meeting = $meeting->getPlaceAndYear($this->getSession('meeting')->meetingId);
 		$template->menuItems = $meeting->getMenuItems();
@@ -212,8 +209,6 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 	 */
 	protected $debugMode = false;
 
-	protected $sunlight;
-
 	protected function parseTutorEmail($item)
 	{
 		$mails = explode(',', $item->email);
@@ -239,85 +234,29 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 		return ((int) $id . $meetingId) * 116 + 39147;
 	}
 
-	/**
-	 * @return Model
-	 */
-	protected function getModel()
+	protected function getModel(): BaseModel
 	{
 		return $this->model;
 	}
 
-	/**
-	 * @param  Model $model
-	 * @return $this
-	 */
-	protected function setModel($model)
+	protected function setModel(BaseModel $model): self
 	{
 		$this->model = $model;
+
 		return $this;
 	}
 
-	/**
-	 * @return Container
-	 */
-	protected function getContainer()
+	protected function getContainer(): Container
 	{
 		return $this->context;
 	}
 
-	/**
-	 * @param  Container $container
-	 * @return $this
-	 */
-	protected function setContainer($container)
-	{
-		$this->context = $container;
-		return $this;
-	}
-
-	/**
-	 * @return Router
-	 */
-	protected function getRouter()
-	{
-		return $this->router;
-	}
-
-	/**
-	 * @param  Router $router
-	 * @return $this
-	 */
-	protected function setRouter($router)
-	{
-		$this->router = $router;
-		return $this;
-	}
-
-	/**
-	 * @return Latte
-	 */
-	protected function getLatte()
-	{
-		return $this->latte;
-	}
-
-	/**
-	 * @param  Latte $latte
-	 * @return $this
-	 */
-	protected function setLatte($latte)
-	{
-		$this->latte = $latte;
-		return $this;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getAction(/*$fullyQualified = false*/)
+	// @codingStandardsIgnoreStart
+	public function getAction($fullyQualified = false): string
 	{
 		return $this->action;
 	}
+	// @codingStandardsIgnoreEnd
 
 	/**
 	 * @param  string $action
@@ -326,28 +265,6 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 	public function setAction($action)
 	{
 		$this->action = $action;
-		return $this;
-	}
-
-	/**
-	 * @return SunlightModel
-	 */
-	public function getSunlight()
-	{
-		if(empty($this->sunlight)) {
-			$this->setSunlight($this->getContainer()->getService('sunlight'));
-		}
-
-		return $this->sunlight;
-	}
-
-	/**
-	 * @param  SunlightModel $sunlight
-	 * @return $this
-	 */
-	public function setSunlight(SunlightModel $sunlight)
-	{
-		$this->sunlight = $sunlight;
 		return $this;
 	}
 
@@ -369,12 +286,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 		return $this;
 	}
 
-	/**
-	 * @param  string $guid
-	 * @param  array  $data
-	 * @return ActiveRow
-	 */
-	protected function updateByGuid($guid, array $data)
+	protected function updateByGuid(string $guid, array $data): ActiveRow
 	{
 		return $this->getModel()->updateBy('guid', $guid, $data);
 	}

@@ -3,8 +3,7 @@
 namespace App\Models;
 
 use Nette\Database\Context;
-use App\Models\ProgramModel;
-use App\Models\BaseModel;
+use Nette\Database\Table\ActiveRow;
 
 /**
  * Meeting
@@ -33,12 +32,12 @@ class MeetingModel extends BaseModel
 	public $dbColumns = [];
 
 	/**
-	 * @var DateTime
+	 * @var \DateTime
 	 */
 	public $regOpening = null;
 
 	/**
-	 * @var DateTime
+	 * @var \DateTime
 	 */
 	public $regClosing = null;
 
@@ -100,23 +99,7 @@ class MeetingModel extends BaseModel
 		$this->httpEncoding = $encoding;
 	}
 
-	/**
-	 * Create new or return existing instance of class
-	 *
-	 * @return	mixed	instance of class
-	 */
-	public static function getInstance()
-	{
-		if(self::$instance === false) {
-			self::$instance = new self();
-		}
-		return self::$instance;
-	}
-
-	/**
-	 * @return Nette\Database\Table\IRow
-	 */
-	public function all()
+	public function all(): ActiveRow
 	{
 		return $this->getDatabase()
 				->table($this->getTable())
@@ -124,11 +107,7 @@ class MeetingModel extends BaseModel
 				->fetchAll();
 	}
 
-	/**
-	 * @param  int $id
-	 * @return Nette\Database\Table\IRow
-	 */
-	public function find($id)
+	public function find($id): ActiveRow
 	{
 		return $this->getDatabase()
 				->table($this->getTable())
@@ -180,10 +159,8 @@ class MeetingModel extends BaseModel
 
 	/**
 	 * Return meeting data
-	 *
-	 * @return  Nette\Database\Table\IRow
 	 */
-	public function getData($meetingId = null)
+	public function getData($meetingId = null): ActiveRow
 	{
 		if(isset($meetingId)) {
 			$data = $this->find($meetingId);
@@ -318,10 +295,7 @@ class MeetingModel extends BaseModel
 			->fetchField('province_name');
 	}
 
-	/**
-	 * @return Row
-	 */
-	public function findEventId()
+	public function findEventId(): ActiveRow
 	{
 		return $this->getDatabase()
 			->table($this->getTable())
@@ -330,10 +304,7 @@ class MeetingModel extends BaseModel
 			->fetchField('skautis_event_id');
 	}
 
-	/**
-	 * @return Row
-	 */
-	public function findCourseId()
+	public function findCourseId(): ActiveRow
 	{
 		return $this->getDatabase()
 			->table($this->getTable())

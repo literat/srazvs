@@ -8,6 +8,7 @@ use App\Models\MeetingModel;
 use App\Services\Emailer;
 use App\Repositories\VisitorRepository;
 use Exception;
+use Nette\Application\UI\ITemplate;
 
 /**
  * Visitor controller
@@ -383,10 +384,7 @@ class VisitorPresenter extends BasePresenter
 		return $control;
 	}
 
-	/**
-	 * @return Latte
-	 */
-	protected function createMailTemplate()
+	protected function createMailTemplate(): ITemplate
 	{
 		$template = $this->createTemplate();
 		$template->setFile(
