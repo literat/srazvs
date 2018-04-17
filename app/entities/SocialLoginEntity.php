@@ -4,7 +4,6 @@ namespace App\Entities;
 
 class SocialLoginEntity implements IEntity
 {
-
 	public $id;
 
 	public $guid;
@@ -21,18 +20,12 @@ class SocialLoginEntity implements IEntity
 
 	public $deletedAt;
 
-	/**
-	 * @return int
-	 */
-	public function getId()
+	public function getId(): int
 	{
 		return $this->id;
 	}
 
-	/**
-	 * @return array
-	 */
-	public function toArray()
+	public function toArray(): array
 	{
 		$userId = $this->user;
 		$properties = get_object_vars($this);
@@ -41,5 +34,4 @@ class SocialLoginEntity implements IEntity
 
 		return $properties;
 	}
-
 }

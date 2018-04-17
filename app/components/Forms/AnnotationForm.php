@@ -2,13 +2,12 @@
 
 namespace App\Components\Forms;
 
-use App\Services\AnnotationService;
 use App\Models\MeetingModel;
+use App\Services\AnnotationService;
 use Nette\Application\UI\Form;
 
 class AnnotationForm extends BaseForm
 {
-
 	const TEMPLATE_NAME = 'AnnotationForm';
 
 	const MESSAGE_REQUIRED = 'Hodnota musí být vyplněna!';
@@ -25,7 +24,7 @@ class AnnotationForm extends BaseForm
 	protected $annotationService;
 
 	/**
-	 * @var  MeetingModel
+	 * @var MeetingModel
 	 */
 	protected $meetingModel;
 
@@ -48,7 +47,7 @@ class AnnotationForm extends BaseForm
 	}
 
 	/**
-	 * @param  array $defaults
+	 * @param  array          $defaults
 	 * @return AnnotationForm
 	 */
 	public function setDefaults(array $defaults = []): AnnotationForm
@@ -147,5 +146,4 @@ class AnnotationForm extends BaseForm
 
 		return $this;
 	}
-
 }

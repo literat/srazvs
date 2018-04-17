@@ -6,7 +6,6 @@ use App\Models\ProgramModel;
 
 abstract class AProgramsControl extends BaseControl implements IProgramsControl
 {
-
 	const TEMPLATE_NAME = '';
 
 	/**
@@ -52,5 +51,4 @@ abstract class AProgramsControl extends BaseControl implements IProgramsControl
 
 		return $this;
 	}
-
 }

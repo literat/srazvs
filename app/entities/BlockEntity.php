@@ -4,7 +4,6 @@ namespace App\Entities;
 
 class BlockEntity implements IEntity
 {
-
 	public $id;
 
 	public $name;
@@ -33,20 +32,13 @@ class BlockEntity implements IEntity
 
 	public $meeting;
 
-	/**
-	 * @return int
-	 */
-	public function getId()
+	public function getId(): int
 	{
 		return $this->id;
 	}
 
-	/**
-	 * @return array
-	 */
-	public function toArray()
+	public function toArray(): array
 	{
 		return get_object_vars($this);
 	}
-
 }

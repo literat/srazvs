@@ -6,7 +6,6 @@ use App\Models\ProgramModel;
 
 class PublicProgramDetailControl extends BaseControl
 {
-
 	const TEMPLATE_NAME = 'PublicProgramDetail';
 
 	/**
@@ -43,7 +42,7 @@ class PublicProgramDetailControl extends BaseControl
 	}
 
 	/**
-	 * @param ProgramModel $programModel
+	 * @param  ProgramModel $programModel
 	 * @return self
 	 */
 	public function setProgramModel(ProgramModel $programModel): self
@@ -52,5 +51,4 @@ class PublicProgramDetailControl extends BaseControl
 
 		return $this;
 	}
-
 }

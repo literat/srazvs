@@ -2,21 +2,10 @@
 
 namespace App\Models;
 
+use DateTime;
 use Nette\Database\Context;
 use Nette\Database\Table\ActiveRow;
-use Nette\Utils\Strings;
-use \Exception;
-use DateTime;
-use Tracy\Debugger;
 
-/**
- * Visitor
- *
- * class for handling visitors
- *
- * @created 2012-11-07
- * @author Tomas Litera <tomaslitera@hotmail.com>
- */
 class VisitorModel extends BaseModel
 {
 
@@ -51,26 +40,23 @@ class VisitorModel extends BaseModel
 	public $meetingPrice;
 
 	/**
-	 * @var int
-	 */
-	private $meetingAdvance;
-
-	/**
-	 * Array of database programs table columns
-	 *
-	 * @var array	dbColumns[]
+	 * @var array
 	 */
 	public $dbColumns = [];
 
 	/**
-	 * Array of form names
-	 *
-	 * @var array	formNames[]
+	 * @var array
 	 */
 	public $formNames = [];
 
+	/**
+	 * @var string
+	 */
 	protected $table = 'kk_visitors';
 
+	/**
+	 * @var array
+	 */
 	protected $columns = [
 		'name',
 		'surname',
@@ -93,6 +79,11 @@ class VisitorModel extends BaseModel
 		'cost',
 		'meeting',
 	];
+
+	/**
+	 * @var int
+	 */
+	protected $meetingAdvance;
 
 	public function __construct(
 		MeetingModel $meetingModel,
@@ -138,10 +129,7 @@ class VisitorModel extends BaseModel
 		$this->database = $database;
 	}
 
-	/**
-	 * @return array
-	 */
-	public function getColumns()
+	public function getColumns(): array
 	{
 		return $this->columns;
 	}
@@ -156,15 +144,15 @@ class VisitorModel extends BaseModel
 	}
 
 	/**
-	 * Create a new visitor
+	 * Create a new visitor.
 	 *
-	 * @return	string
+	 * @return string
 	 */
 	public function assemble(array $dbData, $mealsData, $programsData, $returnGuid = false)
 	{
 		$return = true;
 
-		if(!$dbData['province']) {
+		if (!$dbData['province']) {
 			$dbData['province'] = 0;
 		}
 
@@ -179,11 +167,11 @@ class VisitorModel extends BaseModel
 		// visitor's id is empty and i must add one
 		$mealsData['visitor'] = $visitorId;
 
-		if($visitorId){
+		if ($visitorId) {
 			// gets data from database
 			$programBlocks = $this->blocksModel->getProgramBlocks($dbData['meeting']);
 
-			foreach($programBlocks as $dbBlocksData) {
+			foreach ($programBlocks as $dbBlocksData) {
 				$bindingsData = [
 					'visitor' => $visitorId,
 					'program' => $programsData[$dbBlocksData['id']],
@@ -193,24 +181,23 @@ class VisitorModel extends BaseModel
 				$bindingsData['guid'] = md5(uniqid());
 				$resultBinding = $this->database->query('INSERT INTO `kk_visitor-program`', $bindingsData);
 
-				if(!$resultBinding) {
-					throw new Exception('Error while binding visitor`s program');
+				if (!$resultBinding) {
+					throw new \Exception('Error while binding visitor`s program');
 				}
 			}
 
-			if($return) {
-
+			if ($return) {
 				// create meals for visitor
-				if(!$return = $this->mealModel->create($mealsData)) {
-					throw new Exception('Error while creating meals');
+				if (!$return = $this->mealModel->create($mealsData)) {
+					throw new \Exception('Error while creating meals');
 				}
 			}
 		} else {
-			throw new Exception('Error while creating visitor');
+			throw new \Exception('Error while creating visitor');
 		}
 
 		//return $return;
-		if($returnGuid) {
+		if ($returnGuid) {
 			return $dbData['guid'];
 		} else {
 			return $visitorId;
@@ -218,13 +205,13 @@ class VisitorModel extends BaseModel
 	}
 
 	/**
-	 * Modify a visitor
+	 * Modify a visitor.
 	 *
-	 * @param	int		$visitor_id		ID of a visitor
-	 * @param	array	$db_data		Visitor's database data
-	 * @param	array	$mealsData		Data of meals
-	 * @param	array	$programsData	Program's data
-	 * @return	mixed					TRUE or array of errors
+	 * @param  int   $visitorId ID of a visitor
+	 * @param  array $visitor   Visitor's database data
+	 * @param  array $meals     Data of meals
+	 * @param  array $programs  Program's data
+	 * @return mixed TRUE or array of errors
 	 */
 	public function modify(int $visitorId, array $visitor, array $meals, array $programs)
 	{
@@ -245,7 +232,7 @@ class VisitorModel extends BaseModel
 		$oldPrograms = $this->findVisitorPrograms($visitorId);
 
 		// update old data to new existing
-		foreach($programBlocks as $programBlock) {
+		foreach ($programBlocks as $programBlock) {
 			// read first value from array and shift it to the end
 			$oldProgram = array_shift($oldPrograms);
 
@@ -260,13 +247,13 @@ class VisitorModel extends BaseModel
 	}
 
 	/**
-	 * Modify a visitor
+	 * Modify a visitor.
 	 *
-	 * @param	int		$visitor_id		ID of a visitor
-	 * @param	array	$db_data		Visitor's database data
-	 * @param	array	$meals_data		Data of meals
-	 * @param	array	$programs_data	Program's data
-	 * @return	mixed					TRUE or array of errors
+	 * @param  int   $guid     ID of a visitor
+	 * @param  array $visitor  Visitor's database data
+	 * @param  array $meals    Data of meals
+	 * @param  array $programs Program's data
+	 * @return mixed TRUE or array of errors
 	 */
 	public function modifyByGuid($guid, $visitor, $meals, $programs)
 	{
@@ -289,7 +276,7 @@ class VisitorModel extends BaseModel
 		$oldPrograms = $this->findVisitorPrograms($visitor->id);
 
 		// update old data to new existing
-		foreach($programBlocks as $programBlock) {
+		foreach ($programBlocks as $programBlock) {
 			// read first value from array and shift it to the end
 			$oldProgram = array_shift($oldPrograms);
 
@@ -304,9 +291,9 @@ class VisitorModel extends BaseModel
 	}
 
 	/**
-	 * @param int $visitorId
-	 * @param int $oldProgramId
-	 * @param int $newProgramId
+	 * @param  int   $visitorId
+	 * @param  int   $oldProgramId
+	 * @param  int   $newProgramId
 	 * @return mixed
 	 */
 	public function updateOrCreateProgram(int $visitorId, int $oldProgramId, int $newProgramId)
@@ -318,7 +305,7 @@ class VisitorModel extends BaseModel
 				'program' => $newProgramId,
 			]);
 
-		if(!$result) {
+		if (!$result) {
 			$result = $this->getDatabase()
 				->table('kk_visitor-program')
 				->where('visitor ? AND id ?', $visitorId, $oldProgramId)
@@ -333,10 +320,10 @@ class VisitorModel extends BaseModel
 	}
 
 	/**
-	 * Delete one or multiple record/s
+	 * Delete one or multiple record/s.
 	 *
-	 * @param	int		ID/s of record
-	 * @return	boolean
+	 * @param  int     $id ID/s of record
+	 * @return boolean
 	 */
 	public function delete($id)
 	{
@@ -349,11 +336,11 @@ class VisitorModel extends BaseModel
 	}
 
 	/**
-	 * Set as checked one or multiple record/s
+	 * Set as checked one or multiple record/s.
 	 *
-	 * @param	int		ID/s of record
-	 * @param 	int 	0 | 1
-	 * @return	boolean
+	 * @param  int     $id    ID/s of record
+	 * @param  int     $value 0 | 1
+	 * @return boolean
 	 */
 	public function checked($id, $value)
 	{
@@ -366,9 +353,9 @@ class VisitorModel extends BaseModel
 	}
 
 	/**
-	 * Get count of visitors
+	 * Get count of visitors.
 	 *
-	 * @return  integer
+	 * @return integer
 	 */
 	public function getCount()
 	{
@@ -380,9 +367,9 @@ class VisitorModel extends BaseModel
 
 	/**
 	 * @param  string $search
-	 * @return $this
+	 * @return self
 	 */
-	public function setSearch($search)
+	public function setSearch(string $search): self
 	{
 		$this->search = $search;
 
@@ -392,7 +379,7 @@ class VisitorModel extends BaseModel
 	/**
 	 * @return string
 	 */
-	protected function getSearch()
+	protected function getSearch(): string
 	{
 		return $this->search;
 	}
@@ -400,12 +387,12 @@ class VisitorModel extends BaseModel
 	/**
 	 * @return string
 	 */
-	protected function buildSearchQuery()
+	protected function buildSearchQuery(): string
 	{
 		$search = $this->getSearch();
 
 		$query = '';
-		if($search) {
+		if ($search) {
 			$query = "AND (`code` REGEXP '" . $search . "'
 							OR `group_num` REGEXP '" . $search . "'
 							OR `name` REGEXP '" . $search . "'
@@ -419,18 +406,18 @@ class VisitorModel extends BaseModel
 	}
 
 	/**
-	 * Modify the visitor's bill
+	 * Modify the visitor's bill.
 	 *
-	 * @param	int	ID/s of visitor
-	 * @param	string	type of payment (pay | advance)
-	 * @return	string	error message or true
+	 * @param  int    $ids  ID/s of visitor
+	 * @param  string $type type of payment (pay | advance)
+	 * @return string error message or true
 	 */
 	public function payCharge($ids, $type)
 	{
 		$bill = $this->getBill($ids)['bill'];
 		$cost = $this->meetingModel->getPrice('cost');
 
-		if($bill < $cost) {
+		if ($bill < $cost) {
 			$newBill = ['bill' => $this->meetingModel->getPrice($type)];
 			$payResult = $this->getDatabase()
 				->table($this->getTable())
@@ -439,15 +426,15 @@ class VisitorModel extends BaseModel
 
 			return $payResult;
 		} else {
-			throw new Exception('Charge already paid!');
+			throw new \Exception('Charge already paid!');
 		}
 	}
 
 	/**
-	 * Get recipients by ids
+	 * Get recipients by ids.
 	 *
-	 * @param	mixed	ID of visitor
-	 * @return	mixed	result
+	 * @param  mixed $ids ID of visitor
+	 * @return mixed
 	 */
 	public function getRecipients($ids)
 	{
@@ -475,26 +462,29 @@ class VisitorModel extends BaseModel
 	public function all(): ActiveRow
 	{
 		return $this->getDatabase()
-			->query('SELECT 	vis.id AS id,
-								vis.guid AS guid,
-								code,
-								name,
-								surname,
-								nick,
-								email,
-								group_name,
-								group_num,
-								city,
-								province_name AS province,
-								bill,
-								cost,
-								birthday,
-								checked
+			->query(
+				'SELECT vis.id AS id,
+							vis.guid AS guid,
+							code,
+							name,
+							surname,
+							nick,
+							email,
+							group_name,
+							group_num,
+							city,
+							province_name AS province,
+							bill,
+							cost,
+							birthday,
+							checked
 						FROM kk_visitors AS vis
 						LEFT JOIN kk_provinces AS provs ON vis.province = provs.id
 						WHERE meeting = ? AND vis.deleted = ? ' . $this->buildSearchQuery() . '
 						ORDER BY vis.id ASC',
-						$this->getMeetingId(), '0')->fetchAll();
+				$this->getMeetingId(),
+				'0'
+			)->fetchAll();
 	}
 
 	/**
@@ -512,7 +502,7 @@ class VisitorModel extends BaseModel
 			->group('email')
 			->fetchAll();
 
-		foreach($emails as $item){
+		foreach ($emails as $item) {
 			$recipientMailAddresses .= $item['email'] . ",\n";
 		}
 
@@ -531,8 +521,8 @@ class VisitorModel extends BaseModel
 	}
 
 	/**
-	 * @param	int		ID of visitor
-	 * @return	mixed	result
+	 * @param  int   $visitorId ID of visitor
+	 * @return mixed
 	 */
 	public function findVisitorPrograms(int $visitorId)
 	{
@@ -542,5 +532,4 @@ class VisitorModel extends BaseModel
 			->where('visitor', $visitorId)
 			->fetchAll();
 	}
-
 }

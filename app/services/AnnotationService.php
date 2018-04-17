@@ -3,14 +3,13 @@
 namespace App\Services;
 
 use App\Entities\BlockEntity;
-use Nette\Utils\ArrayHash;
 use App\Models\BlockModel;
 use App\Models\ProgramModel;
 use Nette\Database\Table\ActiveRow;
+use Nette\Utils\ArrayHash;
 
 class AnnotationService
 {
-
 	/**
 	 * @var BlockModel
 	 */
@@ -21,33 +20,20 @@ class AnnotationService
 	 */
 	protected $programModel;
 
-	/**
-	 * @param BlockModel $block
-	 * @param ProgramModel $program
-	 */
 	public function __construct(BlockModel $block, ProgramModel $program)
 	{
 		$this->setBlockModel($block);
 		$this->setProgramModel($program);
 	}
 
-	/**
-	 * @param  string $id
-	 * @param  string $type
-	 * @return \Nette\Database\Table\ActiveRow
-	 */
-	public function findByType(string $guid, string $type)
+	public function findByType(string $guid, string $type): ActiveRow
 	{
 		return $this->getModelByType($type)->findBy('guid', $guid);
 	}
 
-	/**
-	 * @param  ActiveRow $annotation
-	 * @return BlockEntity
-	 */
 	public function findParentProgram(ActiveRow $annotation): BlockEntity
 	{
-		if(array_key_exists('block', $annotation->toArray())) {
+		if (array_key_exists('block', $annotation->toArray())) {
 			$parentProgram = $this->getBlockModel()->find($annotation->block);
 		} else {
 			$parentProgram = $annotation;
@@ -56,19 +42,15 @@ class AnnotationService
 		return $parentProgram;
 	}
 
-	/**
-	 * @param  string    $type
-	 * @param  ArrayHash $annotation
-	 * @return \Nette\Database\Table\ActiveRow
-	 */
-	public function updateByType(string $type, ArrayHash $annotation)
+	public function updateByType(string $type, ArrayHash $annotation): ActiveRow
 	{
 		return $this->getModelByType($type)->updateBy('guid', $annotation->guid, (array) $annotation);
 	}
 
 	/**
-	 * @param  string $type
+	 * @param  string                   $type
 	 * @return \App\Models\ProgramModel | \App\Models\BLockModel
+	 * @throws \Exception
 	 */
 	protected function getModelByType(string $type)
 	{
@@ -86,18 +68,11 @@ class AnnotationService
 		return $model;
 	}
 
-	/**
-	 * @return ProgramModel
-	 */
-	protected function getProgramModel()
+	protected function getProgramModel(): ProgramModel
 	{
 		return $this->programModel;
 	}
 
-	/**
-	 * @param  ProgramModel $model
-	 * @return self
-	 */
 	protected function setProgramModel(ProgramModel $model): self
 	{
 		$this->programModel = $model;
@@ -105,23 +80,15 @@ class AnnotationService
 		return $this;
 	}
 
-	/**
-	 * @return BlockModel
-	 */
 	protected function getBlockModel(): BlockModel
 	{
 		return $this->blockModel;
 	}
 
-	/**
-	 * @param  BlockModel $model
-	 * @return self
-	 */
 	protected function setBlockModel(BlockModel $model): self
 	{
 		$this->blockModel = $model;
 
 		return $this;
 	}
-
 }

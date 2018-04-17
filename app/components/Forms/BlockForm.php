@@ -10,7 +10,6 @@ use Nette\Forms\Controls\SubmitButton;
 
 class BlockForm extends BaseForm
 {
-
 	const TEMPLATE_NAME = 'BlockForm';
 
 	const MESSAGE_REQUIRED = 'Hodnota musí být vyplněna!';
@@ -80,7 +79,7 @@ class BlockForm extends BaseForm
 		$this->setCategoryRepository($categoryRepository);
 	}
 
-	public function render(): void
+	public function render()
 	{
 		$template = $this->getTemplate();
 		$template->setFile($this->buildTemplatePath());
@@ -89,7 +88,7 @@ class BlockForm extends BaseForm
 	}
 
 	/**
-	 * @param  array $defaults
+	 * @param  BlockEntity $defaults
 	 * @return self
 	 */
 	public function setDefaults(BlockEntity $defaults): self
@@ -187,7 +186,7 @@ class BlockForm extends BaseForm
 
 		$selectContent = [];
 
-		foreach($categories as $category) {
+		foreach ($categories as $category) {
 			$selectContent[$category->id] = $category->name;
 		}
 
@@ -200,8 +199,7 @@ class BlockForm extends BaseForm
 	 */
 	protected function guardDefaults(BlockEntity $defaults): BlockEntity
 	{
-		if(!array_key_exists($defaults->category, $this->buildCategorySelect()) )
-		{
+		if (!array_key_exists($defaults->category, $this->buildCategorySelect())) {
 			$defaults->category = 0;
 		}
 

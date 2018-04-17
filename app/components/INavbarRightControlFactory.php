@@ -2,17 +2,10 @@
 
 namespace App\Components;
 
-use App\Components;
-
-/**
- * Generated factory
- */
 interface INavbarRightControlFactory
 {
-
 	/**
-	 * @return \App\Components\NavbarRightControl
+	 * @return NavbarRightControl
 	 */
 	public function create(): NavbarRightControl;
-
 }

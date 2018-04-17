@@ -7,7 +7,6 @@ use Nette\Database\Table\ActiveRow;
 
 class ProvinceModel extends BaseModel
 {
-
 	/**
 	 * @var string
 	 */
@@ -30,7 +29,7 @@ class ProvinceModel extends BaseModel
 			->where('deleted', '0')
 			->fetchAll();
 
-		array_walk($provinces, function(&$province) {
+		array_walk($provinces, function (&$province) {
 			$province = $province->province_name;
 		});
 
@@ -38,5 +37,4 @@ class ProvinceModel extends BaseModel
 
 		return $provinces;
 	}
-
 }

@@ -4,7 +4,6 @@ namespace App\Entities;
 
 class VisitorEntity
 {
-
 	public $name;
 
 	public $surname;
@@ -34,5 +33,4 @@ class VisitorEntity
 	{
 		return array_filter(get_object_vars($this));
 	}
-
 }

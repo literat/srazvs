@@ -3,28 +3,23 @@
 namespace App\Models;
 
 use App\Entities\BlockEntity;
+use App\Entities\IEntity;
 use Nette\Database\Context;
 use Nette\Database\Table\ActiveRow;
 use Nette\Reflection\ClassType;
-use App\Entities\IEntity;
-use \Exception;
 use Nette\Utils\DateTime;
 
-/**
- * Blocks
- *
- * class for handling program blocks
- *
- * @created 2012-09-14
- * @author Tomas Litera <tomaslitera@hotmail.com>
- */
 class BlockModel extends BaseModel implements IModel
 {
 
-	/** @var string */
+	/**
+	 * @var string
+	 */
 	protected $table = 'kk_blocks';
 
-	/** @var array */
+	/**
+	 * @var array
+	 */
 	public $columns = [
 		'guid',
 		'name',
@@ -42,21 +37,19 @@ class BlockModel extends BaseModel implements IModel
 		//"meeting",
 	];
 
-	private static $connection;
-
 	/**
-	 * @param Context  $database
+	 * @param Context $database
 	 */
 	public function __construct(Context $database)
 	{
 		$this->setDatabase($database);
-		self::$connection = $this->getDatabase();
 	}
 
 	public function all(): ActiveRow
 	{
 		return $this->getDatabase()
-			->query('SELECT blocks.guid AS guid,
+			->query(
+				'SELECT blocks.guid AS guid,
 						blocks.id AS id,
 						blocks.name AS name,
 						cat.name AS cat_name,
@@ -71,24 +64,26 @@ class BlockModel extends BaseModel implements IModel
 				LEFT JOIN kk_categories AS cat ON cat.id = blocks.category
 				WHERE blocks.meeting = ? AND blocks.deleted = ?
 				ORDER BY day, `from` ASC',
-				$this->getMeetingId(), '0')
-			->fetchAll();
+				$this->getMeetingId(),
+				'0'
+			)->fetchAll();
 	}
 
 	/**
-	 * @param  int $id
+	 * @param  int         $id
 	 * @return BlockEntity
 	 */
 	public function find($id): IEntity
 	{
 		$block = parent::find($id);
+
 		return $this->hydrate($block);
 	}
 
 	/**
-	 * @param IEntity $entity
+	 * @param  IEntity    $entity
 	 * @return bool|mixed
-	 * @throws Exception
+	 * @throws \Exception
 	 */
 	public function save(IEntity $entity)
 	{
@@ -99,7 +94,6 @@ class BlockModel extends BaseModel implements IModel
 
 			$id = $this->create($values);
 			$result = $this->setIdentity($entity, $id);
-
 		} else {
 			$values = $entity->toArray();
 			$result = $this->update($entity->getId(), $values);
@@ -109,15 +103,16 @@ class BlockModel extends BaseModel implements IModel
 	}
 
 	/**
-	 * Return blocks that contents programs
+	 * Return blocks that contents programs.
 	 *
-	 * @param	int		meeting ID
-	 * @return	array	result and number of affected rows
+	 * @param  int   $meetingId meeting ID
+	 * @return array result and number of affected rows
 	 */
 	public function getProgramBlocks($meetingId)
 	{
 		$data = $this->getDatabase()
-			->query('SELECT id,
+			->query(
+				'SELECT id,
 					day,
 					DATE_FORMAT(`from`, "%H:%i") AS `from`,
 					DATE_FORMAT(`to`, "%H:%i") AS `to`,
@@ -126,13 +121,16 @@ class BlockModel extends BaseModel implements IModel
 				FROM kk_blocks
 				WHERE deleted = ? AND program = ? AND meeting = ?
 				ORDER BY `day`, `from` ASC',
-				'0', '1', $meetingId)->fetchAll();
+				'0',
+				'1',
+				$meetingId
+			)->fetchAll();
 
 		return $data;
 	}
 
 	/**
-	 * @param  integer $meetingId
+	 * @param  integer   $meetingId
 	 * @return ActiveRow
 	 */
 	public function idsFromCurrentMeeting($meetingId)
@@ -145,14 +143,15 @@ class BlockModel extends BaseModel implements IModel
 	}
 
 	/**
-	 * @param  integer $meetingId
-	 * @param  string  $dayVal
+	 * @param  integer   $meetingId
+	 * @param  string    $dayVal
 	 * @return ActiveRow
 	 */
 	public function getExportBlocks($meetingId, $dayVal)
 	{
 		$result = $this->getDatabase()
-			->query('SELECT blocks.id AS id,
+			->query(
+				'SELECT blocks.id AS id,
 						day,
 						DATE_FORMAT(`from`, "%H:%i") AS `from`,
 						DATE_FORMAT(`to`, "%H:%i") AS `to`,
@@ -166,13 +165,17 @@ class BlockModel extends BaseModel implements IModel
 				/* 18 - pauzy */
 				WHERE blocks.deleted = ? AND day = ? AND meeting = ? AND category != ?
 				ORDER BY `from` ASC',
-				'0', $dayVal, $meetingId, '18')->fetchAll();
+				'0',
+				$dayVal,
+				$meetingId,
+				'18'
+			)->fetchAll();
 
 		return $result;
 	}
 
 	/**
-	 * Get tutor e-mail address
+	 * Get tutor e-mail address.
 	 */
 	public function getTutor(int $blockId): ActiveRow
 	{
@@ -196,7 +199,8 @@ class BlockModel extends BaseModel implements IModel
 	public function findByDay(string $day = ''): ActiveRow
 	{
 		return $this->getDatabase()
-				->query('SELECT	blocks.id AS id,
+				->query(
+					'SELECT	blocks.id AS id,
 							day,
 							DATE_FORMAT(`from`, "%H:%i") AS `from`,
 							DATE_FORMAT(`to`, "%H:%i") AS `to`,
@@ -207,20 +211,23 @@ class BlockModel extends BaseModel implements IModel
 					LEFT JOIN kk_categories AS cat ON cat.id = blocks.category
 					WHERE blocks.deleted = ? AND day = ? AND blocks.meeting = ?
 					ORDER BY `from` ASC',
-					'0', $day, $this->getMeetingId())
-				->fetchAll();
+					'0',
+					$day,
+					$this->getMeetingId()
+				)->fetchAll();
 	}
 
 	/**
-	 * Return blocks that contents programs
+	 * Return blocks that contents programs.
 	 *
-	 * @param	int		meeting ID
-	 * @return	array	result and number of affected rows
+	 * @param  int   $meetingId meeting ID
+	 * @return array result and number of affected rows
 	 */
 	public function findProgramBlocksByMeeting(int $meetingId)
 	{
 		return $this->getDatabase()
-			->query('SELECT id,
+			->query(
+				'SELECT id,
 					day,
 					DATE_FORMAT(`from`, "%H:%i") AS `from`,
 					DATE_FORMAT(`to`, "%H:%i") AS `to`,
@@ -229,15 +236,20 @@ class BlockModel extends BaseModel implements IModel
 				FROM kk_blocks
 				WHERE deleted = ? AND program = ? AND meeting = ?
 				ORDER BY `day`, `from` ASC',
-				'0', '1', $meetingId)->fetchAll();
+				'0',
+				'1',
+				$meetingId
+			)->fetchAll();
 	}
 
-	public function findByProgramId(/*int $programId*/)
+	/*
+	public function findByProgramId(int $programId)
 	{
 		return $this->getDatabase()
 			->query()
 			->fetch();
 	}
+	*/
 
 	/**
 	 * @param  $values
@@ -293,13 +305,12 @@ class BlockModel extends BaseModel implements IModel
 	}
 
 	/**
-	 * @throws Exception
+	 * @throws \Exception
 	 */
-	private function guardToGreaterThanFrom(DateTime $from, DateTime $to): void
+	private function guardToGreaterThanFrom(DateTime $from, DateTime $to)
 	{
-		if($from > $to) {
-			throw new Exception('Starting time is greater then finishing time.');
+		if ($from > $to) {
+			throw new \Exception('Starting time is greater then finishing time.');
 		}
 	}
-
 }

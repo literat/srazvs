@@ -6,7 +6,6 @@ use App\Models\ProgramModel;
 
 class PublicProgramsControl extends AProgramsControl
 {
-
 	const TEMPLATE_NAME = 'PublicPrograms';
 
 	/**
@@ -41,5 +40,4 @@ class PublicProgramsControl extends AProgramsControl
 
 		return $this;
 	}
-
 }

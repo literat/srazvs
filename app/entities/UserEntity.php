@@ -4,7 +4,6 @@ namespace App\Entities;
 
 class UserEntity implements IEntity
 {
-
 	public $id;
 
 	public $guid;
@@ -19,18 +18,12 @@ class UserEntity implements IEntity
 
 	public $deletedAt;
 
-	/**
-	 * @return int
-	 */
-	public function getId()
+	public function getId(): int
 	{
 		return $this->id;
 	}
 
-	/**
-	 * @return array
-	 */
-	public function toArray()
+	public function toArray(): array
 	{
 		$personId = $this->person;
 		$properties = get_object_vars($this);
@@ -39,5 +32,4 @@ class UserEntity implements IEntity
 
 		return $properties;
 	}
-
 }

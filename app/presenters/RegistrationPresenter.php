@@ -2,34 +2,23 @@
 
 namespace App\Presenters;
 
-use DateTime;
-use Exception;
-use App\Entities\VisitorEntity;
-use App\Models\MeetingModel;
-use App\Models\MealModel;
-use App\Services\Skautis\UserService;
-use App\Services\Emailer;
-use App\Repositories\VisitorRepository;
-use App\Repositories\ProgramRepository;
-use App\Components\Forms\RegistrationForm;
 use App\Components\Forms\Factories\IRegistrationFormFactory;
-use App\Services\Skautis\EventService;
-use Nette\Utils\ArrayHash;
+use App\Components\Forms\RegistrationForm;
+use App\Entities\VisitorEntity;
+use App\Models\MealModel;
+use App\Models\MeetingModel;
 use App\Models\SettingsModel;
+use App\Repositories\ProgramRepository;
+use App\Repositories\VisitorRepository;
+use App\Services\Emailer;
+use App\Services\Skautis\EventService;
+use App\Services\Skautis\UserService;
+use DateTime;
+use Nette\Utils\ArrayHash;
 use Skautis\Wsdl\AuthenticationException;
 
-/**
- * Registration controller
- *
- * This file handles the registration of visitors
- *
- * @author Tomas Litera
- * @copyright 2013-06-12 <tomaslitera@hotmail.com>
- * @package srazvs
- */
 class RegistrationPresenter extends VisitorPresenter
 {
-
 	/**
 	 * @var UserService
 	 */
@@ -39,11 +28,6 @@ class RegistrationPresenter extends VisitorPresenter
 	 * @var SettingsModel
 	 */
 	protected $settingsModel;
-
-	/**
-	 * @var boolean
-	 */
-	private $disabled = false;
 
 	/**
 	 * @var IRegistrationFormFactory
@@ -65,17 +49,23 @@ class RegistrationPresenter extends VisitorPresenter
 	 */
 	private $programRepository;
 
+	/**
+	 * @var bool
+	 */
 	protected $error = false;
-	protected $hash = null;
-	private $user;
 
 	/**
-	 * @param MeetingModel       $meetingModel
-	 * @param UserService        $userService
-	 * @param MealModel          $mealModel
-	 * @param ProgramRepository  $programRepository
-	 * @param VisitorRepository  $visitorRepository
-	 * @param SettingsModel      $settingsModel
+	 * @var string
+	 */
+	protected $hash = null;
+
+	/**
+	 * @param MeetingModel      $meetingModel
+	 * @param UserService       $userService
+	 * @param MealModel         $mealModel
+	 * @param ProgramRepository $programRepository
+	 * @param VisitorRepository $visitorRepository
+	 * @param SettingsModel     $settingsModel
 	 */
 	public function __construct(
 		MeetingModel $meetingModel,
@@ -106,9 +96,7 @@ class RegistrationPresenter extends VisitorPresenter
 	}
 
 	/**
-	 * Injector
-	 *
-	 * @param  IRegistrationFormFactory $factory
+	 * @param IRegistrationFormFactory $factory
 	 */
 	public function injectRegistrationFormFactory(IRegistrationFormFactory $factory)
 	{
@@ -124,7 +112,7 @@ class RegistrationPresenter extends VisitorPresenter
 
 		$this->getMeetingModel()->setMeetingId($this->getMeetingId());
 
-		if($this->getDebugMode() || $this->getSettingsModel()->findDebugRegime()) {
+		if ($this->getDebugMode() || $this->getSettingsModel()->findDebugRegime()) {
 			$this->getMeetingModel()->setRegistrationHandlers(1);
 			$this->setMeetingId(1);
 		} else {
@@ -141,24 +129,27 @@ class RegistrationPresenter extends VisitorPresenter
 		$template->isRegistrationOpen = $this->getMeetingModel()->isRegOpen($this->getDebugMode());
 	}
 
-	/**
-	 * Process data from form
-	 */
 	public function actionCreate($visitor): string
 	{
 		try {
 			$guid = $this->getVisitorRepository()->create($visitor);
 			$result = $this->sendRegistrationSummary($visitor, $guid);
 
-			$this->logInfo('Creation of registration(%s) successfull, result: %s', [
-				$guid,
-				json_encode($result),
-			]);
+			$this->logInfo(
+				'Creation of registration(%s) successfull, result: %s',
+				[
+					$guid,
+					json_encode($result),
+				]
+			);
 			$this->flashSuccess("Registrace({$guid}) byla úspěšně založena.");
-		} catch(Exception $e) {
-			$this->logError('Creation of registration failed, result: %s', [
-				$e->getMessage(),
-			]);
+		} catch (\Exception $e) {
+			$this->logError(
+				'Creation of registration failed, result: %s',
+				[
+					$e->getMessage(),
+				]
+			);
 			$this->flashError('Uložení účastníka selhalo, chyba: ' . $e->getMessage());
 		}
 
@@ -171,16 +162,22 @@ class RegistrationPresenter extends VisitorPresenter
 			$result = $this->getVisitorRepository()->updateByGuid($guid, $visitor);
 			$result = $this->sendRegistrationSummary($visitor, $guid);
 
-			$this->logInfo('Modification of registration(%s) successfull, result: %s', [
-				$guid,
-				json_encode($result),
-			]);
+			$this->logInfo(
+				'Modification of registration(%s) successfull, result: %s',
+				[
+					$guid,
+					json_encode($result),
+				]
+			);
 			$this->flashSuccess("Registrace({$guid}) byla úspěšně upravena.");
-		} catch(Exception $e) {
-			$this->logError('Modification of registration(%s) failed, result: %s', [
-				$guid,
-				$e->getMessage(),
-			]);
+		} catch (\Exception $e) {
+			$this->logError(
+				'Modification of registration(%s) failed, result: %s',
+				[
+					$guid,
+					$e->getMessage(),
+				]
+			);
 			$this->flashError('Uložení účastníka selhalo, chyba: ' . $e->getMessage());
 			$result = false;
 		}
@@ -193,9 +190,6 @@ class RegistrationPresenter extends VisitorPresenter
 		parent::beforeRender();
 	}
 
-	/**
-	 * Renders default template
-	 */
 	public function renderDefault()
 	{
 		$template = $this->getTemplate();
@@ -214,9 +208,6 @@ class RegistrationPresenter extends VisitorPresenter
 		}
 	}
 
-	/**
-	 * Renders new template
-	 */
 	public function renderNew()
 	{
 		$template = $this->getTemplate();
@@ -225,11 +216,7 @@ class RegistrationPresenter extends VisitorPresenter
 		$template->loggedIn = false;
 	}
 
-	/**
-	 * @param  string  $guid
-	 * @return void
-	 */
-	public function renderCheck($guid)
+	public function renderCheck(string $guid)
 	{
 		$visitor = $this->getVisitorRepository()->findByGuid($guid);
 
@@ -244,10 +231,6 @@ class RegistrationPresenter extends VisitorPresenter
 		$template->programs = $this->getProgramRepository()->findByVisitorId($visitor->id);
 	}
 
-	/**
-	 * @param  string $guid
-	 * @return void
-	 */
 	public function renderEdit($guid)
 	{
 		$visitor = $this->getVisitorRepository()->findExpandedByGuid($guid);
@@ -264,22 +247,19 @@ class RegistrationPresenter extends VisitorPresenter
 		$this['registrationForm']->setDefaults($visitor);
 	}
 
-	/**
-	 * @return RegistrationFormControl
-	 */
 	protected function createComponentRegistrationForm(): RegistrationForm
 	{
 		$control = $this->registrationFormFactory->create();
 		$control->setMeetingId($this->getMeetingId());
-		$control->onRegistrationSave[] = function($visitor) {
+		$control->onRegistrationSave[] = function ($visitor) {
 			$guid = $this->getParameter('guid');
 
-			if($guid) {
+			if ($guid) {
 				$guid = $this->actionUpdate($guid, $visitor);
 			} else {
 				$guid = $this->actionCreate($visitor);
 			}
-/*
+			/*
 				if($this->getUserService()->isLoggedIn() && $this->getMeetingModel()->findCourseId()) {
 					$this->getEventService()->insertEnroll(
 						$this->getUserService()->getSkautis()->getUser()->getLoginId(),
@@ -288,23 +268,20 @@ class RegistrationPresenter extends VisitorPresenter
 						'123456789'
 					);
 				}
-*/
+			*/
 			$this->redirect('Registration:check', $guid);
 		};
 
 		return $control;
 	}
 
-	/**
-	 * @return VisitorEntity
-	 */
 	protected function useLoggedVisitor(): VisitorEntity
 	{
 		$userDetail = $this->getUserService()->getUserDetail();
 		$skautisUser = $this->getUserService()->getPersonalDetail($userDetail->ID_Person);
 		$membership = $this->getUserService()->getPersonUnitDetail($userDetail->ID_Person);
 
-		if(!preg_match('/^[1-9]{1}[0-9a-zA-Z]{2}\.[0-9a-zA-Z]{1}[0-9a-zA-Z]{1}$/', $membership->RegistrationNumber)) {
+		if (!preg_match('/^[1-9]{1}[0-9a-zA-Z]{2}\.[0-9a-zA-Z]{1}[0-9a-zA-Z]{1}$/', $membership->RegistrationNumber)) {
 			$skautisUserUnit = $this->getUserService()->getParentUnitDetail($membership->ID_Unit)[0];
 		} else {
 			$skautisUserUnit = $this->getUserService()->getUnitDetail($membership->ID_Unit);
@@ -321,83 +298,47 @@ class RegistrationPresenter extends VisitorPresenter
 		$visitor->birthday = (new DateTime($skautisUser->Birthday))->format('d. m. Y');
 		$visitor->group_name = $skautisUserUnit->DisplayName;
 		$visitor->group_num = $skautisUserUnit->RegistrationNumber;
-		if(isset($membership->Unit)) {
+		if (isset($membership->Unit)) {
 			$visitor->troop_name = $membership->Unit;
 		}
 
 		return $visitor;
 	}
 
-	/**
-	 * @return MealModel
-	 */
-	protected function getMealModel()
+	protected function getMealModel(): MealModel
 	{
 		return $this->mealModel;
 	}
 
-	/**
-	 * @param  MealModel $model
-	 * @return $this
-	 */
-	protected function setMealModel(MealModel $model)
+	protected function setMealModel(MealModel $model): self
 	{
 		$this->mealModel = $model;
 
 		return $this;
 	}
 
-	/**
-	 * @return MeetingModel
-	 */
-	protected function getMeetingModel()
+	protected function getMeetingModel(): MeetingModel
 	{
 		return $this->meetingModel;
 	}
 
-	/**
-	 * @param  MeetingModel $model
-	 * @return $this
-	 */
-	protected function setMeetingModel(MeetingModel $model)
-	{
-		$this->meetingModel = $model;
-
-		return $this;
-	}
-
-	/**
-	 * @return UserService
-	 */
-	protected function getUserService()
+	protected function getUserService(): UserService
 	{
 		return $this->userService;
 	}
 
-	/**
-	 * @param  UserService $service
-	 * @return $this
-	 */
-	protected function setUserService(UserService $service)
+	protected function setUserService(UserService $service): self
 	{
 		$this->userService = $service;
 
 		return $this;
 	}
 
-	/**
-	 * @return EventService
-	 */
 	protected function getEventService(): EventService
 	{
 		return $this->skautisEventService;
 	}
 
-	/**
-	 * @param EventService $skautisEvent
-	 *
-	 * @return self
-	 */
 	protected function setEventService(EventService $service): self
 	{
 		$this->skautisEventService = $service;
@@ -405,20 +346,11 @@ class RegistrationPresenter extends VisitorPresenter
 		return $this;
 	}
 
-
-	/**
-	 * @return SettingsModel
-	 */
 	protected function getSettingsModel(): SettingsModel
 	{
 		return $this->settingsModel;
 	}
 
-	/**
-	 * @param SettingsModel $model
-	 *
-	 * @return self
-	 */
 	protected function setSettingsModel(SettingsModel $model): self
 	{
 		$this->settingsModel = $model;
@@ -426,23 +358,15 @@ class RegistrationPresenter extends VisitorPresenter
 		return $this;
 	}
 
-	/**
-	 * @return ProgramRepository
-	 */
 	protected function getProgramRepository(): ProgramRepository
 	{
 		return $this->programRepository;
 	}
 
-	/**
-	 * @param  ProgramRepository $repository
-	 * @return RegistrationPresenter
-	 */
 	protected function setProgramRepository(ProgramRepository $repository): self
 	{
 		$this->programRepository = $repository;
 
 		return $this;
 	}
-
 }

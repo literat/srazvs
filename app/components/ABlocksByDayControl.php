@@ -6,7 +6,6 @@ use App\Models\BlockModel;
 
 abstract class ABlocksByDayControl extends BaseControl implements IBlocksByDayControl
 {
-
 	const TEMPLATE_NAME = '';
 
 	/**
@@ -71,5 +70,4 @@ abstract class ABlocksByDayControl extends BaseControl implements IBlocksByDayCo
 
 		return $this;
 	}
-
 }

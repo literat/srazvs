@@ -2,23 +2,16 @@
 
 namespace App\Models;
 
+use Nette\Database\Context;
 use Nette\Database\Table\ActiveRow;
 use Nette\Utils\Json;
-use Nette\Database\Context;
-use \Exception;
 
-/**
- * Settings
- *
- * class for handling settings
- *
- * @created 2012-03-06
- * @author Tomas Litera <tomaslitera@hotmail.com>
- */
 class SettingsModel extends BaseModel
 {
 
-	/** @var string */
+	/**
+	 * @var string
+	 */
 	protected $table = 'kk_settings';
 
 	/**
@@ -33,15 +26,15 @@ class SettingsModel extends BaseModel
 	{
 		$data = $this->all();
 
-		if(!$data) {
-			throw new Exception('Settings: no data found!');
+		if (!$data) {
+			throw new \Exception('Settings: no data found!');
 		} else {
 			return $data;
 		}
 	}
 
 	/**
-	 * Modify mail subject and message
+	 * Modify mail subject and message.
 	 */
 	public function modifyMailJson(string $type, string $subject, string $message): string
 	{
@@ -52,8 +45,8 @@ class SettingsModel extends BaseModel
 
 		$result = $this->updateByName($mailData, 'mail_' . $type);
 
-		if(!$result) {
-			throw new Exception('Mail modification failed!');
+		if (!$result) {
+			throw new \Exception('Mail modification failed!');
 		} else {
 			return $result;
 		}
@@ -77,8 +70,9 @@ class SettingsModel extends BaseModel
 	}
 
 	/**
-	 * @param  string $name
+	 * @param  string                     $name
 	 * @return ActiveRow
+	 * @throws \Nette\Utils\JsonException
 	 */
 	public function findByName($name)
 	{
@@ -91,8 +85,8 @@ class SettingsModel extends BaseModel
 	}
 
 	/**
-	 * @param  mixed  $value
-	 * @param  string $name
+	 * @param  mixed     $value
+	 * @param  string    $name
 	 * @return ActiveRow
 	 */
 	public function updateByName($value, $name)
@@ -108,10 +102,7 @@ class SettingsModel extends BaseModel
 		return $this->updateByName($data, 'debug');
 	}
 
-	/**
-	 * @return bool
-	 */
-	public function findDebugRegime()
+	public function findDebugRegime(): bool
 	{
 		return (bool) $this->findByName('debug');
 	}
@@ -126,5 +117,4 @@ class SettingsModel extends BaseModel
 			'value' => Json::encode($value)
 		];
 	}
-
 }

@@ -7,7 +7,6 @@ use App\Models\PersonModel;
 
 class PersonRepository
 {
-
 	/**
 	 * @var PersonModel
 	 */
@@ -30,7 +29,7 @@ class PersonRepository
 	}
 
 	/**
-	 * @param  int $id
+	 * @param  int          $id
 	 * @return PersonEntity
 	 */
 	public function find(int $id): PersonEntity
@@ -41,6 +40,7 @@ class PersonRepository
 	/**
 	 * @param  $person
 	 * @return \Nette\Database\Table\ActiveRow
+	 * @throws \Exception
 	 */
 	public function create($person)
 	{
@@ -53,9 +53,9 @@ class PersonRepository
 	}
 
 	/**
-	 * @param  $id
 	 * @param  $person
 	 * @return \Nette\Database\Table\ActiveRow
+	 * @throws \Exception
 	 */
 	public function update($person)
 	{
@@ -66,9 +66,9 @@ class PersonRepository
 	}
 
 	/**
-	 * @param  $id
 	 * @param  $person
 	 * @return \Nette\Database\Table\ActiveRow
+	 * @throws \Exception
 	 */
 	public function save($person)
 	{
@@ -88,7 +88,7 @@ class PersonRepository
 	}
 
 	/**
-	 * @param  array $values
+	 * @param  array        $values
 	 * @return PersonEntity
 	 */
 	protected function populate($values): PersonEntity
@@ -109,7 +109,7 @@ class PersonRepository
 
 	/**
 	 * @param  PersonModel $model
-	 * @return $this
+	 * @return self
 	 */
 	protected function setPersonModel(PersonModel $model): self
 	{
@@ -117,5 +117,4 @@ class PersonRepository
 
 		return $this;
 	}
-
 }

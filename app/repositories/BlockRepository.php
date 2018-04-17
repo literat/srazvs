@@ -4,11 +4,9 @@ namespace App\Repositories;
 
 use App\Entities\BlockEntity;
 use App\Models\BlockModel;
-use Nette\Database\Table\ActiveRow;
 
 class BlockRepository
 {
-
 	/**
 	 * @var BlockModel
 	 */
@@ -23,7 +21,7 @@ class BlockRepository
 	}
 
 	/**
-	 * @param  int $meetingId
+	 * @param  int  $meetingId
 	 * @return self
 	 */
 	public function setMeetingId(int $meetingId): self
@@ -42,8 +40,8 @@ class BlockRepository
 	}
 
 	/**
-	 * @param  int $id
-	 * @return \Nette\Database\Table\ActiveRow
+	 * @param  int         $id
+	 * @return BlockEntity
 	 */
 	public function find(int $id): BlockEntity
 	{
@@ -60,7 +58,7 @@ class BlockRepository
 	}
 
 	/**
-	 * @param $id
+	 * @param  $id
 	 * @return \Nette\Database\Table\ActiveRow
 	 */
 	public function findTutor($id)
@@ -109,7 +107,7 @@ class BlockRepository
 	}
 
 	/**
-	 * @param $id
+	 * @param  $id
 	 * @return bool
 	 */
 	public function delete($id): bool
@@ -118,7 +116,7 @@ class BlockRepository
 	}
 
 	/**
-	 * @param  array $values
+	 * @param  array       $values
 	 * @return BlockEntity
 	 */
 	protected function populate($values): BlockEntity
@@ -140,7 +138,7 @@ class BlockRepository
 
 	/**
 	 * @param  BlockModel $model
-	 * @return $this
+	 * @return self
 	 */
 	protected function setBlockModel(BlockModel $model): self
 	{
@@ -148,5 +146,4 @@ class BlockRepository
 
 		return $this;
 	}
-
 }

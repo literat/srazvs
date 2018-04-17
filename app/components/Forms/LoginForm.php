@@ -2,13 +2,12 @@
 
 namespace App\Components\Forms;
 
-use App\Services\AnnotationService;
 use App\Models\MeetingModel;
+use App\Services\AnnotationService;
 use Nette\Application\UI\Form;
 
 class LoginForm extends BaseForm
 {
-
 	const TEMPLATE_NAME = 'LoginForm';
 	const MESSAGE_REQUIRED = '';
 	const MESSAGE_MAX_LENGTH = '';
@@ -24,7 +23,7 @@ class LoginForm extends BaseForm
 	protected $annotationService;
 
 	/**
-	 * @var  MeetingModel
+	 * @var MeetingModel
 	 */
 	protected $meetingModel;
 
@@ -36,7 +35,7 @@ class LoginForm extends BaseForm
 		$this->setMeetingModel($meeting);
 	}
 
-	public function render(): void
+	public function render()
 	{
 		$template = $this->getTemplate();
 		$template->setFile($this->buildTemplatePath());
@@ -44,7 +43,7 @@ class LoginForm extends BaseForm
 	}
 
 	/**
-	 * @param  array $defaults
+	 * @param  array          $defaults
 	 * @return AnnotationForm
 	 */
 	public function setDefaults(array $defaults = []): AnnotationForm
@@ -142,5 +141,4 @@ class LoginForm extends BaseForm
 
 		return $this;
 	}
-
 }

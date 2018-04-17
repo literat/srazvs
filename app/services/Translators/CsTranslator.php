@@ -18,5 +18,4 @@ class CsTranslator implements ITranslator
 		dd($message);
 	}
 	// @codingStandardsIgnoreEnd
-
 }

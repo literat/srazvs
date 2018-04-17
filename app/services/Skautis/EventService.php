@@ -2,15 +2,11 @@
 
 namespace App\Services\Skautis;
 
-/**
- * User service
- */
 class EventService extends SkautisService
 {
-
 	/**
-	 * @param   void
-	 * @return  \stdClass
+	 * @param  void
+	 * @return \stdClass
 	 *
 	 * @throws \Skautis\Wsdl\WsdlException
 	 */
@@ -27,9 +23,9 @@ class EventService extends SkautisService
 	}
 
 	/**
-	 * @param  int    $loginId
-	 * @param  int    $educationEventCourseId
-	 * @param  string $phone
+	 * @param  int       $loginId
+	 * @param  int       $educationEventCourseId
+	 * @param  string    $phone
 	 * @return \stdClass
 	 *
 	 * @throws \Skautis\Wsdl\WsdlException
@@ -46,5 +42,4 @@ class EventService extends SkautisService
 				'Affirmation'             => true,
 			]));
 	}
-
 }

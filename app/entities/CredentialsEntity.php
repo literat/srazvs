@@ -4,7 +4,6 @@ namespace App\Entities;
 
 class CredentialsEntity implements IEntity
 {
-
 	public $id;
 
 	public $guid;
@@ -21,20 +20,13 @@ class CredentialsEntity implements IEntity
 
 	public $email;
 
-	/**
-	 * @return int
-	 */
-	public function getId()
+	public function getId(): int
 	{
 		return $this->id;
 	}
 
-	/**
-	 * @return array
-	 */
-	public function toArray()
+	public function toArray(): array
 	{
 		return get_object_vars($this);
 	}
-
 }

@@ -2,18 +2,14 @@
 
 namespace App\Presenters;
 
+use App\Services\Skautis\Authenticator as SkautisAuthenticator;
 use App\Services\Skautis\AuthService as SkautisAuthService;
 use App\Services\Skautis\UserService as SkautisUserService;
-use App\Services\Skautis\Authenticator as SkautisAuthenticator;
 use App\Services\UserService;
 use Skautis\Wsdl\AuthenticationException;
 
-/**
- * Skautis Auth presenters.
- */
 class AuthPresenter extends BasePresenter
 {
-
 	/**
 	 * @var SkautisAuthService
 	 */
@@ -35,7 +31,6 @@ class AuthPresenter extends BasePresenter
 	private $skautisAuthenticator;
 
 	/**
-	 * AuthPresenter constructor.
 	 * @param SkautisAuthService $skautisAuthService
 	 * @param SkautisUserService $skautisUserService
 	 * @param UserService        $userService
@@ -52,9 +47,6 @@ class AuthPresenter extends BasePresenter
 		$this->skautisAuthenticator = $skautisAuthenticator;
 	}
 
-	/**
-	 * @return void
-	 */
 	protected function startup()
 	{
 		parent::startup();
@@ -64,7 +56,7 @@ class AuthPresenter extends BasePresenter
 	 * @param  string $provider
 	 * @return void
 	 */
-	public function actionLogin($provider)
+	public function actionLogin(string $provider)
 	{
 		$this->{$provider . 'Login'}();
 	}
@@ -73,7 +65,7 @@ class AuthPresenter extends BasePresenter
 	 * @param  string $provider
 	 * @return void
 	 */
-	public function actionLogout($provider)
+	public function actionLogout(string $provider)
 	{
 		$this->getSession('auth')->backlink = $this->getParameter('backlink') ?? null;
 		$this->{$provider . 'Logout'}();
@@ -89,10 +81,10 @@ class AuthPresenter extends BasePresenter
 	}
 
 	/**
-	 * Redirects to login page
+	 * Redirects to login page.
 	 *
-	 * @param   string $backlink
-	 * @return  void
+	 * @param  string                            $backlink
+	 * @return void
 	 * @throws \Nette\Application\AbortException
 	 */
 	protected function skautisLogin($backlink = null)
@@ -101,10 +93,10 @@ class AuthPresenter extends BasePresenter
 	}
 
 	/**
-	 * Handle log out from Skautis
-	 * Skautis redirects to this action after log out
+	 * Handle log out from Skautis.
+	 * Skautis redirects to this action after log out.
 	 *
-	 * @return  void
+	 * @return void
 	 * @throws \Nette\Application\AbortException
 	 */
 	protected function skautisLogout()
@@ -113,10 +105,10 @@ class AuthPresenter extends BasePresenter
 	}
 
 	/**
-	 * Handle Skautis login process
+	 * Handle Skautis login process.
 	 *
-	 * @param   string $returnUrl
-	 * @return  void
+	 * @param  string                                  $returnUrl
+	 * @return void
 	 * @throws \Nette\Application\AbortException
 	 * @throws \Nette\Security\AuthenticationException
 	 */
@@ -140,7 +132,7 @@ class AuthPresenter extends BasePresenter
 				$this->context->application->restoreRequest($returnUrl);
 			}
 
-			if($backlink = $this->getSession('auth')->backlink) {
+			if ($backlink = $this->getSession('auth')->backlink) {
 				unset($this->getSession('auth')->backlink);
 				$this->redirectUrl($backlink);
 			} else {
@@ -154,10 +146,10 @@ class AuthPresenter extends BasePresenter
 	}
 
 	/**
-	 * Log out from Skautis
+	 * Log out from Skautis.
 	 *
-	 * @param   void
-	 * @return  void
+	 * @return void
+	 * @throws \Nette\Application\AbortException
 	 */
 	protected function handleSkautisLogout()
 	{
@@ -172,7 +164,7 @@ class AuthPresenter extends BasePresenter
 		}
 		*/
 
-		if($backlink = $this->getSession('auth')->backlink) {
+		if ($backlink = $this->getSession('auth')->backlink) {
 			unset($this->getSession('auth')->backlink);
 			$this->redirectUrl($backlink);
 		} else {
@@ -181,7 +173,7 @@ class AuthPresenter extends BasePresenter
 	}
 
 	/**
-	 * @param string $token
+	 * @param  string                            $token
 	 * @throws \Nette\Application\AbortException
 	 */
 	protected function guardToken(string $token = '')
@@ -191,9 +183,6 @@ class AuthPresenter extends BasePresenter
 		}
 	}
 
-	/**
-	 * @return SkautisAuthService
-	 */
 	protected function getSkautisAuthService(): SkautisAuthService
 	{
 		return $this->skautisAuthService;
@@ -229,7 +218,4 @@ class AuthPresenter extends BasePresenter
 
 		return $this;
 	}
-
-
-
 }

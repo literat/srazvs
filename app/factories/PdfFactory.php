@@ -4,14 +4,6 @@ namespace App\Factories;
 
 use Mpdf\Mpdf;
 
-/**
- * PdfFactory
- *
- * factory to create instance of Mpdf
- *
- * @created 2016-07-07
- * @author Tomas Litera <tomas@litera.me>
- */
 class PdfFactory
 {
 	/** @var Mpdf */
@@ -44,7 +36,6 @@ class PdfFactory
 	/** @var bool */
 	private $debugMode = false;
 
-	/** Constructor */
 	public function __construct(array $configuration)
 	{
 		$this->encoding 	= $configuration['encoding'];
@@ -59,26 +50,27 @@ class PdfFactory
 	}
 
 	/**
-	 * Return new Mpdf with few settings
+	 * Return new Mpdf with few settings.
 	 *
-	 * @return	Mpdf;
+	 * @return Mpdf;
 	 */
 	public function create()
 	{
-		$this->pdf = new Mpdf([
-			$this->encoding,
-			$this->paperFormat,
-			$this->fontSize,
-			$this->font,
-			$this->marginLeft,
-			$this->marginRight,
-			$this->marginTop,
-			$this->marginBottom
+		$this->pdf = new Mpdf(
+			[
+				$this->encoding,
+				$this->paperFormat,
+				$this->fontSize,
+				$this->font,
+				$this->marginLeft,
+				$this->marginRight,
+				$this->marginTop,
+				$this->marginBottom
 			]
 		);
 
 		// debugging on demand
-		if($this->debugMode){
+		if ($this->debugMode) {
 			$this->pdf->debug = true;
 		}
 		$this->pdf->useOnlyCoreFonts = true;
@@ -91,7 +83,7 @@ class PdfFactory
 	}
 
 	/**
-	 * Set margins of PDF
+	 * Set margins of PDF.
 	 */
 	public function setMargins($left, $right, $top, $bottom)
 	{
@@ -102,7 +94,7 @@ class PdfFactory
 	}
 
 	/**
-	 * Set paper format of PDF
+	 * Set paper format of PDF.
 	 */
 	public function setPaperFormat($paperFormat)
 	{

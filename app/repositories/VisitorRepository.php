@@ -12,7 +12,6 @@ use Nette\Utils\Strings;
 
 class VisitorRepository
 {
-
 	/**
 	 * @var VisitorModel
 	 */
@@ -52,7 +51,7 @@ class VisitorRepository
 	}
 
 	/**
-	 * @param int  $meetingId
+	 * @param  int  $meetingId
 	 * @return self
 	 */
 	public function setMeeting(int $meetingId): self
@@ -63,8 +62,8 @@ class VisitorRepository
 	}
 
 	/**
-	 * @param  int $id
-	 * @return boolean
+	 * @param  int  $id
+	 * @return bool
 	 */
 	public function setChecked(int $id): bool
 	{
@@ -72,8 +71,8 @@ class VisitorRepository
 	}
 
 	/**
-	 * @param  int $id
-	 * @return boolean
+	 * @param  int  $id
+	 * @return bool
 	 */
 	public function setUnchecked(int $id): bool
 	{
@@ -81,9 +80,9 @@ class VisitorRepository
 	}
 
 	/**
-	 * Return visitor by id
+	 * Return visitor by id.
 	 *
-	 * @param  int    $id
+	 * @param  int       $id
 	 * @return ActiveRow
 	 */
 	public function findById($id)
@@ -92,7 +91,7 @@ class VisitorRepository
 	}
 
 	/**
-	 * @param  int $id
+	 * @param  int       $id
 	 * @return ArrayHash
 	 */
 	public function findExpandedById(int $id): ArrayHash
@@ -111,7 +110,10 @@ class VisitorRepository
 	}
 
 	/**
-	 * Return visitor by guid
+	 * Return visitor by guid.
+	 *
+	 * @param  string    $guid
+	 * @return ActiveRow
 	 */
 	public function findByGuid(string $guid): ActiveRow
 	{
@@ -141,7 +143,7 @@ class VisitorRepository
 	}
 
 	/**
-	 * @param  int  $id
+	 * @param  int   $id
 	 * @return array
 	 */
 	public function findRecipients($id): array
@@ -150,10 +152,11 @@ class VisitorRepository
 	}
 
 	/**
-	 * @param  array   $data
+	 * @param  array      $data
 	 * @return string
+	 * @throws \Exception
 	 */
-	public function create($data)
+	public function create(array $data)
 	{
 		$visitor = $this->filterFields($data, $this->getVisitorModel()->getColumns());
 		$visitor['code'] = $this->calculateCode4Bank(
@@ -171,10 +174,10 @@ class VisitorRepository
 
 	/**
 	 * @param  integer $id
-	 * @param  array   $data
+	 * @param  array   $values
 	 * @return integer
 	 */
-	public function update($id, $values)
+	public function update($id, array $values)
 	{
 		$visitor = $this->filterFields($values, $this->getVisitorModel()->getColumns());
 
@@ -194,11 +197,11 @@ class VisitorRepository
 	}
 
 	/**
-	 * @param  integer $id
-	 * @param  array   $data
+	 * @param  string  $guid
+	 * @param  array   $values
 	 * @return integer
 	 */
-	public function updateByGuid($guid, $values)
+	public function updateByGuid(string $guid, array $values)
 	{
 		$visitor = $this->filterFields($values, $this->getVisitorModel()->getColumns());
 
@@ -220,7 +223,7 @@ class VisitorRepository
 
 	/**
 	 * @param  integer $id
-	 * @return boolean
+	 * @return bool
 	 */
 	public function delete($id)
 	{
@@ -228,7 +231,7 @@ class VisitorRepository
 	}
 
 	/**
-	 * Counts visitors
+	 * Counts visitors.
 	 *
 	 * @return int
 	 */
@@ -238,7 +241,7 @@ class VisitorRepository
 	}
 
 	/**
-	 * @param  int $id
+	 * @param  int        $id
 	 * @return string
 	 * @throws \Exception
 	 */
@@ -248,7 +251,7 @@ class VisitorRepository
 	}
 
 	/**
-	 * @param  int $id
+	 * @param  int        $id
 	 * @return string
 	 * @throws \Exception
 	 */
@@ -271,7 +274,7 @@ class VisitorRepository
 	}
 
 	/**
-	 * @param  int    $visitorId
+	 * @param  int   $visitorId
 	 * @return array
 	 */
 	public function assembleFormPrograms(int $visitorId): array
@@ -281,7 +284,7 @@ class VisitorRepository
 		$formPrograms = [];
 
 		foreach ($visitorPrograms as $visitorProgram) {
-			if($visitorProgram->program !== 0) {
+			if ($visitorProgram->program !== 0) {
 				$program = $this->getProgramRepository()->find($visitorProgram->program);
 				$formPrograms['blck_' . $program->block] = $visitorProgram->program;
 			}
@@ -291,8 +294,8 @@ class VisitorRepository
 	}
 
 	/**
-	 * @param  array  $data
-	 * @param  array  $fields
+	 * @param  array $data
+	 * @param  array $fields
 	 * @return array
 	 */
 	protected function filterFields($data, array $fields)
@@ -308,8 +311,8 @@ class VisitorRepository
 	{
 		$blocks = $this->getBlockModel()->idsFromCurrentMeeting($data['meeting']);
 
-		$programs = array_map(function($block) use ($data) {
-			if(!array_key_exists('blck_' . $block['id'], $data)) {
+		$programs = array_map(function ($block) use ($data) {
+			if (!array_key_exists('blck_' . $block['id'], $data)) {
 				return 0;
 			}
 
@@ -407,5 +410,4 @@ class VisitorRepository
 
 		return $this;
 	}
-
 }

@@ -2,29 +2,18 @@
 
 namespace App\Services\Skautis;
 
-/**
- * Authentication service
- */
 class AuthService extends SkautisService
 {
-
-	/**
-	 * Gets login url
-	 *
-	 * @param   string  $backlink
-	 * @return  string
-	 */
-	public function getLoginUrl($backlink)
+	public function getLoginUrl(string $backlink): string
 	{
 		return $this->getSkautis()->getLoginUrl($backlink);
 	}
 
-
 	/**
-	 * Sets initial data after login to Skautis
+	 * Sets initial data after login to Skautis.
 	 *
-	 * @param   array  $arr
-	 * @return  void
+	 * @param  array $arr
+	 * @return void
 	 */
 	public function setInit(array $arr)
 	{
@@ -32,16 +21,11 @@ class AuthService extends SkautisService
 		$this->getSkautis()->setLoginData($arr);
 	}
 
-
 	/**
-	 * Return url for log out
-	 *
-	 * @param   void
-	 * @return  string
+	 * Return url for log out.
 	 */
-	public function getLogoutUrl()
+	public function getLogoutUrl(): string
 	{
 		return $this->getSkautis()->getLogoutUrl();
 	}
-
 }

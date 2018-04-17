@@ -4,31 +4,48 @@ namespace App\Factories;
 
 use PHPExcel;
 
-/**
- * ExcelFactory
- *
- * factory to create instance of PHPExcel
- *
- * @created 2016-07-07
- * @author Tomas Litera <tomaslitera@hotmail.com>
- */
 class ExcelFactory
 {
 	/** @var \PHPExcel */
 	private $excel;
+
+	/**
+	 * @var string
+	 */
 	private $creator = 'Junák - český skaut, Kapitanát vodních skautů, z. s.';
+
+	/**
+	 * @var string
+	 */
 	private $lastModifiedBy = 'Srazy VS';
+
+	/**
+	 * @var string
+	 */
 	private $title = 'Srazy VS: Export';
+
+	/**
+	 * @var string
+	 */
 	private $subject = 'Export';
+
+	/**
+	 * @var string
+	 */
 	private $description = 'Srazy VS CMS: export dat';
+
+	/**
+	 * @var string
+	 */
 	private $keywords = 'sraz vs export xlsx';
+
+	/**
+	 * @var string
+	 */
 	private $category = 'Export dat';
 
-	/** Constructor */
 	public function __construct(array $configuration)
 	{
-		//var_dump($configuration);
-		//exit;
 		$this->creator 			= $configuration['creator'];
 		$this->lastModifiedBy 	= $configuration['lastModifiedBy'];
 		$this->title 			= $configuration['title'];
@@ -39,7 +56,7 @@ class ExcelFactory
 	}
 
 	/**
-	 * Return new PHPExcel with few settings
+	 * Return new PHPExcel with few settings.
 	 */
 	public function create(): PHPExcel
 	{

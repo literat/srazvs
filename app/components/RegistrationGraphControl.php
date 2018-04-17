@@ -6,7 +6,6 @@ use App\Models\ExportModel;
 
 class RegistrationGraphControl extends BaseControl
 {
-
 	const TEMPLATE_NAME = 'RegistrationGraph';
 	const GRAPH_WIDTH = 94;
 	const GRAPH_HEIGHT_INIT = 0;
@@ -26,9 +25,6 @@ class RegistrationGraphControl extends BaseControl
 		$this->setExportModel($model);
 	}
 
-	/**
-	 * @return void
-	 */
 	public function render()
 	{
 		$exportModel = $this->getExportModel();
@@ -54,13 +50,12 @@ class RegistrationGraphControl extends BaseControl
 
 	/**
 	 * @param  ExportModel $model
-	 * @return $this
+	 * @return self
 	 */
-	protected function setExportModel(ExportModel $model)
+	protected function setExportModel(ExportModel $model): self
 	{
 		$this->exportModel = $model;
 
 		return $this;
 	}
-
 }

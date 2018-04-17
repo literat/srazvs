@@ -2,13 +2,9 @@
 
 namespace App\Presenters;
 
-use App\Models\MeetingModel;
 use App\Components\ProgramOverviewControl;
-use Nette\Http\Request;
+use App\Models\MeetingModel;
 
-/**
- * This file handles the retrieval and serving of news articles
- */
 class DashboardPresenter extends BasePresenter
 {
 
@@ -29,9 +25,6 @@ class DashboardPresenter extends BasePresenter
 		$this->setProgramOverviewControl($control);
 	}
 
-	/**
-	 * @return void
-	 */
 	public function startup()
 	{
 		parent::startup();
@@ -42,7 +35,8 @@ class DashboardPresenter extends BasePresenter
 	}
 
 	/**
-	 * Render entire page
+	 * Render entire page.
+	 *
 	 * @return void
 	 */
 	public function renderDefault()
@@ -67,13 +61,12 @@ class DashboardPresenter extends BasePresenter
 
 	/**
 	 * @param  ProgramOverviewControl $control
-	 * @return $this
+	 * @return self
 	 */
-	protected function setProgramOverviewControl(ProgramOverviewControl $control)
+	protected function setProgramOverviewControl(ProgramOverviewControl $control): self
 	{
 		$this->programOverview = $control;
 
 		return $this;
 	}
-
 }

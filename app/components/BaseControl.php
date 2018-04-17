@@ -6,7 +6,6 @@ use Nette\Application\UI\Control;
 
 abstract class BaseControl extends Control
 {
-
 	const TEMPLATE_DIR = __DIR__ . '/../templates/components';
 	const TEMPLATE_EXT = 'latte';
 	const TEMPLATE_NAME = null;
@@ -47,5 +46,4 @@ abstract class BaseControl extends Control
 			self::TEMPLATE_EXT
 		);
 	}
-
 }

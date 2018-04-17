@@ -8,11 +8,10 @@ use Nette\Forms\Controls;
 
 abstract class BaseForm extends BaseControl
 {
-
 	const TEMPLATE_DIR = __DIR__ . '/../../templates/components/Forms';
 
 	/**
-	 * @param  Form   $form
+	 * @param  Form $form
 	 * @return Form
 	 */
 	protected function setupRendering(Form $form): Form
@@ -31,15 +30,13 @@ abstract class BaseForm extends BaseControl
 				$control->getControlPrototype()
 					->addClass(empty($usedPrimary) ? 'btn btn-default' : '');
 				$usedPrimary = true;
-			} elseif (
-				$control instanceof Controls\TextBase ||
+			} elseif ($control instanceof Controls\TextBase ||
 				$control instanceof Controls\SelectBox ||
 				$control instanceof Controls\MultiSelectBox
 			) {
 				$control->getControlPrototype()
 					->addClass('form-control');
-			} elseif (
-				$control instanceof Controls\Checkbox ||
+			} elseif ($control instanceof Controls\Checkbox ||
 				$control instanceof Controls\CheckboxList ||
 				$control instanceof Controls\RadioList
 			) {
@@ -51,5 +48,4 @@ abstract class BaseForm extends BaseControl
 
 		return $form;
 	}
-
 }

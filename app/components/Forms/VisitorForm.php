@@ -2,18 +2,17 @@
 
 namespace App\Components\Forms;
 
-use App\Repositories\ProgramRepository;
-use App\Models\ProvinceModel;
 use App\Models\BlockModel;
 use App\Models\MealModel;
 use App\Models\MeetingModel;
-use Nette\Application\UI\Form;
+use App\Models\ProvinceModel;
+use App\Repositories\ProgramRepository;
 use App\Services\Skautis\UserService;
+use Nette\Application\UI\Form;
 use Nette\Forms\Controls\SubmitButton;
 
 class VisitorForm extends BaseForm
 {
-
 	const TEMPLATE_NAME = 'VisitorForm';
 
 	const MESSAGE_REQUIRED = 'Hodnota musí být vyplněna!';
@@ -45,7 +44,7 @@ class VisitorForm extends BaseForm
 	protected $blockModel;
 
 	/**
-	 * @var  MeetingModel
+	 * @var MeetingModel
 	 */
 	protected $meetingModel;
 
@@ -65,7 +64,6 @@ class VisitorForm extends BaseForm
 	private $userService;
 
 	/**
-	 * VisitorForm constructor.
 	 * @param ProvinceModel     $province
 	 * @param ProgramRepository $program
 	 * @param BlockModel        $block
@@ -155,7 +153,8 @@ class VisitorForm extends BaseForm
 			->addRule(
 				Form::PATTERN,
 				'Číslo musí být ve formátu nnn.nn!',
-				'[1-9]{1}[0-9a-zA-Z]{2}\.[0-9a-zA-Z]{1}[0-9a-zA-Z]{1}')
+				'[1-9]{1}[0-9a-zA-Z]{2}\.[0-9a-zA-Z]{1}[0-9a-zA-Z]{1}'
+			)
 			->setAttribute('placeholder', '214.02')
 			->getLabelPrototype()->setAttribute('class', 'required');
 		$form->addText('group_name', 'Název střediska/přístavu:', 30)
@@ -186,8 +185,8 @@ class VisitorForm extends BaseForm
 		$form->addTextArea('comment', 'Dotazy, přání, připomínky, stížnosti:', 50, 8);
 		$form->addTextArea('question', 'Vaše nabídka:', 50, 8)
 			->setAttribute(
-			'placeholder',
-			'Vaše nabídka na sdílení dobré praxe (co u vás umíte dobře a jste ochotni se o to podělit)'
+				'placeholder',
+				'Vaše nabídka na sdílení dobré praxe (co u vás umíte dobře a jste ochotni se o to podělit)'
 			);
 		$form->addTextArea('question2', 'Počet a typy lodí:', 50, 8)
 			->setAttribute('placeholder', 'Počet a typy lodí, které sebou přivezete (vyplňte pokud ano)');
@@ -242,7 +241,7 @@ class VisitorForm extends BaseForm
 	}
 
 	/**
-	 * @param  Form   $form
+	 * @param  Form $form
 	 * @return Form
 	 */
 	protected function buildProgramSwitcher(Form $form): Form
@@ -250,7 +249,6 @@ class VisitorForm extends BaseForm
 		$programBlocks = $this->fetchProgramBlocks();
 
 		foreach ($programBlocks as $block) {
-
 			$programsInBlock = $this->getProgramRepository()->findByBlockId($block->id);
 
 			$programs = [
@@ -273,7 +271,7 @@ class VisitorForm extends BaseForm
 	}
 
 	/**
-	 * @param  Form   $form
+	 * @param  Form $form
 	 * @return Form
 	 */
 	protected function buildMealSwitcher(Form $form): Form
@@ -381,7 +379,7 @@ class VisitorForm extends BaseForm
 	 */
 	protected function setMealField(string $meal): self
 	{
-		if(!in_array($meal, $this->mealFields)) {
+		if (!in_array($meal, $this->mealFields)) {
 			$this->mealFields[] = $meal;
 		}
 
@@ -423,7 +421,7 @@ class VisitorForm extends BaseForm
 	}
 
 	/**
-	 * @return  self
+	 * @return self
 	 */
 	protected function setMealFields(): self
 	{
@@ -452,16 +450,16 @@ class VisitorForm extends BaseForm
 	/**
 	 * @return UserService
 	 */
-	protected function getUserService()
+	protected function getUserService(): UserService
 	{
 		return $this->userService;
 	}
 
 	/**
 	 * @param  UserService $service
-	 * @return $this
+	 * @return self
 	 */
-	protected function setUserService(UserService $service)
+	protected function setUserService(UserService $service): self
 	{
 		$this->userService = $service;
 
@@ -469,13 +467,13 @@ class VisitorForm extends BaseForm
 	}
 
 	/**
-	 * @param  array  $programs
+	 * @param  array $programs
 	 * @return array
 	 */
 	protected function filterFilledCapacity(array $programs = []): array
 	{
 		return array_keys(
-			array_filter($programs, function($id) {
+			array_filter($programs, function ($id) {
 				if ($id) {
 					$visitorsOnProgram = $this->getProgramRepository()->countVisitors($id);
 					$programCapacity = $this->getProgramRepository()->find($id)->capacity;
@@ -485,5 +483,4 @@ class VisitorForm extends BaseForm
 			}, ARRAY_FILTER_USE_BOTH)
 		);
 	}
-
 }

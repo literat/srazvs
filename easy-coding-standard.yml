@@ -1,0 +1,88 @@
+services:
+    PHP_CodeSniffer\Standards\Generic\Sniffs\CodeAnalysis\UnusedFunctionParameterSniff: ~
+    PHP_CodeSniffer\Standards\Generic\Sniffs\ControlStructures\InlineControlStructureSniff: ~
+    PHP_CodeSniffer\Standards\Generic\Sniffs\Files\ByteOrderMarkSniff: ~
+    PHP_CodeSniffer\Standards\Generic\Sniffs\Files\LineEndingsSniff: ~
+    PHP_CodeSniffer\Standards\Generic\Sniffs\Formatting\DisallowMultipleStatementsSniff: ~
+    # Class and Interface names should be unique in a project, they should never be duplicated
+    PHP_CodeSniffer\Standards\Generic\Sniffs\Classes\DuplicateClassNameSniff: ~
+    # Control Structures must have at least one statement inside of the body (empty catch rules is skipped)
+    PHP_CodeSniffer\Standards\Generic\Sniffs\CodeAnalysis\EmptyStatementSniff: ~
+    # For loops that have only a second expression (the condition) should be converted to while loops
+    PHP_CodeSniffer\Standards\Generic\Sniffs\CodeAnalysis\ForLoopShouldBeWhileLoopSniff: ~
+    # Incrementers in nested loops should use different variable names
+    PHP_CodeSniffer\Standards\Generic\Sniffs\CodeAnalysis\JumbledIncrementerSniff: ~
+    # If statements that are always evaluated should not be used
+    PHP_CodeSniffer\Standards\Generic\Sniffs\CodeAnalysis\UnconditionalIfStatementSniff: ~
+    # Methods should not be declared final inside of classes that are declared final
+    PHP_CodeSniffer\Standards\Generic\Sniffs\CodeAnalysis\UnnecessaryFinalModifierSniff: ~
+    # Line length should not exceed 120 characters
+    PHP_CodeSniffer\Standards\Generic\Sniffs\Files\LineLengthSniff:
+        absoluteLineLimit: 130
+        lineLimit: 120
+    # Exactly one space is allowed after a cast
+    PHP_CodeSniffer\Standards\Generic\Sniffs\Formatting\SpaceAfterCastSniff: ~
+
+    # Casts should not have whitespace inside the parentheses
+    PHP_CodeSniffer\Standards\Squiz\Sniffs\WhiteSpace\CastSpacingSniff: ~
+    # The php constructs like echo, return, include, etc. should have one space after them
+    PHP_CodeSniffer\Standards\Squiz\Sniffs\WhiteSpace\LanguageConstructSpacingSniff: ~
+    # Verifies that operators have valid spacing surrounding them
+    PHP_CodeSniffer\Standards\Squiz\Sniffs\WhiteSpace\LogicalOperatorSpacingSniff: ~
+    # Proper operator spacing
+    PHP_CodeSniffer\Standards\Squiz\Sniffs\WhiteSpace\OperatorSpacingSniff:
+        ignoreNewlines: true
+    # The php keywords static, public, private, and protected should have one space after them
+    PHP_CodeSniffer\Standards\Squiz\Sniffs\WhiteSpace\ScopeKeywordSpacingSniff: ~
+    # Semicolons should not have spaces before them
+    PHP_CodeSniffer\Standards\Squiz\Sniffs\WhiteSpace\SemicolonSpacingSniff: ~
+
+    PHP_CodeSniffer\Standards\Generic\Sniffs\Metrics\NestingLevelSniff: ~
+    PHP_CodeSniffer\Standards\Generic\Sniffs\NamingConventions\ConstructorNameSniff: ~
+    PHP_CodeSniffer\Standards\Generic\Sniffs\NamingConventions\UpperCaseConstantNameSniff: ~
+    PHP_CodeSniffer\Standards\Generic\Sniffs\NamingConventions\CamelCapsFunctionNameSniff: ~
+    PHP_CodeSniffer\Standards\Generic\Sniffs\PHP\DeprecatedFunctionsSniff: ~
+    PHP_CodeSniffer\Standards\Generic\Sniffs\PHP\DisallowShortOpenTagSniff: ~
+    PHP_CodeSniffer\Standards\Generic\Sniffs\PHP\ForbiddenFunctionsSniff: ~
+    PHP_CodeSniffer\Standards\Generic\Sniffs\PHP\LowerCaseConstantSniff: ~
+    PHP_CodeSniffer\Standards\Generic\Sniffs\Strings\UnnecessaryStringConcatSniff: ~
+    PHP_CodeSniffer\Standards\Generic\Sniffs\WhiteSpace\DisallowSpaceIndentSniff: ~
+    PHP_CodeSniffer\Standards\MySource\Sniffs\PHP\EvalObjectFactorySniff: ~
+    PHP_CodeSniffer\Standards\MySource\Sniffs\PHP\GetRequestDataSniff: ~
+    PHP_CodeSniffer\Standards\PEAR\Sniffs\Classes\ClassDeclarationSniff: ~
+    PHP_CodeSniffer\Standards\PEAR\Sniffs\Commenting\InlineCommentSniff: ~
+    PHP_CodeSniffer\Standards\PEAR\Sniffs\Functions\ValidDefaultValueSniff: ~
+    PHP_CodeSniffer\Standards\PEAR\Sniffs\NamingConventions\ValidClassNameSniff: ~
+    PHP_CodeSniffer\Standards\PSR2\Sniffs\Namespaces\NamespaceDeclarationSniff: ~
+    PHP_CodeSniffer\Standards\PSR2\Sniffs\Namespaces\UseDeclarationSniff: ~
+    PHP_CodeSniffer\Standards\PSR2\Sniffs\Namespaces\UseDeclarationSniff: ~
+    PHP_CodeSniffer\Standards\Squiz\Sniffs\PHP\DisallowSizeFunctionsInLoopsSniff: ~
+    PHP_CodeSniffer\Standards\Squiz\Sniffs\PHP\DiscouragedFunctionsSniff: ~
+    PHP_CodeSniffer\Standards\Squiz\Sniffs\PHP\EvalSniff: ~
+    PHP_CodeSniffer\Standards\Squiz\Sniffs\PHP\ForbiddenFunctionsSniff: ~
+    PHP_CodeSniffer\Standards\Squiz\Sniffs\PHP\GlobalKeywordSniff: ~
+    PHP_CodeSniffer\Standards\Squiz\Sniffs\PHP\NonExecutableCodeSniff: ~
+    PHP_CodeSniffer\Standards\Squiz\Sniffs\Scope\MemberVarScopeSniff: ~
+    PHP_CodeSniffer\Standards\Squiz\Sniffs\Scope\MethodScopeSniff: ~
+    PHP_CodeSniffer\Standards\Squiz\Sniffs\Scope\StaticThisUsageSniff: ~
+    #PHP_CodeSniffer\Standards\Generic\Sniffs\Functions\OpeningFunctionBraceBsdAllmanSniff: ~
+    #PHP_CodeSniffer\Standards\Generic\Sniffs\Metrics\CyclomaticComplexitySniff: ~
+    PhpCsFixer\Fixer\PhpTag\BlankLineAfterOpeningTagFixer: ~
+    PhpCsFixer\Fixer\Operator\ConcatSpaceFixer:
+            spacing: one
+    PhpCsFixer\Fixer\ArrayNotation\ArraySyntaxFixer:
+            syntax: short
+    PhpCsFixer\Fixer\ControlStructure\YodaStyleFixer:
+            equal: false
+            identical: false
+            less_and_greater: false
+    PhpCsFixer\Fixer\Phpdoc\PhpDocSummaryFixer: ~
+    PhpCsFixer\Fixer\Phpdoc\PhpdocNoAliasTagFixer: ~
+    PhpCsFixer\Fixer\Phpdoc\PhpdocAlignFixer: ~
+
+imports:
+    - { resource: 'vendor/symplify/easy-coding-standard/config/clean-code.yml' }
+    - { resource: 'vendor/symplify/easy-coding-standard/config/psr2.yml' }
+
+parameters:
+  indentation: tab

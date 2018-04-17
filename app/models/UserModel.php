@@ -2,26 +2,20 @@
 
 namespace App\Models;
 
+use App\Entities\IEntity;
 use App\Entities\UserEntity;
 use Nette\Database\Context;
 use Nette\Database\Table\ActiveRow;
-use Nette\Reflection\ClassType;
-use App\Entities\IEntity;
-use \Exception;
 
-/**
- * Social Logins
- *
- * class for handling social logins
- */
 class UserModel extends BaseModel implements IModel
 {
-
-	/** @var string */
+	/**
+	 * @var string
+	 */
 	protected $table = 'kk_users';
 
 	/**
-	 * @param Context  $database
+	 * @param Context $database
 	 */
 	public function __construct(Context $database)
 	{
@@ -34,7 +28,7 @@ class UserModel extends BaseModel implements IModel
 	}
 
 	/**
-	 * @param  int $id
+	 * @param  int        $id
 	 * @return UserEntity
 	 */
 	public function find($id): UserEntity
@@ -44,9 +38,9 @@ class UserModel extends BaseModel implements IModel
 	}
 
 	/**
-	 * @param IEntity $entity
+	 * @param  IEntity    $entity
 	 * @return bool|mixed
-	 * @throws Exception
+	 * @throws \Exception
 	 */
 	public function save(IEntity $entity)
 	{
@@ -54,7 +48,7 @@ class UserModel extends BaseModel implements IModel
 			$values = $entity->toArray();
 
 			$result = $this->create($values);
-			//$result = $this->setIdentity($row, $row->id);
+		//$result = $this->setIdentity($row, $row->id);
 		} else {
 			$values = $entity->toArray();
 			$result = $this->update($entity->getId(), $values);
@@ -79,22 +73,4 @@ class UserModel extends BaseModel implements IModel
 
 		return $entity;
 	}
-
-
-	/**
-	 * @param  $item
-	 * @param  $id
-	 * @return mixed
-	 */
-	private function setIdentity($item, $id)
-	{
-		$ref = new ClassType($item);
-		$idProperty = $ref->getProperty('data');
-		//dd($idProperty->id);
-		$idProperty->setAccessible(true);
-		$idProperty->setValue($item, $id);
-dd($item);
-		return $item;
-	}
-
 }

@@ -2,14 +2,11 @@
 
 namespace App\Services;
 
-use Tracy\Debugger;
-use Nette\Utils\Strings;
 use App\Models\CategoryModel;
-use Nette\Database\Table\ActiveRow;
+use Nette\Utils\Strings;
 
 class CategoryService
 {
-
 	/**
 	 * @var CategoryModel
 	 */
@@ -23,19 +20,12 @@ class CategoryService
 		$this->setCategoryModel($categoryModel);
 	}
 
-	/**
-	 * @return array
-	 */
 	public function all(): array
 	{
 		return $this->getCategoryModel()->all();
 	}
 
-	/**
-	 * @param  string $name
-	 * @return string
-	 */
-	protected function getStyleFromName($name)
+	protected function getStyleFromName(string $name): string
 	{
 		$style = Strings::toAscii($name);
 		$style = str_replace(" ", "_", $style);
@@ -52,8 +42,7 @@ class CategoryService
 	}
 
 	/**
-	 * @param CategoryModel $categoryModel
-	 *
+	 * @param  CategoryModel $categoryModel
 	 * @return self
 	 */
 	public function setCategoryModel(CategoryModel $categoryModel): self
@@ -62,5 +51,4 @@ class CategoryService
 
 		return $this;
 	}
-
 }

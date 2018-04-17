@@ -6,7 +6,6 @@ use App\Repositories\ProgramRepository;
 
 class ProgramVisitorsControl extends BaseControl
 {
-
 	const TEMPLATE_NAME = 'ProgramVisitors';
 
 	/**
@@ -55,5 +54,4 @@ class ProgramVisitorsControl extends BaseControl
 
 		return $this;
 	}
-
 }

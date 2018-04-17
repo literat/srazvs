@@ -10,7 +10,6 @@ use Nette\Forms\Controls\SubmitButton;
 
 class ProgramForm extends BaseForm
 {
-
 	const TEMPLATE_NAME = 'ProgramForm';
 
 	const MESSAGE_REQUIRED = 'Hodnota musí být vyplněna!';
@@ -144,7 +143,7 @@ class ProgramForm extends BaseForm
 
 		$selectContent = [];
 
-		foreach($blocks as $block) {
+		foreach ($blocks as $block) {
 			$selectContent[$block->id] = sprintf(
 				'%s, %s - %s : %s',
 				$block->day,
@@ -166,7 +165,7 @@ class ProgramForm extends BaseForm
 
 		$selectContent = [];
 
-		foreach($categories as $category) {
+		foreach ($categories as $category) {
 			$selectContent[$category->id] = $category->name;
 		}
 

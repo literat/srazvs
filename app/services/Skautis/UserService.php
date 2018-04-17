@@ -4,9 +4,6 @@ namespace App\Services\Skautis;
 
 use Skautis\User;
 
-/**
- * User service
- */
 class UserService extends SkautisService
 {
 
@@ -19,7 +16,7 @@ class UserService extends SkautisService
 	}
 
 	/**
-	 * Returns Role ID of logged user
+	 * Returns Role ID of logged user.
 	 */
 	public function getRoleId()
 	{
@@ -28,7 +25,7 @@ class UserService extends SkautisService
 
 
 	/**
-	 * Returns all Skautis roles
+	 * Returns all Skautis roles.
 	 */
 	public function getAllSkautisRoles(bool $activeOnly = true): array
 	{
@@ -42,7 +39,7 @@ class UserService extends SkautisService
 
 
 	/**
-	 * Gets user detail
+	 * Gets user detail.
 	 */
 	public function getUserDetail()
 	{
@@ -56,7 +53,7 @@ class UserService extends SkautisService
 
 
 	/**
-	 * Changes the loggeed user Skautis role
+	 * Changes the loggeed user Skautis role.
 	 */
 	public function updateSkautisRole(string $id): void
 	{
@@ -77,11 +74,11 @@ class UserService extends SkautisService
 
 
 	/**
-	 * Returns complete list of information about logged user
+	 * Returns complete list of information about logged user.
 	 */
 	public function getPersonalDetail($personId = null)
 	{
-		if(!$personId) {
+		if (!$personId) {
 			$personId = $this->getUserDetail()->ID_Person;
 		}
 
@@ -89,7 +86,7 @@ class UserService extends SkautisService
 	}
 
 	/**
-	 * Returns complete list of information about logged user unit
+	 * Returns complete list of information about logged user unit.
 	 */
 	public function getParentUnitDetail($unitId)
 	{
@@ -97,7 +94,7 @@ class UserService extends SkautisService
 	}
 
 	/**
-	 * Returns complete list of information about logged user unit
+	 * Returns complete list of information about logged user unit.
 	 */
 	public function getUnitDetail($unitId)
 	{
@@ -105,7 +102,7 @@ class UserService extends SkautisService
 	}
 
 	/**
-	 * Returns complete list of information about logged user unit
+	 * Returns complete list of information about logged user unit.
 	 */
 	public function getPersonUnitDetail($personId)
 	{
@@ -120,7 +117,7 @@ class UserService extends SkautisService
 	}
 
 	/**
-	 * Check if login session is still valid
+	 * Check if login session is still valid.
 	 */
 	public function isLoggedIn(): bool
 	{
@@ -129,10 +126,10 @@ class UserService extends SkautisService
 
 
 	/**
-	 * Resets login data
+	 * Resets login data.
 	 *
-	 * @param   void
-	 * @return  void
+	 * @param  void
+	 * @return void
 	 */
 	public function resetLoginData()
 	{
@@ -141,12 +138,12 @@ class UserService extends SkautisService
 
 
 	/**
-	 * Verify action
+	 * Verify action.
 	 *
-	 * @param   string  $table      např. ID_EventGeneral, NULL = oveření nad celou tabulkou
-	 * @param   string  $id         id ověřované akce - např EV_EventGeneral_UPDATE
-	 * @param   string  $actionId   tabulka v DB skautisu
-	 * @return  bool|\stdClass|array
+	 * @param  string               $table    např. ID_EventGeneral, NULL = oveření nad celou tabulkou
+	 * @param  string               $id       id ověřované akce - např EV_EventGeneral_UPDATE
+	 * @param  string               $actionId tabulka v DB skautisu
+	 * @return bool|\stdClass|array
 	 */
 	public function actionVerify(string $table, ?string $id = null, ?string $actionId = null)
 	{
@@ -174,5 +171,4 @@ class UserService extends SkautisService
 		}
 		return $res;
 	}
-
 }

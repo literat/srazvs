@@ -6,7 +6,6 @@ use App\Models\ExportModel;
 
 class MealControl extends BaseControl
 {
-
 	const TEMPLATE_NAME = 'Meal';
 
 	/**
@@ -46,13 +45,12 @@ class MealControl extends BaseControl
 
 	/**
 	 * @param  ExportModel $model
-	 * @return $this
+	 * @return self
 	 */
-	protected function setExportModel(ExportModel $model)
+	protected function setExportModel(ExportModel $model): self
 	{
 		$this->exportModel = $model;
 
 		return $this;
 	}
-
 }

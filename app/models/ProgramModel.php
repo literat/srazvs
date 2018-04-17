@@ -5,17 +5,8 @@ namespace App\Models;
 use Nette\Database\Context;
 use Nette\Database\Table\ActiveRow;
 
-/**
- * Program model
- *
- * class for handling programs
- *
- * @created 2012-10-01
- * @author Tomas Litera <tomaslitera@hotmail.com>
- */
 class ProgramModel extends BaseModel
 {
-
 	/**
 	 * @var array
 	 */
@@ -33,17 +24,20 @@ class ProgramModel extends BaseModel
 	];
 
 	/**
-	 * Array of form names
-	 *
-	 * @var array	form_names[]
+	 * @var array
 	 */
 	public $formNames = [];
 
+	/**
+	 * @var string
+	 */
 	protected $table = 'kk_programs';
 
+	/**
+	 * @var Context
+	 */
 	private static $connection;
 
-	/** Constructor */
 	public function __construct(Context $database)
 	{
 		$this->formNames = [
@@ -63,11 +57,9 @@ class ProgramModel extends BaseModel
 	}
 
 	/**
-	 * Get programs
-	 *
-	 * @param	int		$block_id	ID of block
-	 * @param	int		$visitor_id	ID of visitor
-	 * @return	string				html
+	 * @param  int    $block_id   ID of block
+	 * @param  int    $visitor_id ID of visitor
+	 * @return string html
 	 */
 	public function getPrograms($blockId, $vid)
 	{
@@ -77,8 +69,8 @@ class ProgramModel extends BaseModel
 			->limit(10)
 			->fetchAll();
 
-		if(!$blocks){
-			$html = "";
+		if (!$blocks) {
+			$html = '';
 		} else {
 			/*
 			$progSql = "SELECT progs.name AS prog_name
@@ -92,13 +84,16 @@ class ProgramModel extends BaseModel
 
 			$checkedFlag = false;
 			$htmlInput = "";
-			foreach($blocks as $data){
+			foreach ($blocks as $data) {
 				// full program capacity with visitors
 				$fullProgramData = $this->database
-					->query('SELECT COUNT(visitor) AS visitors FROM `kk_visitor-program` AS visprog
+					->query(
+						'SELECT COUNT(visitor) AS visitors FROM `kk_visitor-program` AS visprog
 							LEFT JOIN kk_visitors AS vis ON vis.id = visprog.visitor
 							WHERE program = ? AND vis.deleted = ?',
-							$data['id'], '0')->fetch();
+						$data['id'],
+						'0'
+					)->fetch();
 
 				// if the program is checked
 				$program = $this->database
@@ -106,15 +101,16 @@ class ProgramModel extends BaseModel
 					->where('program ? AND visitor ?', $data['id'], $vid)
 					->fetch();
 
-				if($program){
+				if ($program) {
 					$checked = "checked='checked'";
 					$checkedFlag = true;
 				} else {
 					$checked = "";
 				}
 				// if the capacity is full
-				if($fullProgramData['visitors'] >= $data['capacity']){
-					$htmlInput .= sprintf('<input id="%s%s" %s disabled type="radio" name="blck_%s" value="%s" />',
+				if ($fullProgramData['visitors'] >= $data['capacity']) {
+					$htmlInput .= sprintf(
+						'<input id="%s%s" %s disabled type="radio" name="blck_%s" value="%s" />',
 						$data['id'],
 						$blockId,
 						$checked,
@@ -123,7 +119,8 @@ class ProgramModel extends BaseModel
 					);
 					$fullProgramInfo = " (NELZE ZAPSAT - kapacita programu je již naplněna!)";
 				} else {
-					$htmlInput .= sprintf('<input id="%s%s" %s type="radio" name="blck_%s" value="%s" />',
+					$htmlInput .= sprintf(
+						'<input id="%s%s" %s type="radio" name="blck_%s" value="%s" />',
 						$data['id'],
 						$blockId,
 						$checked,
@@ -132,7 +129,8 @@ class ProgramModel extends BaseModel
 					);
 					$fullProgramInfo = "";
 				}
-				$htmlInput .= sprintf('<label for="%s%s">%s</label>',
+				$htmlInput .= sprintf(
+					'<label for="%s%s">%s</label>',
 					$data['id'],
 					$blockId,
 					$data['name']
@@ -142,13 +140,14 @@ class ProgramModel extends BaseModel
 			}
 
 			// pokud uz jednou bylo zaskrtnuto, nezaskrtavam znovu
-			if(!$checkedFlag) {
+			if (!$checkedFlag) {
 				$checked = "checked='checked'";
 			} else {
 				$checked = "";
 			}
 
-			$html .= sprintf('<input %s type="radio" name="blck_%s" value="0" /> Nebudu přítomen <br />',
+			$html .= sprintf(
+				'<input %s type="radio" name="blck_%s" value="0" /> Nebudu přítomen <br />',
 				$checked,
 				$blockId
 			);
@@ -168,30 +167,32 @@ class ProgramModel extends BaseModel
 			->limit(10)
 			->fetchAll();
 
-		if(!$exportPrograms) {
+		if (!$exportPrograms) {
 			$html = "";
 		} else {
 			$html = "<table>\n";
-			foreach($exportPrograms as $data){
+			foreach ($exportPrograms as $data) {
 				$html .= "<tr>";
 				//// resim kapacitu programu a jeho naplneni navstevniky
 				$fullProgramData = $this->database
-					->query('SELECT COUNT(visitor) AS visitors
+					->query(
+						'SELECT COUNT(visitor) AS visitors
 							FROM `kk_visitor-program` AS visprog
 							LEFT JOIN `kk_visitors` AS vis ON vis.id = visprog.visitor
 							WHERE program = ?
 							AND vis.deleted = ?',
-							$data['id'], '0')->fetch();
+						$data['id'],
+						'0'
+					)->fetch();
 
-				if($fullProgramData['visitors'] >= $data['capacity']){
+				if ($fullProgramData['visitors'] >= $data['capacity']) {
 					//$html .= "<input disabled type='radio' name='".$id."' value='".$data['id']."' />\n";
 					$fullProgramInfo = sprintf(
 						'<span style="font-size:12px; font-weight:bold;">%s/%s</span> (kapacita programu je naplněna!)',
 						$fullProgramData['visitors'],
 						$data['capacity']
 					);
-				}
-				else {
+				} else {
 					//$html .= "<input type='radio' name='".$id."' value='".$data['id']."' /> \n";
 					$fullProgramInfo = sprintf(
 						'<span style="font-size:12px; font-weight:bold;">%s/%s</span>',
@@ -220,7 +221,7 @@ class ProgramModel extends BaseModel
 
 	public function renderExportPrograms()
 	{
-		$programs = "";
+		$programs = '';
 
 		$progSql = $this->database
 			->table('kk_blocks')
@@ -230,24 +231,22 @@ class ProgramModel extends BaseModel
 				DATE_FORMAT(`from`, "%H:%i") AS `from`,
 				DATE_FORMAT(`to`, "%H:%i") AS `to`,
 				name,
-				program'
-			)
+				program')
 			->where('deleted = ? AND program = ? AND meeting = ?', '0', '1', $this->meetingId)
 			->order('day ASC, from ASC')
 			->fetchAll();
 
-		if(!$progSql){
+		if (!$progSql) {
 			$programs .= "<div class='emptyTable' style='width:400px;'>Nejsou žádná aktuální data.</div>\n";
 		} else {
 			//// prasarnicka kvuli programu raftu - resim obsazenost dohromady u dvou polozek
 			//$raftCountSql = "SELECT COUNT(visitor) AS raft FROM `kk_visitor-program` WHERE program='56|57'";
 
-			foreach($progSql as $progData){
+			foreach ($progSql as $progData) {
 				//nemoznost volit predsnemovni dikusi
-				if($progData['id'] == 63) {
+				if ($progData['id'] == 63) {
 					$notDisplayed = "style='display:none;'";
-				}
-				//obsazenost raftu
+				} //obsazenost raftu
 				/*
 				elseif($raftCountData['raft'] >= 18){
 					if($progData['id'] == 86) $notDisplayed = "style='display:none;'";
@@ -265,7 +264,7 @@ class ProgramModel extends BaseModel
 					$progData['to'],
 					$progData['name']
 				);
-				if($progData['program'] == 1) {
+				if ($progData['program'] == 1) {
 					$programs .= "<div " . $notDisplayed . ">" . $this->getExportPrograms($progData['id']) . "</div>";
 				}
 				$programs .= "<br />";
@@ -276,13 +275,13 @@ class ProgramModel extends BaseModel
 	}
 
 	/**
-	 * Render data in a table
+	 * Render data in a table.
 	 *
-	 * @return	string	html of a table
+	 * @return string html of a table
 	 */
 	public function getData($programId = null)
 	{
-		if(isset($programId)) {
+		if (isset($programId)) {
 			$data = $this->database
 				->table($this->getTable())
 				->where('id ? AND deleted ?', $programId, '0')
@@ -290,7 +289,8 @@ class ProgramModel extends BaseModel
 				->fetch();
 		} else {
 			$data = $this->database
-				->query('SELECT programs.id AS id,
+				->query(
+					'SELECT programs.id AS id,
 						programs.name AS name,
 						programs.description AS description,
 						programs.tutor AS tutor,
@@ -304,7 +304,10 @@ class ProgramModel extends BaseModel
 				LEFT JOIN kk_categories AS cat ON cat.id = programs.category
 				WHERE blocks.meeting = ? AND programs.deleted = ? AND blocks.deleted = ?
 				ORDER BY programs.id ASC',
-				$this->meetingId, '0', '0')->fetchAll();
+					$this->getMeetingId(),
+					'0',
+					'0'
+				)->fetchAll();
 		}
 
 		return $data;
@@ -313,7 +316,8 @@ class ProgramModel extends BaseModel
 	public function all(): ActiveRow
 	{
 		return $this->getDatabase()
-				->query('SELECT programs.id AS id,
+				->query(
+					'SELECT programs.id AS id,
 						programs.name AS name,
 						programs.description AS description,
 						programs.tutor AS tutor,
@@ -328,7 +332,10 @@ class ProgramModel extends BaseModel
 				LEFT JOIN kk_categories AS cat ON cat.id = programs.category
 				WHERE blocks.meeting = ? AND programs.deleted = ? AND blocks.deleted = ?
 				ORDER BY programs.id ASC',
-				$this->getMeetingId(), '0', '0')->fetchAll();
+					$this->getMeetingId(),
+					'0',
+					'0'
+				)->fetchAll();
 	}
 
 	public function annotation(string $guid): ActiveRow
@@ -341,13 +348,14 @@ class ProgramModel extends BaseModel
 	}
 
 	/**
-	 * @param  int    $visitorId
+	 * @param  int   $visitorId
 	 * @return array
 	 */
 	public function findByVisitorId(int $visitorId): array
 	{
 		return $this->getDatabase()
-			->query('SELECT progs.name AS prog_name,
+			->query(
+				'SELECT progs.name AS prog_name,
 							day,
 							DATE_FORMAT(`from`, "%H:%i") AS `from`,
 							DATE_FORMAT(`to`, "%H:%i") AS `to`
@@ -357,29 +365,29 @@ class ProgramModel extends BaseModel
 					LEFT JOIN kk_blocks AS blocks ON progs.block = blocks.id
 					WHERE vis.id = ?
 					ORDER BY `day`, `from` ASC',
-					$visitorId)
-			->fetchAll();
+				$visitorId
+			)->fetchAll();
 	}
 
-	public static function getPdfPrograms($id, $vid, $database){
+	public static function getPdfPrograms($id, $vid, $database)
+	{
 		$result = $database
 			->table('kk_programs')
 			->where('block ? AND deleted ?', $id, '0')
 			->limit(10)
 			->fetchAll();
 
-		if(!$result){
-			$html = "";
+		if (!$result) {
+			$html = '';
 		} else {
-
 			$html = "<div class='program'>\n";
 
-			foreach($result as $data){
+			foreach ($result as $data) {
 				$rows = $database
 					->table('kk_visitor-program')
 					->where('program ? AND visitor ?', $data->id, $vid)
 					->fetchAll();
-				if($rows) {
+				if ($rows) {
 					$html .= $data['name'];
 				}
 			}
@@ -389,23 +397,26 @@ class ProgramModel extends BaseModel
 		return $html;
 	}
 
-	public function getProgramsLarge($id){
+	public function getProgramsLarge($id)
+	{
 		$result = $this->database
-			->query('SELECT progs.name AS name,
+			->query(
+				'SELECT progs.name AS name,
 						cat.style AS style
 				FROM kk_programs AS progs
 				LEFT JOIN kk_categories AS cat ON cat.id = progs.category
 				WHERE block = ? AND progs.deleted = ?
 				LIMIT 10',
-				$id, '0')->fetchAll();
+				$id,
+				'0'
+			)->fetchAll();
 
-		if(!$result) {
-			$html = "";
-		}
-		else {
+		if (!$result) {
+			$html = '';
+		} else {
 			$html = "<table>";
 			$html .= " <tr>";
-			foreach($result as $data){
+			foreach ($result as $data) {
 				$html .= "<td class='category cat-" . $data['style'] . "' >" . $data['name'] . "</td>\n";
 			}
 			$html .= " </tr>\n";
@@ -425,10 +436,10 @@ class ProgramModel extends BaseModel
 
 		$html = '';
 
-		if(!$result) {
+		if (!$result) {
 			$html = "";
 		} else {
-			foreach($result as $data){
+			foreach ($result as $data) {
 				$html .= $data['name'] . ",\n";
 			}
 		}
@@ -436,9 +447,9 @@ class ProgramModel extends BaseModel
 	}
 
 	/**
-	 * Get tutor e-mail address
+	 * Get tutor e-mail address.
 	 *
-	 * @param int $id id of block item
+	 * @param  int                             $id id of block item
 	 * @return \Nette\Database\Table\ActiveRow object with e-mail address
 	 */
 	public function getTutor($id): ActiveRow
@@ -454,37 +465,44 @@ class ProgramModel extends BaseModel
 	public function findByBlockId(int $blockId = null): ActiveRow
 	{
 		return $this->getDatabase()
-			->query('SELECT	progs.id AS id,
+			->query(
+				'SELECT	progs.id AS id,
 						progs.name AS name,
 						style
 				FROM kk_programs AS progs
 				LEFT JOIN kk_categories AS cat ON cat.id = progs.category
 				WHERE block = ? AND progs.deleted = ?
 				LIMIT 10',
-				$blockId, '0')
-			->fetchAll();
+				$blockId,
+				'0'
+			)->fetchAll();
 	}
 
 	public function findProgramVisitors(int $programId): ActiveRow
 	{
 		return $this->getDatabase()
-				->query('SELECT vis.name AS name,
+			->query(
+				'SELECT vis.name AS name,
 								vis.surname AS surname,
 								vis.nick AS nick
 						FROM kk_visitors AS vis
 						LEFT JOIN `kk_visitor-program` AS visprog ON vis.id = visprog.visitor
 						WHERE visprog.program = ? AND vis.deleted = ?',
-						$programId, '0')->fetchAll();
+				$programId,
+				'0'
+			)->fetchAll();
 	}
 
 	public function countProgramVisitors(int $programId): ActiveRow
 	{
 		return $this->getDatabase()
-				->query('SELECT COUNT(*)
+			->query(
+				'SELECT COUNT(*)
 						FROM kk_visitors AS vis
 						LEFT JOIN `kk_visitor-program` AS visprog ON vis.id = visprog.visitor
 						WHERE visprog.program = ? AND vis.deleted = ?',
-						$programId, '0')->fetch()[0];
+				$programId,
+				'0'
+			)->fetch()[0];
 	}
-
 }

@@ -6,7 +6,6 @@ use App\Models\ExportModel;
 
 class MaterialsControl extends BaseControl
 {
-
 	const TEMPLATE_NAME = 'Materials';
 
 	/**
@@ -51,5 +50,4 @@ class MaterialsControl extends BaseControl
 
 		return $this;
 	}
-
 }

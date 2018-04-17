@@ -2,19 +2,11 @@
 
 namespace App\Models;
 
+use Nette\Caching\Cache;
 use Nette\Database\Context;
 use Nette\Database\Table\ActiveRow;
 use Nette\SmartObject;
-use Nette\Caching\Cache;
 
-/**
- * BaseModel
- *
- * Base model is a base class for all components.
- *
- * @created 2012-12-16
- * @author Tomas Litera <tomaslitera@hotmail.com>
- */
 abstract class BaseModel
 {
 	use SmartObject;
@@ -24,16 +16,24 @@ abstract class BaseModel
 	 */
 	protected static $instance;
 
-	/** @var string */
+	/**
+	 * @var string
+	 */
 	protected $table = null;
 
-	/** @var array */
+	/**
+	 * @var array
+	 */
 	protected $columns = [];
 
-	/** @var Context */
+	/**
+	 * @var Context
+	 */
 	protected $database;
 
-	/** @var integer */
+	/**
+	 * @var integer
+	 */
 	protected $meetingId;
 
 	/**
@@ -41,7 +41,6 @@ abstract class BaseModel
 	 */
 	protected $cache;
 
-	/** Constructor */
 	public function __construct($table = null, $database = null)
 	{
 		$this->setTable($table);
@@ -49,9 +48,9 @@ abstract class BaseModel
 	}
 
 	/**
-	 * Create new or return existing instance of class
+	 * Create new or return existing instance of class.
 	 *
-	 * @return	mixed	instance of class
+	 * @return mixed instance of class
 	 */
 	/*
 	public static function getInstance()
@@ -90,10 +89,10 @@ abstract class BaseModel
 	}
 
 	/**
-	 * Create a new record
+	 * Create a new record.
 	 *
-	 * @param	mixed	array of data
-	 * @return	boolean
+	 * @param  mixed   array of data
+	 * @return boolean
 	 */
 	public function create(array $data)
 	{
@@ -107,9 +106,9 @@ abstract class BaseModel
 	}
 
 	/**
-	 * @param	int	   $id
-	 * @param	array  $data
-	 * @return	bool
+	 * @param  int   $id
+	 * @param  array $data
+	 * @return bool
 	 */
 	public function update($id, array $data)
 	{
@@ -122,10 +121,10 @@ abstract class BaseModel
 	}
 
 	/**
-	 * @param	string         $column
-	 * @param   string|integer $value
-	 * @param	array          $data
-	 * @return	bool
+	 * @param  string         $column
+	 * @param  string|integer $value
+	 * @param  array          $data
+	 * @return bool
 	 */
 	public function updateBy($column, $value, array $data)
 	{
@@ -138,8 +137,8 @@ abstract class BaseModel
 	}
 
 	/**
-	 * @param	int		ID/s of record
-	 * @return	boolean
+	 * @param  int     $ids ID/s of record
+	 * @return boolean
 	 */
 	public function delete($ids)
 	{
@@ -157,9 +156,9 @@ abstract class BaseModel
 
 	/**
 	 * @param  integer $meetingId
-	 * @return $this
+	 * @return self
 	 */
-	public function setMeetingId($meetingId)
+	public function setMeetingId($meetingId): self
 	{
 		$this->meetingId = $meetingId;
 
@@ -180,12 +179,13 @@ abstract class BaseModel
 	}
 
 	/**
-	 * @param  Nette\Database\Context $database
-	 * @return $this
+	 * @param  \Nette\Database\Context $database
+	 * @return self
 	 */
-	protected function setDatabase(Context $database)
+	protected function setDatabase(Context $database): self
 	{
 		$this->database = $database;
+
 		return $this;
 	}
 
@@ -199,9 +199,9 @@ abstract class BaseModel
 
 	/**
 	 * @param  string $table
-	 * @return $this
+	 * @return self
 	 */
-	protected function setTable($table)
+	protected function setTable($table): self
 	{
 		$this->table = $table;
 
@@ -226,13 +226,12 @@ abstract class BaseModel
 
 	/**
 	 * @param  Cache $cache
-	 * @return $this
+	 * @return self
 	 */
-	protected function setCache(Cache $cache)
+	protected function setCache(Cache $cache): self
 	{
 		$this->cache = $cache;
 
 		return $this;
 	}
-
 }

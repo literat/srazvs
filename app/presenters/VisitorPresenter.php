@@ -5,23 +5,12 @@ namespace App\Presenters;
 use App\Components\Forms\Factories\IVisitorFormFactory;
 use App\Components\Forms\VisitorForm;
 use App\Models\MeetingModel;
-use App\Services\Emailer;
 use App\Repositories\VisitorRepository;
-use Exception;
+use App\Services\Emailer;
 use Nette\Application\UI\ITemplate;
 
-/**
- * Visitor controller
- *
- * This file handles the retrieval and serving of visitors
- *
- * @author Tomas Litera
- * @copyright 2013-06-12 <tomaslitera@hotmail.com>
- * @package srazvs
- */
 class VisitorPresenter extends BasePresenter
 {
-
 	const TEMPLATE_DIR = __DIR__ . '/../templates/visitor/';
 	const TEMPLATE_EXT = 'latte';
 	const REDIRECT_DEFAULT = 'Visitor:listing';
@@ -70,9 +59,7 @@ class VisitorPresenter extends BasePresenter
 	}
 
 	/**
-	 * Injector
-	 *
-	 * @param  IVisitorFormFactory $factory
+	 * @param IVisitorFormFactory $factory
 	 */
 	public function injectVisitorFormFactory(IVisitorFormFactory $factory)
 	{
@@ -90,9 +77,11 @@ class VisitorPresenter extends BasePresenter
 	}
 
 	/**
-	 * Process data from form
+	 * Process data from form.
 	 *
-	 * @return void
+	 * @param  $visitor
+	 * @return bool
+	 * @throws \Nette\Application\AbortException
 	 */
 	public function actionCreate($visitor)
 	{
@@ -103,7 +92,7 @@ class VisitorPresenter extends BasePresenter
 
 			$this->logInfo('Creation of visitor(' . $guid . ') successfull, result: ' . json_encode($result));
 			$this->flashSuccess('Účastník(' . $guid . ') byl úspěšně vytvořen.');
-		} catch(Exception $e) {
+		} catch (\Exception $e) {
 			$this->logError('Creation of visitor(' . $guid . ') failed, result: ' . $e->getMessage());
 			$this->flashError('Creation of visitor failed, result: ' . $e->getMessage());
 		}
@@ -112,10 +101,12 @@ class VisitorPresenter extends BasePresenter
 	}
 
 	/**
-	 * Process data from editing
+	 * Process data from editing.
 	 *
-	 * @param  integer 	$id
-	 * @return void
+	 * @param int $id
+	 * @param  $visitor
+	 * @return bool|int
+	 * @throws \Nette\Application\AbortException
 	 */
 	public function actionUpdate($id, $visitor)
 	{
@@ -126,7 +117,7 @@ class VisitorPresenter extends BasePresenter
 
 			$this->logInfo('Modification of visitor(' . $id . ') successfull, result: ' . json_encode($result));
 			$this->flashSuccess('Účastník(' . $id . ') byl úspěšně upraven.');
-		} catch(Exception $e) {
+		} catch (\Exception $e) {
 			$this->logError('Modification of visitor(' . $id . ') failed, result: ' . $e->getMessage());
 			$this->flashFailure('Modification of visitor failed, result: ' . $e->getMessage());
 			$result = false;
@@ -136,8 +127,9 @@ class VisitorPresenter extends BasePresenter
 	}
 
 	/**
-	 * @param  int  $id
+	 * @param  int                               $id
 	 * @return void
+	 * @throws \Nette\Application\AbortException
 	 */
 	public function actionDelete($id)
 	{
@@ -147,7 +139,7 @@ class VisitorPresenter extends BasePresenter
 
 			$this->logInfo('Destroying of visitor(' . $id . ') successfull, result: ' . json_encode($result));
 			$this->flashSuccess('Položka byla úspěšně smazána');
-		} catch(Exception $e) {
+		} catch (\Exception $e) {
 			$this->logError('Destroying of visitor(' . $id . ') failed, result: ' . $e->getMessage());
 			$this->flashFailure('Destroying of visitor failed, result: ' . $e->getMessage());
 		}
@@ -156,9 +148,10 @@ class VisitorPresenter extends BasePresenter
 	}
 
 	/**
-	 * Prepare mass mail form
+	 * Prepare mass mail form.
 	 *
 	 * @return void
+	 * @throws \Nette\Application\AbortException
 	 */
 	public function actionSend()
 	{
@@ -184,7 +177,7 @@ class VisitorPresenter extends BasePresenter
 
 			$this->logInfo('E-mail was send successfully, result: ' . json_encode($result));
 			$this->flashSuccess('E-mail byl úspěšně odeslán');
-		} catch(Exception $e) {
+		} catch (\Exception $e) {
 			$this->logError('Sending of e-mail failed, result: ' . $e->getMessage());
 			$this->flashFailure('Sending of e-mail failed, result: ' . $e->getMessage());
 		}
@@ -193,14 +186,15 @@ class VisitorPresenter extends BasePresenter
 	}
 
 	/**
-	 * @param  integer|string $ids
+	 * @param  $id
 	 * @return void
+	 * @throws \Nette\Application\AbortException
 	 */
 	public function actionPay($id)
 	{
 		$this->allowAdminAccessOnly();
 		try {
-			if(!$id) {
+			if (!$id) {
 				$id = $this->getHttpRequest()->getPost('checker');
 			}
 
@@ -211,7 +205,7 @@ class VisitorPresenter extends BasePresenter
 
 			$this->logInfo('Visitor: Action pay cost for id %s executed successfully.', [json_encode($id)]);
 			$this->flashSuccess('Platba byla zaplacena.');
-		} catch(Exception $e) {
+		} catch (\Exception $e) {
 			$this->logError('Visitor: Action pay for id %s failed, result: %s', [
 				json_encode($id),
 				$e->getMessage()
@@ -223,14 +217,15 @@ class VisitorPresenter extends BasePresenter
 	}
 
 	/**
-	 * @param  string|interger $ids
+	 * @param  int|null                          $id
 	 * @return void
+	 * @throws \Nette\Application\AbortException
 	 */
 	public function actionAdvance(int $id = null)
 	{
 		$this->allowAdminAccessOnly();
 		try {
-			if(!$id) {
+			if (!$id) {
 				$id = $this->getHttpRequest()->getPost('checker');
 			}
 
@@ -239,14 +234,18 @@ class VisitorPresenter extends BasePresenter
 			$recipients = $visitor->findRecipients($id);
 			$this->getEmailer()->sendPaymentInfo($recipients, 'advance');
 
-			$this->logInfo('Visitor: Action pay advance for id %s executed successfully.', [json_encode($id)]);
+			$this->logInfo('Visitor: Action pay advance for id %s executed successfully.', [
+				json_encode($id)
+			]);
 			$this->flashSuccess('Záloha byla zaplacena.');
-		} catch(Exception $e) {
+		} catch (\Exception $e) {
 			$this->logError(
-				'Visitor: Action pay advance for id %s failed, result: %s', [
+				'Visitor: Action pay advance for id %s failed, result: %s',
+				[
 					json_encode($id),
 					$e->getMessage(),
-				]);
+				]
+			);
 			$this->flashFailure('Zaplacení zálohy pro účastníka s id ' . json_encode($id) . ' neprošlo: ' . $e->getMessage());
 		}
 
@@ -254,10 +253,11 @@ class VisitorPresenter extends BasePresenter
 	}
 
 	/**
-	 * Set item as checked by id
+	 * Set item as checked by id.
 	 *
-	 * @param  integer $id
+	 * @param  integer                           $id
 	 * @return void
+	 * @throws \Nette\Application\AbortException
 	 */
 	public function actionChecked($id)
 	{
@@ -266,7 +266,7 @@ class VisitorPresenter extends BasePresenter
 			$result = $this->getVisitorRepository()->setChecked($id);
 			$this->logInfo('Check of visitor(' . $id . ') successfull, result: ' . json_encode($result));
 			$this->flashSuccess('Položka byla úspěšně zkontrolována');
-		} catch(Exception $e) {
+		} catch (\Exception $e) {
 			$this->logError('Check of visitor(' . $id . ') failed, result: ' . $e->getMessage());
 			$this->flashFailure('Check of visitor failed, result: ' . $e->getMessage());
 		}
@@ -275,10 +275,11 @@ class VisitorPresenter extends BasePresenter
 	}
 
 	/**
-	 * Set item as unchecked by id
+	 * Set item as unchecked by id.
 	 *
-	 * @param  integer $id
+	 * @param  integer                           $id
 	 * @return void
+	 * @throws \Nette\Application\AbortException
 	 */
 	public function actionUnchecked($id)
 	{
@@ -287,7 +288,7 @@ class VisitorPresenter extends BasePresenter
 			$result = $this->getVisitorRepository()->setUnchecked($id);
 			$this->logInfo('Uncheck of visitor(' . $id . ') successfull, result: ' . json_encode($result));
 			$this->flashSuccess('Položka byla nastavena jako nekontrolována');
-		} catch(Exception $e) {
+		} catch (\Exception $e) {
 			$this->logError('Uncheck of visitor(' . $id . ') failed, result: ' . $e->getMessage());
 			$this->flashFailure('Uncheck of visitor failed, result: ' . $e->getMessage());
 		}
@@ -296,9 +297,10 @@ class VisitorPresenter extends BasePresenter
 	}
 
 	/**
-	 * Prepare page for new item
+	 * Prepare page for new item.
 	 *
 	 * @return void
+	 * @throws \Nette\Application\AbortException
 	 */
 	public function renderNew()
 	{
@@ -308,8 +310,9 @@ class VisitorPresenter extends BasePresenter
 	}
 
 	/**
-	 * @param  integer $id
+	 * @param  integer                           $id
 	 * @return void
+	 * @throws \Nette\Application\AbortException
 	 */
 	public function renderEdit($id)
 	{
@@ -323,9 +326,10 @@ class VisitorPresenter extends BasePresenter
 	}
 
 	/**
-	 * Prepare mass mail form
+	 * Prepare mass mail form.
 	 *
 	 * @return void
+	 * @throws \Nette\Application\AbortException
 	 */
 	public function renderMail()
 	{
@@ -339,6 +343,7 @@ class VisitorPresenter extends BasePresenter
 
 	/**
 	 * @return void
+	 * @throws \Nette\Application\AbortException
 	 */
 	public function renderListing()
 	{
@@ -355,18 +360,18 @@ class VisitorPresenter extends BasePresenter
 	}
 
 	/**
-	 * @return VisitorFormControl
+	 * @return VisitorForm
 	 */
 	protected function createComponentVisitorForm(): VisitorForm
 	{
 		$control = $this->visitorFormFactory->create();
 		$control->setMeetingId($this->getMeetingId());
 
-		$control->onVisitorSave[] = function($visitor) {
+		$control->onVisitorSave[] = function ($visitor) {
 			$id = $this->getParameter('id');
 			$this->setBacklinkFromArray($visitor);
 
-			if($id) {
+			if ($id) {
 				$this->actionUpdate($id, $visitor);
 			} else {
 				$this->actionCreate($visitor);
@@ -375,7 +380,7 @@ class VisitorPresenter extends BasePresenter
 			$this->redirect($this->getBacklink() ?: self::REDIRECT_DEFAULT);
 		};
 
-		$control->onVisitorReset[] = function($visitor) {
+		$control->onVisitorReset[] = function ($visitor) {
 			$this->setBacklinkFromArray($visitor);
 
 			$this->redirect($this->getBacklink() ?: self::REDIRECT_DEFAULT);
@@ -422,16 +427,16 @@ class VisitorPresenter extends BasePresenter
 	/**
 	 * @return MeetingModel
 	 */
-	protected function getMeetingModel()
+	protected function getMeetingModel(): MeetingModel
 	{
 		return $this->meetingModel;
 	}
 
 	/**
 	 * @param  MeetingModel $model
-	 * @return $this
+	 * @return self
 	 */
-	protected function setMeetingModel(MeetingModel $model)
+	protected function setMeetingModel(MeetingModel $model): self
 	{
 		$this->meetingModel = $model;
 
@@ -441,16 +446,16 @@ class VisitorPresenter extends BasePresenter
 	/**
 	 * @return Emailer
 	 */
-	protected function getEmailer()
+	protected function getEmailer(): Emailer
 	{
 		return $this->emailer;
 	}
 
 	/**
 	 * @param  Emailer $emailer
-	 * @return $this
+	 * @return self
 	 */
-	protected function setEmailer(Emailer $emailer)
+	protected function setEmailer(Emailer $emailer): self
 	{
 		$this->emailer = $emailer;
 
@@ -475,5 +480,4 @@ class VisitorPresenter extends BasePresenter
 
 		return $this;
 	}
-
 }

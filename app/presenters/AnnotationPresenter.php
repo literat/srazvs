@@ -6,7 +6,6 @@ use App\Components\Forms\AnnotationForm;
 use App\Components\Forms\Factories\IAnnotationFormFactory;
 use App\Models\MeetingModel;
 use App\Services\AnnotationService;
-use \Exception;
 
 class AnnotationPresenter extends BasePresenter
 {
@@ -28,7 +27,7 @@ class AnnotationPresenter extends BasePresenter
 
 	/**
 	 * @param AnnotationService $service
-	 * @param MeetingModel $model
+	 * @param MeetingModel      $model
 	 */
 	public function __construct(AnnotationService $service, MeetingModel $model)
 	{
@@ -37,7 +36,7 @@ class AnnotationPresenter extends BasePresenter
 	}
 
 	/**
-	 * @param  IAnnotationFormFactory $factory
+	 * @param IAnnotationFormFactory $factory
 	 */
 	public function injectAnnotationFormFactory(IAnnotationFormFactory $factory)
 	{
@@ -45,8 +44,8 @@ class AnnotationPresenter extends BasePresenter
 	}
 
 	/**
-	 * @param  string $id
-	 * @param  string $type
+	 * @param string $guid
+	 * @param string $type
 	 */
 	public function renderEdit(string $guid, string $type)
 	{
@@ -63,25 +62,28 @@ class AnnotationPresenter extends BasePresenter
 	}
 
 	/**
-	 * @return AnnotationFormControl
+	 * @return AnnotationForm
 	 */
 	protected function createComponentAnnotationForm(): AnnotationForm
 	{
 		$control = $this->annotationFormFactory->create();
 		$control->setMeetingId($this->getMeetingId());
 		$type = $this->getParameter('type');
-		$control->onAnnotationSave[] = function($annotation) use ($type) {
+		$control->onAnnotationSave[] = function ($annotation) use ($type) {
 			try {
 				$result = $this->getAnnotationService()->updateByType($type, $annotation);
 
-				$this->logInfo('Modification of annotation id %s with data %s successfull, result: %s',	[
-					$annotation->guid,
-					json_encode($annotation),
-					json_encode($result),
-				]);
+				$this->logInfo(
+					'Modification of annotation id %s with data %s successfull, result: %s',
+					[
+						$annotation->guid,
+						json_encode($annotation),
+						json_encode($result),
+					]
+				);
 
 				$this->flashSuccess('Položka byla úspěšně upravena');
-			} catch(Exception $e) {
+			} catch (\Exception $e) {
 				$this->logError("Modification of annotation id {$annotation->guid} failed, result: {$e->getMessage()}");
 
 				$this->flashError("Modification of annotation id {$annotation->guid} failed, result: {$e->getMessage()}");
@@ -130,5 +132,4 @@ class AnnotationPresenter extends BasePresenter
 
 		return $this;
 	}
-
 }

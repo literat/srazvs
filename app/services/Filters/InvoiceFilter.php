@@ -6,7 +6,6 @@ use Nette\SmartObject;
 
 class InvoiceFilter
 {
-
 	use SmartObject;
 
 	/**
@@ -17,5 +16,4 @@ class InvoiceFilter
 	{
 		return sprintf("%03d", $value);
 	}
-
 }

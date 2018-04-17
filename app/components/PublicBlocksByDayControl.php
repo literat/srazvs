@@ -6,7 +6,6 @@ use App\Models\BlockModel;
 
 class PublicBlocksByDayControl extends ABlocksByDayControl implements IBlocksByDayControl
 {
-
 	const TEMPLATE_NAME = 'PublicBlocksByDay';
 
 	/**
@@ -23,8 +22,7 @@ class PublicBlocksByDayControl extends ABlocksByDayControl implements IBlocksByD
 		BlockModel $model,
 		PublicProgramsControl $programsControl,
 		PublicBlockDetailControl $blockDetailControl
-	)
-	{
+	) {
 		$this->setBlockModel($model);
 		$this->setProgramsControl($programsControl);
 		$this->setPublicBlockDetailControl($blockDetailControl);
@@ -48,5 +46,4 @@ class PublicBlocksByDayControl extends ABlocksByDayControl implements IBlocksByD
 
 		return $this;
 	}
-
 }

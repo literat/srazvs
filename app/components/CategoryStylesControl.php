@@ -6,7 +6,6 @@ use App\Services\CategoryService;
 
 class CategoryStylesControl extends BaseControl
 {
-
 	const TEMPLATE_NAME = 'CategoryStyles';
 
 	/**
@@ -48,5 +47,4 @@ class CategoryStylesControl extends BaseControl
 
 		return $this;
 	}
-
 }

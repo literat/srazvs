@@ -1,6 +1,6 @@
 <?php
 
-if(!function_exists('dd')) {
+if (!function_exists('dd')) {
 	/**
 	 * Dump the passed variables and end the script.
 	 *
@@ -9,8 +9,9 @@ if(!function_exists('dd')) {
 	 * @param  mixed
 	 * @return void
 	 */
-	function dd() {
-		array_map(function ($x){
+	function dd()
+	{
+		array_map(function ($x) {
 			(\Tracy\Debugger::dump($x));
 		}, func_get_args());
 
@@ -18,13 +19,14 @@ if(!function_exists('dd')) {
 	}
 }
 
-if(!function_exists('appVersion')) {
+if (!function_exists('appVersion')) {
 	/**
-	 * Get application version from package.json
+	 * Get application version from package.json.
 	 *
 	 * @return string
 	 */
-	function appVersion() {
+	function appVersion()
+	{
 		$packagePath = realpath(__DIR__ . '/../package.json');
 		$package = json_decode(file_get_contents($packagePath));
 
@@ -32,13 +34,14 @@ if(!function_exists('appVersion')) {
 	}
 }
 
-if(!function_exists('webpackManifest')) {
+if (!function_exists('webpackManifest')) {
 	/**
-	 * Get object from manifest.json
+	 * Get object from manifest.json.
 	 *
 	 * @return string
 	 */
-	function webpackManifest(string $name = null) {
+	function webpackManifest(string $name = null)
+	{
 		$manifestPath = realpath(__DIR__ . '/../www/manifest.json');
 		$manifest = json_decode(file_get_contents($manifestPath), true);
 
@@ -50,35 +53,38 @@ if(!function_exists('webpackManifest')) {
 	}
 }
 
-if(!function_exists('mainCss')) {
+if (!function_exists('mainCss')) {
 	/**
-	 * Get main css file from manifest.json
+	 * Get main css file from manifest.json.
 	 *
 	 * @return string
 	 */
-	function mainCss() {
+	function mainCss()
+	{
 		return webpackManifest('main.css');
 	}
 }
 
-if(!function_exists('mainJs')) {
+if (!function_exists('mainJs')) {
 	/**
-	 * Get main js file from manifest.json
+	 * Get main js file from manifest.json.
 	 *
 	 * @return string
 	 */
-	function mainJs() {
+	function mainJs()
+	{
 		return webpackManifest('main.js');
 	}
 }
 
-if(!function_exists('vendorJs')) {
+if (!function_exists('vendorJs')) {
 	/**
-	 * Get vendor js file from manifest.json
+	 * Get vendor js file from manifest.json.
 	 *
 	 * @return string
 	 */
-	function vendorJs() {
+	function vendorJs()
+	{
 		return webpackManifest('vendor.js');
 	}
 }

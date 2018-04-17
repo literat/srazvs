@@ -2,23 +2,16 @@
 
 namespace App\Models;
 
-use Nette\Database\Table\ActiveRow;
-use Tracy\Debugger;
-use Nette\Utils\Strings;
-use Nette\Database\Context;
 use Nette\Caching\Cache;
+use Nette\Database\Context;
+use Nette\Database\Table\ActiveRow;
+use Nette\Utils\Strings;
 
-/**
- * Category
- *
- * class for handling category and category styles
- *
- * @created 2012-03-06
- * @author Tomas Litera <tomaslitera@hotmail.com>
- */
 class CategoryModel extends BaseModel
 {
-	/** @var array */
+	/**
+	 * @var array
+	 */
 	public $dbColumns = [
 		'name',
 		'bgcolor',
@@ -26,11 +19,14 @@ class CategoryModel extends BaseModel
 		'focolor',
 	];
 
-	/** @var string */
+	/**
+	 * @var string
+	 */
 	protected $table = 'kk_categories';
 
 	/**
-	 * @param Nette\Database\Context $database
+	 * @param Context $database
+	 * @param Cache   $cache
 	 */
 	public function __construct(Context $database, Cache $cache)
 	{
@@ -39,8 +35,8 @@ class CategoryModel extends BaseModel
 	}
 
 	/**
-	 * @param	array  $data
-	 * @return	boolean
+	 * @param  array   $data
+	 * @return boolean
 	 */
 	public function create(array $data)
 	{
@@ -50,9 +46,9 @@ class CategoryModel extends BaseModel
 	}
 
 	/**
-	 * @param	integer $id
-	 * @param	array  $data
-	 * @return	boolean
+	 * @param  integer $id
+	 * @param  array   $data
+	 * @return boolean
 	 */
 	public function update($id, array $data)
 	{
@@ -62,7 +58,7 @@ class CategoryModel extends BaseModel
 	}
 
 	/**
-	 * @param  integer $id
+	 * @param  integer                         $id
 	 * @return \Nette\Database\Table\ActiveRow
 	 */
 	public function find($id): ActiveRow
@@ -94,5 +90,4 @@ class CategoryModel extends BaseModel
 
 		return $style;
 	}
-
 }

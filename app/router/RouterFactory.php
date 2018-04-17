@@ -2,19 +2,12 @@
 
 namespace App\Routers;
 
-use Nette\Application\Routers\RouteList;
-use Nette\Application\Routers\Route;
 use Nette\Application\IRouter;
+use Nette\Application\Routers\Route;
+use Nette\Application\Routers\RouteList;
 
-/**
- * Router factory.
- */
 class RouterFactory
 {
-
-	/**
-	 * @return \Nette\Application\IRouter
-	 */
 	public function createRouter(): IRouter
 	{
 		$router = new RouteList();
@@ -42,5 +35,4 @@ class RouterFactory
 
 		return $router;
 	}
-
 }

@@ -6,7 +6,6 @@ use App\Models\CategoryModel;
 
 class CategoryRepository
 {
-
 	/**
 	 * @var CategoryModel
 	 */
@@ -46,5 +45,4 @@ class CategoryRepository
 
 		return $this;
 	}
-
 }

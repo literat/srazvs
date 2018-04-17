@@ -2,35 +2,17 @@
 
 namespace App\Services\Skautis;
 
-use Nette\SmartObject;
+use App\Services\Skautis\AuthService as SkautisAuthService;
+use App\Services\Skautis\UserService as SkautisUserService;
+use App\Services\UserService;
+use Nette\Security\AuthenticationException;
 use Nette\Security\IAuthenticator;
 use Nette\Security\Identity;
-use App\Repositories\SocialLoginRepository;
-use App\Repositories\PersonRepository;
-use App\Repositories\UserRepository;
-use App\Services\UserService;
-use App\Services\Skautis\UserService as SkautisUserService;
-use App\Services\Skautis\AuthService as SkautisAuthService;
-use Nette\Security\AuthenticationException;
+use Nette\SmartObject;
 
 class Authenticator implements IAuthenticator
 {
 	use SmartObject;
-
-	/**
-	 * @var SocialLoginRepository
-	 */
-	private $socialLoginRepository;
-
-	/**
-	 * @var PersonRepository
-	 */
-	private $personRepository;
-
-	/**
-	 * @var UserRepository
-	 */
-	private $userRepository;
 
 	/**
 	 * @var AuthService
@@ -48,16 +30,10 @@ class Authenticator implements IAuthenticator
 	private $userService;
 
 	public function __construct(
-		SocialLoginRepository $socialLoginRepository,
-		PersonRepository $personRepository,
-		UserRepository $userRepository,
 		SkautisAuthService $skautisAuthService,
 		SkautisUserService $skautisUserService,
 		UserService $userService
 	) {
-		$this->socialLoginRepository = $socialLoginRepository;
-		$this->personRepository = $personRepository;
-		$this->userRepository = $userRepository;
 		$this->skautisAuthService = $skautisAuthService;
 		$this->skautisUserService = $skautisUserService;
 		$this->userService = $userService;
@@ -73,12 +49,12 @@ class Authenticator implements IAuthenticator
 		$token = $userDetail->ID;
 
 		$user = $this->userService->findByProviderAndToken('skautis', $token);
-		if(!$user) {
+		if (!$user) {
 			$userDetail = $this->skautisUserService->getPersonalDetail();
 			$user = $this->userService->createAccount($token, $userDetail);
 		}
 
-		return new Identity($user->id, $user->role,  ['username' => $user->nick]);
+		return new Identity($user->id, $user->role, ['username' => $user->nick]);
 	}
 
 	/**
@@ -90,5 +66,4 @@ class Authenticator implements IAuthenticator
 			throw new AuthenticationException('Nemáte platné přihlášení do skautISu!');
 		}
 	}
-
 }

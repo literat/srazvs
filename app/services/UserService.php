@@ -2,10 +2,10 @@
 
 namespace App\Services;
 
-use App\Repositories\SocialLoginRepository;
-use App\Repositories\PersonRepository;
-use App\Repositories\UserRepository;
 use App\Entities\CredentialsEntity;
+use App\Repositories\PersonRepository;
+use App\Repositories\SocialLoginRepository;
+use App\Repositories\UserRepository;
 
 class UserService
 {
@@ -29,16 +29,13 @@ class UserService
 		SocialLoginRepository $socialLoginRepository,
 		PersonRepository $personRepository,
 		UserRepository $userRepository
-	)
-	{
+	) {
 		$this->setSocialLoginRepository($socialLoginRepository);
 		$this->setPersonRepository($personRepository);
 		$this->setUserRepository($userRepository);
 	}
 
 	/**
-	 * @param string $provider
-	 * @param string $token
 	 * @return CredentialsEntity
 	 */
 	public function findByProviderAndToken(string $provider, string $token)//: ?CredentialsEntity
@@ -46,7 +43,7 @@ class UserService
 		$socialLogin = $this->getSocialLoginRepository()->findByProviderAndToken($provider, $token);
 
 		$credentials = null;
-		if($socialLogin) {
+		if ($socialLogin) {
 			$credentials = new CredentialsEntity();
 			$credentials->id = $socialLogin->user->id;
 			$credentials->guid = $socialLogin->user->guid;

@@ -6,7 +6,6 @@ use App\Models\BlockModel;
 
 class PublicBlockDetailControl extends BaseControl
 {
-
 	const TEMPLATE_NAME = 'PublicBlockDetail';
 
 	/**
@@ -42,7 +41,7 @@ class PublicBlockDetailControl extends BaseControl
 	}
 
 	/**
-	 * @param BlockModel $model
+	 * @param  BlockModel $model
 	 * @return self
 	 */
 	protected function setBlockModel(BlockModel $model): self
@@ -51,5 +50,4 @@ class PublicBlockDetailControl extends BaseControl
 
 		return $this;
 	}
-
 }

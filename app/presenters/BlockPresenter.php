@@ -2,30 +2,15 @@
 
 namespace App\Presenters;
 
-use App\Services\Emailer;
-use App\Repositories\BlockRepository;
-use App\Components\Forms\Factories\IBlockFormFactory;
 use App\Components\Forms\BlockForm;
-use \Exception;
+use App\Components\Forms\Factories\IBlockFormFactory;
+use App\Repositories\BlockRepository;
+use App\Services\Emailer;
 use Nette\Utils\ArrayHash;
 
-/**
- * Block controller
- *
- * This file handles the retrieval and serving of blocks
- *
- * @created 2013-06-03
- * @author Tomas Litera <tomaslitera@hotmail.com>
- */
 class BlockPresenter extends BasePresenter
 {
-
 	const REDIRECT_DEFAULT = 'Block:listing';
-
-	/**
-	 * @var integer
-	 */
-	private $blockId = null;
 
 	/**
 	 * @var Emailer
@@ -43,6 +28,11 @@ class BlockPresenter extends BasePresenter
 	private $blockFormFactory;
 
 	/**
+	 * @var int
+	 */
+	protected $blockId;
+
+	/**
 	 * @param BlockRepository $blockRepository
 	 * @param Emailer         $emailer
 	 */
@@ -53,16 +43,13 @@ class BlockPresenter extends BasePresenter
 	}
 
 	/**
-	 * @param  IBlockFormFactory $factory
+	 * @param IBlockFormFactory $factory
 	 */
 	public function injectBlockFormFactory(IBlockFormFactory $factory)
 	{
 		$this->blockFormFactory = $factory;
 	}
 
-	/**
-	 * @return void
-	 */
 	public function startup()
 	{
 		parent::startup();
@@ -71,9 +58,6 @@ class BlockPresenter extends BasePresenter
 		$this->getBlockRepository()->setMeetingId($meetingId);
 	}
 
-	/**
-	 * @return void
-	 */
 	public function actionCreate(ArrayHash $block)
 	{
 		try {
@@ -81,13 +65,21 @@ class BlockPresenter extends BasePresenter
 
 			$result = $this->getBlockRepository()->create($block);
 
-			$this->logInfo('Creation of block successfull, result: %s', [json_encode($result)]);
+			$this->logInfo(
+				'Creation of block successfull, result: %s',
+				[
+					json_encode($result)
+				]
+			);
 			$this->flashSuccess('Položka byla úspěšně vytvořena');
-		} catch(Exception $e) {
-			$this->logError('Creation of block with data %s failed, result: %s', [
-				json_encode($block),
-				$e->getMessage(),
-			]);
+		} catch (\Exception $e) {
+			$this->logError(
+				'Creation of block with data %s failed, result: %s',
+				[
+					json_encode($block),
+					$e->getMessage(),
+				]
+			);
 			$this->flashFailure('Creation of block failed, result: ' . $e->getMessage());
 			$result = false;
 		}
@@ -107,13 +99,16 @@ class BlockPresenter extends BasePresenter
 
 			$result = $this->getBlockRepository()->update($id, $block);
 
-			$this->logInfo('Modification of block id %s with data =s successfull, result: %s', [
-				$id,
-				json_encode($block),
-				json_encode($result),
-			]);
+			$this->logInfo(
+				'Modification of block id %s with data =s successfull, result: %s',
+				[
+					$id,
+					json_encode($block),
+					json_encode($result),
+				]
+			);
 			$this->flashSuccess('Položka byla úspěšně uložena.');
-		} catch(Exception $e) {
+		} catch (\Exception $e) {
 			$this->logError('Záznam se nepodařilo uložit.');
 			$this->flashFailure('Modification of block id ' . $id . ' failed, result: ' . $e->getMessage());
 			$result = false;
@@ -123,7 +118,7 @@ class BlockPresenter extends BasePresenter
 	}
 
 	/**
-	 * @param  int $id
+	 * @param  int                               $id
 	 * @return void
 	 * @throws \Nette\Application\AbortException
 	 */
@@ -133,7 +128,7 @@ class BlockPresenter extends BasePresenter
 			$result = $this->getBlockRepository()->delete($id);
 			$this->logInfo('Destroying of block successfull, result: ' . json_encode($result));
 			$this->flashSuccess('Položka byla úspěšně smazána.');
-		} catch(Exception $e) {
+		} catch (\Exception $e) {
 			$this->logError('Destroying of block failed, result: ' . $e->getMessage());
 			$this->flashFailure('Destroying of block failed, result: ' . $e->getMessage());
 		}
@@ -142,7 +137,7 @@ class BlockPresenter extends BasePresenter
 	}
 
 	/**
-	 * Send mail to tutor
+	 * Send mail to tutor.
 	 *
 	 * @param $id
 	 * @return void
@@ -156,12 +151,15 @@ class BlockPresenter extends BasePresenter
 
 			$this->getEmailer()->tutor($recipients, $tutors->guid, 'block');
 
-			$this->logInfo('Sending email to block tutor successfull, result: %s, %s', [
-				json_encode($recipients),
-				$tutors->guid,
-			]);
+			$this->logInfo(
+				'Sending email to block tutor successfull, result: %s, %s',
+				[
+					json_encode($recipients),
+					$tutors->guid,
+				]
+			);
 			$this->flashSuccess('Email lektorovi byl odeslán..');
-		} catch(Exception $e) {
+		} catch (\Exception $e) {
 			$this->logError('Sending email to block tutor failed, result: %s', [$e->getMessage()]);
 			$this->flashFailure('Email lektorovi nebyl odeslán, result: ' . $e->getMessage());
 		}
@@ -169,9 +167,6 @@ class BlockPresenter extends BasePresenter
 		$this->redirect('Block:edit', $id);
 	}
 
-	/**
-	 * @return void
-	 */
 	public function renderNew()
 	{
 		$template = $this->getTemplate();
@@ -179,9 +174,9 @@ class BlockPresenter extends BasePresenter
 	}
 
 	/**
-	 * Prepare data for editing
+	 * Prepare data for editing.
 	 *
-	 * @param  int $id of Block
+	 * @param  int  $id of Block
 	 * @return void
 	 */
 	public function renderEdit($id)
@@ -203,9 +198,6 @@ class BlockPresenter extends BasePresenter
 		$this['blockForm']->setDefaults($block);
 	}
 
-	/**
-	 * @return void
-	 */
 	public function renderListing()
 	{
 		$template = $this->getTemplate();
@@ -214,20 +206,17 @@ class BlockPresenter extends BasePresenter
 		$template->heading = $this->heading;
 	}
 
-	/**
-	 * @return BlockForm
-	 */
 	protected function createComponentBlockForm(): BlockForm
 	{
 		$control = $this->blockFormFactory->create();
 		$control->setMeetingId($this->getMeetingId());
-		$control->onBlockSave[] = function($block) {
+		$control->onBlockSave[] = function ($block) {
 			//$guid = $this->getParameter('guid');
 			$id = $this->getParameter('id');
 
 			$this->setBacklinkFromArray($block);
 
-			if($id) {
+			if ($id) {
 				$this->actionUpdate($id, $block);
 			} else {
 				$this->actionCreate($block);
@@ -236,7 +225,7 @@ class BlockPresenter extends BasePresenter
 			$this->redirect($this->getBacklink() ?: self::REDIRECT_DEFAULT);
 		};
 
-		$control->onBlockReset[] = function($block) {
+		$control->onBlockReset[] = function ($block) {
 			$this->setBacklinkFromArray($block);
 
 			$this->redirect($this->getBacklink() ?: self::REDIRECT_DEFAULT);
@@ -245,43 +234,27 @@ class BlockPresenter extends BasePresenter
 		return $control;
 	}
 
-	/**
-	 * @return Emailer
-	 */
 	protected function getEmailer(): Emailer
 	{
 		return $this->emailer;
 	}
 
-	/**
-	 * @param  Emailer $emailer
-	 * @return self
-	 */
 	protected function setEmailer(Emailer $emailer): self
 	{
 		$this->emailer = $emailer;
+
 		return $this;
 	}
 
-	/**
-	 * @return BlockRepository
-	 */
 	private function getBlockRepository(): BlockRepository
 	{
 		return $this->blockRepository;
 	}
 
-	/**
-	 * @param  BlockRepository $blockRepository
-	 * @return self
-	 */
 	private function setBlockRepository(BlockRepository $blockRepository): self
 	{
 		$this->blockRepository = $blockRepository;
 
 		return $this;
 	}
-
-
-
 }

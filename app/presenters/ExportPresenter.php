@@ -2,28 +2,21 @@
 
 namespace App\Presenters;
 
-use App\Models\ExportModel;
-use App\Models\ProgramModel;
-use App\Models\BlockModel;
-use App\Models\MealModel;
-use App\Factories\ExcelFactory;
-use App\Factories\PdfFactory;
-use App\Components\RegistrationGraphControl;
 use App\Components\MaterialsControl;
 use App\Components\MealControl;
-use Nette\Utils\Strings;
-use Tracy\Debugger;
+use App\Components\RegistrationGraphControl;
+use App\Factories\ExcelFactory;
+use App\Factories\PdfFactory;
+use App\Models\BlockModel;
+use App\Models\ExportModel;
+use App\Models\MealModel;
+use App\Models\ProgramModel;
 use Mpdf\Mpdf;
+use Nette\Utils\Strings;
 use PHPExcel;
 
-/**
- * Export Controller
- *
- * This file handles the retrieval and serving of exports
- */
 class ExportPresenter extends BasePresenter
 {
-
 	const TEMPLATE_DIR = __DIR__ . '/../templates/Export/';
 	const TEMPLATE_EXT = 'latte';
 
@@ -32,6 +25,9 @@ class ExportPresenter extends BasePresenter
 	 */
 	protected $programModel;
 
+	/**
+	 * @var BlockModel
+	 */
 	protected $blockModel;
 
 	/**
@@ -44,6 +40,9 @@ class ExportPresenter extends BasePresenter
 	 */
 	protected $excel;
 
+	/**
+	 * @var string
+	 */
 	protected $filename;
 
 	/**
@@ -67,7 +66,7 @@ class ExportPresenter extends BasePresenter
 	 * @param ExcelFactory             $excel
 	 * @param PdfFactory               $pdf
 	 * @param RegistrationGraphControl $control
-	 * @param MaterialsControl          $materialControl
+	 * @param MaterialsControl         $materialControl
 	 */
 	public function __construct(
 		ExportModel $export,
@@ -99,9 +98,6 @@ class ExportPresenter extends BasePresenter
 		$this->getProgramModel()->setMeetingId($this->getMeetingId());
 	}
 
-	/**
-	 * @return void
-	 */
 	public function renderDefault()
 	{
 		$this->allowAdminAccessOnly();
@@ -130,13 +126,13 @@ class ExportPresenter extends BasePresenter
 
 		$evidences = $this->getModel()->evidence($id);
 
-		if(!$evidences) {
+		if (!$evidences) {
 			$this->logError('No data for evidence export.');
 			$this->flashMessage('No data.');
 			$this->redirect('Export:listing');
 		}
 
-		switch($type){
+		switch ($type) {
 			case "summary":
 				$templateName = 'evidence_summary';
 				// specific mPDF settings
@@ -161,9 +157,9 @@ class ExportPresenter extends BasePresenter
 	}
 
 	/**
-	 * Print Attendance into PDF file
+	 * Print Attendance into PDF file.
 	 */
-	public function renderAttendance(): void
+	public function renderAttendance()
 	{
 		$this->allowAdminAccessOnly();
 		// output file name
@@ -187,9 +183,9 @@ class ExportPresenter extends BasePresenter
 	}
 
 	/**
-	 * Print meal tickets into PDF file
+	 * Print meal tickets into PDF file.
 	 */
-	public function renderMealTicket(): void
+	public function renderMealTicket()
 	{
 		$this->allowAdminAccessOnly();
 		// output file name
@@ -207,9 +203,9 @@ class ExportPresenter extends BasePresenter
 	}
 
 	/**
-	 * Print name list into PDF file
+	 * Print name list into PDF file.
 	 */
-	public function renderNameList(): void
+	public function renderNameList()
 	{
 		$this->allowAdminAccessOnly();
 		// output file name
@@ -232,7 +228,7 @@ class ExportPresenter extends BasePresenter
 		$this->publish();
 	}
 
-	public function renderProgram(string $type, int $id): void
+	public function renderProgram(string $type, int $id)
 	{
 		$programMethod = 'renderProgram' . Strings::firstUpper($type);
 
@@ -240,9 +236,9 @@ class ExportPresenter extends BasePresenter
 	}
 
 	/**
-	 * Print program cards into PDF file
+	 * Print program cards into PDF file.
 	 */
-	protected function renderProgramCards(): void
+	protected function renderProgramCards()
 	{
 		$this->allowAdminAccessOnly();
 		$this->filename = 'vlastni_programy.pdf';
@@ -260,9 +256,9 @@ class ExportPresenter extends BasePresenter
 	}
 
 	/**
-	 * Print large program into PDF file
+	 * Print large program into PDF file.
 	 */
-	protected function renderProgramLarge(): void
+	protected function renderProgramLarge()
 	{
 		$this->allowAdminAccessOnly();
 		$largeProgram = $this->getModel()->largeProgram();
@@ -282,13 +278,12 @@ class ExportPresenter extends BasePresenter
 
 		$this->forgeView($templateName, $parameters);
 		$this->publish();
-
 	}
 
 	/**
-	 * Print public program into PDF file
+	 * Print public program into PDF file.
 	 */
-	protected function renderProgramPublic(): void
+	protected function renderProgramPublic()
 	{
 		$templateName = 'program_public';
 		$publicProgram = $this->getModel()->publicProgram();
@@ -307,9 +302,9 @@ class ExportPresenter extends BasePresenter
 	}
 
 	/**
-	 * Print program badges into PDF file
+	 * Print program badges into PDF file.
 	 */
-	protected function renderProgramBadges(): void
+	protected function renderProgramBadges()
 	{
 		$this->allowAdminAccessOnly();
 		$this->filename = 'program-badge.pdf';
@@ -342,9 +337,9 @@ class ExportPresenter extends BasePresenter
 	}
 
 	/**
-	 * Print visitors on program into PDF file
+	 * Print visitors on program into PDF file.
 	 */
-	protected function renderProgramVisitors(int $id): void
+	protected function renderProgramVisitors(int $id)
 	{
 		$this->allowAdminAccessOnly();
 		$this->filename = 'ucastnici-programu.pdf';
@@ -365,9 +360,9 @@ class ExportPresenter extends BasePresenter
 	}
 
 	/**
-	 * Print details of program into PDF file
+	 * Print details of program into PDF file.
 	 */
-	protected function renderProgramDetails(): void
+	protected function renderProgramDetails()
 	{
 		$this->allowAdminAccessOnly();
 		$this->filename = 'vypis-programu.pdf';
@@ -385,7 +380,7 @@ class ExportPresenter extends BasePresenter
 		$this->publish();
 	}
 
-	public function actionNameBadges(): void
+	public function actionNameBadges()
 	{
 		$this->allowAdminAccessOnly();
 		$names = $this->getHttpRequest()->getPost()['names'];
@@ -393,24 +388,25 @@ class ExportPresenter extends BasePresenter
 	}
 
 	/**
-	 * Print name badges into PDF file
+	 * Print name badges into PDF file.
 	 *
-	 * @param	string 	comma separated values
+	 * @param  string                            $namesStringified comma separated values
+	 * @throws \Nette\Application\AbortException
 	 */
-	public function renderNameBadges(string $namesStringified): void
+	public function renderNameBadges(string $namesStringified)
 	{
 		$this->allowAdminAccessOnly();
 		$this->filename = 'jmenovky.pdf';
 		$templateName = 'name_badge';
 
 		$badges = [];
-		if(!$namesStringified) {
+		if (!$namesStringified) {
 			$badges = $this->getModel()->nameBadges();
 		} else {
-			$namesStringified = preg_replace('/\s+/','',$namesStringified);
+			$namesStringified = preg_replace('/\s+/', '', $namesStringified);
 
-			$names = explode(',',$namesStringified);
-			foreach($names as $name) {
+			$names = explode(',', $namesStringified);
+			foreach ($names as $name) {
 				$badge['nick'] = $name;
 				$badges[] = $badge;
 			}
@@ -429,9 +425,9 @@ class ExportPresenter extends BasePresenter
 	}
 
 	/**
-	 * Print data of visitors into excel file
+	 * Print data of visitors into excel file.
 	 */
-	public function renderVisitorsExcel(): void
+	public function renderVisitorsExcel()
 	{
 		$this->allowAdminAccessOnly();
 		$excel = $this->getExcel();
@@ -463,7 +459,7 @@ class ExportPresenter extends BasePresenter
 			'S1' => 'Otázka',
 		];
 
-		foreach($cells as $key => $value) {
+		foreach ($cells as $key => $value) {
 			$list->setCellValue($key, $value);
 		}
 
@@ -485,7 +481,7 @@ class ExportPresenter extends BasePresenter
 			'S' => 20,
 		];
 
-		foreach($dimensions as $key => $value) {
+		foreach ($dimensions as $key => $value) {
 			$excel->getActiveSheet()->getColumnDimension($key)->setWidth($value);
 		}
 
@@ -522,15 +518,15 @@ class ExportPresenter extends BasePresenter
 		];
 
 		$i = 2;
-		foreach($visitors as $data) {
-			foreach($cellValues as $cell => $value) {
+		foreach ($visitors as $data) {
+			foreach ($cellValues as $cell => $value) {
 				$list->setCellValue($cell . $i, $data[$value]);
 			}
 			$i++;
 		}
 
 		// stahnuti souboru
-		$filename = 'export-MS-' . date('Y-m-d',time()) . '.xlsx';
+		$filename = 'export-MS-' . date('Y-m-d', time()) . '.xlsx';
 
 		$excel->setActiveSheetIndex(0);
 
@@ -570,12 +566,12 @@ class ExportPresenter extends BasePresenter
 		return $this;
 	}
 
-	protected function publish(): void
+	protected function publish()
 	{
 		$template = $this->getTemplate();
 
 		/* debugging */
-		if($this->debugMode){
+		if ($this->debugMode) {
 			echo $template;
 			exit('DEBUG_MODE');
 		} else {
@@ -627,11 +623,11 @@ class ExportPresenter extends BasePresenter
 	{
 		$graphHeight = RegistrationGraphControl::GRAPH_HEIGHT_INIT;
 
-		foreach($this->getModel()->graph() as $graph) {
+		foreach ($this->getModel()->graph() as $graph) {
 			$graphHeight += RegistrationGraphControl::GRAPH_HEIGHT_STEP;
 		}
 
-		if($graphHeight < RegistrationGraphControl::GRAPH_HEIGHT_MIN) {
+		if ($graphHeight < RegistrationGraphControl::GRAPH_HEIGHT_MIN) {
 			$graphHeight = RegistrationGraphControl::GRAPH_HEIGHT_MIN;
 		}
 
@@ -685,5 +681,4 @@ class ExportPresenter extends BasePresenter
 
 		return $this;
 	}
-
 }

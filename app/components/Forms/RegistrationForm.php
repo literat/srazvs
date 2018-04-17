@@ -2,16 +2,15 @@
 
 namespace App\Components\Forms;
 
-use App\Models\ProvinceModel;
-use App\Repositories\ProgramRepository;
 use App\Models\BlockModel;
 use App\Models\MeetingModel;
-use Nette\Application\UI\Form;
+use App\Models\ProvinceModel;
+use App\Repositories\ProgramRepository;
 use App\Services\Skautis\UserService;
+use Nette\Application\UI\Form;
 
 class RegistrationForm extends VisitorForm
 {
-
 	const TEMPLATE_NAME = 'RegistrationForm';
 
 	/**
@@ -145,7 +144,7 @@ class RegistrationForm extends VisitorForm
 		return $form;
 	}
 
-	public function processForm(Form $form): void
+	public function processForm(Form $form)
 	{
 		$registration = $form->getValues();
 		$registration['meeting'] = $this->getMeetingId();
@@ -158,12 +157,4 @@ class RegistrationForm extends VisitorForm
 	{
 		return $this->userService;
 	}
-
-	protected function setUserService(UserService $service): self
-	{
-		$this->userService = $service;
-
-		return $this;
-	}
-
 }

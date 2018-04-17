@@ -6,12 +6,11 @@ use Tracy\Debugger;
 
 trait Loggable
 {
-
 	/**
-	 * Logs debug message
+	 * Logs debug message.
 	 *
-	 * @param  string $message   Formatted message
-	 * @param  array  $arguments Message arguments
+	 * @param string $message   Formatted message
+	 * @param array  $arguments Message arguments
 	 */
 	protected function logDebug(string $message = '', array $arguments = [])
 	{
@@ -19,10 +18,10 @@ trait Loggable
 	}
 
 	/**
-	 * Logs info message
+	 * Logs info message.
 	 *
-	 * @param  string $message   Formatted message
-	 * @param  array  $arguments Message arguments
+	 * @param string $message   Formatted message
+	 * @param array  $arguments Message arguments
 	 */
 	protected function logInfo(string $message = '', array $arguments = [])
 	{
@@ -30,10 +29,10 @@ trait Loggable
 	}
 
 	/**
-	 * Logs warning message
+	 * Logs warning message.
 	 *
-	 * @param  string $message   Formatted message
-	 * @param  array  $arguments Message arguments
+	 * @param string $message   Formatted message
+	 * @param array  $arguments Message arguments
 	 */
 	protected function logWarning(string $message = '', array $arguments = [])
 	{
@@ -41,10 +40,10 @@ trait Loggable
 	}
 
 	/**
-	 * Logs error message
+	 * Logs error message.
 	 *
-	 * @param  string $message   Formatted message
-	 * @param  array  $arguments Message arguments
+	 * @param string $message   Formatted message
+	 * @param array  $arguments Message arguments
 	 */
 	protected function logError(string $message = '', array $arguments = [])
 	{
@@ -52,10 +51,10 @@ trait Loggable
 	}
 
 	/**
-	 * Logs exception message
+	 * Logs exception message.
 	 *
-	 * @param  string $message   Formatted message
-	 * @param  array  $arguments Message arguments
+	 * @param string $message   Formatted message
+	 * @param array  $arguments Message arguments
 	 */
 	protected function logException(string $message = '', array $arguments = [])
 	{
@@ -63,10 +62,10 @@ trait Loggable
 	}
 
 	/**
-	 * Logs critical message
+	 * Logs critical message.
 	 *
-	 * @param  string $message   Formatted message
-	 * @param  array  $arguments Message arguments
+	 * @param string $message   Formatted message
+	 * @param array  $arguments Message arguments
 	 */
 	protected function logCritical(string $message = '', array $arguments = [])
 	{
@@ -74,14 +73,13 @@ trait Loggable
 	}
 
 	/**
-	 * Logs debug message
+	 * Logs debug message.
 	 *
-	 * @param  string $message   Formatted message
-	 * @param  array  $arguments Message arguments
+	 * @param string $message   Formatted message
+	 * @param array  $arguments Message arguments
 	 */
 	protected function log(string $message = '', array $arguments = [], string $level = Debugger::ERROR)
 	{
 		Debugger::log(vsprintf($message, $arguments), $level);
 	}
-
 }

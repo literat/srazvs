@@ -5,17 +5,8 @@ namespace App\Models;
 use Nette\Database\Context;
 use Nette\Database\Table\ActiveRow;
 
-/**
- * Export Model
- *
- * class for exporting materials for printing
- *
- * @created 2012-09-21
- * @author Tomas Litera <tomaslitera@hotmail.com>
- */
 class ExportModel extends BaseModel
 {
-
 	/**
 	 * @var integer
 	 */
@@ -27,7 +18,7 @@ class ExportModel extends BaseModel
 	private static $connection;
 
 	/**
-	 * @param Context  $database
+	 * @param Context $database
 	 */
 	public function __construct(Context $database)
 	{
@@ -37,32 +28,29 @@ class ExportModel extends BaseModel
 
 	/**
 	 * @param  integer $height
-	 * @return $this
+	 * @return self
 	 */
-	public function setGraphHeight($height)
+	public function setGraphHeight(int $height): self
 	{
 		$this->graphHeight = $height;
 
 		return $this;
 	}
 
-	/**
-	 * @return integer
-	 */
-	public function getGraphHeight()
+	public function getGraphHeight(): int
 	{
 		return $this->graphHeight;
 	}
 
 	/**
-	 * Return data for meal tickets
+	 * Return data for meal tickets.
 	 *
-	 * @param	void
-	 * @return	array
+	 * @return array
 	 */
 	public function mealTicket()
 	{
-		return $this->getDatabase()->query('SELECT	vis.id AS id,
+		return $this->getDatabase()->query(
+			'SELECT	vis.id AS id,
 				name,
 				surname,
 				nick,
@@ -94,16 +82,19 @@ class ExportModel extends BaseModel
 		LEFT JOIN kk_meals AS meals ON meals.visitor = vis.id
 		LEFT JOIN kk_provinces AS provs ON vis.province = provs.id
 		LEFT JOIN kk_meetings AS meets ON meets.id = vis.meeting
-		WHERE meeting = ? AND vis.deleted = ?
-		', $this->getMeetingId(), '0')->fetchAll();
+		WHERE meeting = ? AND vis.deleted = ?',
+			$this->getMeetingId(),
+			'0'
+		)->fetchAll();
 	}
 
 	/**
-	 * Print Attendance into PDF file
+	 * Print Attendance into PDF file.
 	 */
 	public function attendance(): ActiveRow
 	{
-		return $this->getDatabase()->query('SELECT	vis.id AS id,
+		return $this->getDatabase()->query(
+			'SELECT	vis.id AS id,
 						name,
 						surname,
 						nick,
@@ -119,18 +110,20 @@ class ExportModel extends BaseModel
 				LEFT JOIN kk_meetings AS meets ON meets.id = vis.meeting
 				WHERE meeting = ? AND vis.deleted = ?
 				ORDER BY surname ASC',
-				$this->getMeetingId(), '0')->fetchAll();
+			$this->getMeetingId(),
+			'0'
+		)->fetchAll();
 	}
 
 	/**
-	 * Return data for name list
+	 * Return data for name list.
 	 *
-	 * @param	void
-	 * @return	array    data
+	 * @return array
 	 */
 	public function nameList()
 	{
-		return $this->getDatabase()->query('SELECT	vis.id AS id,
+		return $this->getDatabase()->query(
+			'SELECT	vis.id AS id,
 						name,
 						surname,
 						nick,
@@ -145,29 +138,30 @@ class ExportModel extends BaseModel
 				FROM kk_visitors AS vis
 				LEFT JOIN kk_meetings AS meets ON meets.id = vis.meeting
 				WHERE meeting = ? AND vis.deleted = ?
-				ORDER BY nick ASC
-				', $this->getMeetingId(), '0')->fetchAll();
+				ORDER BY nick ASC',
+			$this->getMeetingId(),
+			'0'
+		)->fetchAll();
 	}
 
 	/**
-	 * Return data for evidence
+	 * Return data for evidence.
 	 *
-	 * @param	int		$visitroId		ID of visitor
-	 * @return	array	data from database
+	 * @param  int   $visitorId
+	 * @return array
 	 */
 	public function evidence($visitorId = null)
 	{
 		$evidenceLimit = '';
 		$specificVisitor = '';
 
-		if(isset($visitorId) && $visitorId !== null) {
+		if (isset($visitorId) && $visitorId !== null) {
 			$evidenceLimit = 'LIMIT 1';
 			$specificVisitor = "vis.id IN (" . $visitorId . ") AND";
 		}
 
-
-
-		return $this->getDatabase()->query('SELECT	vis.id AS id,
+		return $this->getDatabase()->query(
+			'SELECT	vis.id AS id,
 					name,
 					surname,
 					street,
@@ -186,7 +180,10 @@ class ExportModel extends BaseModel
 			LEFT JOIN kk_meetings AS meets ON meets.id = vis.meeting
 			WHERE ' . $specificVisitor . ' meeting = ? AND vis.deleted = ?
 			ORDER BY surname, name
-			' . $evidenceLimit, $this->getMeetingId(), '0')->fetchAll();
+			' . $evidenceLimit,
+			$this->getMeetingId(),
+			'0'
+		)->fetchAll();
 	}
 
 	public static function getPdfBlocks($vid, string $meetingId)
@@ -194,7 +191,8 @@ class ExportModel extends BaseModel
 		$programs = "<tr>";
 		$programs .= " <td class='progPart'>";
 
-		$data = self::$connection->query('SELECT 	id,
+		$data = self::$connection->query(
+			'SELECT 	id,
 							day,
 							DATE_FORMAT(`from`, "%H:%i") AS `from`,
 							DATE_FORMAT(`to`, "%H:%i") AS `to`,
@@ -202,14 +200,18 @@ class ExportModel extends BaseModel
 							program
 					FROM kk_blocks
 					WHERE deleted = ? AND program = ? AND meeting = ?
-					ORDER BY `day` ASC', '0', '1', $meetingId)->fetchAll();
+					ORDER BY `day` ASC',
+			'0',
+			'1',
+			$meetingId
+		)->fetchAll();
 
-		if(!$data){
+		if (!$data) {
 			$programs .= "<div class='emptyTable' style='width:400px;'>Nejsou žádná aktuální data.</div>\n";
 		} else {
-			foreach($data as $progData) {
+			foreach ($data as $progData) {
 				// zbaveni se predsnemovni diskuse
-				if($progData['id'] == 63) {
+				if ($progData['id'] == 63) {
 					$programs .= "";
 				} else {
 					$programs = sprintf(
@@ -219,7 +221,7 @@ class ExportModel extends BaseModel
 						$progData['to'],
 						$progData['name']
 					);
-					if($progData['program'] == 1) {
+					if ($progData['program'] == 1) {
 						$programs .= sprintf(
 							'<div>%s</div>',
 							ProgramModel::getPdfPrograms($progData['id'], $vid, self::$connection)
@@ -236,14 +238,14 @@ class ExportModel extends BaseModel
 	}
 
 	/**
-	 * Return data for program cards
+	 * Return data for program cards.
 	 *
-	 * @param	void
-	 * @return	array	data
+	 * @return array
 	 */
 	public function programCards()
 	{
-		return $this->getDatabase()->query('SELECT	vis.id AS id,
+		return $this->getDatabase()->query(
+			'SELECT	vis.id AS id,
 						name,
 						surname,
 						nick,
@@ -277,13 +279,16 @@ class ExportModel extends BaseModel
 				LEFT JOIN kk_provinces AS provs ON vis.province = provs.id
 				LEFT JOIN kk_meetings AS meets ON meets.id = vis.meeting
 				WHERE meeting = ? AND vis.deleted = ?
-				ORDER BY nick ASC
-				', $this->meetingId, '0')->fetchAll();
+				ORDER BY nick ASC',
+			$this->meetingId,
+			'0'
+		)->fetchAll();
 	}
 
 	public function getLargeProgramData($day)
 	{
-		return $this->getDatabase()->query('SELECT 	blocks.id AS id,
+		return $this->getDatabase()->query(
+			'SELECT 	blocks.id AS id,
 						day,
 						DATE_FORMAT(`from`, "%H:%i") AS `from`,
 						DATE_FORMAT(`to`, "%H:%i") AS `to`,
@@ -294,14 +299,17 @@ class ExportModel extends BaseModel
 			FROM kk_blocks AS blocks
 			LEFT JOIN kk_categories AS cat ON cat.id = blocks.category
 			WHERE blocks.deleted = ? AND day = ? AND meeting = ?
-			ORDER BY `from` ASC', '0', $day, $this->getMeetingId())->fetchAll();
+			ORDER BY `from` ASC',
+			'0',
+			$day,
+			$this->getMeetingId()
+		)->fetchAll();
 	}
 
 	/**
-	 * Return data for large program
+	 * Return data for large program.
 	 *
-	 * @param	void
-	 * @return	array	data
+	 * @return array
 	 */
 	public function largeProgram()
 	{
@@ -318,10 +326,9 @@ class ExportModel extends BaseModel
 	}
 
 	/**
-	 * Return data for public program
+	 * Return data for public program.
 	 *
-	 * @param	void
-	 * @return	array	data
+	 * @return array
 	 */
 	public function publicProgram()
 	{
@@ -338,10 +345,9 @@ class ExportModel extends BaseModel
 	}
 
 	/**
-	 * Return data for program badges
+	 * Return data for program badges.
 	 *
-	 * @param	void
-	 * @return	array	data
+	 * @return array
 	 */
 	public function programBadges()
 	{
@@ -353,10 +359,9 @@ class ExportModel extends BaseModel
 	}
 
 	/**
-	 * Return data for name badges
+	 * Return data for name badges.
 	 *
-	 * @param	void
-	 * @return	array	data
+	 * @return array
 	 */
 	public function nameBadges()
 	{
@@ -372,14 +377,17 @@ class ExportModel extends BaseModel
 	public function graph(): ActiveRow
 	{
 		return $this->getDatabase()
-			->query('SELECT DATE_FORMAT(reg_daytime, "%d. %m. %Y") AS day,
+			->query(
+				'SELECT DATE_FORMAT(reg_daytime, "%d. %m. %Y") AS day,
 							   COUNT(reg_daytime) AS reg_count
 						FROM `kk_visitors` AS vis
 						LEFT JOIN kk_meetings AS meet ON meet.id = vis.meeting
 						WHERE meet.id = ? AND vis.deleted = ?
 						GROUP BY day
 						ORDER BY reg_daytime ASC',
-						$this->getMeetingId(), '0')->fetchAll();
+				$this->getMeetingId(),
+				'0'
+			)->fetchAll();
 	}
 
 	/**
@@ -388,7 +396,8 @@ class ExportModel extends BaseModel
 	public function graphMax()
 	{
 		return $this->getDatabase()
-			->query('SELECT MAX( reg_count ) AS max
+			->query(
+				'SELECT MAX( reg_count ) AS max
 					  FROM (
 						SELECT DATE_FORMAT( reg_daytime, "%d. %m. %Y" ) AS
 							DAY , COUNT( reg_daytime ) AS reg_count
@@ -398,13 +407,16 @@ class ExportModel extends BaseModel
 							AND vis.deleted = ?
 						GROUP BY DAY
 					  ) AS cnt',
-					  $this->getMeetingId(), '0')->fetchField();
+				$this->getMeetingId(),
+				'0'
+			)->fetchField();
 	}
 
 	public function materials(): ActiveRow
 	{
 		return $this->getDatabase()
-			->query('SELECT	progs.id AS id,
+			->query(
+				'SELECT	progs.id AS id,
 						progs.name AS name,
 						progs.material AS material
 				FROM `kk_programs` AS progs
@@ -412,27 +424,33 @@ class ExportModel extends BaseModel
 				WHERE progs.deleted = ?
 					AND bls.meeting = ?
 					AND bls.deleted = ?',
-					'0', $this->getMeetingId(), '0')->fetchAll();
+				'0',
+				$this->getMeetingId(),
+				'0'
+			)->fetchAll();
 	}
 
 	/**
-	 * Get materials for each program
+	 * Get materials for each program.
 	 *
-	 * @param	string	type of money (account|balance|suma)
-	 * @return	mixed	amount of money or false if error
+	 * @param  string $type type of money (account|balance|suma)
+	 * @return mixed  amount of money or false if error
 	 */
 	public function getMoney($type)
 	{
 		$data = $this->getDatabase()
-			->query('SELECT SUM(bill) AS account,
+			->query(
+				'SELECT SUM(bill) AS account,
 							COUNT(bill) * vis.cost AS suma,
 							COUNT(bill) * vis.cost - SUM(bill) AS balance
 					FROM kk_visitors AS vis
 					LEFT JOIN kk_meetings AS meets ON vis.meeting = meets.id
 					WHERE meeting = ? AND vis.deleted = ?',
-					$this->getMeetingId(), '0')->fetch();
+				$this->getMeetingId(),
+				'0'
+			)->fetch();
 
-		switch($type){
+		switch ($type) {
 			case "account":
 				return $data['account'];
 			case "balance":
@@ -445,51 +463,61 @@ class ExportModel extends BaseModel
 	}
 
 	/**
-	 * Get count of meals
+	 * Get count of meals.
 	 *
-	 * @param	string	name of meal
-	 * @return	array	meal name => count
+	 * @param  string $meal name of meal
+	 * @return array  meal name => count
 	 */
 	public function getMealCount($meal)
 	{
 		$data = $this->getDatabase()
-			->query('SELECT count(?) AS ?
+			->query(
+				'SELECT count(?) AS ?
 				FROM `kk_meals` AS mls
 				LEFT JOIN `kk_visitors` AS vis ON vis.id = mls.visitor
 				WHERE vis.deleted = ?
 					AND vis.meeting = ?
 					AND ' . $meal . ' = ?',
-					$meal, $meal, '0', $this->getMeetingId(), 'ano')->fetch();
+				$meal,
+				$meal,
+				'0',
+				$this->getMeetingId(),
+				'ano'
+			)->fetch();
 
 		return $data[$meal];
 	}
 
 	/**
-	 * Return data for visitors's program
+	 * Return data for visitors's program.
 	 */
 	public function programVisitors(int $programId): ActiveRow
 	{
 		return $this->getDatabase()
-			->query('SELECT vis.name AS name,
+			->query(
+				'SELECT vis.name AS name,
 							vis.surname AS surname,
 							vis.nick AS nick,
 							prog.name AS program
 					FROM kk_visitors AS vis
 					LEFT JOIN `kk_visitor-program` AS visprog ON vis.id = visprog.visitor
 					LEFT JOIN `kk_programs` AS prog ON prog.id = visprog.program
-					WHERE visprog.program = ? AND vis.deleted = ?', $programId, '0')->fetchAll();
+					WHERE visprog.program = ? AND vis.deleted = ?',
+				$programId,
+				'0'
+			)->fetchAll();
 	}
 
 	/**
-	 * Return data for details of program
+	 * Return data for details of program.
 	 *
-	 * @param	void
-	 * @return	array	data
+	 * @return array
 	 */
 	public function programDetails()
 	{
 		return $this->getDatabase()
-			->query('SELECT prog.name AS name,
+			->query(
+				'SELECT prog.name AS name,
 						 prog.description AS description,
 						 prog.tutor AS tutor,
 						 prog.email AS email
@@ -497,20 +525,23 @@ class ExportModel extends BaseModel
 					LEFT JOIN `kk_blocks` AS block ON block.id = prog.block
 					WHERE block.meeting = ?
 						AND prog.deleted = ?
-						AND block.deleted = ?', $this->getMeetingId(), '0', '0')->fetchAll();
+						AND block.deleted = ?',
+				$this->getMeetingId(),
+				'0',
+				'0'
+			)->fetchAll();
 	}
 
 	/**
-	 * Return data for visitor excel
+	 * Return data for visitor excel.
 	 *
-	 * @param   void
-	 * @return	array	data
+	 * @return array
 	 */
 	public function visitorsExcel()
 	{
 		return $this->getDatabase()
-			->query('
-		SELECT vis.id AS id,
+			->query(
+				'SELECT vis.id AS id,
 			code,
 			vis.name,
 			surname,
@@ -543,7 +574,9 @@ class ExportModel extends BaseModel
 		/*LEFT JOIN `kk_visitor-program` AS visprog ON visprog.visitor = vis.id
 		LEFT JOIN `kk_programs` AS progs ON visprog.program = progs.id*/
 		LEFT JOIN `kk_meals` AS mls ON mls.visitor = vis.id
-		WHERE vis.deleted = ? AND meeting = ?', '0', $this->getMeetingId())->fetchAll();
+		WHERE vis.deleted = ? AND meeting = ?',
+				'0',
+				$this->getMeetingId()
+			)->fetchAll();
 	}
-
 }

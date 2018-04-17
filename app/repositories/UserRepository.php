@@ -7,7 +7,6 @@ use App\Models\UserModel;
 
 class UserRepository
 {
-
 	/**
 	 * @var UserModel
 	 */
@@ -30,7 +29,7 @@ class UserRepository
 	}
 
 	/**
-	 * @param  int $id
+	 * @param  int        $id
 	 * @return UserEntity
 	 */
 	public function find(int $id): UserEntity
@@ -39,8 +38,9 @@ class UserRepository
 	}
 
 	/**
-	 * @param  $user
+	 * @param  UserEntity                      $user
 	 * @return \Nette\Database\Table\ActiveRow
+	 * @throws \Exception
 	 */
 	public function create($user)
 	{
@@ -53,9 +53,9 @@ class UserRepository
 	}
 
 	/**
-	 * @param  $id
 	 * @param  $user
 	 * @return \Nette\Database\Table\ActiveRow
+	 * @throws \Exception
 	 */
 	public function update($user)
 	{
@@ -66,9 +66,9 @@ class UserRepository
 	}
 
 	/**
-	 * @param  $id
 	 * @param  $user
 	 * @return \Nette\Database\Table\ActiveRow
+	 * @throws \Exception
 	 */
 	public function save($user)
 	{
@@ -79,7 +79,7 @@ class UserRepository
 	}
 
 	/**
-	 * @param  $id
+	 * @param  int  $id
 	 * @return bool
 	 */
 	public function delete($id): bool
@@ -88,7 +88,7 @@ class UserRepository
 	}
 
 	/**
-	 * @param  array $values
+	 * @param  array      $values
 	 * @return UserEntity
 	 */
 	protected function populate($values): UserEntity
@@ -109,7 +109,7 @@ class UserRepository
 
 	/**
 	 * @param  UserModel $model
-	 * @return $this
+	 * @return self
 	 */
 	protected function setUserModel(UserModel $model): self
 	{
@@ -117,5 +117,4 @@ class UserRepository
 
 		return $this;
 	}
-
 }

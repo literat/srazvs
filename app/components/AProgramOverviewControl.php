@@ -2,11 +2,8 @@
 
 namespace App\Components;
 
-use App\Components\ProgramsControl;
-
 abstract class AProgramOverviewControl extends BaseControl implements IProgramOverviewControl
 {
-
 	const TEMPLATE_NAME = '';
 
 	/**
@@ -47,5 +44,4 @@ abstract class AProgramOverviewControl extends BaseControl implements IProgramOv
 
 		return $this;
 	}
-
 }

@@ -9,7 +9,6 @@ use Nette\Utils\ArrayHash;
 
 class ProgramRepository
 {
-
 	/**
 	 * @var VisitorModel
 	 */
@@ -33,7 +32,8 @@ class ProgramRepository
 	}
 
 	/**
-	 * @param int $meetingId
+	 * @param  int  $meetingId
+	 * @return self
 	 */
 	public function setMeetingId(int $meetingId): self
 	{
@@ -52,8 +52,8 @@ class ProgramRepository
 	}
 
 	/**
-	 * @param  int  $id
-	 * @return Nette\Database\Table\ActiveRow
+	 * @param  int                             $id
+	 * @return \Nette\Database\Table\ActiveRow
 	 */
 	public function find(int $id): ActiveRow
 	{
@@ -61,7 +61,7 @@ class ProgramRepository
 	}
 
 	/**
-	 * @param  int  $visitorId
+	 * @param  int   $visitorId
 	 * @return array
 	 */
 	public function findByVisitorId(int $visitorId): array
@@ -70,7 +70,7 @@ class ProgramRepository
 	}
 
 	/**
-	 * @param int $blockId
+	 * @param  int   $blockId
 	 * @return array
 	 */
 	public function findByBlockId(int $blockId): array
@@ -79,7 +79,7 @@ class ProgramRepository
 	}
 
 	/**
-	 * @param  int    $programId
+	 * @param  int   $programId
 	 * @return array
 	 */
 	public function findTutor(int $programId): ActiveRow
@@ -97,8 +97,8 @@ class ProgramRepository
 	}
 
 	/**
-	 * @param  Nette\Utils\ArrayHash $program
-	 * @return boolean
+	 * @param  \Nette\Utils\ArrayHash $program
+	 * @return bool
 	 */
 	public function create(ArrayHash $program)
 	{
@@ -110,7 +110,7 @@ class ProgramRepository
 	}
 
 	/**
-	 * @param  Nette\Utils\ArrayHash $program
+	 * @param  \Nette\Utils\ArrayHash $program
 	 * @return boolean
 	 */
 	public function update(int $id, ArrayHash $program)
@@ -121,8 +121,8 @@ class ProgramRepository
 	}
 
 	/**
-	 * @param  int    $id
-	 * @return boolean
+	 * @param  int  $id
+	 * @return bool
 	 */
 	public function delete(int $id)
 	{
@@ -139,7 +139,7 @@ class ProgramRepository
 	}
 
 	/**
-	 * @param  int    $visitorId
+	 * @param  int   $visitorId
 	 * @return array
 	 */
 	public function assembleFormPrograms(int $visitorId): array
@@ -149,7 +149,7 @@ class ProgramRepository
 		$formPrograms = [];
 
 		foreach ($visitorPrograms as $visitorProgram) {
-			if($visitorProgram->program !== 0) {
+			if ($visitorProgram->program !== 0) {
 				$program = $this->getProgramModel()->findByProgramId($visitorProgram->program);
 				$formPrograms['blck_' . $program->block] = $visitorProgram->program;
 			}
@@ -159,12 +159,12 @@ class ProgramRepository
 	}
 
 	/**
-	 * @param  Nette\Utils\ArrayHash $program
-	 * @return Nette\Utils\ArrayHash
+	 * @param  \Nette\Utils\ArrayHash $program
+	 * @return \Nette\Utils\ArrayHash
 	 */
 	protected function transformDisplayInRegValue(ArrayHash $program): ArrayHash
 	{
-		if(array_key_exists('display_in_reg', $program) && empty($program['display_in_reg'])) {
+		if (array_key_exists('display_in_reg', $program) && empty($program['display_in_reg'])) {
 			$program['display_in_reg'] = '1';
 		} else {
 			$program['display_in_reg'] = '0';
@@ -183,7 +183,7 @@ class ProgramRepository
 
 	/**
 	 * @param  ProgramModel $model
-	 * @return $this
+	 * @return self
 	 */
 	protected function setProgramModel(ProgramModel $model): self
 	{
@@ -210,5 +210,4 @@ class ProgramRepository
 
 		return $this;
 	}
-
 }

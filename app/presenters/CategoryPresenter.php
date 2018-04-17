@@ -2,17 +2,10 @@
 
 namespace App\Presenters;
 
-use \Exception;
-use Tracy\Debugger;
-use Nette\Database\Context;
 use App\Models\CategoryModel;
 
 class CategoryPresenter extends BasePresenter
 {
-
-	/** @var integer */
-	private $categoryId = null;
-
 	/**
 	 * @param CategoryModel $model
 	 */
@@ -31,8 +24,9 @@ class CategoryPresenter extends BasePresenter
 	}
 
 	/**
-	 * @param  int  $id
+	 * @param  int                               $id
 	 * @return void
+	 * @throws \Nette\Application\AbortException
 	 */
 	public function actionDelete($id)
 	{
@@ -40,7 +34,7 @@ class CategoryPresenter extends BasePresenter
 			$result = $this->getModel()->delete($id);
 			$this->logInfo('Destroying of category successfull, result: %s', json_encode($result));
 			$this->flashMessage('Položka byla úspěšně smazána', 'ok');
-		} catch(Exception $e) {
+		} catch (\Exception $e) {
 			$this->logError('Destroying of category failed, result: %s', $e->getMessage());
 			$this->flashMessage('Destroying of category failed, result: ' . $e->getMessage(), 'error');
 		}
@@ -48,9 +42,6 @@ class CategoryPresenter extends BasePresenter
 		$this->redirect('Category:listing');
 	}
 
-	/**
-	 * @return void
-	 */
 	public function actionCreate()
 	{
 		try {
@@ -60,11 +51,14 @@ class CategoryPresenter extends BasePresenter
 			$this->logInfo('Creation of category successfull, result: %s', json_encode($result));
 
 			$this->flashMessage('Položka byla úspěšně vytvořena', 'ok');
-		} catch(Exception $e) {
-			$this->logError('Creation of category with data %s failed, result: %s', [
-				json_encode($data),
-				$e->getMessage()
-			]);
+		} catch (\Exception $e) {
+			$this->logError(
+				'Creation of category with data %s failed, result: %s',
+				[
+					json_encode($data),
+					$e->getMessage()
+				]
+			);
 
 			$this->flashMessage('Creation of category failed, result: ' . $e->getMessage(), 'error');
 		}
@@ -73,8 +67,9 @@ class CategoryPresenter extends BasePresenter
 	}
 
 	/**
-	 * @param  integer $id
+	 * @param  integer                           $id
 	 * @return void
+	 * @throws \Nette\Application\AbortException
 	 */
 	public function actionUpdate($id)
 	{
@@ -82,17 +77,23 @@ class CategoryPresenter extends BasePresenter
 			$data = $this->getHttpRequest()->getPost();
 			$result = $this->getModel()->update($id, $data);
 
-			$this->logInfo('Modification of category id %s with data %s successfull, result: %s', [
-				$id,
-				json_encode($data),
-				json_encode($result),
-			]);
+			$this->logInfo(
+				'Modification of category id %s with data %s successfull, result: %s',
+				[
+					$id,
+					json_encode($data),
+					json_encode($result),
+				]
+			);
 			$this->flashMessage('Položka byla úspěšně upravena', 'ok');
-		} catch(Exception $e) {
-			$this->logError('Modification of category id %s failed, result: %s', [
-				$id,
-				$e->getMessage(),
-			]);
+		} catch (\Exception $e) {
+			$this->logError(
+				'Modification of category id %s failed, result: %s',
+				[
+					$id,
+					$e->getMessage(),
+				]
+			);
 
 			$this->flashMessage('Modification of category id ' . $id . ' failed, result: ' . $e->getMessage(), 'error');
 		}
@@ -100,9 +101,6 @@ class CategoryPresenter extends BasePresenter
 		$this->redirect('Category:listing');
 	}
 
-	/**
-	 * @return void
-	 */
 	public function renderListing()
 	{
 		$model = $this->getModel();
@@ -113,9 +111,6 @@ class CategoryPresenter extends BasePresenter
 		$template->heading = $this->heading;
 	}
 
-	/**
-	 * @return void
-	 */
 	public function renderNew()
 	{
 		$template = $this->getTemplate();
@@ -124,9 +119,6 @@ class CategoryPresenter extends BasePresenter
 		$template->heading = 'nová kategorie';
 	}
 
-	/**
-	 * @return void
-	 */
 	public function renderEdit($id)
 	{
 		$model = $this->getModel();
@@ -137,5 +129,4 @@ class CategoryPresenter extends BasePresenter
 		$template->id = $id;
 		$template->category = $model->find($id);
 	}
-
 }

@@ -6,7 +6,6 @@ use Nette\Security\User;
 
 class NavbarRightControl extends BaseControl
 {
-
 	const TEMPLATE_NAME = 'NavbarRight';
 
 	/**
@@ -45,7 +44,7 @@ class NavbarRightControl extends BaseControl
 
 	/**
 	 * @param  User $user
-	 * @return $this
+	 * @return self
 	 */
 	protected function setUser(User $user): self
 	{
@@ -53,5 +52,4 @@ class NavbarRightControl extends BaseControl
 
 		return $this;
 	}
-
 }

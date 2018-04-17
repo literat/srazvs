@@ -5,21 +5,13 @@ namespace App\Models;
 use Nette\Database\Context;
 use Nette\Database\Table\ActiveRow;
 
-/**
- * Meal
- *
- * class for handling meals
- *
- * @created 2012-11-11
- * @author Tomas Litera <tomaslitera@hotmail.com>
- */
 class MealModel extends BaseModel
 {
 
 	/**
 	 * @var array
 	 */
-	static public $meals = [
+	public static $meals = [
 		'fry_dinner'    => 'páteční večeře',
 		'sat_breakfast' => 'sobotní snídaně',
 		'sat_lunch'     => 'sobotní oběd',
@@ -32,13 +24,13 @@ class MealModel extends BaseModel
 	 * @deprecated
 	 * @var array
 	 */
-	static public $dayMeal = [
-		"páteční večeře"	=>	"fry_dinner",
-		"sobotní snídaně"	=>	"sat_breakfast",
-		"sobotní oběd"		=>	"sat_lunch",
-		"sobotní večeře"	=>	"sat_dinner",
-		"nedělní snídaně"	=>	"sun_breakfast",
-		"nedělní oběd"		=>	"sun_lunch"
+	public static $dayMeal = [
+		"páteční večeře"	=> "fry_dinner",
+		"sobotní snídaně"	=> "sat_breakfast",
+		"sobotní oběd"		=> "sat_lunch",
+		"sobotní večeře"	=> "sat_dinner",
+		"nedělní snídaně"	=> "sun_breakfast",
+		"nedělní oběd"		=> "sun_lunch"
 	];
 
 	/**
@@ -89,15 +81,15 @@ class MealModel extends BaseModel
 	}
 
 	/**
-	 * @param  int   $visitorId
-	 * @param  array $values
+	 * @param  int            $visitorId
+	 * @param  array          $values
 	 * @return ActiveRow|bool
 	 */
 	public function updateOrCreate(int $visitorId, array $values)
 	{
 		$result = $this->updateByVisitor($visitorId, $values);
 
-		if(!$result) {
+		if (!$result) {
 			$values['visitor'] = $visitorId;
 			$result = $this->create($values);
 		}
@@ -106,10 +98,10 @@ class MealModel extends BaseModel
 	}
 
 	/**
-	 * Get meals data by visitor id
+	 * Get meals data by visitor id.
 	 *
-	 * @param	integer	visitor id
-	 * @return	array
+	 * @param  integer $visitorId
+	 * @return array
 	 */
 	public function findByVisitorId($visitorId): array
 	{
@@ -119,14 +111,12 @@ class MealModel extends BaseModel
 			->limit(1)
 			->fetch();
 
-		if(!$meals) {
+		if (!$meals) {
 			$meals = [];
 		} else {
 			$meals = $meals->toArray();
 		}
 
 		return $meals;
-
 	}
-
 }

@@ -7,7 +7,6 @@ use App\Services\Emailer;
 
 class SettingsPresenter extends BasePresenter
 {
-
 	/**
 	 * @var Emailer
 	 */
@@ -29,8 +28,9 @@ class SettingsPresenter extends BasePresenter
 	}
 
 	/**
-	 * @param 	string 	$id
-	 * @return 	void
+	 * @param  string                            $id
+	 * @return void
+	 * @throws \Nette\Application\AbortException
 	 */
 	public function actionUpdate($id)
 	{
@@ -40,7 +40,7 @@ class SettingsPresenter extends BasePresenter
 
 			$this->logInfo('Settings: mail type %s update succesfull.', [$id]);
 			$this->flashSuccess('Settings: mail type ' . $id . ' update succesfull.');
-		} catch(\Exception $e) {
+		} catch (\Exception $e) {
 			$this->logError('Settings: mail type %s update failed, result: %s', [
 				$id,
 				$e->getMessage(),
@@ -52,7 +52,8 @@ class SettingsPresenter extends BasePresenter
 	}
 
 	/**
-	 * @return 	void
+	 * @return void
+	 * @throws \Nette\Application\AbortException
 	 */
 	public function actionDebug()
 	{
@@ -60,7 +61,7 @@ class SettingsPresenter extends BasePresenter
 			$activate = false;
 			$data = $this->getHttpRequest()->getPost();
 
-			if(array_key_exists('debug', $data)) {
+			if (array_key_exists('debug', $data)) {
 				$activate = true;
 			}
 
@@ -68,7 +69,7 @@ class SettingsPresenter extends BasePresenter
 
 			$this->logInfo('Settings: debug regime update succesfull.');
 			$this->flashSuccess('Settings: debug regime update succesfull.');
-		} catch(\Exception $e) {
+		} catch (\Exception $e) {
 			$this->logError('Settings: debug update update failed, result: %s', [$e->getMessage()]);
 			$this->flashFailure('Settings: debug regime update failed, result: ' . $e->getMessage());
 		}
@@ -77,8 +78,9 @@ class SettingsPresenter extends BasePresenter
 	}
 
 	/**
-	 * @param 	string 	$id
-	 * @return 	void
+	 * @param  string                            $id
+	 * @return void
+	 * @throws \Nette\Application\AbortException
 	 */
 	public function actionMail($id)
 	{
@@ -144,5 +146,4 @@ class SettingsPresenter extends BasePresenter
 
 		return $this;
 	}
-
 }

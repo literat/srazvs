@@ -5,19 +5,15 @@ namespace App\Presenters;
 use App\Components\INavbarRightControlFactory;
 use App\Components\NavbarRightControl;
 use App\Models\BaseModel;
-use Nette;
-use Nette\Utils\ArrayHash;
-use Nette\Caching\Cache;
 use App\Traits\Loggable;
-use Nette\DI\Container;
+use Nette;
+use Nette\Caching\Cache;
 use Nette\Database\Table\ActiveRow;
+use Nette\DI\Container;
+use Nette\Utils\ArrayHash;
 
-/**
- * Base presenter for all application presenters.
- */
 abstract class BasePresenter extends Nette\Application\UI\Presenter
 {
-
 	use Loggable;
 
 	const FLASH_TYPE_OK    = 'success';
@@ -60,6 +56,61 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 	 */
 	protected $navbarRightControlFactory;
 
+	/**
+	 * @var string
+	 */
+	protected $template = 'listing';
+
+	/**
+	 * @var string
+	 */
+	protected $templateDir = '';
+
+	/**
+	 * @var integer
+	 */
+	protected $itemId = null;
+
+	/**
+	 * @var string
+	 */
+	protected $cms = '';
+
+	/**
+	 * @var string
+	 */
+	protected $page = '';
+
+	/**
+	 * @var string
+	 */
+	protected $heading = '';
+
+	/**
+	 * @var string
+	 */
+	protected $todo = '';
+
+	/**
+	 * @var array
+	 */
+	protected $data = [];
+
+	/**
+	 * @var string
+	 */
+	protected $error = '';
+
+	/**
+	 * @var string
+	 */
+	protected $database = null;
+
+	/**
+	 * @var boolean
+	 */
+	protected $debugMode = false;
+
 	public function injectNavbarRightControlFactory(INavbarRightControlFactory $factory): self
 	{
 		$this->navbarRightControlFactory = $factory;
@@ -67,9 +118,6 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 		return $this;
 	}
 
-	/**
-	 * Startup
-	 */
 	protected function startup()
 	{
 		parent::startup();
@@ -77,15 +125,15 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 		$meetingId = $this->getHttpRequest()->getQuery('mid', '');
 
 		$backlink = $this->getHttpRequest()->getQuery('backlink');
-		if(!empty($backlink)) {
+		if (!empty($backlink)) {
 			$this->setBacklink($backlink);
 		}
 
 		$meetingSession = $this->getSession('meeting');
-		if($meetingId) {
+		if ($meetingId) {
 			$meetingSession->meetingId = $meetingId;
-			//$_SESSION['meetingID'] = $meetingId;
-		} elseif($meetingSession->meetingId/*!isset($_SESSION['meetingID'])*/) {
+		//$_SESSION['meetingID'] = $meetingId;
+		} elseif ($meetingSession->meetingId/*!isset($_SESSION['meetingID'])*/) {
 			$meeting = $this->getContainer()->getService('meeting');
 			//$_SESSION['meetingID'] = $meeting->getLastMeetingId();
 			$meetingSession->meetingId = $meeting->getLastMeetingId();
@@ -95,7 +143,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 		//$this->setMeetingId($_SESSION['meetingID']);
 
 		$model = $this->getModel();
-		if($model) {
+		if ($model) {
 			//$model->setMeetingId($_SESSION['meetingID']);
 			$model->setMeetingId($meetingSession->meetingId);
 		}
@@ -105,8 +153,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 
 
 	/**
-	 * Before render
-	 * Prepare variables for template
+	 * Prepare variables for template.
 	 */
 	public function beforeRender()
 	{
@@ -142,72 +189,6 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 		//$this->template->production = $this->context->parameters['environment'] === 'production' ? 1 : 0;
 		//$this->template->version = $this->context->parameters['site']['version'];
 	}
-
-	/**
-	 * template
-	 * @var string
-	 */
-	protected $template = 'listing';
-
-	/**
-	 * template directory
-	 * @var string
-	 */
-	protected $templateDir = '';
-
-	/**
-	 * category ID
-	 * @var integer
-	 */
-	protected $itemId = null;
-
-	/**
-	 * action what to do
-	 * @var string
-	 */
-	protected $cms = '';
-
-	/**
-	 * page where to return
-	 * @var string
-	 */
-	protected $page = '';
-
-	/**
-	 * heading tetxt
-	 * @var string
-	 */
-	protected $heading = '';
-
-	/**
-	 * action what to do next
-	 * @var string
-	 */
-	protected $todo = '';
-
-	/**
-	 * data
-	 * @var array
-	 */
-	protected $data = [];
-
-	/**
-	 * error handler
-	 * @var string
-	 */
-	protected $error = '';
-
-	/**
-	 * database connection
-	 * @var string
-	 */
-	protected $database = null;
-
-	/**
-	 * debug mode
-	 * @var boolean
-	 */
-	protected $debugMode = false;
 
 	protected function parseTutorEmail($item)
 	{
@@ -260,29 +241,31 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 
 	/**
 	 * @param  string $action
-	 * @return $this
+	 * @return self
 	 */
-	public function setAction($action)
+	public function setAction($action): self
 	{
 		$this->action = $action;
+
 		return $this;
 	}
 
 	/**
 	 * @return integer
 	 */
-	protected function getMeetingId()
+	protected function getMeetingId(): int
 	{
 		return $this->meetingId;
 	}
 
 	/**
-	 * @param  integer  $meetingId
-	 * @return $this
+	 * @param  integer $meetingId
+	 * @return self
 	 */
-	protected function setMeetingId($meetingId)
+	protected function setMeetingId($meetingId): self
 	{
 		$this->meetingId = $meetingId;
+
 		return $this;
 	}
 
@@ -299,7 +282,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 		if (($data = $this->getCache()->load($key)) !== null) {
 			$items = [];
 
-			foreach($data as $item) {
+			foreach ($data as $item) {
 				$object = new \stdClass();
 				foreach ($item as $key => $value) {
 					$object->$key = $value;
@@ -327,9 +310,6 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 		return $data;
 	}
 
-	/**
-	 * @return NavbarRightControl
-	 */
 	protected function createComponentNavbarRight(): NavbarRightControl
 	{
 		return $this->navbarRightControlFactory->create();
@@ -358,9 +338,9 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 
 	/**
 	 * @param  string $backlink
-	 * @return $this
+	 * @return self
 	 */
-	protected function setBacklink($backlink)
+	protected function setBacklink($backlink): self
 	{
 		$this->backlink = $backlink;
 
@@ -369,10 +349,11 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 
 	/**
 	 * @return string
+	 * @throws Nette\Application\UI\InvalidLinkException
 	 */
 	protected function getBacklinkUrl()
 	{
-		if($this->getBacklink()) {
+		if ($this->getBacklink()) {
 			return $this->link(
 				$this->getBacklink(),
 				[
@@ -388,7 +369,7 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 	 */
 	protected function setBacklinkFromArray(ArrayHash $array): self
 	{
-		if(array_key_exists('backlink', $array) && !empty($array['backlink'])) {
+		if (array_key_exists('backlink', $array) && !empty($array['backlink'])) {
 			$this->setBacklink($array['backlink']);
 			unset($array['backlink']);
 		}
@@ -397,9 +378,9 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 	}
 
 	/**
-	 * Flashes success message
+	 * Flashes success message.
 	 *
-	 * @param  string $message Message
+	 * @param string $message Message
 	 */
 	protected function flashSuccess(string $message = '')
 	{
@@ -407,9 +388,9 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 	}
 
 	/**
-	 * Flashes failure message
+	 * Flashes failure message.
 	 *
-	 * @param  string $message Message
+	 * @param string $message Message
 	 */
 	protected function flashFailure(string $message = '')
 	{
@@ -417,9 +398,9 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 	}
 
 	/**
-	 * Flashes error message
+	 * Flashes error message.
 	 *
-	 * @param  string $message Message
+	 * @param string $message Message
 	 */
 	protected function flashError(string $message = '')
 	{
@@ -427,24 +408,23 @@ abstract class BasePresenter extends Nette\Application\UI\Presenter
 	}
 
 	/**
-	 * @throws Nette\Application\AbortException
+	 * @throws Nette\Application\BadRequestException
 	 */
 	protected function unauthorized()
 	{
 		$message = 'Nemáte oprávnění pro tuto stránku. Prosím, přihlašte se nebo požádejte administrátora.';
 		$this->flashFailure($message);
-		$this->error($message, Nette\Http\IResponse::S403_FORBIDDEN );
+		$this->error($message, Nette\Http\IResponse::S403_FORBIDDEN);
 	}
 
 	/**
-	 * @throws Nette\Application\AbortException
+	 * @throws Nette\Application\BadRequestException
 	 */
 	protected function allowAdminAccessOnly()
 	{
 		$user = $this->getUser();
-		if(!$user->isInRole(self::ROLE_ADMIN)) {
+		if (!$user->isInRole(self::ROLE_ADMIN)) {
 			$this->unauthorized();
 		}
 	}
-
 }

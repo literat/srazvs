@@ -7,7 +7,6 @@ use App\Models\SocialLoginModel;
 
 class SocialLoginRepository
 {
-
 	/**
 	 * @var SocialLoginModel
 	 */
@@ -30,7 +29,7 @@ class SocialLoginRepository
 	}
 
 	/**
-	 * @param  int $id
+	 * @param  int               $id
 	 * @return SocialLoginEntity
 	 */
 	public function find(int $id): SocialLoginEntity
@@ -39,8 +38,8 @@ class SocialLoginRepository
 	}
 
 	/**
-	 * @param  string $provider
-	 * @param  string $token
+	 * @param  string            $provider
+	 * @param  string            $token
 	 * @return SocialLoginEntity
 	 */
 	public function findByProviderAndToken(string $provider, string $token)//: SocialLoginEntity
@@ -51,6 +50,7 @@ class SocialLoginRepository
 	/**
 	 * @param  $socialLogin
 	 * @return \Nette\Database\Table\ActiveRow
+	 * @throws \Exception
 	 */
 	public function create($socialLogin)
 	{
@@ -63,9 +63,9 @@ class SocialLoginRepository
 	}
 
 	/**
-	 * @param  $id
 	 * @param  $socialLogin
 	 * @return \Nette\Database\Table\ActiveRow
+	 * @throws \Exception
 	 */
 	public function update($socialLogin)
 	{
@@ -76,9 +76,9 @@ class SocialLoginRepository
 	}
 
 	/**
-	 * @param  $id
 	 * @param  $socialLogin
 	 * @return \Nette\Database\Table\ActiveRow
+	 * @throws \Exception
 	 */
 	public function save($socialLogin)
 	{
@@ -89,7 +89,7 @@ class SocialLoginRepository
 	}
 
 	/**
-	 * @param  $id
+	 * @param  int  $id
 	 * @return bool
 	 */
 	public function delete($id): bool
@@ -98,7 +98,7 @@ class SocialLoginRepository
 	}
 
 	/**
-	 * @param  array $values
+	 * @param  array             $values
 	 * @return SocialLoginEntity
 	 */
 	protected function populate($values): SocialLoginEntity
@@ -127,5 +127,4 @@ class SocialLoginRepository
 
 		return $this;
 	}
-
 }

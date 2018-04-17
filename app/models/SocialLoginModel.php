@@ -2,26 +2,21 @@
 
 namespace App\Models;
 
+use App\Entities\IEntity;
 use App\Entities\SocialLoginEntity;
 use Nette\Database\Context;
 use Nette\Database\Table\ActiveRow;
-use Nette\Reflection\ClassType;
-use App\Entities\IEntity;
-use \Exception;
 
-/**
- * Social Logins
- *
- * class for handling social logins
- */
 class SocialLoginModel extends BaseModel implements IModel
 {
 
-	/** @var string */
+	/**
+	 * @var string
+	 */
 	protected $table = 'kk_social_logins';
 
 	/**
-	 * @param Context  $database
+	 * @param Context $database
 	 */
 	public function __construct(Context $database)
 	{
@@ -34,18 +29,19 @@ class SocialLoginModel extends BaseModel implements IModel
 	}
 
 	/**
-	 * @param  int $id
+	 * @param  int               $id
 	 * @return SocialLoginEntity
 	 */
 	public function find($id): SocialLoginEntity
 	{
 		$block = parent::find($id);
+
 		return $this->hydrate($block);
 	}
 
 	/**
-	 * @param  string $provider
-	 * @param  string $token
+	 * @param  string            $provider
+	 * @param  string            $token
 	 * @return SocialLoginEntity
 	 */
 	public function findByProviderAndToken(string $provider, string $token)//: SocialLoginEntity
@@ -56,7 +52,7 @@ class SocialLoginModel extends BaseModel implements IModel
 			->where('token', $token)
 			->fetch();
 
-		if($socialLogin) {
+		if ($socialLogin) {
 			$socialLogin = $this->hydrate($socialLogin);
 		}
 
@@ -64,9 +60,9 @@ class SocialLoginModel extends BaseModel implements IModel
 	}
 
 	/**
-	 * @param IEntity $entity
+	 * @param  IEntity    $entity
 	 * @return bool|mixed
-	 * @throws Exception
+	 * @throws \Exception
 	 */
 	public function save(IEntity $entity)
 	{
@@ -74,8 +70,7 @@ class SocialLoginModel extends BaseModel implements IModel
 			$values = $entity->toArray();
 
 			$result = $this->create($values);
-			//$result = $this->setIdentity($entity, $id);
-
+		//$result = $this->setIdentity($entity, $id);
 		} else {
 			$values = $entity->toArray();
 			$result = $this->update($entity->getId(), $values);
@@ -95,7 +90,7 @@ class SocialLoginModel extends BaseModel implements IModel
 
 		// unset($values['id']);
 		foreach ($values as $property => $value) {
-			if($property === 'user_id') {
+			if ($property === 'user_id') {
 				$entity->user = $values->user;
 			} else {
 				$entity->$property = $value;
@@ -104,21 +99,4 @@ class SocialLoginModel extends BaseModel implements IModel
 
 		return $entity;
 	}
-
-
-	/**
-	 * @param  $item
-	 * @param  $id
-	 * @return mixed
-	 */
-	private function setIdentity($item, $id)
-	{
-		$ref = new ClassType($item);
-		$idProperty = $ref->getProperty('id');
-		$idProperty->setAccessible(true);
-		$idProperty->setValue($item, $id);
-
-		return $item;
-	}
-
 }

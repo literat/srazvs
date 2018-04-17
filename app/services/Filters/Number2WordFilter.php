@@ -6,7 +6,6 @@ use Nette\SmartObject;
 
 class Number2WordFilter
 {
-
 	use SmartObject;
 
 	/**
@@ -16,7 +15,7 @@ class Number2WordFilter
 	 * * true:když bude $number 0 zobrazí se na výstupu nula;
 	 * * false:když bude $number 0 zobrazí se na výstupu (bool)false
 	 * return string nebo bool false
-	 * (C) Martin Bumba, http://mbumba.cz
+	 * (C) Martin Bumba, http://mbumba.cz.
 	 */
 	public function __invoke($number, $zero = false)
 	{
@@ -48,62 +47,62 @@ class Number2WordFilter
 		$length = strlen($number);
 
 		// treatment of 0
-		if($number == 0) {
+		if ($number == 0) {
 			return $zero ? 'nula' : false;
-		} elseif($length == 1) {
+		} elseif ($length == 1) {
 			// 1 regulation - units
 			return $units[$number];
-		} elseif($length == 2) {
+		} elseif ($length == 2) {
 			// 2 regulations - desítky
 			$dozensAndUnits = $number{0} . $number{1};
-			if($dozensAndUnits == 10) {
+			if ($dozensAndUnits == 10) {
 				echo 'deset';
-			} elseif($dozensAndUnits < 20) {
+			} elseif ($dozensAndUnits < 20) {
 				return $between[$dozensAndUnits];
 			} else {
 				return $dozens[$number{0}] . $units[$number{1}];
 			}
-		} elseif($length == 3) {
+		} elseif ($length == 3) {
 			// 3 regulations - hundreds
-			if($number{0} == 1) {
+			if ($number{0} == 1) {
 				return 'sto' . self::__invoke(substr($number, 1));
-			} elseif($number{0} == 2) {
+			} elseif ($number{0} == 2) {
 				return 'dvěstě' . self::__invoke(substr($number, 1));
-			} elseif($number{0} == 3 || $number{0} == 4) {
+			} elseif ($number{0} == 3 || $number{0} == 4) {
 				return $units[$number{0}] . 'sta' . self::__invoke(substr($number, 1));
 			} else {
 				return $units[$number{0}] . 'set' . self::__invoke(substr($number, 1));
 			}
-		} elseif($length == 4) {
+		} elseif ($length == 4) {
 			// 4 regulations - thousands
-			if($number{0} == 1) {
+			if ($number{0} == 1) {
 				return 'tisíc' . self::__invoke(substr($number, 1));
-			} elseif($number{0} < 5) {
+			} elseif ($number{0} < 5) {
 				return $units[$number{0}] . 'tisíce' . self::__invoke(substr($number, 1));
 			} else {
 				return $units[$number{0}] . 'tisíc' . self::__invoke(substr($number, 1));
 			}
-		} elseif($length == 5) {
+		} elseif ($length == 5) {
 			// 5 regulations - tens of thousands
 			$tensOfThousands = $number{0} . $number{1};
-			if($tensOfThousands == 10) {
+			if ($tensOfThousands == 10) {
 				return 'desettisíc' . self::__invoke(substr($number, 2));
-			} elseif($tensOfThousands < 20) {
+			} elseif ($tensOfThousands < 20) {
 				return $between[$tensOfThousands] . 'tisíc' . self::__invoke(substr($number, 2));
-			} elseif($tensOfThousands < 100) {
+			} elseif ($tensOfThousands < 100) {
 				return $dozens[$number{0}] . $units[$number{1}] . 'tisíc' . self::__invoke(substr($number, 2));
 			}
-		} elseif($length == 6) {
+		} elseif ($length == 6) {
 			// 6 regulations - hundreds of thousands
-			if($number{0} == 1) {
-				if($number{1} . $number{2} == 00) {
+			if ($number{0} == 1) {
+				if ($number{1} . $number{2} == 00) {
 					return 'stotisíc' . self::__invoke(substr($number, 3));
 				} else {
 					return 'sto' . self::__invoke(substr($number, 1));
 				}
-			} elseif($number{0} == 2) {
+			} elseif ($number{0} == 2) {
 				return 'dvěstě' . self::__invoke(substr($number, 1));
-			} elseif($number{0} == 3 || $number{0} == 4) {
+			} elseif ($number{0} == 3 || $number{0} == 4) {
 				return $units[$number{0}] . 'sta' . self::__invoke(substr($number, 1));
 			} else {
 				return $units[$number{0}] . 'set' . self::__invoke(substr($number, 1));
@@ -112,5 +111,4 @@ class Number2WordFilter
 
 		return false;
 	}
-
 }

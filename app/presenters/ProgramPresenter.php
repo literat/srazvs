@@ -7,30 +7,16 @@ use App\Components\Forms\Factories\IProgramFormFactory;
 use App\Components\Forms\ProgramForm;
 use App\Components\IProgramOverviewControl;
 use App\Components\ProgramOverviewControl;
-use App\Components\PublicProgramOverviewControl;
 use App\Components\ProgramVisitorsControl;
+use App\Components\PublicProgramOverviewControl;
 use App\Models\BlockModel;
 use App\Models\MeetingModel;
 use App\Repositories\ProgramRepository;
 use App\Services\Emailer;
 use Nette\Utils\ArrayHash;
-use Exception;
 
-/**
- * Program controller
- *
- * This file handles the retrieval and serving of blocks
- *
- * @created 2013-06-05
- * @author Tomas Litera <tomaslitera@hotmail.com>
- */
 class ProgramPresenter extends BasePresenter
 {
-
-	/**
-	 * @var integer
-	 */
-	private $programId = null;
 
 	/**
 	 * @var Emailer
@@ -73,8 +59,10 @@ class ProgramPresenter extends BasePresenter
 	private $programVisitors;
 
 	/**
-	 * Prepare model classes and get meeting id
+	 * @var int
 	 */
+	protected $programId;
+
 	public function __construct(
 		Emailer $emailer,
 		BlockModel $blockModel,
@@ -94,16 +82,13 @@ class ProgramPresenter extends BasePresenter
 	}
 
 	/**
-	 * @param  IProgramFormFactory $factory
+	 * @param IProgramFormFactory $factory
 	 */
 	public function injectProgramFormFactory(IProgramFormFactory $factory)
 	{
 		$this->programFormFactory = $factory;
 	}
 
-	/**
-	 * @return void
-	 */
 	public function startup()
 	{
 		parent::startup();
@@ -115,10 +100,11 @@ class ProgramPresenter extends BasePresenter
 	}
 
 	/**
-	 * Stores program into storage
+	 * Stores program into storage.
 	 *
-	 * @param  Nette\Utils\ArrayHash  $program
+	 * @param  ArrayHash                         $program
 	 * @return boolean
+	 * @throws \Nette\Application\AbortException
 	 */
 	public function actionCreate(ArrayHash $program)
 	{
@@ -129,17 +115,23 @@ class ProgramPresenter extends BasePresenter
 
 			$result = $this->getProgramRepository()->create($program);
 
-			$this->logInfo('Storing of new program with data %s successfull, result: %s', [
-				json_encode($program),
-				json_encode($result),
-			]);
+			$this->logInfo(
+				'Storing of new program with data %s successfull, result: %s',
+				[
+					json_encode($program),
+					json_encode($result),
+				]
+			);
 
 			$this->flashSuccess('Položka byla úspěšně vytvořena');
-		} catch(Exception $e) {
-			$this->logError('Creation of program with data %s failed, result: %s', [
-				json_encode($program),
-				$e->getMessage()
-			]);
+		} catch (\Exception $e) {
+			$this->logError(
+				'Creation of program with data %s failed, result: %s',
+				[
+					json_encode($program),
+					$e->getMessage()
+				]
+			);
 
 			$this->flashError('Položku se nepodařilo vytvořit.');
 		}
@@ -148,11 +140,12 @@ class ProgramPresenter extends BasePresenter
 	}
 
 	/**
-	 * Updates program in storage
+	 * Updates program in storage.
 	 *
-	 * @param  int                    $id
-	 * @param  Nette\Utils\ArrayHash  $program
+	 * @param  int                               $id
+	 * @param  ArrayHash                         $program
 	 * @return boolean
+	 * @throws \Nette\Application\AbortException
 	 */
 	public function actionUpdate(int $id, ArrayHash $program)
 	{
@@ -169,7 +162,7 @@ class ProgramPresenter extends BasePresenter
 			]);
 
 			$this->flashSuccess('Položka byla úspěšně upravena');
-		} catch(Exception $e) {
+		} catch (\Exception $e) {
 			$this->logError('Updating of program(%s) failed, result: %s', [
 				$program->guid,
 				$e->getMessage(),
@@ -182,8 +175,9 @@ class ProgramPresenter extends BasePresenter
 	}
 
 	/**
-	 * @param  integer  $id
+	 * @param  integer                           $id
 	 * @return void
+	 * @throws \Nette\Application\AbortException
 	 */
 	public function actionDelete($id)
 	{
@@ -195,19 +189,19 @@ class ProgramPresenter extends BasePresenter
 				json_encode($result)
 			]);
 			$this->flashSuccess('Položka byla úspěšně smazána.');
-		} catch(Exception $e) {
-			$this->logError('Destroying of program failed, result: %s', [
-				$e->getMessage()
-			]);
+		} catch (\Exception $e) {
+			$this->logError(
+				'Destroying of program failed, result: %s',
+				[
+					$e->getMessage()
+				]
+			);
 			$this->flashError(sprintf('Smazání programu se nezdařilo, result: %s', $e->getMessage()));
 		}
 
 		$this->redirect('Program:listing');
 	}
 
-	/**
-	 * @return void
-	 */
 	public function actionMail($id)
 	{
 		$this->allowAdminAccessOnly();
@@ -217,15 +211,21 @@ class ProgramPresenter extends BasePresenter
 
 			$this->getEmailer()->tutor($recipients, $tutors->guid, 'program');
 
-			$this->logInfo('Sending email to program tutor successfull, result: %s, %s', [
-				json_encode($recipients),
-				$tutors->guid
-			]);
+			$this->logInfo(
+				'Sending email to program tutor successfull, result: %s, %s',
+				[
+					json_encode($recipients),
+					$tutors->guid
+				]
+			);
 			$this->flashSuccess('Email lektorovi byl odeslán.');
-		} catch(Exception $e) {
-			$this->logError('Sending email to program tutor failed, result: %s', [
-				$e->getMessage()
-			]);
+		} catch (\Exception $e) {
+			$this->logError(
+				'Sending email to program tutor failed, result: %s',
+				[
+					$e->getMessage()
+				]
+			);
 			$this->flashError(sprintf('Email lektorovi nebyl odeslán, result: %s', $e->getMessage()));
 		}
 
@@ -233,7 +233,7 @@ class ProgramPresenter extends BasePresenter
 	}
 
 	/**
-	 * View public program
+	 * View public program.
 	 *
 	 * @return void
 	 */
@@ -243,8 +243,8 @@ class ProgramPresenter extends BasePresenter
 
 		$template = $this->getTemplate();
 		$template->meeting_heading = $this->getMeetingModel()->getRegHeading();
-			////otevirani a uzavirani prihlasovani
-		if(($this->getMeetingModel()->getRegOpening() < time()) || $this->getDebugMode()) {
+		////otevirani a uzavirani prihlasovani
+		if (($this->getMeetingModel()->getRegOpening() < time()) || $this->getDebugMode()) {
 			$template->display_program = true;
 		} else {
 			$template->display_program = false;
@@ -256,9 +256,6 @@ class ProgramPresenter extends BasePresenter
 				td.time { background-color:#cccccc; width:80px; }';
 	}
 
-	/**
-	 * @return void
-	 */
 	public function renderListing()
 	{
 		$this->allowAdminAccessOnly();
@@ -268,9 +265,6 @@ class ProgramPresenter extends BasePresenter
 		$template->heading = $this->heading;
 	}
 
-	/**
-	 * @return void
-	 */
 	public function renderNew()
 	{
 		$this->allowAdminAccessOnly();
@@ -279,8 +273,9 @@ class ProgramPresenter extends BasePresenter
 	}
 
 	/**
-	 * @param  integer $id
+	 * @param  integer                           $id
 	 * @return void
+	 * @throws \Nette\Application\AbortException
 	 */
 	public function renderEdit($id)
 	{
@@ -296,20 +291,17 @@ class ProgramPresenter extends BasePresenter
 		$this['programForm']->setDefaults($program);
 	}
 
-	/**
-	 * @return ProgramForm
-	 */
 	protected function createComponentProgramForm(): ProgramForm
 	{
 		$control = $this->programFormFactory->create();
 		$control->setMeetingId($this->getMeetingId());
-		$control->onProgramSave[] = function($program) {
+		$control->onProgramSave[] = function ($program) {
 			//$guid = $this->getParameter('guid');
 			$id = $this->getParameter('id');
 
 			$this->setBacklinkFromArray($program);
 
-			if($id) {
+			if ($id) {
 				$this->actionUpdate($id, $program);
 			} else {
 				$this->actionCreate($program);
@@ -318,7 +310,7 @@ class ProgramPresenter extends BasePresenter
 			$this->redirect($this->getBacklink() ?: 'Program:listing');
 		};
 
-		$control->onProgramReset[] = function($program) {
+		$control->onProgramReset[] = function ($program) {
 			$this->setBacklinkFromArray($program);
 
 			$this->redirect($this->getBacklink() ?: 'Program:listing');
@@ -327,53 +319,33 @@ class ProgramPresenter extends BasePresenter
 		return $control;
 	}
 
-	/**
-	 * @return AProgramOverviewControl
-	 */
 	protected function createComponentProgramOverview(): IProgramOverviewControl
 	{
 		return $this->programOverview->setMeetingId($this->getMeetingId());
 	}
 
-	/**
-	 * @return CategoryStylesControl
-	 */
 	protected function createComponentCategoryStyles(): CategoryStylesControl
 	{
 		return $this->categoryStyles;
 	}
 
-	/**
-	 * @return ProgramVisitorsControl
-	 */
 	protected function createComponentProgramVisitors(): ProgramVisitorsControl
 	{
 		return $this->programVisitors;
 	}
 
-	/**
-	 * @param  ProgramOverviewControl $control
-	 * @return $this
-	 */
-	protected function setProgramOverviewControl(IProgramOverviewControl $control)
+	protected function setProgramOverviewControl(IProgramOverviewControl $control): self
 	{
 		$this->programOverview = $control;
 
 		return $this;
 	}
 
-	/**
-	 * @return Emailer
-	 */
 	protected function getEmailer(): Emailer
 	{
 		return $this->emailer;
 	}
 
-	/**
-	 * @param  Emailer $emailer
-	 * @return self
-	 */
 	protected function setEmailer(Emailer $emailer): self
 	{
 		$this->emailer = $emailer;
@@ -381,18 +353,11 @@ class ProgramPresenter extends BasePresenter
 		return $this;
 	}
 
-	/**
-	 * @return BlockModel
-	 */
 	protected function getBlockModel(): BlockModel
 	{
 		return $this->blockModel;
 	}
 
-	/**
-	 * @param  BlockModel $blockModel
-	 * @return self
-	 */
 	protected function setBlockModel(BlockModel $blockModel): self
 	{
 		$this->blockModel = $blockModel;
@@ -400,18 +365,11 @@ class ProgramPresenter extends BasePresenter
 		return $this;
 	}
 
-	/**
-	 * @return MeetingModel
-	 */
 	protected function getMeetingModel(): MeetingModel
 	{
 		return $this->meetingModel;
 	}
 
-	/**
-	 * @param  MeetingModel $model
-	 * @return $this
-	 */
 	protected function setMeetingModel(MeetingModel $model): self
 	{
 		$this->meetingModel = $model;
@@ -419,30 +377,18 @@ class ProgramPresenter extends BasePresenter
 		return $this;
 	}
 
-	/**
-	 * @return ProgramRepository
-	 */
 	protected function getProgramRepository(): ProgramRepository
 	{
 		return $this->programRepository;
 	}
 
-	/**
-	 * @param  ProgramRepository $model
-	 * @return $this
-	 */
-	protected function setProgramRepository(ProgramRepository $repository):self
+	protected function setProgramRepository(ProgramRepository $repository): self
 	{
 		$this->programRepository = $repository;
 
 		return $this;
 	}
 
-	/**
-	 * @param CategoryStylesControl $control
-	 *
-	 * @return self
-	 */
 	public function setCategoryStylesControl(CategoryStylesControl $control): self
 	{
 		$this->categoryStyles = $control;
@@ -450,15 +396,10 @@ class ProgramPresenter extends BasePresenter
 		return $this;
 	}
 
-	/**
-	 * @param  ProgramVisitorsControl $control
-	 * @return self
-	 */
 	public function setProgramVisitorsControl(ProgramVisitorsControl $control): self
 	{
 		$this->programVisitors = $control;
 
 		return $this;
 	}
-
 }

@@ -5,22 +5,8 @@ namespace App\Models;
 use Nette\Database\Context;
 use Nette\Database\Table\ActiveRow;
 
-/**
- * Meeting
- *
- * class for handling meeting
- *
- * @created 2012-11-09
- * @author Tomas Litera <tomaslitera@hotmail.com>
- */
 class MeetingModel extends BaseModel
 {
-
-	/**
-	 * @var array
-	 */
-	private $weekendDays = [];
-
 	/**
 	 * @var array
 	 */
@@ -41,18 +27,41 @@ class MeetingModel extends BaseModel
 	 */
 	public $regClosing = null;
 
-	/** @var string registration heading text */
+	/**
+	 * @var string
+	 */
 	public $regHeading = '';
 
+	/**
+	 * @var int
+	 */
 	public $eventId;
-	public $courseId;
-	private $program;
-	private $httpEncoding;
-	private $dbTable;
 
+	/**
+	 * @var int
+	 */
+	public $courseId;
+
+	/**
+	 * @var ProgramModel
+	 */
+	protected $program;
+
+	/**
+	 * @var string
+	 */
+	protected $httpEncoding;
+
+	/**
+	 * @var string
+	 */
 	protected $table = 'kk_meetings';
 
-	/** Constructor */
+	/**
+	 * @var array
+	 */
+	protected $weekendDays = [];
+
 	public function __construct(Context $database, ProgramModel $program)
 	{
 		$this->weekendDays = ["pátek", "sobota", "neděle"];
@@ -86,7 +95,6 @@ class MeetingModel extends BaseModel
 			'skautis_event_id',
 			'skautis_course_id',
 		];
-		$this->dbTable = "kk_meetings";
 		$this->setDatabase($database);
 		$this->program = $program;
 	}
@@ -116,10 +124,10 @@ class MeetingModel extends BaseModel
 	}
 
 	/**
-	 * Create a new record
+	 * Create a new record.
 	 *
-	 * @param	mixed	array of data
-	 * @return	boolean
+	 * @param  array   $data
+	 * @return boolean
 	 */
 	public function create(array $data)
 	{
@@ -130,11 +138,11 @@ class MeetingModel extends BaseModel
 	}
 
 	/**
-	 * Modify record
+	 * Modify record.
 	 *
-	 * @param	int		$id			ID of record
-	 * @param	array	$db_data	array of data
-	 * @return	bool
+	 * @param  int   $id   ID of record
+	 * @param  array $data array of data
+	 * @return bool
 	 */
 	public function update($id, array $data)
 	{
@@ -144,10 +152,10 @@ class MeetingModel extends BaseModel
 	}
 
 	/**
-	 * Delete one or multiple record/s
+	 * Delete one or multiple record/s.
 	 *
-	 * @param	int		ID/s of record
-	 * @return	boolean
+	 * @param  int     $ids ID/s of record
+	 * @return boolean
 	 */
 	public function delete($ids)
 	{
@@ -158,17 +166,17 @@ class MeetingModel extends BaseModel
 	}
 
 	/**
-	 * Return meeting data
+	 * Return meeting data.
 	 */
 	public function getData($meetingId = null): ActiveRow
 	{
-		if(isset($meetingId)) {
+		if (isset($meetingId)) {
 			$data = $this->find($meetingId);
 		} else {
 			$data = $this->all();
 		}
 
-		if(!$data) {
+		if (!$data) {
 			return 0;
 		} else {
 			return $data;
@@ -176,7 +184,7 @@ class MeetingModel extends BaseModel
 	}
 
 	/**
-	 * @param  string $priceType cost|advance
+	 * @param  string  $priceType cost|advance
 	 * @return integer
 	 */
 	public function getPrice($priceType)
@@ -189,11 +197,7 @@ class MeetingModel extends BaseModel
 			->fetchField();
 	}
 
-	/**
-	 * @param  integer $meetingId
-	 * @return $this
-	 */
-	public function setRegistrationHandlers($meetingId = 1)
+	public function setRegistrationHandlers(int $meetingId = 1): self
 	{
 		$meeting = $this->getDatabase()
 			->table($this->getTable())
@@ -214,78 +218,48 @@ class MeetingModel extends BaseModel
 		return $this;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getRegOpening()
+	public function getRegOpening(): string
 	{
 		return $this->regOpening;
 	}
 
-	/**
-	 * @param  string $value
-	 * @return $this
-	 */
-	public function setRegOpening($value = '')
+	public function setRegOpening(string $value = ''): self
 	{
 		$this->regOpening = $value;
 
 		return $this;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getRegClosing()
+	public function getRegClosing(): string
 	{
 		return $this->regClosing;
 	}
 
-	/**
-	 * @param  string $value
-	 * @return $this
-	 */
-	public function setRegClosing($value = '')
+	public function setRegClosing(string $value = ''): self
 	{
 		$this->regClosing = $value;
 
 		return $this;
 	}
 
-	/**
-	 * @return string
-	 */
-	public function getRegHeading()
+	public function getRegHeading(): string
 	{
 		return $this->regHeading;
 	}
 
-	/**
-	 * @param  string $value
-	 * @return $this
-	 */
-	public function setRegHeading($value = '')
+	public function setRegHeading(string $value = ''): self
 	{
 		$this->regHeading = $value;
 
 		return $this;
 	}
 
-	/**
-	 * Is registration open?
-	 *
-	 * @return 	boolean
-	 */
-	public function isRegOpen($debug = false)
+	public function isRegOpen($debug = false): bool
 	{
-		return (($this->getRegOpening() < time()) && (time() < $this->getRegClosing()) || $debug);
+		return ($this->getRegOpening() < time()) && (time() < $this->getRegClosing()) || $debug;
 	}
 
-	/**
-	 * @param  integer $id
-	 * @return string
-	 */
-	public function getProvinceNameById($id)
+	public function getProvinceNameById(int $id): string
 	{
 		return $this->getDatabase()
 			->table('kk_provinces')
@@ -355,5 +329,4 @@ class MeetingModel extends BaseModel
 			->limit(1)
 			->fetchField();
 	}
-
 }
