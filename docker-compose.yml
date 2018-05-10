@@ -1,0 +1,62 @@
+version: '2'
+
+services:
+
+    webserver:
+        image: dockette/nginx:latest
+        ports:
+            - 80:80
+            - 443:443
+        volumes:
+            - ./www:/srv/srazvs/www
+            - ./.docker/nginx/srazvs:/etc/nginx/sites.d/srazvs
+            - ./.docker/nginx/certs:/etc/nginx/ssl
+        links:
+            - application:application
+
+    application:
+        image: dockette/php71-fpm
+        volumes:
+          - application-sync:/srv/srazvs:nocopy
+        ports:
+            - 9000:9000
+        links:
+            - database:mysql
+
+
+    database:
+        image: mysql:latest
+        ports:
+            - 3306:3306
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: vodni
+            MYSQL_USER: vodni
+            MYSQL_PASSWORD: vodni
+        volumes:
+            - ./.mysqldata:/var/lib/mysql
+
+    phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        ports:
+            - 8888:80
+        links:
+            - database:db
+        environment:
+            MYSQL_USER: vodni
+            MYSQL_PASSWORD: vodni
+            MYSQL_ROOT_PASSWORD: root
+
+    portainer:
+        image: portainer/portainer
+        command: -H unix:///var/run/docker.sock
+        volumes:
+            - /var/run/docker.sock:/var/run/docker.sock
+            - portainer_data:/data
+        ports:
+            - 10000:9000
+
+volumes:
+    application-sync:
+        external: true
+    portainer_data:

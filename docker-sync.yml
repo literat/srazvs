@@ -1,0 +1,13 @@
+version: "2"
+
+options:
+  verbose: true
+syncs:
+  application-sync: # tip: add -sync and you keep consistent names as a convention
+    src: './'
+    sync_host_ip: 'auto'
+    sync_host_port: 10872
+    sync_strategy: 'rsync'
+    # sync_strategy: 'native_osx' # not needed, this is the default now
+    sync_excludes: ['.docker', '.mysqldata', 'node_modules', 'tests', 'vendor/bin']
+    sync_userid: '0'
